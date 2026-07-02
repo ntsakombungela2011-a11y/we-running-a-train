@@ -1,30 +1,33 @@
 name: Builds
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 
-# Declare default permissions as read only.
-permissions: read-all
+# Declare permissions to allow creating releases and uploading assets.
+permissions:
+  contents: write
+  actions: read
 
 jobs:
   build:
-    name: Build ${{ matrix.target }}
-    runs-on: macos-26
-    strategy:
-      fail-fast: false
-      matrix:
-        target: ["appbundle --debug", "ios --no-codesign"]
+    name: Build Android Release
+    runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 17
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: temurin
 
-      - name: Install Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
-      - run: flutter doctor -v
-
       - name: Checkout mobile code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+
+      - run: flutter doctor -v
 
       - name: Install dependencies
         run: flutter pub get
@@ -32,4 +35,49 @@ jobs:
       - name: Code generation
         run: dart run build_runner build
 
-      - run: flutter build ${{ matrix.target }}
+      - name: Configure Keystore
+        run: |
+          echo "$PLAY_STORE_UPLOAD_KEY" | base64 --decode > app/upload-keystore.jks
+          echo "storeFile=upload-keystore.jks" >> key.properties
+          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
+          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
+          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
+        env:
+          PLAY_STORE_UPLOAD_KEY: ${{ secrets.PLAY_STORE_UPLOAD_KEY }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+        working-directory: android
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Determine Release Version
+        id: version
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            # For manual dispatch, use pubspec version and short SHA
+            PUBSPEC_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+            SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+            echo "tag=v${PUBSPEC_VERSION}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-${{ steps.version.outputs.tag }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          draft: false
+          prerelease: false
+          files: build/app/outputs/flutter-apk/app-release.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
