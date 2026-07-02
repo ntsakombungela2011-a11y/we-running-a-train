@@ -51,15 +51,16 @@ class _CategorySection extends StatelessWidget {
     return ListSection(
       header: Text(category.label),
       children: palettes.map((palette) {
-        return ListTile(
-          title: Text(palette.name),
-          trailing: palette.id == selectedPaletteId ? const Icon(Icons.check) : null,
-          leading: _PalettePreview(palette: palette),
-          onTap: () {
-            // Need to make sure the notifier has this method
-            // ref.read(generalPreferencesProvider.notifier).setPalette(palette.id);
-          },
-        );
+        return Consumer(builder: (context, ref, child) {
+          return ListTile(
+            title: Text(palette.name),
+            trailing: palette.id == selectedPaletteId ? const Icon(Icons.check) : null,
+            leading: _PalettePreview(palette: palette),
+            onTap: () {
+              ref.read(generalPreferencesProvider.notifier).setPalette(palette.id);
+            },
+          );
+        });
       }).toList(),
     );
   }
@@ -77,7 +78,7 @@ class _PalettePreview extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
       ),
       child: ClipOval(
         child: Row(

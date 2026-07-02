@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lichess_mobile/l10n/l10n.dart';
 import 'package:lichess_mobile/src/model/settings/board_preferences.dart'
     show BoardPrefs, BoardTheme, boardPreferencesProvider;
 import 'package:lichess_mobile/src/model/settings/preferences_storage.dart';
 import 'package:lichess_mobile/src/theme.dart';
 import 'package:lichess_mobile/src/utils/json.dart';
+
+part 'general_preferences.freezed.dart';
+part 'general_preferences.g.dart';
 
 final generalPreferencesProvider = NotifierProvider<GeneralPreferencesNotifier, GeneralPrefs>(
   GeneralPreferencesNotifier.new,
@@ -79,30 +83,36 @@ class GeneralPreferencesNotifier extends Notifier<GeneralPrefs>
   }
 }
 
-class GeneralPrefs implements Serializable {
-  const GeneralPrefs({
-    required this.themeMode,
-    required this.isSoundEnabled,
-    required this.soundTheme,
-    required this.masterVolume,
-    required this.systemColors,
-    required this.appThemeSeed,
-    this.locale,
-    this.backgroundColor,
-    this.backgroundImage,
-    required this.selectedPaletteId,
-  });
+@Freezed(fromJson: true, toJson: true)
+sealed class GeneralPrefs with _$GeneralPrefs implements Serializable {
+  const GeneralPrefs._();
 
-  final BackgroundThemeMode themeMode;
-  final bool isSoundEnabled;
-  final SoundTheme soundTheme;
-  final double masterVolume;
-  final bool systemColors;
-  final AppThemeSeed appThemeSeed;
-  final Locale? locale;
-  final (BackgroundColor, bool)? backgroundColor;
-  final BackgroundImage? backgroundImage;
-  final String selectedPaletteId;
+  @Assert('masterVolume >= 0 && masterVolume <= 1')
+  const factory GeneralPrefs({
+    @JsonKey(unknownEnumValue: BackgroundThemeMode.system, defaultValue: BackgroundThemeMode.system)
+    required BackgroundThemeMode themeMode,
+    required bool isSoundEnabled,
+    @JsonKey(unknownEnumValue: SoundTheme.standard) required SoundTheme soundTheme,
+    @JsonKey(defaultValue: 0.8) required double masterVolume,
+
+    /// Whether to use system colors on android 10+.
+    @JsonKey(defaultValue: true) required bool systemColors,
+
+    /// App theme seed
+    @Deprecated('Use systemColors instead')
+    @JsonKey(unknownEnumValue: AppThemeSeed.board, defaultValue: AppThemeSeed.board)
+    required AppThemeSeed appThemeSeed,
+
+    /// Locale to use in the app, use system locale if null
+    @LocaleConverter() Locale? locale,
+
+    /// Background color theme (boolean value is not used)
+    (BackgroundColor, bool)? backgroundColor,
+    @BackgroundImageConverter() BackgroundImage? backgroundImage,
+
+    /// Selected color palette ID
+    @JsonKey(defaultValue: 'bullet_express') required String selectedPaletteId,
+  }) = _GeneralPrefs;
 
   static const defaults = GeneralPrefs(
     themeMode: BackgroundThemeMode.system,
@@ -114,84 +124,55 @@ class GeneralPrefs implements Serializable {
     selectedPaletteId: 'bullet_express',
   );
 
-  GeneralPrefs copyWith({
-    BackgroundThemeMode? themeMode,
-    bool? isSoundEnabled,
-    SoundTheme? soundTheme,
-    double? masterVolume,
-    bool? systemColors,
-    AppThemeSeed? appThemeSeed,
-    Locale? locale,
-    (BackgroundColor, bool)? backgroundColor,
-    BackgroundImage? backgroundImage,
-    String? selectedPaletteId,
-  }) {
-    return GeneralPrefs(
-      themeMode: themeMode ?? this.themeMode,
-      isSoundEnabled: isSoundEnabled ?? this.isSoundEnabled,
-      soundTheme: soundTheme ?? this.soundTheme,
-      masterVolume: masterVolume ?? this.masterVolume,
-      systemColors: systemColors ?? this.systemColors,
-      appThemeSeed: appThemeSeed ?? this.appThemeSeed,
-      locale: locale ?? this.locale,
-      backgroundColor: backgroundColor ?? this.backgroundColor,
-      backgroundImage: backgroundImage ?? this.backgroundImage,
-      selectedPaletteId: selectedPaletteId ?? this.selectedPaletteId,
-    );
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'themeMode': themeMode.name,
-      'isSoundEnabled': isSoundEnabled,
-      'soundTheme': soundTheme.name,
-      'masterVolume': masterVolume,
-      'systemColors': systemColors,
-      'appThemeSeed': appThemeSeed.name,
-      'locale': locale?.toLanguageTag(),
-      'selectedPaletteId': selectedPaletteId,
-      if (backgroundColor != null) 'backgroundColor': [backgroundColor!.$1.name, backgroundColor!.$2],
-      if (backgroundImage != null) 'backgroundImage': const BackgroundImageConverter().toJson(backgroundImage),
-    };
-  }
-
   factory GeneralPrefs.fromJson(Map<String, dynamic> json) {
-    return GeneralPrefs(
-      themeMode: BackgroundThemeMode.values.byName(json['themeMode'] as String? ?? 'system'),
-      isSoundEnabled: json['isSoundEnabled'] as bool? ?? true,
-      soundTheme: SoundTheme.values.byName(json['soundTheme'] as String? ?? 'standard'),
-      masterVolume: (json['masterVolume'] as num?)?.toDouble() ?? 0.8,
-      systemColors: json['systemColors'] as bool? ?? true,
-      appThemeSeed: AppThemeSeed.values.byName(json['appThemeSeed'] as String? ?? 'board'),
-      locale: json['locale'] != null ? Locale.fromSubtags(languageCode: json['locale'] as String) : null,
-      selectedPaletteId: json['selectedPaletteId'] as String? ?? 'bullet_express',
-      backgroundColor: json['backgroundColor'] != null
-          ? (BackgroundColor.values.byName((json['backgroundColor'] as List)[0] as String), (json['backgroundColor'] as List)[1] as bool)
-          : null,
-      backgroundImage: const BackgroundImageConverter().fromJson(json['backgroundImage'] as Map<String, dynamic>?),
-    );
+    return _$GeneralPrefsFromJson(json);
   }
 
   bool get isForcedDarkMode => backgroundColor != null || backgroundImage != null;
 }
 
-enum AppThemeSeed { system, board }
+enum AppThemeSeed {
+  /// The app theme is based on the user's system theme (only available on Android 10+).
+  system,
 
+  /// The app theme is based on the chessboard.
+  board,
+}
+
+/// Describes the background theme of the app.
 enum BackgroundThemeMode {
-  system, light, dark;
+  /// Use either the light or dark theme based on what the user has selected in
+  /// the system settings.
+  system,
+
+  /// Always use the light mode regardless of system preference.
+  light,
+
+  /// Always use the dark mode (if available) regardless of system preference.
+  dark;
+
   String title(AppLocalizations l10n) {
     switch (this) {
-      case BackgroundThemeMode.system: return l10n.deviceTheme;
-      case BackgroundThemeMode.dark: return l10n.dark;
-      case BackgroundThemeMode.light: return l10n.light;
+      case BackgroundThemeMode.system:
+        return l10n.deviceTheme;
+      case BackgroundThemeMode.dark:
+        return l10n.dark;
+      case BackgroundThemeMode.light:
+        return l10n.light;
     }
   }
 }
 
 enum SoundTheme {
-  standard('Standard'), piano('Piano'), nes('NES'), sfx('SFX'), futuristic('Futuristic'), lisp('Lisp');
+  standard('Standard'),
+  piano('Piano'),
+  nes('NES'),
+  sfx('SFX'),
+  futuristic('Futuristic'),
+  lisp('Lisp');
+
   final String label;
+
   const SoundTheme(this.label);
 }
 
@@ -205,48 +186,71 @@ enum BackgroundColor {
   purple(Color(0xff624865), 'Purple'),
   lime(Color(0xff4f5530), 'Lime'),
   sepia(Color(0xff5f5d57), 'Sepia');
+
   final Color color;
-  final String label;
-  const BackgroundColor(this.color, this.label);
+  final String _label;
+
+  const BackgroundColor(this.color, this._label);
+
+  String get label => _label;
+
+  /// The base theme for the background color.
   ThemeData get baseTheme => BackgroundImage.getTheme(color);
+
+  /// Darker version of the color by 30%.
   Color get darker => Color.lerp(color, Colors.black, 0.3)!;
 }
 
-class BackgroundImage {
-  const BackgroundImage({
-    required this.path,
-    required this.transform,
-    required this.isBlurred,
-    required this.seedColor,
-    required this.meanLuminance,
-    required this.width,
-    required this.height,
-    required this.viewportWidth,
-    required this.viewportHeight,
-  });
-  final String path;
-  final Matrix4 transform;
-  final bool isBlurred;
-  final Color seedColor;
-  final double meanLuminance;
-  final double width;
-  final double height;
-  final double viewportWidth;
-  final double viewportHeight;
+@freezed
+sealed class BackgroundImage with _$BackgroundImage {
+  const BackgroundImage._();
 
+  const factory BackgroundImage({
+    /// The path to the image asset relative to the document directory returned by [getApplicationDocumentsDirectory]
+    required String path,
+    required Matrix4 transform,
+    required bool isBlurred,
+    required Color seedColor,
+    required double meanLuminance,
+    required double width,
+    required double height,
+    required double viewportWidth,
+    required double viewportHeight,
+  }) = _BackgroundImage;
+
+  static Color getFilterColor(Color surfaceColor, double meanLuminance) => surfaceColor.withValues(
+    alpha: switch (meanLuminance) {
+      < 0.2 => 0,
+      < 0.4 => 0.25,
+      < 0.6 => 0.5,
+      _ => 0.8,
+    },
+  );
+
+  /// Generate a base [ThemeData] from the seed color.
   static ThemeData getTheme(Color seedColor) => ThemeData.from(
     colorScheme: ColorScheme.fromSeed(seedColor: seedColor, brightness: Brightness.dark),
+    textTheme: defaultTargetPlatform == TargetPlatform.iOS ? kCupertinoDefaultTextTheme : null,
   );
+
+  /// The base theme for the background image.
   ThemeData get baseTheme => getTheme(seedColor);
 }
 
-class BackgroundImageConverter {
+class BackgroundImageConverter implements JsonConverter<BackgroundImage?, Map<String, dynamic>?> {
   const BackgroundImageConverter();
+
+  @override
   BackgroundImage? fromJson(Map<String, dynamic>? json) {
-    if (json == null) return null;
+    if (json == null) {
+      return null;
+    }
+
+    final transform = json['transform'] as List<dynamic>;
+
     return BackgroundImage(
       path: json['path'] as String,
-      transform: Matrix4.fromList((json['transform'] as List).map((e) => (e as num).toDouble()).toList()),
+      transform: Matrix4.fromList(transform.map((e) => (e as num).toDouble()).toList()),
       isBlurred: json['isBlurred'] as bool,
       seedColor: Color(json['seedColor'] as int),
       meanLuminance: json['meanLuminance'] as double,
@@ -256,8 +260,13 @@ class BackgroundImageConverter {
       viewportHeight: json['viewportHeight'] as double,
     );
   }
+
+  @override
   Map<String, dynamic>? toJson(BackgroundImage? object) {
-    if (object == null) return null;
+    if (object == null) {
+      return null;
+    }
+
     return {
       'path': object.path,
       'transform': object.transform.storage,

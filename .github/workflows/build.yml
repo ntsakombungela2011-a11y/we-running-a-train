@@ -41,14 +41,9 @@ jobs:
       - name: Determine Release Version
         id: version
         run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          else
-            # For manual dispatch, use pubspec version and short SHA
-            PUBSPEC_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
-            SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-            echo "tag=v${PUBSPEC_VERSION}-${SHORT_SHA}-debug" >> $GITHUB_OUTPUT
-          fi
+          PUBSPEC_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          echo "tag=v${PUBSPEC_VERSION}-${SHORT_SHA}-debug" >> $GITHUB_OUTPUT
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

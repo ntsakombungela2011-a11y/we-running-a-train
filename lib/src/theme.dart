@@ -52,7 +52,6 @@ ThemeData _makeDefaultTheme(
 
   ColorScheme scheme;
   if (selectedPalette.id == 'boipelo_pick') {
-    // strictly monochromatic blue
     scheme = ColorScheme.fromSeed(
       seedColor: selectedPalette.colors.first,
       brightness: brightness,
@@ -98,24 +97,24 @@ ThemeData _makeBackgroundImageTheme({
 
   return baseTheme.copyWith(
     colorScheme: scheme.copyWith(
-      surface: scheme.surface.withOpacity(baseSurfaceAlpha),
+      surface: scheme.surface.withValues(alpha: baseSurfaceAlpha),
     ),
     appBarTheme: _appBarTheme.copyWith(
-      backgroundColor: isBackgroundImage ? null : seedColor.withOpacity(kCupertinoBarOpacity),
+      backgroundColor: isBackgroundImage ? null : seedColor.withValues(alpha: kCupertinoBarOpacity),
     ),
-    scaffoldBackgroundColor: seedColor.withOpacity(0),
+    scaffoldBackgroundColor: seedColor.withValues(alpha: 0),
     sliderTheme: kSliderTheme,
   );
 }
 
 ListTileThemeData _makeListTileTheme(ColorScheme colorScheme, bool isIOS) {
   return ListTileThemeData(
-    iconColor: colorScheme.onSurface.withOpacity(0.7),
+    iconColor: colorScheme.onSurface.withValues(alpha: 0.7),
     titleTextStyle: isIOS
         ? TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.w500, fontSize: 16)
         : null,
     subtitleTextStyle: TextStyle(
-      color: colorScheme.onSurface.withOpacity(Styles.subtitleOpacity),
+      color: colorScheme.onSurface.withValues(alpha: Styles.subtitleOpacity),
     ),
   );
 }
