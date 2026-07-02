@@ -1,3 +1,4 @@
+import 'package:lichess_mobile/src/view/settings/palette_picker_screen.dart';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +102,13 @@ class _BodyState extends ConsumerState<_Body> {
                           ref.read(generalPreferencesProvider.notifier).toggleSystemColors();
                         },
                       ),
+                    SettingsListTile(
+                      icon: const Icon(Icons.palette_outlined),
+                      settingsLabel: const Text("Themes"),
+                      onTap: () {
+                        Navigator.of(context).push(PalettePickerScreen.buildRoute());
+                      },
+                    ),
                     SettingsListTile(
                       icon: const Icon(Icons.wallpaper),
                       settingsLabel: Text(context.l10n.background),

@@ -31,7 +31,7 @@ class LiveTvChannelsScreen extends ConsumerWidget {
         }
       },
       child: PlatformScaffold(
-        appBar: PlatformAppBar(title: const Text('Lichess TV')),
+        appBar: PlatformAppBar(title: const Text('Boipelo TV')),
         body: const _Body(),
       ),
     );
