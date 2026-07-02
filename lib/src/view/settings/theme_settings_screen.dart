@@ -19,6 +19,7 @@ import 'package:lichess_mobile/src/view/settings/piece_set_screen.dart';
 import 'package:lichess_mobile/src/widgets/adaptive_choice_picker.dart';
 import 'package:lichess_mobile/src/widgets/list.dart';
 import 'package:lichess_mobile/src/widgets/settings.dart';
+import 'package:lichess_mobile/src/styles/palettes.dart';
 
 class ThemeSettingsScreen extends ConsumerWidget {
   const ThemeSettingsScreen({super.key});
@@ -108,6 +109,7 @@ class _BodyState extends ConsumerState<_Body> {
                     SettingsListTile(
                       icon: const Icon(Icons.palette_outlined),
                       settingsLabel: const Text("Themes"),
+                      settingsValue: allPalettes.firstWhere((p) => p.id == generalPrefs.selectedPaletteId, orElse: () => allPalettes.first).name,
                       onTap: () {
                         Navigator.of(
                           context,

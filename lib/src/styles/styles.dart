@@ -166,4 +166,44 @@ const lichessCustomColors = LichessCustomColors(
 extension CustomColorsBuildContext on BuildContext {
   LichessCustomColors get lichessColors =>
       Theme.of(this).extension<LichessCustomColors>() ?? lichessCustomColors;
+
+  LichessTheme get lichessTheme =>
+      Theme.of(this).extension<LichessTheme>() ??
+      const LichessTheme(rowEven: null, rowOdd: null);
+}
+
+@immutable
+class LichessTheme extends ThemeExtension<LichessTheme> {
+  const LichessTheme({
+    required this.rowEven,
+    required this.rowOdd,
+  });
+
+  final Color? rowEven;
+  final Color? rowOdd;
+
+  @override
+  LichessTheme copyWith({
+    Color? rowEven,
+    Color? rowOdd,
+  }) {
+    return LichessTheme(
+      rowEven: rowEven ?? this.rowEven,
+      rowOdd: rowOdd ?? this.rowOdd,
+    );
+  }
+
+  @override
+  LichessTheme lerp(
+    ThemeExtension<LichessTheme>? other,
+    double t,
+  ) {
+    if (other is! LichessTheme) {
+      return this;
+    }
+    return LichessTheme(
+      rowEven: Color.lerp(rowEven, other.rowEven, t),
+      rowOdd: Color.lerp(rowOdd, other.rowOdd, t),
+    );
+  }
 }
