@@ -1,10 +1,6 @@
 name: Crowdin mobile source push
 
 on:
-  push:
-    paths:
-        - 'translation/source/mobile.xml'
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:

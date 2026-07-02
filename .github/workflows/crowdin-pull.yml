@@ -1,8 +1,6 @@
 name: Crowdin pull
 
 on:
-  schedule:
-    - cron: '0 0 * * 0' # https://crontab.guru/every-week
   workflow_dispatch:
 
 permissions:
