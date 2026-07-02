@@ -255,7 +255,7 @@ class _WatchTvWidget extends ConsumerWidget {
           return const SizedBox.shrink();
         }
         return ListSection(
-          header: const Text('Lichess TV'),
+          header: const Text('Boipelo TV'),
           hasLeading: true,
           onHeaderTap: () =>
               Navigator.of(context).push(LiveTvChannelsScreen.buildRoute()).then((_) {
