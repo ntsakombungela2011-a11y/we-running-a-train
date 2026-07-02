@@ -169,24 +169,21 @@ extension CustomColorsBuildContext on BuildContext {
 
   LichessTheme get lichessTheme =>
       Theme.of(this).extension<LichessTheme>() ??
-      const LichessTheme(rowEven: null, rowOdd: null);
+      const LichessTheme(
+        rowEven: Colors.transparent,
+        rowOdd: Colors.transparent,
+      );
 }
 
 @immutable
 class LichessTheme extends ThemeExtension<LichessTheme> {
-  const LichessTheme({
-    required this.rowEven,
-    required this.rowOdd,
-  });
+  const LichessTheme({required this.rowEven, required this.rowOdd});
 
-  final Color? rowEven;
-  final Color? rowOdd;
+  final Color rowEven;
+  final Color rowOdd;
 
   @override
-  LichessTheme copyWith({
-    Color? rowEven,
-    Color? rowOdd,
-  }) {
+  LichessTheme copyWith({Color? rowEven, Color? rowOdd}) {
     return LichessTheme(
       rowEven: rowEven ?? this.rowEven,
       rowOdd: rowOdd ?? this.rowOdd,
@@ -194,16 +191,13 @@ class LichessTheme extends ThemeExtension<LichessTheme> {
   }
 
   @override
-  LichessTheme lerp(
-    ThemeExtension<LichessTheme>? other,
-    double t,
-  ) {
+  LichessTheme lerp(ThemeExtension<LichessTheme>? other, double t) {
     if (other is! LichessTheme) {
       return this;
     }
     return LichessTheme(
-      rowEven: Color.lerp(rowEven, other.rowEven, t),
-      rowOdd: Color.lerp(rowOdd, other.rowOdd, t),
+      rowEven: Color.lerp(rowEven, other.rowEven, t) ?? rowEven,
+      rowOdd: Color.lerp(rowOdd, other.rowOdd, t) ?? rowOdd,
     );
   }
 }

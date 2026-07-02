@@ -109,7 +109,12 @@ class _BodyState extends ConsumerState<_Body> {
                     SettingsListTile(
                       icon: const Icon(Icons.palette_outlined),
                       settingsLabel: const Text("Themes"),
-                      settingsValue: allPalettes.firstWhere((p) => p.id == generalPrefs.selectedPaletteId, orElse: () => allPalettes.first).name,
+                      settingsValue: allPalettes
+                          .firstWhere(
+                            (p) => p.id == generalPrefs.selectedPaletteId,
+                            orElse: () => allPalettes.first,
+                          )
+                          .name,
                       onTap: () {
                         Navigator.of(
                           context,

@@ -422,8 +422,8 @@ class _GameRowState extends ConsumerState<_GameRow> {
         },
         child: ColoredBox(
           color: widget.index.isEven
-              ? context.lichessTheme.rowEven ?? Colors.transparent
-              : context.lichessTheme.rowOdd ?? Colors.transparent,
+              ? context.lichessTheme.rowEven
+              : context.lichessTheme.rowOdd,
           child: Padding(
             padding: _kGameRowPadding,
             child: Row(

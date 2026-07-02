@@ -1,4 +1,4 @@
-import "package:lichess_mobile/src/styles/styles.dart";
+import 'package:lichess_mobile/src/styles/styles.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class OpeningNameHeader extends StatelessWidget {
   const OpeningNameHeader({required this.opening, super.key});
-
   final Opening opening;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -68,7 +66,6 @@ class OpeningExplorerMoveTable extends ConsumerWidget {
     this.onMoveSelected,
     this.isIndexing = false,
   }) : _isLoading = false;
-
   const OpeningExplorerMoveTable.loading()
     : _isLoading = true,
       moves = const IListConst([]),
@@ -77,32 +74,25 @@ class OpeningExplorerMoveTable extends ConsumerWidget {
       blackWins = 0,
       isIndexing = false,
       onMoveSelected = null;
-
   final IList<OpeningMove> moves;
   final int whiteWins;
   final int draws;
   final int blackWins;
   final void Function(Move)? onMoveSelected;
   final bool isIndexing;
-
   final bool _isLoading;
-
   String formatNum(int num) => NumberFormat.decimalPatternDigits().format(num);
-
   static const columnWidths = {
     0: FractionColumnWidth(0.15),
     1: FractionColumnWidth(0.35),
     2: FractionColumnWidth(0.50),
   };
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (_isLoading) {
       return loadingTable;
     }
-
     final games = whiteWins + draws + blackWins;
-
     return Table(
       columnWidths: columnWidths,
       children: [
@@ -277,7 +267,6 @@ class OpeningExplorerMoveTable extends ConsumerWidget {
 
 class IndexingIndicator extends StatefulWidget {
   const IndexingIndicator();
-
   @override
   State<IndexingIndicator> createState() => _IndexingIndicatorState();
 }
@@ -285,7 +274,6 @@ class IndexingIndicator extends StatefulWidget {
 class _IndexingIndicatorState extends State<IndexingIndicator>
     with TickerProviderStateMixin {
   late AnimationController controller;
-
   @override
   void initState() {
     controller =
@@ -320,9 +308,7 @@ class _IndexingIndicatorState extends State<IndexingIndicator>
 
 class OpeningExplorerHeaderTile extends StatelessWidget {
   const OpeningExplorerHeaderTile({required this.child, super.key});
-
   final Widget child;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -343,12 +329,10 @@ class OpeningExplorerGameTile extends ConsumerStatefulWidget {
     required this.ply,
     super.key,
   });
-
   final Side pov;
   final OpeningExplorerGame game;
   final Color color;
   final int ply;
-
   @override
   ConsumerState<OpeningExplorerGameTile> createState() =>
       _OpeningExplorerGameTileState();
@@ -360,7 +344,6 @@ class _OpeningExplorerGameTileState
   Widget build(BuildContext context) {
     const widthResultBox = 50.0;
     const paddingResultBox = EdgeInsets.all(5);
-
     return Container(
       padding: kExplorerTableRowPadding,
       color: widget.color,
@@ -473,21 +456,17 @@ class _WinPercentageChart extends StatelessWidget {
     required this.draws,
     required this.blackWins,
   });
-
   final int whiteWins;
   final int draws;
   final int blackWins;
-
   int percentGames(int games) =>
       ((games / (whiteWins + draws + blackWins)) * 100).round();
   String label(int percent) => percent < 20 ? '' : '$percent%';
-
   @override
   Widget build(BuildContext context) {
     final percentWhite = percentGames(whiteWins);
     final percentDraws = percentGames(draws);
     final percentBlack = percentGames(blackWins);
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(5),
       child: Row(

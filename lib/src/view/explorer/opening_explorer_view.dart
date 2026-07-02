@@ -1,4 +1,4 @@
-import "package:lichess_mobile/src/styles/styles.dart";
+import 'package:lichess_mobile/src/styles/styles.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +30,6 @@ class OpeningExplorerView extends ConsumerStatefulWidget {
     this.scrollable = true,
     this.shouldDisplayGames = true,
   });
-
   final Side pov;
   final Position position;
   final Opening? opening;
@@ -39,7 +38,6 @@ class OpeningExplorerView extends ConsumerStatefulWidget {
 
   /// Whether to display recent and top games in the explorer.
   final bool shouldDisplayGames;
-
   @override
   ConsumerState<OpeningExplorerView> createState() => _OpeningExplorerState();
 }
@@ -56,35 +54,29 @@ class _OpeningExplorerState extends ConsumerState<OpeningExplorerView> {
   /// Last explorer content that was successfully loaded. This is used to
   /// display a loading indicator while the new content is being fetched.
   List<Widget>? lastExplorerWidgets;
-
   @override
   Widget build(BuildContext context) {
     if (widget.position.ply >= 50) {
       return Center(child: Text(context.l10n.maxDepthReached));
     }
-
     final isLoggedIn = ref.watch(isLoggedInProvider);
     if (!isLoggedIn) {
       return Center(child: Text(context.l10n.youNeedAnAccountToDoThat));
     }
-
     final prefs = ref.watch(openingExplorerPreferencesProvider);
     final variant = Variant.fromRule(widget.position.rule);
-
     if (prefs.db == OpeningDatabase.player && prefs.playerDb.username == null) {
       return const Center(
         // TODO: l10n
         child: Text('Select a Lichess player in the settings.'),
       );
     }
-
     final request = (fen: widget.position.fen, variant: variant);
     final cacheKey = (fen: widget.position.fen, variant: variant, prefs: prefs);
     final cacheOpeningExplorer = cache[cacheKey];
     final openingExplorerAsync = cacheOpeningExplorer != null
         ? AsyncValue.data((entry: cacheOpeningExplorer, isIndexing: false))
         : ref.watch(openingExplorerProvider(request));
-
     if (cacheOpeningExplorer == null) {
       ref.listen(openingExplorerProvider(request), (_, curAsync) {
         curAsync.whenData((cur) {
@@ -94,7 +86,6 @@ class _OpeningExplorerState extends ConsumerState<OpeningExplorerView> {
         });
       });
     }
-
     switch (openingExplorerAsync) {
       case AsyncData(:final value):
         if (value == null) {
@@ -113,12 +104,9 @@ class _OpeningExplorerState extends ConsumerState<OpeningExplorerView> {
                 ],
           );
         }
-
         final topGames = value.entry.topGames;
         final recentGames = value.entry.recentGames;
-
         final ply = widget.position.ply;
-
         final children = [
           if (widget.opening != null)
             OpeningNameHeader(opening: widget.opening!),
@@ -169,9 +157,7 @@ class _OpeningExplorerState extends ConsumerState<OpeningExplorerView> {
             }, growable: false),
           ],
         ];
-
         lastExplorerWidgets = children;
-
         return _ExplorerListView(
           scrollable: widget.scrollable,
           isLoading: false,
@@ -217,11 +203,9 @@ class _ExplorerListView extends StatelessWidget {
     required this.isLoading,
     required this.scrollable,
   });
-
   final List<Widget> children;
   final bool isLoading;
   final bool scrollable;
-
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
@@ -238,7 +222,6 @@ class _ExplorerListView extends StatelessWidget {
         ),
       ),
     );
-
     return Stack(
       children: [
         if (scrollable)
