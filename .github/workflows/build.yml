@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build:
-    name: Build Android Release
+    name: Build Android Debug
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 17
@@ -35,22 +35,8 @@ jobs:
       - name: Code generation
         run: dart run build_runner build
 
-      - name: Configure Keystore
-        run: |
-          echo "$PLAY_STORE_UPLOAD_KEY" | base64 --decode > app/upload-keystore.jks
-          echo "storeFile=upload-keystore.jks" >> key.properties
-          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> key.properties
-          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> key.properties
-          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> key.properties
-        env:
-          PLAY_STORE_UPLOAD_KEY: ${{ secrets.PLAY_STORE_UPLOAD_KEY }}
-          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
-          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-        working-directory: android
-
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build Debug APK
+        run: flutter build apk --debug
 
       - name: Determine Release Version
         id: version
@@ -61,23 +47,23 @@ jobs:
             # For manual dispatch, use pubspec version and short SHA
             PUBSPEC_VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
             SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-            echo "tag=v${PUBSPEC_VERSION}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+            echo "tag=v${PUBSPEC_VERSION}-${SHORT_SHA}-debug" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk-${{ steps.version.outputs.tag }}
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: debug-apk-${{ steps.version.outputs.tag }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
 
       - name: Create or Update Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: Release ${{ steps.version.outputs.tag }}
+          name: Debug Release ${{ steps.version.outputs.tag }}
           draft: false
-          prerelease: false
-          files: build/app/outputs/flutter-apk/app-release.apk
+          prerelease: true
+          files: build/app/outputs/flutter-apk/app-debug.apk
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
