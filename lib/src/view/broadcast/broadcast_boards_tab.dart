@@ -53,13 +53,18 @@ class BroadcastBoardsTab extends ConsumerWidget {
                   children: [
                     const Icon(Icons.info, size: 30),
                     const SizedBox(height: 8.0),
-                    Text(context.l10n.broadcastNoBoardsYet, textAlign: TextAlign.center),
+                    Text(
+                      context.l10n.broadcastNoBoardsYet,
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               )
             : BroadcastPreview(
                 games: showOnlyOngoingGames
-                    ? value.games.values.where((game) => game.isOngoing).toIList()
+                    ? value.games.values
+                          .where((game) => game.isOngoing)
+                          .toIList()
                     : value.games.values.toIList(),
                 tournamentId: tournamentId,
                 roundId: roundId,
@@ -68,7 +73,9 @@ class BroadcastBoardsTab extends ConsumerWidget {
                 roundSlug: value.round.slug,
                 customScoring: value.round.customScoring,
               ),
-      AsyncError(:final error) => Center(child: Text('Could not load broadcast: $error')),
+      AsyncError(:final error) => Center(
+        child: Text('Could not load broadcast: $error'),
+      ),
       _ => const Center(child: CircularProgressIndicator.adaptive()),
     };
   }
@@ -125,7 +132,9 @@ class _BroadcastPreviewState extends ConsumerState<BroadcastPreview> {
   @override
   Widget build(BuildContext context) {
     final showEvaluationGauges = ref.watch(
-      broadcastPreferencesProvider.select((value) => value.showRoundEvaluationGauges),
+      broadcastPreferencesProvider.select(
+        (value) => value.showRoundEvaluationGauges,
+      ),
     );
     const numberLoadingBoards = 12;
     const boardSpacing = 10.0;
@@ -145,7 +154,9 @@ class _BroadcastPreviewState extends ConsumerState<BroadcastPreview> {
         ? null
         : _searchQuery.isEmpty
         ? widget.games
-        : widget.games!.where((game) => _containsPlayer(game, _searchQuery)).toIList();
+        : widget.games!
+              .where((game) => _containsPlayer(game, _searchQuery))
+              .toIList();
     final showSearchBar = widget.games != null && widget.games!.length > 6;
     final mediaQueryPadding = MediaQuery.paddingOf(context);
 
@@ -187,14 +198,19 @@ class _BroadcastPreviewState extends ConsumerState<BroadcastPreview> {
               final boardSize =
                   boardWithMaybeEvalBarWidth -
                   (showEvaluationGauges
-                      ? boardThumbnailEvalGaugeAspectRatio * boardWithMaybeEvalBarWidth
+                      ? boardThumbnailEvalGaugeAspectRatio *
+                            boardWithMaybeEvalBarWidth
                       : 0);
 
               if (games == null) {
                 return BoardThumbnail.loading(
                   size: boardSize,
-                  header: _PlayerWidgetLoading(width: boardWithMaybeEvalBarWidth),
-                  footer: _PlayerWidgetLoading(width: boardWithMaybeEvalBarWidth),
+                  header: _PlayerWidgetLoading(
+                    width: boardWithMaybeEvalBarWidth,
+                  ),
+                  footer: _PlayerWidgetLoading(
+                    width: boardWithMaybeEvalBarWidth,
+                  ),
                 );
               }
 
@@ -219,7 +235,8 @@ class _BroadcastPreviewState extends ConsumerState<BroadcastPreview> {
               crossAxisCount: numberOfBoardsByRow,
               crossAxisSpacing: boardSpacing,
               mainAxisSpacing: boardSpacing,
-              mainAxisExtent: boardWithMaybeEvalBarWidth + 2 * headerAndFooterHeight,
+              mainAxisExtent:
+                  boardWithMaybeEvalBarWidth + 2 * headerAndFooterHeight,
               childAspectRatio: 1 + boardThumbnailEvalGaugeAspectRatio,
             ),
           ),
@@ -257,10 +274,12 @@ class ObservedBoardThumbnail extends ConsumerStatefulWidget {
   final BroadcastCustomScoring? customScoring;
 
   @override
-  ConsumerState<ObservedBoardThumbnail> createState() => _ObservedBoardThumbnailState();
+  ConsumerState<ObservedBoardThumbnail> createState() =>
+      _ObservedBoardThumbnailState();
 }
 
-class _ObservedBoardThumbnailState extends ConsumerState<ObservedBoardThumbnail> {
+class _ObservedBoardThumbnailState
+    extends ConsumerState<ObservedBoardThumbnail> {
   bool isBoardVisible = false;
 
   @override
@@ -305,8 +324,12 @@ class _ObservedBoardThumbnailState extends ConsumerState<ObservedBoardThumbnail>
         orientation: Side.white,
         fen: widget.game.fen,
         showEvaluationGauge: widget.showEvaluationGauge,
-        whiteWinningChances: (widget.game.cp != null || widget.game.mate != null)
-            ? ExternalEval(cp: widget.game.cp, mate: widget.game.mate).winningChances(Side.white)
+        whiteWinningChances:
+            (widget.game.cp != null || widget.game.mate != null)
+            ? ExternalEval(
+                cp: widget.game.cp,
+                mate: widget.game.mate,
+              ).winningChances(Side.white)
             : null,
         lastMove: widget.game.lastMove,
         size: widget.boardSize,
@@ -342,7 +365,10 @@ class _PlayerWidgetLoading extends StatelessWidget {
         padding: _kPlayerWidgetPadding,
         child: Container(
           height: _kPlayerWidgetTextStyle.fontSize,
-          decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(5)),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(5),
+          ),
         ),
       ),
     );
@@ -381,7 +407,9 @@ class _PlayerWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: BroadcastPlayerWidget(player: player, showRating: false)),
+              Expanded(
+                child: BroadcastPlayerWidget(player: player, showRating: false),
+              ),
               const SizedBox(width: 5),
               if (game.isOver)
                 Text(
@@ -415,5 +443,7 @@ class _PlayerWidget extends StatelessWidget {
 
 bool _containsPlayer(BroadcastGame game, String query) {
   final q = query.toLowerCase();
-  return game.players.values.any((pwc) => pwc.player.name?.toLowerCase().contains(q) ?? false);
+  return game.players.values.any(
+    (pwc) => pwc.player.name?.toLowerCase().contains(q) ?? false,
+  );
 }

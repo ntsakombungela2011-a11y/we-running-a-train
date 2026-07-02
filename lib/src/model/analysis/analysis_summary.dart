@@ -6,7 +6,11 @@ import 'package:lichess_mobile/src/model/common/chess.dart';
 import 'package:lichess_mobile/src/model/game/player.dart';
 
 /// The study/broadcast pgn endpoints send this summary of server analysis via the 'x-lichess-analysis' header if the query contains 'analysisHeader=1'.
-typedef AnalysisSummary = ({Division? division, PlayerAnalysis white, PlayerAnalysis black});
+typedef AnalysisSummary = ({
+  Division? division,
+  PlayerAnalysis white,
+  PlayerAnalysis black,
+});
 
 AnalysisSummary? readAnalysisSummaryFromHeader(Response response) {
   final analysisHeader = response.headers['x-lichess-analysis'];
@@ -37,5 +41,8 @@ PlayerAnalysis _playerAnalysisSummaryFromPick(RequiredPick pick) {
 }
 
 Division _divisionFromPick(RequiredPick pick) {
-  return Division(middlegame: pick('middle').asIntOrNull(), endgame: pick('end').asIntOrNull());
+  return Division(
+    middlegame: pick('middle').asIntOrNull(),
+    endgame: pick('end').asIntOrNull(),
+  );
 }

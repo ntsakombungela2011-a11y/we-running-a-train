@@ -34,7 +34,10 @@ class PuzzleDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const SizedBox.shrink(), actions: const [DaysSelector()]),
+      appBar: AppBar(
+        title: const SizedBox.shrink(),
+        actions: const [DaysSelector()],
+      ),
       body: const _Body(),
     );
   }
@@ -55,7 +58,9 @@ class PuzzleDashboardWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final puzzleDashboard = ref.watch(puzzleDashboardProvider(ref.watch(daysProvider).days));
+    final puzzleDashboard = ref.watch(
+      puzzleDashboardProvider(ref.watch(daysProvider).days),
+    );
 
     final days = ref.watch(daysProvider).days;
 
@@ -65,20 +70,32 @@ class PuzzleDashboardWidget extends ConsumerWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _ChartSection(dashboard: dashboard, showDaysSelector: showDaysSelector, days: days),
-            _PerformanceSection(dashboard: dashboard, metric: Metric.improvementArea),
+            _ChartSection(
+              dashboard: dashboard,
+              showDaysSelector: showDaysSelector,
+              days: days,
+            ),
+            _PerformanceSection(
+              dashboard: dashboard,
+              metric: Metric.improvementArea,
+            ),
             _PerformanceSection(dashboard: dashboard, metric: Metric.strength),
           ],
         );
       },
       error: (e, s) {
-        debugPrint('SEVERE: [PuzzleDashboardWidget] could not load puzzle dashboard; $e\n$s');
+        debugPrint(
+          'SEVERE: [PuzzleDashboardWidget] could not load puzzle dashboard; $e\n$s',
+        );
         return Padding(
           padding: Styles.bodySectionPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(context.l10n.puzzlePuzzleDashboard, style: Styles.sectionTitle),
+              Text(
+                context.l10n.puzzlePuzzleDashboard,
+                style: Styles.sectionTitle,
+              ),
               if (e is ClientException && e.message.contains('404'))
                 Text(context.l10n.puzzleNoPuzzlesToShow)
               else
@@ -143,9 +160,14 @@ class _ChartSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chartData = dashboard.themes.take(9).sortedBy((e) => e.theme.name).toList();
+    final chartData = dashboard.themes
+        .take(9)
+        .sortedBy((e) => e.theme.name)
+        .toList();
     final puzzlesToReplay =
-        dashboard.global.nb - dashboard.global.firstWins - dashboard.global.replayWins;
+        dashboard.global.nb -
+        dashboard.global.firstWins -
+        dashboard.global.replayWins;
     return ListSection(
       header: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +196,10 @@ class _ChartSection extends StatelessWidget {
       ),
       children: [
         StatCardRow([
-          StatCard(context.l10n.performance, value: dashboard.global.performance.toString()),
+          StatCard(
+            context.l10n.performance,
+            value: dashboard.global.performance.toString(),
+          ),
           StatCard(
             context.l10n
                 .puzzleNbPlayed(dashboard.global.nb)
@@ -185,7 +210,8 @@ class _ChartSection extends StatelessWidget {
           ),
           StatCard(
             context.l10n.puzzleSolved.capitalize(),
-            value: '${((dashboard.global.firstWins / dashboard.global.nb) * 100).round()}%',
+            value:
+                '${((dashboard.global.firstWins / dashboard.global.nb) * 100).round()}%',
           ),
         ]),
         if (chartData.length >= 3) PuzzleChart(chartData),
@@ -260,7 +286,9 @@ class PuzzleChart extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: AspectRatio(
-        aspectRatio: MediaQuery.sizeOf(context).width > FormFactor.desktop ? 2.8 : 1.2,
+        aspectRatio: MediaQuery.sizeOf(context).width > FormFactor.desktop
+            ? 2.8
+            : 1.2,
         child: RadarChart(
           RadarChartData(
             radarBorderData: BorderSide(width: 0.5, color: radarColor),
@@ -272,12 +300,16 @@ class PuzzleChart extends StatelessWidget {
                 fillColor: chartColor.withValues(alpha: 0.2),
                 borderColor: chartColor,
                 dataEntries: puzzleData
-                    .map((theme) => RadarEntry(value: theme.performance.toDouble()))
+                    .map(
+                      (theme) =>
+                          RadarEntry(value: theme.performance.toDouble()),
+                    )
                     .toList(),
               ),
             ],
-            getTitle: (index, angle) =>
-                RadarChartTitle(text: puzzleData[index].theme.l10n(context.l10n).name),
+            getTitle: (index, angle) => RadarChartTitle(
+              text: puzzleData[index].theme.l10n(context.l10n).name,
+            ),
             titleTextStyle: const TextStyle(fontSize: 10),
             titlePositionPercentageOffset: 0.09,
             tickCount: 3,
@@ -319,21 +351,31 @@ enum Metric {
 
   static const _itemsToShow = 3;
 
-  List<PuzzleDashboardData> sort(IList<PuzzleDashboardData> themes, PuzzleDashboard dashboard) {
+  List<PuzzleDashboardData> sort(
+    IList<PuzzleDashboardData> themes,
+    PuzzleDashboard dashboard,
+  ) {
     // Themes are filtered to those with enough plays (nb > global.nb / 40),
     // then sorted ascending by performance. Improvement areas are taken from
     // the bottom (lowest performance), strengths from the top (highest performance).
     final minNb = dashboard.global.nb / 40;
 
-    final all = themes.where((e) => e.nb > minNb).sortedByCompare((e) => e.performance, (a, b) {
-      final perfCmp = a.compareTo(b);
-      return perfCmp;
-    }).toList();
+    final all = themes.where((e) => e.nb > minNb).sortedByCompare(
+      (e) => e.performance,
+      (a, b) {
+        final perfCmp = a.compareTo(b);
+        return perfCmp;
+      },
+    ).toList();
 
     return switch (this) {
       strength =>
         all
-            .where((e) => e.firstWins >= 3 && e.performance > dashboard.global.performance)
+            .where(
+              (e) =>
+                  e.firstWins >= 3 &&
+                  e.performance > dashboard.global.performance,
+            )
             .toList()
             .reversed
             .take(_itemsToShow)
@@ -341,8 +383,10 @@ enum Metric {
       improvementArea =>
         all
             .where((e) {
-              final failed = e.nb - e.firstWins; // fixed + unfixed = nb - firstWins
-              return failed >= 3 && e.performance < dashboard.global.performance;
+              final failed =
+                  e.nb - e.firstWins; // fixed + unfixed = nb - firstWins
+              return failed >= 3 &&
+                  e.performance < dashboard.global.performance;
             })
             .take(_itemsToShow)
             .toList(),
@@ -399,7 +443,9 @@ class PuzzleThemeRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeInfo = data.theme.l10n(context.l10n);
-    final solvePercentage = data.nb > 0 ? (data.firstWins / data.nb * 100).toInt() : 0;
+    final solvePercentage = data.nb > 0
+        ? (data.firstWins / data.nb * 100).toInt()
+        : 0;
 
     return InkWell(
       onTap: () {
@@ -423,7 +469,10 @@ class PuzzleThemeRow extends ConsumerWidget {
               style: Styles.formDescription,
             ),
             StatCardRow([
-              StatCard(context.l10n.performance, value: data.performance.toString()),
+              StatCard(
+                context.l10n.performance,
+                value: data.performance.toString(),
+              ),
               StatCard(
                 context.l10n
                     .puzzleNbPlayed(data.nb)
@@ -432,7 +481,10 @@ class PuzzleThemeRow extends ConsumerWidget {
                     .capitalize(),
                 value: data.nb.toString().localizeNumbers(),
               ),
-              StatCard(context.l10n.puzzleSolved.capitalize(), value: '$solvePercentage%'),
+              StatCard(
+                context.l10n.puzzleSolved.capitalize(),
+                value: '$solvePercentage%',
+              ),
             ]),
           ],
         ),

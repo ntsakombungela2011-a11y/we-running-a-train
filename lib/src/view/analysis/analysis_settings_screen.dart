@@ -36,14 +36,16 @@ class AnalysisSettingsScreen extends ConsumerWidget {
                   SwitchSettingTile(
                     title: Text(context.l10n.inlineNotation),
                     value: prefs.inlineNotation,
-                    onChanged: (value) =>
-                        ref.read(analysisPreferencesProvider.notifier).toggleInlineNotation(),
+                    onChanged: (value) => ref
+                        .read(analysisPreferencesProvider.notifier)
+                        .toggleInlineNotation(),
                   ),
                   SwitchSettingTile(
                     title: const Text('Small board'), // TODO l10n
                     value: prefs.smallBoard,
-                    onChanged: (value) =>
-                        ref.read(analysisPreferencesProvider.notifier).toggleSmallBoard(),
+                    onChanged: (value) => ref
+                        .read(analysisPreferencesProvider.notifier)
+                        .toggleSmallBoard(),
                   ),
                   ListTile(
                     title: Text(context.l10n.openingExplorer),
@@ -65,7 +67,9 @@ class AnalysisSettingsScreen extends ConsumerWidget {
                       title: Text(context.l10n.mobileServerAnalysis),
                       value: prefs.enableServerAnalysis,
                       onChanged: (_) {
-                        ref.read(analysisPreferencesProvider.notifier).toggleServerAnalysis();
+                        ref
+                            .read(analysisPreferencesProvider.notifier)
+                            .toggleServerAnalysis();
                       },
                     ),
                     SwitchSettingTile(
@@ -79,20 +83,23 @@ class AnalysisSettingsScreen extends ConsumerWidget {
                     SwitchSettingTile(
                       title: Text(context.l10n.toggleGlyphAnnotations),
                       value: prefs.showAnnotations,
-                      onChanged: (_) =>
-                          ref.read(analysisPreferencesProvider.notifier).toggleAnnotations(),
+                      onChanged: (_) => ref
+                          .read(analysisPreferencesProvider.notifier)
+                          .toggleAnnotations(),
                     ),
                     SwitchSettingTile(
                       title: Text(context.l10n.mobileShowComments),
                       value: prefs.showPgnComments,
-                      onChanged: (_) =>
-                          ref.read(analysisPreferencesProvider.notifier).togglePgnComments(),
+                      onChanged: (_) => ref
+                          .read(analysisPreferencesProvider.notifier)
+                          .togglePgnComments(),
                     ),
                     SwitchSettingTile(
                       title: Text(context.l10n.bestMoveArrow),
                       value: prefs.showBestMoveArrow,
-                      onChanged: (value) =>
-                          ref.read(analysisPreferencesProvider.notifier).toggleShowBestMoveArrow(),
+                      onChanged: (value) => ref
+                          .read(analysisPreferencesProvider.notifier)
+                          .toggleShowBestMoveArrow(),
                     ),
                   ],
                 ),

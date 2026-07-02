@@ -16,7 +16,11 @@ final gameStorageProvider = FutureProvider<GameStorage>((Ref ref) async {
 
 const kGameStorageTable = 'game';
 
-typedef StoredGame = ({UserId userId, DateTime lastModified, ExportedGame game});
+typedef StoredGame = ({
+  UserId userId,
+  DateTime lastModified,
+  ExportedGame game,
+});
 
 class GameStorage {
   const GameStorage(this._db);
@@ -39,8 +43,14 @@ class GameStorage {
   }) async {
     final list = await _db.query(
       kGameStorageTable,
-      where: ['userId = ?', if (until != null) 'lastModified < ?'].join(' AND '),
-      whereArgs: [userId ?? kStorageAnonId, if (until != null) until.toIso8601String()],
+      where: [
+        'userId = ?',
+        if (until != null) 'lastModified < ?',
+      ].join(' AND '),
+      whereArgs: [
+        userId ?? kStorageAnonId,
+        if (until != null) until.toIso8601String(),
+      ],
       orderBy: 'lastModified DESC',
       limit: max,
     );
@@ -50,7 +60,9 @@ class GameStorage {
           final raw = e['data']! as String;
           final json = jsonDecode(raw);
           if (json is! Map<String, dynamic>) {
-            throw const FormatException('[GameStorage] cannot fetch game: expected an object');
+            throw const FormatException(
+              '[GameStorage] cannot fetch game: expected an object',
+            );
           }
           return (
             userId: UserId(e['userId']! as String),
@@ -58,7 +70,10 @@ class GameStorage {
             game: ExportedGame.fromJson(json),
           );
         })
-        .where((e) => filter.perfs.isEmpty || filter.perfs.contains(e.game.meta.perf))
+        .where(
+          (e) =>
+              filter.perfs.isEmpty || filter.perfs.contains(e.game.meta.perf),
+        )
         .where((e) => filter.side == null || filter.side == e.game.youAre)
         .toIList();
   }
@@ -75,7 +90,9 @@ class GameStorage {
     if (raw != null) {
       final json = jsonDecode(raw);
       if (json is! Map<String, dynamic>) {
-        throw const FormatException('[GameStorage] cannot fetch game: expected an object');
+        throw const FormatException(
+          '[GameStorage] cannot fetch game: expected an object',
+        );
       }
       return ExportedGame.fromJson(json);
     }
@@ -92,6 +109,10 @@ class GameStorage {
   }
 
   Future<void> delete(GameId gameId) async {
-    await _db.delete(kGameStorageTable, where: 'gameId = ?', whereArgs: [gameId.toString()]);
+    await _db.delete(
+      kGameStorageTable,
+      where: 'gameId = ?',
+      whereArgs: [gameId.toString()],
+    );
   }
 }

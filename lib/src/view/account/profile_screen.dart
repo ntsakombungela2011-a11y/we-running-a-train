@@ -38,14 +38,16 @@ class ProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-final _accountActivityProvider = FutureProvider.autoDispose<IList<UserActivity>>((ref) {
-  final authUser = ref.watch(authControllerProvider);
-  if (authUser == null) return IList();
-  return ref.read(userRepositoryProvider).getActivity(authUser.user.id);
-}, name: 'userActivityProvider');
+final _accountActivityProvider =
+    FutureProvider.autoDispose<IList<UserActivity>>((ref) {
+      final authUser = ref.watch(authControllerProvider);
+      if (authUser == null) return IList();
+      return ref.read(userRepositoryProvider).getActivity(authUser.user.id);
+    }, name: 'userActivityProvider');
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         title: account.when(
           data: (user) => user == null
               ? const SizedBox.shrink()
-              : UserAppBarTitleWidget(user: user.lightUser, isOnline: online, seenAt: user.seenAt),
+              : UserAppBarTitleWidget(
+                  user: user.lightUser,
+                  isOnline: online,
+                  seenAt: user.seenAt,
+                ),
           loading: () => const SizedBox.shrink(),
           error: (error, _) => const SizedBox.shrink(),
         ),
@@ -65,7 +71,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           SemanticIconButton(
             icon: const Icon(Icons.edit),
             semanticsLabel: context.l10n.editProfile,
-            onPressed: () => Navigator.of(context).push(EditProfileScreen.buildRoute()),
+            onPressed: () =>
+                Navigator.of(context).push(EditProfileScreen.buildRoute()),
           ),
           account.when(
             data: (user) => user == null
@@ -90,7 +97,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           }
           final activity = ref.watch(_accountActivityProvider);
           final recentGames = ref.watch(myRecentGamesProvider);
-          final nbOfGames = ref.watch(userNumberOfGamesProvider(null)).value ?? 0;
+          final nbOfGames =
+              ref.watch(userNumberOfGamesProvider(null)).value ?? 0;
           return HapticRefreshIndicator(
             edgeOffset: Theme.of(context).platform == TargetPlatform.iOS
                 ? MediaQuery.paddingOf(context).top + kToolbarHeight
@@ -110,25 +118,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     hasLeading: true,
                     children: [
                       ListTile(
-                        title: Text(context.l10n.nbBookmarks(user.count!.bookmark)),
+                        title: Text(
+                          context.l10n.nbBookmarks(user.count!.bookmark),
+                        ),
                         leading: const Icon(Icons.bookmarks_outlined),
                         onTap: () {
-                          Navigator.of(
-                            context,
-                          ).push(GameBookmarksScreen.buildRoute(nbBookmarks: user.count!.bookmark));
+                          Navigator.of(context).push(
+                            GameBookmarksScreen.buildRoute(
+                              nbBookmarks: user.count!.bookmark,
+                            ),
+                          );
                         },
                       ),
                     ],
                   ),
                 UserActivityWidget(activity: activity, user: user.lightUser),
-                RecentGamesWidget(recentGames: recentGames, nbOfGames: nbOfGames, user: null),
+                RecentGamesWidget(
+                  recentGames: recentGames,
+                  nbOfGames: nbOfGames,
+                  user: null,
+                ),
               ],
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+        loading: () =>
+            const Center(child: CircularProgressIndicator.adaptive()),
         error: (error, _) {
-          return FullScreenRetryRequest(onRetry: () => ref.invalidate(accountProvider));
+          return FullScreenRetryRequest(
+            onRetry: () => ref.invalidate(accountProvider),
+          );
         },
       ),
     );

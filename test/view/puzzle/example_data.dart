@@ -12,7 +12,14 @@ final puzzle = Puzzle(
     plays: 68176,
     rating: 1984,
     solution: IList(const ['h4h2', 'h1h2', 'e5f3', 'h2h3', 'b4h4']),
-    themes: ISet(const ['middlegame', 'attraction', 'long', 'mateIn3', 'sacrifice', 'doubleCheck']),
+    themes: ISet(const [
+      'middlegame',
+      'attraction',
+      'long',
+      'mateIn3',
+      'sacrifice',
+      'doubleCheck',
+    ]),
   ),
   game: const PuzzleGame(
     rated: true,
@@ -34,7 +41,13 @@ final puzzle2 = Puzzle(
     plays: 23890,
     initialPly: 88,
     solution: IList(const ['g4h4', 'h8h4', 'b4h4']),
-    themes: ISet(const {'endgame', 'short', 'crushing', 'fork', 'queenRookEndgame'}),
+    themes: ISet(const {
+      'endgame',
+      'short',
+      'crushing',
+      'fork',
+      'queenRookEndgame',
+    }),
   ),
   game: const PuzzleGame(
     id: GameId('w32JTzEf'),

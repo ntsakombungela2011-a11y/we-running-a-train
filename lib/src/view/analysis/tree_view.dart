@@ -18,9 +18,11 @@ class AnalysisTreeView extends ConsumerWidget {
     final analysisState = ref.watch(ctrlProvider).requireValue;
     final prefs = ref.watch(analysisPreferencesProvider);
     // enable computer analysis takes effect here only if it's a lichess game
-    final enableServerAnalysis = !options.isLichessGameAnalysis || prefs.enableServerAnalysis;
+    final enableServerAnalysis =
+        !options.isLichessGameAnalysis || prefs.enableServerAnalysis;
     final currentNode =
-        analysisState.root.branchesOn(analysisState.currentPath).lastOrNull ?? analysisState.root;
+        analysisState.root.branchesOn(analysisState.currentPath).lastOrNull ??
+        analysisState.root;
 
     return Column(
       crossAxisAlignment: .stretch,
@@ -39,10 +41,14 @@ class AnalysisTreeView extends ConsumerWidget {
                   // Avoid overlap with the divider of the analysis tab bar
                   showTopDivider: false,
                   shouldShowComputerAnalysis: enableServerAnalysis,
-                  shouldShowComments: enableServerAnalysis && prefs.showPgnComments,
-                  shouldShowAnnotations: enableServerAnalysis && prefs.showAnnotations,
+                  shouldShowComments:
+                      enableServerAnalysis && prefs.showPgnComments,
+                  shouldShowAnnotations:
+                      enableServerAnalysis && prefs.showAnnotations,
                   premovePaths: analysisState.forecast?.lines,
-                  displayMode: prefs.inlineNotation ? .inlineNotation : .twoColumn,
+                  displayMode: prefs.inlineNotation
+                      ? .inlineNotation
+                      : .twoColumn,
                 ),
                 if (analysisState.archivedGame != null)
                   Padding(

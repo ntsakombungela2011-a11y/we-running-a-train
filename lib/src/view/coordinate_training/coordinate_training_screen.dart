@@ -45,7 +45,8 @@ class CoordinateTrainingScreen extends StatelessWidget {
                 onPressed: () => showModalBottomSheet<void>(
                   context: context,
                   showDragHandle: true,
-                  builder: (BuildContext context) => const _CoordinateTrainingMenu(),
+                  builder: (BuildContext context) =>
+                      const _CoordinateTrainingMenu(),
                 ),
               );
             },
@@ -80,28 +81,29 @@ class _BodyState extends ConsumerState<_Body> {
     final trainingState = ref.watch(coordinateTrainingControllerProvider);
     final trainingPrefs = ref.watch(coordinateTrainingPreferencesProvider);
 
-    final IMap<Square, SquareHighlight> squareHighlights = <Square, SquareHighlight>{
-      if (trainingState.trainingActive)
-        if (trainingPrefs.mode == TrainingMode.findSquare) ...{
-          if (highlightLastGuess != null) ...{
-            highlightLastGuess!: SquareHighlight(
-              details: HighlightDetails(
-                solidColor:
-                    (trainingState.lastGuess == Guess.correct
-                            ? context.lichessColors.good
-                            : context.lichessColors.error)
-                        .withValues(alpha: 0.5),
+    final IMap<Square, SquareHighlight> squareHighlights =
+        <Square, SquareHighlight>{
+          if (trainingState.trainingActive)
+            if (trainingPrefs.mode == TrainingMode.findSquare) ...{
+              if (highlightLastGuess != null) ...{
+                highlightLastGuess!: SquareHighlight(
+                  details: HighlightDetails(
+                    solidColor:
+                        (trainingState.lastGuess == Guess.correct
+                                ? context.lichessColors.good
+                                : context.lichessColors.error)
+                            .withValues(alpha: 0.5),
+                  ),
+                ),
+              },
+            } else ...{
+              trainingState.currentCoord!: SquareHighlight(
+                details: HighlightDetails(
+                  solidColor: context.lichessColors.good.withValues(alpha: 0.5),
+                ),
               ),
-            ),
-          },
-        } else ...{
-          trainingState.currentCoord!: SquareHighlight(
-            details: HighlightDetails(
-              solidColor: context.lichessColors.good.withValues(alpha: 0.5),
-            ),
-          ),
-        },
-    }.lock;
+            },
+        }.lock;
 
     return SafeArea(
       bottom: false,
@@ -114,13 +116,16 @@ class _BodyState extends ConsumerState<_Body> {
 
                 final defaultBoardSize = constraints.biggest.shortestSide;
                 final isTablet = isTabletOrLarger(context);
-                final remainingHeight = constraints.maxHeight - defaultBoardSize;
+                final remainingHeight =
+                    constraints.maxHeight - defaultBoardSize;
                 final isSmallScreen = remainingHeight < kSmallHeightMinusBoard;
                 final boardSize = isTablet || isSmallScreen
                     ? defaultBoardSize - kTabletBoardTableSidePadding * 2
                     : defaultBoardSize;
 
-                final direction = aspectRatio > 1 ? Axis.horizontal : Axis.vertical;
+                final direction = aspectRatio > 1
+                    ? Axis.horizontal
+                    : Axis.vertical;
 
                 return Flex(
                   direction: direction,
@@ -132,7 +137,8 @@ class _BodyState extends ConsumerState<_Body> {
                       children: [
                         _TimeBar(
                           maxWidth: boardSize,
-                          timeFractionElapsed: trainingState.timeFractionElapsed,
+                          timeFractionElapsed:
+                              trainingState.timeFractionElapsed,
                           color: trainingState.lastGuess == Guess.incorrect
                               ? context.lichessColors.error
                               : context.lichessColors.good,
@@ -161,7 +167,9 @@ class _BodyState extends ConsumerState<_Body> {
                         score: trainingState.lastScore!,
                         onPressed: () {
                           ref
-                              .read(coordinateTrainingControllerProvider.notifier)
+                              .read(
+                                coordinateTrainingControllerProvider.notifier,
+                              )
                               .startTraining(trainingPrefs.timeChoice.duration);
                         },
                         label: context.l10n.coordinatesStartTraining,
@@ -172,8 +180,13 @@ class _BodyState extends ConsumerState<_Body> {
                           child: _Button(
                             onPressed: () {
                               ref
-                                  .read(coordinateTrainingControllerProvider.notifier)
-                                  .startTraining(trainingPrefs.timeChoice.duration);
+                                  .read(
+                                    coordinateTrainingControllerProvider
+                                        .notifier,
+                                  )
+                                  .startTraining(
+                                    trainingPrefs.timeChoice.duration,
+                                  );
                             },
                             label: context.l10n.coordinatesStartTraining,
                           ),
@@ -205,7 +218,9 @@ class _BodyState extends ConsumerState<_Body> {
   }
 
   void _onGuess(Square square) {
-    ref.read(coordinateTrainingControllerProvider.notifier).guessCoordinate(square);
+    ref
+        .read(coordinateTrainingControllerProvider.notifier)
+        .guessCoordinate(square);
 
     setState(() {
       highlightLastGuess = square;
@@ -221,7 +236,11 @@ class _BodyState extends ConsumerState<_Body> {
 }
 
 class _TimeBar extends StatelessWidget {
-  const _TimeBar({required this.maxWidth, required this.timeFractionElapsed, required this.color});
+  const _TimeBar({
+    required this.maxWidth,
+    required this.timeFractionElapsed,
+    required this.color,
+  });
 
   final double maxWidth;
   final double? timeFractionElapsed;
@@ -263,7 +282,9 @@ class _CoordinateTrainingMenu extends ConsumerWidget {
             SwitchSettingTile(
               title: const Text('Show Pieces'),
               value: trainingPrefs.showPieces,
-              onChanged: ref.read(coordinateTrainingPreferencesProvider.notifier).setShowPieces,
+              onChanged: ref
+                  .read(coordinateTrainingPreferencesProvider.notifier)
+                  .setShowPieces,
             ),
           ],
         ),
@@ -372,7 +393,9 @@ class SettingsBottomSheet extends ConsumerWidget {
           choiceLabel: (choice) => Text(choice.label(context.l10n)),
           onSelected: (choice, selected) {
             if (selected) {
-              ref.read(coordinateTrainingPreferencesProvider.notifier).setSideChoice(choice);
+              ref
+                  .read(coordinateTrainingPreferencesProvider.notifier)
+                  .setSideChoice(choice);
             }
           },
         ),
@@ -388,7 +411,9 @@ class SettingsBottomSheet extends ConsumerWidget {
           choiceLabel: (choice) => choice.label(context.l10n),
           onSelected: (choice, selected) {
             if (selected) {
-              ref.read(coordinateTrainingPreferencesProvider.notifier).setTimeChoice(choice);
+              ref
+                  .read(coordinateTrainingPreferencesProvider.notifier)
+                  .setTimeChoice(choice);
             }
           },
         ),
@@ -445,16 +470,20 @@ class _TrainingBoardState extends ConsumerState<_TrainingBoard> {
                       borderRadius: widget.isTablet
                           ? const BorderRadius.all(Radius.circular(4.0))
                           : BorderRadius.zero,
-                      boxShadow: widget.isTablet ? boardShadows : const <BoxShadow>[],
+                      boxShadow: widget.isTablet
+                          ? boardShadows
+                          : const <BoxShadow>[],
                     ),
               ),
               onTouchedSquare: (square) {
-                if (trainingState.trainingActive && trainingPrefs.mode == TrainingMode.findSquare) {
+                if (trainingState.trainingActive &&
+                    trainingPrefs.mode == TrainingMode.findSquare) {
                   widget.onGuess(square);
                 }
               },
             ),
-            if (trainingState.trainingActive && trainingPrefs.mode == TrainingMode.findSquare)
+            if (trainingState.trainingActive &&
+                trainingPrefs.mode == TrainingMode.findSquare)
               CoordinateDisplay(
                 currentCoord: trainingState.currentCoord!,
                 nextCoord: trainingState.nextCoord!,
@@ -478,24 +507,38 @@ Future<void> _coordinateTrainingInfoDialogBuilder(BuildContext context) {
     context: context,
     builder: (context) {
       return AlertDialog.adaptive(
-        title: Text(context.l10n.aboutX(context.l10n.coordinatesCoordinateTraining)),
+        title: Text(
+          context.l10n.aboutX(context.l10n.coordinatesCoordinateTraining),
+        ),
         content: SingleChildScrollView(
           child: Text.rich(
             TextSpan(
               children: [
-                TextSpan(text: '${context.l10n.coordinatesKnowingTheChessBoard}\n'),
-                TextSpan(text: '  • ${context.l10n.coordinatesMostChessCourses}\n'),
-                TextSpan(text: '  • ${context.l10n.coordinatesTalkToYourChessFriends}\n'),
                 TextSpan(
-                  text: '  • ${context.l10n.coordinatesYouCanAnalyseAGameMoreEffectively}\n',
+                  text: '${context.l10n.coordinatesKnowingTheChessBoard}\n',
+                ),
+                TextSpan(
+                  text: '  • ${context.l10n.coordinatesMostChessCourses}\n',
+                ),
+                TextSpan(
+                  text:
+                      '  • ${context.l10n.coordinatesTalkToYourChessFriends}\n',
+                ),
+                TextSpan(
+                  text:
+                      '  • ${context.l10n.coordinatesYouCanAnalyseAGameMoreEffectively}\n',
                 ),
                 const TextSpan(text: '\n'),
                 TextSpan(
                   text: '${context.l10n.coordinatesFindSquare}\n',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                TextSpan(text: '${context.l10n.coordinatesACoordinateAppears}\n'),
-                TextSpan(text: '${context.l10n.coordinatesYouHaveThirtySeconds}\n'),
+                TextSpan(
+                  text: '${context.l10n.coordinatesACoordinateAppears}\n',
+                ),
+                TextSpan(
+                  text: '${context.l10n.coordinatesYouHaveThirtySeconds}\n',
+                ),
               ],
             ),
           ),

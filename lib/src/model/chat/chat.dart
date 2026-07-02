@@ -12,7 +12,9 @@ typedef ChatData = ({IList<ChatMessage> lines, bool writeable});
 
 ChatData chatDataFromPick(RequiredPick pick) {
   return (
-    lines: pick('lines').asListOrThrow((it) => ChatMessage.fromPick(it)).toIList(),
+    lines: pick(
+      'lines',
+    ).asListOrThrow((it) => ChatMessage.fromPick(it)).toIList(),
     writeable: pick('writeable').asBoolOrTrue(),
   );
 }
@@ -34,8 +36,10 @@ sealed class ChatOptions {
 @freezed
 abstract class GameChatOptions extends ChatOptions with _$GameChatOptions {
   const GameChatOptions._();
-  const factory GameChatOptions({required GameFullId id, required LightUser? opponent}) =
-      _GameChatOptions;
+  const factory GameChatOptions({
+    required GameFullId id,
+    required LightUser? opponent,
+  }) = _GameChatOptions;
 
   @override
   bool get isPublic => false;
@@ -47,8 +51,10 @@ abstract class GameChatOptions extends ChatOptions with _$GameChatOptions {
 @freezed
 abstract class TvChatOptions extends ChatOptions with _$TvChatOptions {
   const TvChatOptions._();
-  const factory TvChatOptions(TvGameControllerParams params, {required bool writeable}) =
-      _TvChatOptions;
+  const factory TvChatOptions(
+    TvGameControllerParams params, {
+    required bool writeable,
+  }) = _TvChatOptions;
 
   @override
   GameId get id => params.gameId;
@@ -61,10 +67,13 @@ abstract class TvChatOptions extends ChatOptions with _$TvChatOptions {
 }
 
 @freezed
-abstract class TournamentChatOptions extends ChatOptions with _$TournamentChatOptions {
+abstract class TournamentChatOptions extends ChatOptions
+    with _$TournamentChatOptions {
   const TournamentChatOptions._();
-  const factory TournamentChatOptions({required TournamentId id, required bool writeable}) =
-      _TournamentChatOptions;
+  const factory TournamentChatOptions({
+    required TournamentId id,
+    required bool writeable,
+  }) = _TournamentChatOptions;
 
   @override
   LightUser? get opponent => null;
@@ -76,8 +85,10 @@ abstract class TournamentChatOptions extends ChatOptions with _$TournamentChatOp
 @freezed
 abstract class StudyChatOptions extends ChatOptions with _$StudyChatOptions {
   const StudyChatOptions._();
-  const factory StudyChatOptions({required StudyOptions options, required bool writeable}) =
-      _StudyChatOptions;
+  const factory StudyChatOptions({
+    required StudyOptions options,
+    required bool writeable,
+  }) = _StudyChatOptions;
 
   @override
   LightUser? get opponent => null;
@@ -128,7 +139,8 @@ sealed class ChatMessage with _$ChatMessage {
     );
   }
 
-  bool get isSpam => spamRegex.hasMatch(message) || followMeRegex.hasMatch(message);
+  bool get isSpam =>
+      spamRegex.hasMatch(message) || followMeRegex.hasMatch(message);
 }
 
 final RegExp spamRegex = RegExp(

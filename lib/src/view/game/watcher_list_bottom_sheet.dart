@@ -5,7 +5,11 @@ import 'package:lichess_mobile/src/model/user/user.dart';
 import 'package:lichess_mobile/src/view/user/user_or_profile_screen.dart';
 
 class WatcherListBottomSheet extends StatelessWidget {
-  const WatcherListBottomSheet({required this.nbWatchers, required this.watcherNames, super.key});
+  const WatcherListBottomSheet({
+    required this.nbWatchers,
+    required this.watcherNames,
+    super.key,
+  });
 
   final int nbWatchers;
   final IList<String> watcherNames;
@@ -31,7 +35,9 @@ class WatcherListBottomSheet extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.4,
+                  ),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -40,7 +46,10 @@ class WatcherListBottomSheet extends StatelessWidget {
             // Title
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text('Spectators ($nbWatchers)', style: theme.textTheme.titleMedium),
+              child: Text(
+                'Spectators ($nbWatchers)',
+                style: theme.textTheme.titleMedium,
+              ),
             ),
             const SizedBox(height: 8),
             const Divider(height: 1),

@@ -26,7 +26,8 @@ final _logger = Logger('ServerAnalysisService');
 sealed class ServerAnalysisSource with _$ServerAnalysisSource {
   const ServerAnalysisSource._();
 
-  const factory ServerAnalysisSource.game({required GameId gameId}) = _GameServerAnalysisSource;
+  const factory ServerAnalysisSource.game({required GameId gameId}) =
+      _GameServerAnalysisSource;
 
   const factory ServerAnalysisSource.studyChapter({
     required StudyId studyId,
@@ -37,7 +38,9 @@ sealed class ServerAnalysisSource with _$ServerAnalysisSource {
 const Duration kMaxWaitForServerAnalysis = Duration(minutes: 1);
 
 /// A provider for [ServerAnalysisService].
-final serverAnalysisServiceProvider = Provider<ServerAnalysisService>((Ref ref) {
+final serverAnalysisServiceProvider = Provider<ServerAnalysisService>((
+  Ref ref,
+) {
   return ServerAnalysisService(ref);
 }, name: 'ServerAnalysisServiceProvider');
 
@@ -52,14 +55,16 @@ class ServerAnalysisService {
 
   Completer<void>? _analysisCompleter;
 
-  final _analysisProgress = ValueNotifier<(ServerAnalysisSource, ServerEvalEvent)?>(null);
+  final _analysisProgress =
+      ValueNotifier<(ServerAnalysisSource, ServerEvalEvent)?>(null);
 
   /// The current game being analyzed.
-  ValueListenable<ServerAnalysisSource?> get currentAnalysis => _currentAnalysis;
+  ValueListenable<ServerAnalysisSource?> get currentAnalysis =>
+      _currentAnalysis;
 
   /// The last analysis progress event received from the server.
-  ValueListenable<(ServerAnalysisSource, ServerEvalEvent)?> get lastAnalysisEvent =>
-      _analysisProgress;
+  ValueListenable<(ServerAnalysisSource, ServerEvalEvent)?>
+  get lastAnalysisEvent => _analysisProgress;
 
   SocketClient? _socketClient;
 
@@ -67,7 +72,10 @@ class ServerAnalysisService {
   ///
   /// This will return a future that completes when the server analysis is
   /// launched (but not when it is finished).
-  Future<void> requestAnalysis(ServerAnalysisSource source, [Side? side]) async {
+  Future<void> requestAnalysis(
+    ServerAnalysisSource source, [
+    Side? side,
+  ]) async {
     // If we are already listening for analysis updates of this exact game/study,
     // don't tear everything down and reconnect.
     if (_currentAnalysis.value == source &&
@@ -80,8 +88,10 @@ class ServerAnalysisService {
 
     final uri = Uri(
       path: switch (source) {
-        _GameServerAnalysisSource(:final gameId) => '/watch/$gameId/${side?.name ?? Side.white}/v6',
-        _StudyChapterServerAnalysisSource(:final studyId) => '/study/$studyId/socket/v6',
+        _GameServerAnalysisSource(:final gameId) =>
+          '/watch/$gameId/${side?.name ?? Side.white}/v6',
+        _StudyChapterServerAnalysisSource(:final studyId) =>
+          '/study/$studyId/socket/v6',
       },
     );
 
@@ -98,12 +108,15 @@ class ServerAnalysisService {
     _socketSubscription = _socketClient!.stream.listen(
       (event) {
         if (event.topic == 'analysisProgress') {
-          final data = ServerEvalEvent.fromJson(event.data as Map<String, dynamic>);
+          final data = ServerEvalEvent.fromJson(
+            event.data as Map<String, dynamic>,
+          );
 
           _analysisProgress.value = (source, data);
 
           if (data.isAnalysisComplete) {
-            if (_analysisCompleter != null && !_analysisCompleter!.isCompleted) {
+            if (_analysisCompleter != null &&
+                !_analysisCompleter!.isCompleted) {
               _analysisCompleter?.complete();
             }
           }
@@ -152,9 +165,11 @@ class ServerAnalysisService {
             });
     }
 
-    _analysisCompleter?.future.timeout(kMaxWaitForServerAnalysis).whenComplete(() {
-      _cancelAnalysis();
-    });
+    _analysisCompleter?.future.timeout(kMaxWaitForServerAnalysis).whenComplete(
+      () {
+        _cancelAnalysis();
+      },
+    );
   }
 
   /// Cancel the ongoing server analysis, if any.
@@ -182,9 +197,12 @@ class ServerAnalysisService {
     final glyphs = n2['glyphs'] as List<dynamic>?;
     final glyph = glyphs?.first as Map<String, dynamic>?;
     final comments = n2['comments'] as List<dynamic>?;
-    final comment = (comments?.first as Map<String, dynamic>?)?['text'] as String?;
+    final comment =
+        (comments?.first as Map<String, dynamic>?)?['text'] as String?;
     final children = n2['children'] as List<dynamic>? ?? [];
-    final pgnComment = pgnEval != null ? PgnComment(eval: pgnEval, text: comment) : null;
+    final pgnComment = pgnEval != null
+        ? PgnComment(eval: pgnEval, text: comment)
+        : null;
     if (n1 is Branch) {
       if (pgnComment != null) {
         if (n1.lichessAnalysisComments == null) {
@@ -241,7 +259,10 @@ class CurrentAnalysis extends Notifier<ServerAnalysisSource?> {
   }
 
   void _listener() {
-    final source = ref.read(serverAnalysisServiceProvider).currentAnalysis.value;
+    final source = ref
+        .read(serverAnalysisServiceProvider)
+        .currentAnalysis
+        .value;
     if (state != source) {
       state = source;
     }

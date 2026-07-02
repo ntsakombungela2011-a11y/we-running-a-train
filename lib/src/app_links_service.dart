@@ -52,7 +52,8 @@ final appLinksServiceProvider = Provider<AppLinksService>((ref) {
 class AppLinksService {
   /// Creates the service. [appLinks] is injectable so tests can supply a fake
   /// in place of the real (singleton, platform-channel backed) [AppLinks].
-  AppLinksService(this.ref, {AppLinks? appLinks}) : _appLinks = appLinks ?? AppLinks();
+  AppLinksService(this.ref, {AppLinks? appLinks})
+    : _appLinks = appLinks ?? AppLinks();
 
   final Ref ref;
 
@@ -118,7 +119,12 @@ class AppLinksService {
     }
     if (context != null && context.mounted) {
       // For app deep links, we don't want to allow falling back to the browser as it might trigger an infinite loop if the app isn't properly handling the link
-      await handleAppLink(context, uri, animated: animated, allowBrowserFallback: false);
+      await handleAppLink(
+        context,
+        uri,
+        animated: animated,
+        allowBrowserFallback: false,
+      );
     }
   }
 
@@ -127,7 +133,10 @@ class AppLinksService {
   }
 
   /// Resolves an app link [Uri] to one or more corresponding [Route]s.
-  Future<List<Route<dynamic>>?> resolveAppLinkUri(BuildContext context, Uri appLinkUri) async {
+  Future<List<Route<dynamic>>?> resolveAppLinkUri(
+    BuildContext context,
+    Uri appLinkUri,
+  ) async {
     if (appLinkUri.pathSegments.isEmpty) return null;
     _logger.info('Resolving app link: $appLinkUri');
     switch (appLinkUri.pathSegments[0]) {
@@ -145,14 +154,22 @@ class AppLinksService {
         if (appLinkUri.pathSegments.length > 4) {
           final gameId = BroadcastGameId(appLinkUri.pathSegments[4]);
           return [
-            BroadcastRoundScreenLoading.buildRoute(roundId, initialTab: BroadcastRoundTab.boards),
+            BroadcastRoundScreenLoading.buildRoute(
+              roundId,
+              initialTab: BroadcastRoundTab.boards,
+            ),
             BroadcastGameScreen.buildRoute(roundId: roundId, gameId: gameId),
           ];
         } else {
           final fragment = appLinkUri.fragment;
-          final tab = BroadcastRoundTab.tabOrNullFromString(fragment.split('/').first);
-          if (tab == BroadcastRoundTab.players && fragment.length > 'players/'.length) {
-            final playerId = Uri.decodeComponent(fragment.substring('players/'.length));
+          final tab = BroadcastRoundTab.tabOrNullFromString(
+            fragment.split('/').first,
+          );
+          if (tab == BroadcastRoundTab.players &&
+              fragment.length > 'players/'.length) {
+            final playerId = Uri.decodeComponent(
+              fragment.substring('players/'.length),
+            );
             return [
               BroadcastRoundScreenLoading.buildRoute(
                 roundId,
@@ -161,21 +178,36 @@ class AppLinksService {
               BroadcastPlayerResultsScreenLoading.buildRoute(roundId, playerId),
             ];
           }
-          return [BroadcastRoundScreenLoading.buildRoute(roundId, initialTab: tab)];
+          return [
+            BroadcastRoundScreenLoading.buildRoute(roundId, initialTab: tab),
+          ];
         }
       case 'tournament':
         final tournamentId = TournamentId(appLinkUri.pathSegments[1]);
         final playerName = appLinkUri.queryParameters['player'];
-        final playerId = playerName != null ? UserId.fromUserName(playerName) : null;
-        return [TournamentScreen.buildRoute(tournamentId, initialPlayerId: playerId)];
+        final playerId = playerName != null
+            ? UserId.fromUserName(playerName)
+            : null;
+        return [
+          TournamentScreen.buildRoute(tournamentId, initialPlayerId: playerId),
+        ];
       case 'training':
         final id = appLinkUri.pathSegments[1];
-        return [PuzzleScreen.buildRoute(angle: PuzzleAngle.fromKey('mix'), puzzleId: PuzzleId(id))];
+        return [
+          PuzzleScreen.buildRoute(
+            angle: PuzzleAngle.fromKey('mix'),
+            puzzleId: PuzzleId(id),
+          ),
+        ];
       case 'editor':
         final orientation = appLinkUri.queryParameters['color'] == 'black'
             ? Side.black
             : Side.white;
-        final fen = appLinkUri.pathSegments.sublist(1).join('/').replaceAll('_', ' ').trim();
+        final fen = appLinkUri.pathSegments
+            .sublist(1)
+            .join('/')
+            .replaceAll('_', ' ')
+            .trim();
         String? initialFen;
         if (fen.isNotEmpty) {
           try {
@@ -183,7 +215,11 @@ class AppLinksService {
             initialFen = fen;
           } catch (_) {
             if (context.mounted) {
-              showSnackBar(context, 'Invalid FEN: $fen', type: SnackBarType.error);
+              showSnackBar(
+                context,
+                'Invalid FEN: $fen',
+                type: SnackBarType.error,
+              );
             }
           }
         }
@@ -196,7 +232,9 @@ class AppLinksService {
         ];
       case 'tv':
         if (appLinkUri.pathSegments.length < 2) return null;
-        final channel = TvChannel.nameMap.entryOrNull(appLinkUri.pathSegments[1]);
+        final channel = TvChannel.nameMap.entryOrNull(
+          appLinkUri.pathSegments[1],
+        );
         if (channel != null) {
           return [TvScreen.buildRoute(channel: channel.value)];
         } else {
@@ -282,7 +320,11 @@ class AppLinksService {
         } catch (e, st) {
           // Fall back to the current daily puzzle rather than leaving the tap
           // as a no-op when the widget's cached id is stale or unreachable.
-          _logger.info('Failed to load widget puzzle id $puzzleId, falling back: $e', e, st);
+          _logger.info(
+            'Failed to load widget puzzle id $puzzleId, falling back: $e',
+            e,
+            st,
+          );
           puzzle = dailyPuzzle;
         }
       }
@@ -301,14 +343,21 @@ class AppLinksService {
     }
   }
 
-  Future<bool> _tryResolveChallengeLink(BuildContext context, Uri appLinkUri) async {
+  Future<bool> _tryResolveChallengeLink(
+    BuildContext context,
+    Uri appLinkUri,
+  ) async {
     try {
       final challengeId = ChallengeId(appLinkUri.pathSegments[0]);
       if (!challengeId.isValid) return false;
-      final challenge = await ref.read(challengeRepositoryProvider).show(challengeId);
+      final challenge = await ref
+          .read(challengeRepositoryProvider)
+          .show(challengeId);
       if (!context.mounted) return false;
 
-      ref.read(challengeServiceProvider).showConfirmDialog(context, challenge, fromLink: true);
+      ref
+          .read(challengeServiceProvider)
+          .showConfirmDialog(context, challenge, fromLink: true);
 
       return true;
     } catch (e, st) {
@@ -317,13 +366,18 @@ class AppLinksService {
     return false;
   }
 
-  Future<List<Route<dynamic>>?> _tryResolveGameLink(BuildContext context, Uri appLinkUri) async {
+  Future<List<Route<dynamic>>?> _tryResolveGameLink(
+    BuildContext context,
+    Uri appLinkUri,
+  ) async {
     try {
       final gameId = GameId(appLinkUri.pathSegments[0]);
       if (!gameId.isValid) return null;
 
       final game = await ref.read(gameRepositoryProvider).getGame(gameId);
-      final orientation = appLinkUri.pathSegments.getOrNull(1) == 'black' ? Side.black : Side.white;
+      final orientation = appLinkUri.pathSegments.getOrNull(1) == 'black'
+          ? Side.black
+          : Side.white;
       final int ply = int.tryParse(appLinkUri.fragment) ?? 0;
 
       if (!context.mounted) return null;
@@ -342,7 +396,13 @@ class AppLinksService {
 
       final user = game.playerOf(orientation).user;
       if (user != null) {
-        return [TvScreen.buildRoute(gameId: gameId, user: user, orientation: orientation)];
+        return [
+          TvScreen.buildRoute(
+            gameId: gameId,
+            user: user,
+            orientation: orientation,
+          ),
+        ];
       }
     } catch (e, st) {
       _logger.info('Not a game link: $e', e, st);
@@ -419,11 +479,16 @@ class AppLinksService {
     return route;
   }
 
-  static const kLichessLinkifiers = [UrlLinkifier(), EmailLinkifier(), UserTagLinkifier()];
+  static const kLichessLinkifiers = [
+    UrlLinkifier(),
+    EmailLinkifier(),
+    UserTagLinkifier(),
+  ];
 
   /// Handles link clicks in Linkify widgets throughout the app.
   Future<void> onLinkifyOpen(BuildContext context, LinkableElement link) async {
-    if (link is UrlElement && link.url.startsWith(RegExp('https?:\\/\\/$kLichessHost'))) {
+    if (link is UrlElement &&
+        link.url.startsWith(RegExp('https?:\\/\\/$kLichessHost'))) {
       // Handle Lichess links specifically
       final appLinkUri = Uri.parse(link.url);
       await handleAppLink(context, appLinkUri);

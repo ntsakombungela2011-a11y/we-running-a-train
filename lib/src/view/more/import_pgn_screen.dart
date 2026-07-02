@@ -17,8 +17,11 @@ import 'package:lichess_mobile/src/view/analysis/pgn_games_list_screen.dart';
 import 'package:lichess_mobile/src/widgets/feedback.dart';
 
 /// A provider for picking PGN files. Can be overridden in tests.
-final pickPgnFileProvider = Provider<Future<FilePickerResult?> Function()>((ref) {
-  return () => FilePicker.pickFiles(type: FileType.custom, allowedExtensions: ['pgn']);
+final pickPgnFileProvider = Provider<Future<FilePickerResult?> Function()>((
+  ref,
+) {
+  return () =>
+      FilePicker.pickFiles(type: FileType.custom, allowedExtensions: ['pgn']);
 });
 
 class ImportPgnScreen extends StatelessWidget {
@@ -54,7 +57,10 @@ class ImportPgnScreen extends StatelessWidget {
           ),
         );
       } else {
-        Navigator.of(context, rootNavigator: true).push(PgnGamesListScreen.buildRoute(games.lock));
+        Navigator.of(
+          context,
+          rootNavigator: true,
+        ).push(PgnGamesListScreen.buildRoute(games.lock));
       }
     } catch (_) {
       showSnackBar(context, context.l10n.invalidPgn, type: .error);
@@ -140,7 +146,11 @@ class _BodyState extends ConsumerState<_Body> {
       }
     } catch (e) {
       if (mounted) {
-        showSnackBar(context, 'Error loading file: $e', type: SnackBarType.error);
+        showSnackBar(
+          context,
+          'Error loading file: $e',
+          type: SnackBarType.error,
+        );
       }
     }
   }

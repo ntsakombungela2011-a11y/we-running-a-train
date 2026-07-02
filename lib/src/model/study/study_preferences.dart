@@ -6,12 +6,14 @@ import 'package:lichess_mobile/src/model/settings/preferences_storage.dart';
 part 'study_preferences.freezed.dart';
 part 'study_preferences.g.dart';
 
-final studyPreferencesProvider = NotifierProvider<StudyPreferencesNotifier, StudyPrefs>(
-  StudyPreferencesNotifier.new,
-  name: 'StudyPreferencesProvider',
-);
+final studyPreferencesProvider =
+    NotifierProvider<StudyPreferencesNotifier, StudyPrefs>(
+      StudyPreferencesNotifier.new,
+      name: 'StudyPreferencesProvider',
+    );
 
-class StudyPreferencesNotifier extends Notifier<StudyPrefs> with PreferencesStorage<StudyPrefs> {
+class StudyPreferencesNotifier extends Notifier<StudyPrefs>
+    with PreferencesStorage<StudyPrefs> {
   @override
   @protected
   final prefCategory = PrefCategory.study;
@@ -29,11 +31,15 @@ class StudyPreferencesNotifier extends Notifier<StudyPrefs> with PreferencesStor
   }
 
   Future<void> toggleShowVariationArrows() {
-    return save(state.copyWith(showVariationArrows: !state.showVariationArrows));
+    return save(
+      state.copyWith(showVariationArrows: !state.showVariationArrows),
+    );
   }
 
   Future<void> toggleShowEvaluationGauge() {
-    return save(state.copyWith(showEvaluationGauge: !state.showEvaluationGauge));
+    return save(
+      state.copyWith(showEvaluationGauge: !state.showEvaluationGauge),
+    );
   }
 
   Future<void> toggleShowEngineLines() {
@@ -62,7 +68,9 @@ class StudyPreferencesNotifier extends Notifier<StudyPrefs> with PreferencesStor
 }
 
 @Freezed(fromJson: true, toJson: true)
-sealed class StudyPrefs with _$StudyPrefs implements Serializable, CommonAnalysisPrefs {
+sealed class StudyPrefs
+    with _$StudyPrefs
+    implements Serializable, CommonAnalysisPrefs {
   const StudyPrefs._();
 
   const factory StudyPrefs({

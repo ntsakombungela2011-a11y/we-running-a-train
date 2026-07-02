@@ -7,7 +7,8 @@ import 'package:lichess_mobile/src/model/common/service/sound_service.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_repository.dart';
 import 'package:lichess_mobile/src/model/puzzle/streak_storage.dart';
-import 'package:lichess_mobile/src/tab_scaffold.dart' show currentNavigatorKeyProvider;
+import 'package:lichess_mobile/src/tab_scaffold.dart'
+    show currentNavigatorKeyProvider;
 import 'package:lichess_mobile/src/widgets/feedback.dart';
 
 part 'puzzle_streak.freezed.dart';
@@ -29,11 +30,16 @@ sealed class PuzzleStreak with _$PuzzleStreak {
 
   PuzzleId? get nextId => streak.getOrNull(index + 1);
 
-  factory PuzzleStreak.fromJson(Map<String, dynamic> json) => _$PuzzleStreakFromJson(json);
+  factory PuzzleStreak.fromJson(Map<String, dynamic> json) =>
+      _$PuzzleStreakFromJson(json);
 }
 
 /// [PuzzleStreak] with its current [Puzzle].
-typedef StreakState = ({PuzzleStreak streak, Puzzle puzzle, Puzzle? nextPuzzle});
+typedef StreakState = ({
+  PuzzleStreak streak,
+  Puzzle puzzle,
+  Puzzle? nextPuzzle,
+});
 
 final puzzleStreakControllerProvider =
     AsyncNotifierProvider.autoDispose<PuzzleStreakController, StreakState>(
@@ -98,7 +104,9 @@ class PuzzleStreakController extends AsyncNotifier<StreakState> {
     ref.read(soundServiceProvider).play(Sound.confirmation);
 
     state = AsyncData((
-      streak: state.requireValue.streak.copyWith(index: state.requireValue.streak.index + 1),
+      streak: state.requireValue.streak.copyWith(
+        index: state.requireValue.streak.index + 1,
+      ),
       puzzle: state.requireValue.nextPuzzle!,
       nextPuzzle: null,
     ));
@@ -116,9 +124,15 @@ class PuzzleStreakController extends AsyncNotifier<StreakState> {
             ));
           })
           .catchError((_) {
-            final currentContext = ref.read(currentNavigatorKeyProvider).currentContext;
+            final currentContext = ref
+                .read(currentNavigatorKeyProvider)
+                .currentContext;
             if (currentContext != null && currentContext.mounted) {
-              showSnackBar(currentContext, 'Error loading next puzzle', type: SnackBarType.error);
+              showSnackBar(
+                currentContext,
+                'Error loading next puzzle',
+                type: SnackBarType.error,
+              );
             }
           });
     }

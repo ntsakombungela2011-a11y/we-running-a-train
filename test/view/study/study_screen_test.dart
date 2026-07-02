@@ -54,7 +54,8 @@ Study makeStudy({
   IList<String?> deviationComments = const IList.empty(),
   IMap<UserId, StudyMember>? members,
 }) {
-  final effectiveChapter = chapter ?? makeChapter(id: const StudyChapterId('1'));
+  final effectiveChapter =
+      chapter ?? makeChapter(id: const StudyChapterId('1'));
   return Study(
     id: testId,
     name: '',
@@ -63,7 +64,9 @@ Study makeStudy({
     ownerId: null,
     features: (cloneable: false, chat: false, sticky: false),
     topics: const IList.empty(),
-    chapters: chapters ?? IList([StudyChapterMeta(id: effectiveChapter.id, name: '', fen: null)]),
+    chapters:
+        chapters ??
+        IList([StudyChapterMeta(id: effectiveChapter.id, name: '', fen: null)]),
     chapter: effectiveChapter,
     members:
         members ??
@@ -83,22 +86,27 @@ void main() {
     testWidgets('Displays PGN moves and comments', (WidgetTester tester) async {
       final mockRepository = MockStudyRepository();
 
-      when(
-        () => mockRepository.getStudy(id: testId),
-      ).thenAnswer((_) async => (makeStudy(), null, '{root comment} 1. e4 {wow} e5 {such chess}'));
+      when(() => mockRepository.getStudy(id: testId)).thenAnswer(
+        (_) async =>
+            (makeStudy(), null, '{root comment} 1. e4 {wow} e5 {such chess}'),
+      );
 
       final app = await makeTestProviderScopeApp(
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
         defaultPreferences: {
           PrefCategory.study.storageKey: jsonEncode(
             StudyPrefs.defaults.copyWith(inlineNotation: true).toJson(),
           ),
           PrefCategory.engineEvaluation.storageKey: jsonEncode(
-            EngineEvaluationPrefState.defaults.copyWith(isEnabled: false).toJson(),
+            EngineEvaluationPrefState.defaults
+                .copyWith(isEnabled: false)
+                .toJson(),
           ),
         },
       );
@@ -123,8 +131,16 @@ void main() {
           features: (computer: false, explorer: false),
         ),
         chapters: IList(const [
-          StudyChapterMeta(id: StudyChapterId('1'), name: 'Chapter 1', fen: null),
-          StudyChapterMeta(id: StudyChapterId('2'), name: 'Chapter 2', fen: null),
+          StudyChapterMeta(
+            id: StudyChapterId('1'),
+            name: 'Chapter 1',
+            fen: null,
+          ),
+          StudyChapterMeta(
+            id: StudyChapterId('2'),
+            name: 'Chapter 2',
+            fen: null,
+          ),
         ]),
       );
 
@@ -139,17 +155,25 @@ void main() {
         () => mockRepository.getStudy(id: testId),
       ).thenAnswer((_) async => (studyChapter1, null, '{pgn 1}'));
       when(
-        () => mockRepository.getStudy(id: testId, chapterId: const StudyChapterId('1')),
+        () => mockRepository.getStudy(
+          id: testId,
+          chapterId: const StudyChapterId('1'),
+        ),
       ).thenAnswer((_) async => (studyChapter1, null, '{pgn 1}'));
       when(
-        () => mockRepository.getStudy(id: testId, chapterId: const StudyChapterId('2')),
+        () => mockRepository.getStudy(
+          id: testId,
+          chapterId: const StudyChapterId('2'),
+        ),
       ).thenAnswer((_) async => (studyChapter2, null, '{pgn 2}'));
 
       final app = await makeTestProviderScopeApp(
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
       );
       await tester.pumpWidget(app);
@@ -163,7 +187,10 @@ void main() {
       expect(find.text('pgn 2'), findsNothing);
 
       // First chapter does not allow opening explorer
-      expect(find.bySemanticsLabel(RegExp('Opening explorer & tablebase')), findsNothing);
+      expect(
+        find.bySemanticsLabel(RegExp('Opening explorer & tablebase')),
+        findsNothing,
+      );
 
       // 2nd press should not have any effect, we're already at the last chapter
       await tester.tap(find.text('Next chapter'));
@@ -204,7 +231,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Second chapter allows opening explorer, so tab should be displayed now.
-      expect(find.bySemanticsLabel(RegExp('Opening explorer & tablebase')), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('Opening explorer & tablebase')),
+        findsOneWidget,
+      );
 
       expect(find.text('1. Chapter 1'), findsNothing);
       expect(find.text('2. Chapter 2'), findsOneWidget);
@@ -219,8 +249,16 @@ void main() {
       final studyChapter1 = makeStudy(
         chapter: makeChapter(id: const StudyChapterId('1')),
         chapters: IList(const [
-          StudyChapterMeta(id: StudyChapterId('1'), name: 'Chapter 1', fen: null),
-          StudyChapterMeta(id: StudyChapterId('2'), name: 'Chapter 2', fen: null),
+          StudyChapterMeta(
+            id: StudyChapterId('1'),
+            name: 'Chapter 1',
+            fen: null,
+          ),
+          StudyChapterMeta(
+            id: StudyChapterId('2'),
+            name: 'Chapter 2',
+            fen: null,
+          ),
         ]),
       );
 
@@ -229,14 +267,21 @@ void main() {
       );
 
       when(
-        () => mockRepository.getStudy(id: testId, chapterId: const StudyChapterId('2')),
+        () => mockRepository.getStudy(
+          id: testId,
+          chapterId: const StudyChapterId('2'),
+        ),
       ).thenAnswer((_) async => (studyChapter2, null, '{pgn 2}'));
 
       final app = await makeTestProviderScopeApp(
         tester,
-        home: const StudyScreen(options: (id: testId, initialChapter: StudyChapterId('2'))),
+        home: const StudyScreen(
+          options: (id: testId, initialChapter: StudyChapterId('2')),
+        ),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
       );
       await tester.pumpWidget(app);
@@ -255,7 +300,10 @@ void main() {
       when(() => mockRepository.getStudy(id: testId)).thenAnswer(
         (_) async => (
           makeStudy(
-            chapter: makeChapter(id: const StudyChapterId('1'), orientation: Side.black),
+            chapter: makeChapter(
+              id: const StudyChapterId('1'),
+              orientation: Side.black,
+            ),
           ),
           null,
           '',
@@ -266,14 +314,18 @@ void main() {
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
         defaultPreferences: {
           PrefCategory.study.storageKey: jsonEncode(
             StudyPrefs.defaults.copyWith(inlineNotation: true).toJson(),
           ),
           PrefCategory.engineEvaluation.storageKey: jsonEncode(
-            EngineEvaluationPrefState.defaults.copyWith(isEnabled: false).toJson(),
+            EngineEvaluationPrefState.defaults
+                .copyWith(isEnabled: false)
+                .toJson(),
           ),
         },
       );
@@ -308,14 +360,18 @@ void main() {
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
         defaultPreferences: {
           PrefCategory.study.storageKey: jsonEncode(
             StudyPrefs.defaults.copyWith(inlineNotation: true).toJson(),
           ),
           PrefCategory.engineEvaluation.storageKey: jsonEncode(
-            EngineEvaluationPrefState.defaults.copyWith(isEnabled: false).toJson(),
+            EngineEvaluationPrefState.defaults
+                .copyWith(isEnabled: false)
+                .toJson(),
           ),
         },
       );
@@ -332,16 +388,27 @@ void main() {
 
       // Look for e5 and c5 specifically inside the VariationsBar
       expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('e5')),
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('e5'),
+        ),
         findsOneWidget,
       );
       expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('c5')),
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('c5'),
+        ),
         findsOneWidget,
       );
 
       // Tap the 'c5' variation inside the VariationsBar widget
-      await tester.tap(find.descendant(of: find.byType(VariationsBar), matching: find.text('c5')));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('c5'),
+        ),
+      );
 
       await tester.pump();
 
@@ -354,7 +421,10 @@ void main() {
       when(() => mockRepository.getStudy(id: testId)).thenAnswer(
         (_) async => (
           makeStudy(
-            chapter: makeChapter(id: const StudyChapterId('1'), orientation: Side.white),
+            chapter: makeChapter(
+              id: const StudyChapterId('1'),
+              orientation: Side.white,
+            ),
           ),
           null,
           '',
@@ -365,14 +435,19 @@ void main() {
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
       );
       await tester.pumpWidget(app);
       // Wait for study to load
       await tester.pumpAndSettle();
 
-      expect(tester.widget<Chessboard>(find.byType(Chessboard)).orientation, Side.white);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).orientation,
+        Side.white,
+      );
 
       await tester.tap(find.byType(ContextMenuIconButton));
       await tester.pumpAndSettle(); // Wait for menu to open
@@ -380,7 +455,10 @@ void main() {
       await tester.tap(find.text('Flip board'));
       await tester.pumpAndSettle(); // Wait for board to flip
 
-      expect(tester.widget<Chessboard>(find.byType(Chessboard)).orientation, Side.black);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).orientation,
+        Side.black,
+      );
     });
 
     testWidgets('Interactive study', (WidgetTester tester) async {
@@ -419,7 +497,9 @@ void main() {
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
       );
       await tester.pumpWidget(app);
@@ -432,7 +512,9 @@ void main() {
       expect(find.text(introText), findsOneWidget);
 
       expect(
-        find.text('Brilliant! You noticed that the queen on c4 was kinda smothered.'),
+        find.text(
+          'Brilliant! You noticed that the queen on c4 was kinda smothered.',
+        ),
         findsNothing,
       );
 
@@ -465,7 +547,9 @@ void main() {
       await playMove(tester, 'c3', 'd5');
 
       expect(
-        find.text('Brilliant! You noticed that the queen on c4 was kinda smothered.'),
+        find.text(
+          'Brilliant! You noticed that the queen on c4 was kinda smothered.',
+        ),
         findsOneWidget,
       );
 
@@ -473,14 +557,19 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(
-        find.text('Brilliant! You noticed that the queen on c4 was kinda smothered.'),
+        find.text(
+          'Brilliant! You noticed that the queen on c4 was kinda smothered.',
+        ),
         findsOneWidget,
       );
 
       await tester.tap(find.byTooltip('Next'));
       await tester.pump(); // Wait for opponent move to be played
 
-      expect(find.text('What would you play in this position?'), findsOneWidget);
+      expect(
+        find.text('What would you play in this position?'),
+        findsOneWidget,
+      );
 
       await playMove(tester, 'f3', 'c3');
       expect(find.text('Good move'), findsOneWidget);
@@ -488,7 +577,10 @@ void main() {
       // No explicit feedback, so opponent move should be played automatically after delay
       await tester.pump(const Duration(seconds: 1));
 
-      expect(find.text('What would you play in this position?'), findsOneWidget);
+      expect(
+        find.text('What would you play in this position?'),
+        findsOneWidget,
+      );
 
       await playMove(tester, 'c3', 'g3');
       expect(find.text('A fork, threatening Rg7 & b3.'), findsOneWidget);
@@ -496,7 +588,10 @@ void main() {
       await tester.tap(find.byTooltip('Next'));
       await tester.pump(); // Wait for opponent move to be played
 
-      expect(find.text('What would you play in this position?'), findsOneWidget);
+      expect(
+        find.text('What would you play in this position?'),
+        findsOneWidget,
+      );
 
       await playMove(tester, 'b2', 'b3');
 
@@ -512,7 +607,9 @@ void main() {
       expect(find.byTooltip('Analysis board'), findsOneWidget);
     });
 
-    testWidgets('Interactive study hints and deviation comments', (WidgetTester tester) async {
+    testWidgets('Interactive study hints and deviation comments', (
+      WidgetTester tester,
+    ) async {
       final mockRepository = MockStudyRepository();
       when(() => mockRepository.getStudy(id: testId)).thenAnswer(
         (_) async => (
@@ -523,18 +620,34 @@ void main() {
               gamebook: true,
             ),
             chapters: IList(const [
-              StudyChapterMeta(id: StudyChapterId('1'), name: 'Chapter 1', fen: null),
-              StudyChapterMeta(id: StudyChapterId('2'), name: 'Chapter 2', fen: null),
+              StudyChapterMeta(
+                id: StudyChapterId('1'),
+                name: 'Chapter 1',
+                fen: null,
+              ),
+              StudyChapterMeta(
+                id: StudyChapterId('2'),
+                name: 'Chapter 2',
+                fen: null,
+              ),
             ]),
             hints: ['Hint 1', null, null, null, 'Hint 2'].lock,
-            deviationComments: [null, 'Shown if any move other than d4 is played', null, null].lock,
+            deviationComments: [
+              null,
+              'Shown if any move other than d4 is played',
+              null,
+              null,
+            ].lock,
           ),
           null,
           '1. e4 (1. d4 {Shown if d4 is played}) e5 2. Nf3 Nc6 3. d4',
         ),
       );
       when(
-        () => mockRepository.getStudy(id: testId, chapterId: const StudyChapterId('2')),
+        () => mockRepository.getStudy(
+          id: testId,
+          chapterId: const StudyChapterId('2'),
+        ),
       ).thenAnswer(
         (_) async => (
           makeStudy(
@@ -554,7 +667,9 @@ void main() {
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
       );
       await tester.pumpWidget(app);
@@ -570,7 +685,10 @@ void main() {
       expect(find.text('Get a hint'), findsNothing);
 
       await playMove(tester, 'e2', 'e3');
-      expect(find.text('Shown if any move other than d4 is played'), findsOneWidget);
+      expect(
+        find.text('Shown if any move other than d4 is played'),
+        findsOneWidget,
+      );
       await tester.tap(find.byTooltip('Retry'));
       await tester.pump(); // Wait for move to be taken back
 
@@ -595,7 +713,10 @@ void main() {
       // Wait for wrong move to be taken back
       await tester.pump(const Duration(seconds: 1));
 
-      expect(find.text('What would you play in this position?'), findsOneWidget);
+      expect(
+        find.text('What would you play in this position?'),
+        findsOneWidget,
+      );
       expect(find.text("That's not the move!"), findsNothing);
 
       await playMove(tester, 'g1', 'f3');
@@ -624,14 +745,24 @@ void main() {
       expect(find.text('Hint 1'), findsOneWidget);
     });
 
-    testWidgets('Illegal Position in Study Chapter', (WidgetTester tester) async {
+    testWidgets('Illegal Position in Study Chapter', (
+      WidgetTester tester,
+    ) async {
       final mockRepository = MockStudyRepository();
 
       final studyChapter1 = makeStudy(
         chapter: makeChapter(id: const StudyChapterId('1')),
         chapters: IList(const [
-          StudyChapterMeta(id: StudyChapterId('1'), name: 'Legal Chapter', fen: null),
-          StudyChapterMeta(id: StudyChapterId('2'), name: 'Illegal Chapter', fen: null),
+          StudyChapterMeta(
+            id: StudyChapterId('1'),
+            name: 'Legal Chapter',
+            fen: null,
+          ),
+          StudyChapterMeta(
+            id: StudyChapterId('2'),
+            name: 'Illegal Chapter',
+            fen: null,
+          ),
         ]),
       );
 
@@ -645,12 +776,18 @@ void main() {
       ).thenAnswer((_) async => (studyChapter1, null, '1. e4 e5'));
 
       when(
-        () => mockRepository.getStudy(id: testId, chapterId: const StudyChapterId('1')),
+        () => mockRepository.getStudy(
+          id: testId,
+          chapterId: const StudyChapterId('1'),
+        ),
       ).thenAnswer((_) async => (studyChapter1, null, '1. e4 e5'));
 
       // Second chapter has an illegal position (no pieces on Board)
       when(
-        () => mockRepository.getStudy(id: testId, chapterId: const StudyChapterId('2')),
+        () => mockRepository.getStudy(
+          id: testId,
+          chapterId: const StudyChapterId('2'),
+        ),
       ).thenAnswer(
         (_) async => (
           studyChapter2,
@@ -666,7 +803,9 @@ void main() {
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
         },
       );
 
@@ -702,7 +841,9 @@ void main() {
     });
   });
 
-  testWidgets('Displays annotations on the correct square', (WidgetTester tester) async {
+  testWidgets('Displays annotations on the correct square', (
+    WidgetTester tester,
+  ) async {
     final mockRepository = MockStudyRepository();
     when(() => mockRepository.getStudy(id: testId)).thenAnswer(
       (_) async => (
@@ -739,7 +880,9 @@ void main() {
       tester,
       home: const StudyScreen(options: (id: testId, initialChapter: null)),
       overrides: {
-        studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+        studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+          (ref) => mockRepository,
+        ),
       },
     );
     await tester.pumpWidget(app);
@@ -770,7 +913,10 @@ void main() {
 
     // 4. Rg1!!
     expectAnnotations([
-      containsPair(Square.g1, predicate<Annotation>((annotation) => annotation.symbol == '!!')),
+      containsPair(
+        Square.g1,
+        predicate<Annotation>((annotation) => annotation.symbol == '!!'),
+      ),
     ]);
 
     await tester.tap(find.byTooltip('Next'));
@@ -791,7 +937,10 @@ void main() {
     // Regression test for https://github.com/lichess-org/mobile/issues/2231
     // 6. Rh1??
     expectAnnotations([
-      containsPair(Square.h1, predicate<Annotation>((annotation) => annotation.symbol == '??')),
+      containsPair(
+        Square.h1,
+        predicate<Annotation>((annotation) => annotation.symbol == '??'),
+      ),
     ]);
   });
 
@@ -828,7 +977,9 @@ void main() {
       tester,
       home: const StudyScreen(options: (id: testId, initialChapter: null)),
       overrides: {
-        studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+        studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+          (ref) => mockRepository,
+        ),
       },
     );
     await tester.pumpWidget(app);
@@ -842,82 +993,94 @@ void main() {
     expect(board.annotations.length, 1);
     expect(
       board.annotations,
-      containsPair(Square.c1, predicate<Annotation>((annotation) => annotation.symbol == '!!')),
+      containsPair(
+        Square.c1,
+        predicate<Annotation>((annotation) => annotation.symbol == '!!'),
+      ),
     );
   });
 
   group('Server Analysis', () {
-    testWidgets('Does not display server analysis tab if chapter does not allow it', (
-      WidgetTester tester,
-    ) async {
-      final mockRepository = MockStudyRepository();
+    testWidgets(
+      'Does not display server analysis tab if chapter does not allow it',
+      (WidgetTester tester) async {
+        final mockRepository = MockStudyRepository();
 
-      when(() => mockRepository.getStudy(id: testId)).thenAnswer(
-        (_) async => (
-          makeStudy(
-            chapter: makeChapter(
-              id: const StudyChapterId('1'),
-              orientation: Side.white,
-              features: (computer: false, explorer: false),
+        when(() => mockRepository.getStudy(id: testId)).thenAnswer(
+          (_) async => (
+            makeStudy(
+              chapter: makeChapter(
+                id: const StudyChapterId('1'),
+                orientation: Side.white,
+                features: (computer: false, explorer: false),
+              ),
             ),
+            null,
+            '',
           ),
-          null,
-          '',
-        ),
-      );
+        );
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const StudyScreen(options: (id: testId, initialChapter: null)),
-        overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
-        },
-      );
-      await tester.pumpWidget(app);
-
-      // Wait for study to load
-      await tester.pumpAndSettle();
-
-      // Server analysis tab should not be displayed since chapter does not allow it
-      expect(find.bySemanticsLabel(RegExp('Computer analysis')), findsNothing);
-    });
-
-    testWidgets('Cannot request server analysis if study has less than 4 moves', (
-      WidgetTester tester,
-    ) async {
-      final mockRepository = MockStudyRepository();
-
-      when(() => mockRepository.getStudy(id: testId)).thenAnswer(
-        (_) async => (
-          makeStudy(
-            chapter: makeChapter(
-              id: const StudyChapterId('1'),
-              orientation: Side.white,
-              features: (computer: true, explorer: false),
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const StudyScreen(options: (id: testId, initialChapter: null)),
+          overrides: {
+            studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+              (ref) => mockRepository,
             ),
+          },
+        );
+        await tester.pumpWidget(app);
+
+        // Wait for study to load
+        await tester.pumpAndSettle();
+
+        // Server analysis tab should not be displayed since chapter does not allow it
+        expect(
+          find.bySemanticsLabel(RegExp('Computer analysis')),
+          findsNothing,
+        );
+      },
+    );
+
+    testWidgets(
+      'Cannot request server analysis if study has less than 4 moves',
+      (WidgetTester tester) async {
+        final mockRepository = MockStudyRepository();
+
+        when(() => mockRepository.getStudy(id: testId)).thenAnswer(
+          (_) async => (
+            makeStudy(
+              chapter: makeChapter(
+                id: const StudyChapterId('1'),
+                orientation: Side.white,
+                features: (computer: true, explorer: false),
+              ),
+            ),
+            null,
+            '',
           ),
-          null,
-          '',
-        ),
-      );
+        );
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const StudyScreen(options: (id: testId, initialChapter: null)),
-        overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
-        },
-      );
-      await tester.pumpWidget(app);
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const StudyScreen(options: (id: testId, initialChapter: null)),
+          overrides: {
+            studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+              (ref) => mockRepository,
+            ),
+          },
+        );
+        await tester.pumpWidget(app);
 
-      // Wait for study to load
-      await tester.pumpAndSettle();
+        // Wait for study to load
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.bySemanticsLabel(RegExp('Computer analysis')));
-      await tester.pumpAndSettle(); // wait for switch to server analysis tab
+        await tester.tap(find.bySemanticsLabel(RegExp('Computer analysis')));
+        await tester.pumpAndSettle(); // wait for switch to server analysis tab
 
-      expect(find.textContaining('The chapter is too short'), findsOneWidget);
-    });
+        expect(find.textContaining('The chapter is too short'), findsOneWidget);
+      },
+    );
 
     testWidgets('Cannot request server analysis without write permissions', (
       WidgetTester tester,
@@ -950,53 +1113,9 @@ void main() {
         tester,
         home: const StudyScreen(options: (id: testId, initialChapter: null)),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
-        },
-        authUser: user,
-      );
-      await tester.pumpWidget(app);
-
-      // Wait for study to load
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.bySemanticsLabel(RegExp('Computer analysis')));
-      await tester.pumpAndSettle(); // wait for switch to server analysis tab
-
-      expect(find.textContaining('Only the study contributors'), findsOneWidget);
-    });
-
-    testWidgets('Can request server analysis if chapter is long enough and has write permissions', (
-      WidgetTester tester,
-    ) async {
-      final mockRepository = MockStudyRepository();
-
-      final user = AuthUser(
-        user: LightUser(id: UserId.fromUserName('John'), name: 'John'),
-        token: 'test-token',
-      );
-
-      when(() => mockRepository.getStudy(id: testId)).thenAnswer(
-        (_) async => (
-          makeStudy(
-            chapter: makeChapter(
-              id: const StudyChapterId('1'),
-              orientation: Side.white,
-              features: (computer: true, explorer: false),
-            ),
-            members: IMap<UserId, StudyMember>(
-              const {},
-            ).add(user.user.id, StudyMember(user: user.user, role: 'w')),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
           ),
-          null,
-          'e4 e5 Nf3 Nc6',
-        ),
-      );
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const StudyScreen(options: (id: testId, initialChapter: null)),
-        overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
         },
         authUser: user,
       );
@@ -1008,7 +1127,62 @@ void main() {
       await tester.tap(find.bySemanticsLabel(RegExp('Computer analysis')));
       await tester.pumpAndSettle(); // wait for switch to server analysis tab
 
-      expect(find.textContaining('Request a computer analysis'), findsOneWidget);
+      expect(
+        find.textContaining('Only the study contributors'),
+        findsOneWidget,
+      );
     });
+
+    testWidgets(
+      'Can request server analysis if chapter is long enough and has write permissions',
+      (WidgetTester tester) async {
+        final mockRepository = MockStudyRepository();
+
+        final user = AuthUser(
+          user: LightUser(id: UserId.fromUserName('John'), name: 'John'),
+          token: 'test-token',
+        );
+
+        when(() => mockRepository.getStudy(id: testId)).thenAnswer(
+          (_) async => (
+            makeStudy(
+              chapter: makeChapter(
+                id: const StudyChapterId('1'),
+                orientation: Side.white,
+                features: (computer: true, explorer: false),
+              ),
+              members: IMap<UserId, StudyMember>(
+                const {},
+              ).add(user.user.id, StudyMember(user: user.user, role: 'w')),
+            ),
+            null,
+            'e4 e5 Nf3 Nc6',
+          ),
+        );
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const StudyScreen(options: (id: testId, initialChapter: null)),
+          overrides: {
+            studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+              (ref) => mockRepository,
+            ),
+          },
+          authUser: user,
+        );
+        await tester.pumpWidget(app);
+
+        // Wait for study to load
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.bySemanticsLabel(RegExp('Computer analysis')));
+        await tester.pumpAndSettle(); // wait for switch to server analysis tab
+
+        expect(
+          find.textContaining('Request a computer analysis'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }

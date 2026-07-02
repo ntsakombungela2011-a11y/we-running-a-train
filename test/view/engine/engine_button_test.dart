@@ -9,14 +9,23 @@ import 'package:lichess_mobile/src/view/engine/engine_button.dart';
 import 'test_engine_app.dart';
 
 void main() {
-  testWidgets('Engine button is not displayed if computer analysis is not allowed', (tester) async {
-    await makeEngineTestApp(tester, isComputerAnalysisAllowed: false);
-    expect(find.byType(EngineButton), findsNothing);
-  });
+  testWidgets(
+    'Engine button is not displayed if computer analysis is not allowed',
+    (tester) async {
+      await makeEngineTestApp(tester, isComputerAnalysisAllowed: false);
+      expect(find.byType(EngineButton), findsNothing);
+    },
+  );
 
-  testWidgets('Engine starts immediately after the request eval delay', (tester) async {
+  testWidgets('Engine starts immediately after the request eval delay', (
+    tester,
+  ) async {
     // loads a finished game, disable cloud eval because it is ususally not availabe in mid/end game
-    await makeEngineTestApp(tester, isCloudEvalEnabled: false, gameId: const GameId('xze7RH66'));
+    await makeEngineTestApp(
+      tester,
+      isCloudEvalEnabled: false,
+      gameId: const GameId('xze7RH66'),
+    );
 
     expect(find.byType(CircularProgressIndicator), findsOne);
     // wait for the game to be loaded
@@ -30,7 +39,9 @@ void main() {
     expect(find.widgetWithText(EngineButton, '-'), findsOne);
 
     // wait for engine
-    await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+    await tester.pump(
+      kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+    );
     expect(find.widgetWithText(EngineButton, '16'), findsOne);
   });
 }

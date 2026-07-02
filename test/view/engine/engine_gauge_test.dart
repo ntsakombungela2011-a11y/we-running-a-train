@@ -8,7 +8,9 @@ import 'package:lichess_mobile/src/view/engine/engine_gauge.dart';
 import '../../test_provider_scope.dart';
 
 void main() {
-  testWidgets('EngineGauge shows 0.0 when eval is 0', (WidgetTester tester) async {
+  testWidgets('EngineGauge shows 0.0 when eval is 0', (
+    WidgetTester tester,
+  ) async {
     final params = (
       isLocalEngineAvailable: true,
       orientation: Side.white,
@@ -58,8 +60,12 @@ void main() {
     expect(find.text('+0.0'), findsNothing);
   });
 
-  testWidgets('EngineGauge shows 0.0 when game is a draw', (WidgetTester tester) async {
-    final drawPosition = Chess.fromSetup(Setup.parseFen('k7/8/K7/8/8/8/8/8 w - - 0 1'));
+  testWidgets('EngineGauge shows 0.0 when game is a draw', (
+    WidgetTester tester,
+  ) async {
+    final drawPosition = Chess.fromSetup(
+      Setup.parseFen('k7/8/K7/8/8/8/8/8 w - - 0 1'),
+    );
     final params = (
       isLocalEngineAvailable: true,
       orientation: Side.white,

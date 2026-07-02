@@ -28,7 +28,10 @@ const _tournamentResponse = '''
 
 /// Builds a player results JSON response with a single game having the
 /// given `points` ("1", "1/2", "0", or null for ongoing) and [customPoints].
-String playerResponse({required String? points, required double? customPoints}) {
+String playerResponse({
+  required String? points,
+  required double? customPoints,
+}) {
   final pointsField = points == null ? 'null' : '"$points"';
   final customField = customPoints == null ? 'null' : '$customPoints';
   final ongoing = points == null;
@@ -54,7 +57,10 @@ String playerResponse({required String? points, required double? customPoints}) 
 ''';
 }
 
-MockClient mockClientForPlayer({required String? points, required double? customPoints}) {
+MockClient mockClientForPlayer({
+  required String? points,
+  required double? customPoints,
+}) {
   final playerBody = playerResponse(points: points, customPoints: customPoints);
   return MockClient((request) {
     if (request.url.path == '/api/broadcast/$_tournamentId') {
@@ -80,10 +86,16 @@ Future<void> pumpPlayerResultsScreen(
   required String? points,
   required double? customPoints,
 }) async {
-  final client = mockClientForPlayer(points: points, customPoints: customPoints);
+  final client = mockClientForPlayer(
+    points: points,
+    customPoints: customPoints,
+  );
   final app = await makeTestProviderScopeApp(
     tester,
-    home: const BroadcastPlayerResultsScreen(tournamentId: _tournamentId, playerId: _playerId),
+    home: const BroadcastPlayerResultsScreen(
+      tournamentId: _tournamentId,
+      playerId: _playerId,
+    ),
     overrides: {
       httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
         return FakeHttpClientFactory(() => client);
@@ -105,7 +117,10 @@ Future<void> pumpPlayerResultsScreen(
 
 /// Asserts that the game tile in the only rendered [ListTile] displays [expected].
 void expectGameTileShows(String expected) {
-  final tileText = find.descendant(of: find.byType(ListTile), matching: find.text(expected));
+  final tileText = find.descendant(
+    of: find.byType(ListTile),
+    matching: find.text(expected),
+  );
   expect(tileText, findsOneWidget);
 }
 
@@ -118,7 +133,11 @@ void main() {
       });
 
       testWidgets('draw shows ½', variant: kPlatformVariant, (tester) async {
-        await pumpPlayerResultsScreen(tester, points: '1/2', customPoints: null);
+        await pumpPlayerResultsScreen(
+          tester,
+          points: '1/2',
+          customPoints: null,
+        );
         expectGameTileShows('½');
       });
 
@@ -134,44 +153,78 @@ void main() {
     });
 
     group('with custom scoring different from standard', () {
-      testWidgets('custom win 3 points shows 3', variant: kPlatformVariant, (tester) async {
+      testWidgets('custom win 3 points shows 3', variant: kPlatformVariant, (
+        tester,
+      ) async {
         await pumpPlayerResultsScreen(tester, points: '1', customPoints: 3.0);
         expectGameTileShows('3');
       });
 
-      testWidgets('custom draw 1.5 points shows 1.5', variant: kPlatformVariant, (tester) async {
-        await pumpPlayerResultsScreen(tester, points: '1/2', customPoints: 1.5);
-        expectGameTileShows('1.5');
-      });
+      testWidgets(
+        'custom draw 1.5 points shows 1.5',
+        variant: kPlatformVariant,
+        (tester) async {
+          await pumpPlayerResultsScreen(
+            tester,
+            points: '1/2',
+            customPoints: 1.5,
+          );
+          expectGameTileShows('1.5');
+        },
+      );
 
-      testWidgets('custom draw 1 point shows 1', variant: kPlatformVariant, (tester) async {
+      testWidgets('custom draw 1 point shows 1', variant: kPlatformVariant, (
+        tester,
+      ) async {
         await pumpPlayerResultsScreen(tester, points: '1/2', customPoints: 1.0);
         expectGameTileShows('1');
       });
 
-      testWidgets('custom draw with 0 custom points shows ½', variant: kPlatformVariant, (
-        tester,
-      ) async {
-        await pumpPlayerResultsScreen(tester, points: '1/2', customPoints: 0.0);
-        expectGameTileShows('0');
-      });
+      testWidgets(
+        'custom draw with 0 custom points shows ½',
+        variant: kPlatformVariant,
+        (tester) async {
+          await pumpPlayerResultsScreen(
+            tester,
+            points: '1/2',
+            customPoints: 0.0,
+          );
+          expectGameTileShows('0');
+        },
+      );
     });
 
     group('with custom scoring matching standard values', () {
-      testWidgets('custom win 1.0 shows standard 1', variant: kPlatformVariant, (tester) async {
-        await pumpPlayerResultsScreen(tester, points: '1', customPoints: 1.0);
-        expectGameTileShows('1');
-      });
+      testWidgets(
+        'custom win 1.0 shows standard 1',
+        variant: kPlatformVariant,
+        (tester) async {
+          await pumpPlayerResultsScreen(tester, points: '1', customPoints: 1.0);
+          expectGameTileShows('1');
+        },
+      );
 
-      testWidgets('custom draw 0.5 shows standard ½', variant: kPlatformVariant, (tester) async {
-        await pumpPlayerResultsScreen(tester, points: '1/2', customPoints: 0.5);
-        expectGameTileShows('½');
-      });
+      testWidgets(
+        'custom draw 0.5 shows standard ½',
+        variant: kPlatformVariant,
+        (tester) async {
+          await pumpPlayerResultsScreen(
+            tester,
+            points: '1/2',
+            customPoints: 0.5,
+          );
+          expectGameTileShows('½');
+        },
+      );
 
-      testWidgets('custom loss 0.0 shows standard 0', variant: kPlatformVariant, (tester) async {
-        await pumpPlayerResultsScreen(tester, points: '0', customPoints: 0.0);
-        expectGameTileShows('0');
-      });
+      testWidgets(
+        'custom loss 0.0 shows standard 0',
+        variant: kPlatformVariant,
+        (tester) async {
+          await pumpPlayerResultsScreen(tester, points: '0', customPoints: 0.0);
+          expectGameTileShows('0');
+        },
+      );
     });
   });
 
@@ -189,7 +242,9 @@ void main() {
             timeControl: null,
             players: null,
             location: null,
-            dates: startsAt == null ? null : (startsAt: startsAt, endsAt: endsAt),
+            dates: startsAt == null
+                ? null
+                : (startsAt: startsAt, endsAt: endsAt),
             website: null,
             standings: null,
           ),

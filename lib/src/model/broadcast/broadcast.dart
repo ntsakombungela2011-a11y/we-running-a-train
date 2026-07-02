@@ -11,7 +11,11 @@ import 'package:lichess_mobile/src/utils/l10n_context.dart';
 
 part 'broadcast.freezed.dart';
 
-typedef BroadcastList = ({IList<Broadcast> active, IList<Broadcast> past, int? nextPage});
+typedef BroadcastList = ({
+  IList<Broadcast> active,
+  IList<Broadcast> past,
+  int? nextPage,
+});
 
 typedef BroadcastSearchList = ({IList<Broadcast> broadcasts, int? nextPage});
 
@@ -36,7 +40,9 @@ enum BroadcastResult {
             '½-0' => BroadcastResult.whiteHalfWins,
             '0-½' => BroadcastResult.blackHalfWins,
             '*' => BroadcastResult.newOrOngoing,
-            _ => throw FormatException("value $result can't be interpreted as a broadcast result"),
+            _ => throw FormatException(
+              "value $result can't be interpreted as a broadcast result",
+            ),
           };
   }
 
@@ -59,8 +65,14 @@ enum BroadcastResult {
   };
 
   Color? colorFor(Side side, BuildContext context) => switch (this) {
-    whiteWins => side == Side.white ? context.lichessColors.good : context.lichessColors.error,
-    blackWins => side == Side.white ? context.lichessColors.error : context.lichessColors.good,
+    whiteWins =>
+      side == Side.white
+          ? context.lichessColors.good
+          : context.lichessColors.error,
+    blackWins =>
+      side == Side.white
+          ? context.lichessColors.error
+          : context.lichessColors.good,
     _ => null,
   };
 }
@@ -139,19 +151,25 @@ extension BroadcastCustomScoringExt on BroadcastCustomScoring {
     final customScore = (side == Side.white
         ? switch (result) {
             BroadcastResult.whiteWins => this[side]?.win,
-            BroadcastResult.draw || BroadcastResult.whiteHalfWins => this[side]?.draw,
+            BroadcastResult.draw ||
+            BroadcastResult.whiteHalfWins => this[side]?.draw,
             _ => 0.0,
           }
         : switch (result) {
             BroadcastResult.blackWins => this[side]?.win,
-            BroadcastResult.draw || BroadcastResult.blackHalfWins => this[side]?.draw,
+            BroadcastResult.draw ||
+            BroadcastResult.blackHalfWins => this[side]?.draw,
             _ => 0.0,
           });
     return customScore == 0.5 ? '½' : NumberFormat('0.##').format(customScore);
   }
 }
 
-String resultString(BroadcastCustomScoring? customScoring, Side side, BroadcastResult result) =>
+String resultString(
+  BroadcastCustomScoring? customScoring,
+  Side side,
+  BroadcastResult result,
+) =>
     customScoring?.pointsForResult(side, result) ?? result.resultToString(side);
 
 @freezed
@@ -201,12 +219,17 @@ sealed class BroadcastGame with _$BroadcastGame {
 
   // see lila commit 09822641e1cce954a6c39078c5ef0fc6eebe10b5
   bool get isOngoing =>
-      status == BroadcastResult.newOrOngoing && thinkTime != null && lastMove != null;
+      status == BroadcastResult.newOrOngoing &&
+      thinkTime != null &&
+      lastMove != null;
   bool get isOver => status.isOver;
   Side get sideToMove => Setup.parseFen(fen).turn;
 }
 
-typedef BroadcastGamePgnWithAnalysisSummary = ({String pgn, AnalysisSummary? analysisSummary});
+typedef BroadcastGamePgnWithAnalysisSummary = ({
+  String pgn,
+  AnalysisSummary? analysisSummary,
+});
 
 @freezed
 sealed class BroadcastPlayer with _$BroadcastPlayer {
@@ -234,7 +257,8 @@ sealed class BroadcastPlayerWithClock with _$BroadcastPlayerWithClock {
 }
 
 @freezed
-sealed class BroadcastPlayerWithOverallResult with _$BroadcastPlayerWithOverallResult {
+sealed class BroadcastPlayerWithOverallResult
+    with _$BroadcastPlayerWithOverallResult {
   const factory BroadcastPlayerWithOverallResult({
     required BroadcastPlayer player,
     required int played,
@@ -248,7 +272,11 @@ sealed class BroadcastPlayerWithOverallResult with _$BroadcastPlayerWithOverallR
   }) = _BroadcastPlayerWithOverallResult;
 }
 
-typedef BroadcastTieBreakDetail = ({String extendedCode, String description, double points});
+typedef BroadcastTieBreakDetail = ({
+  String extendedCode,
+  String description,
+  double points,
+});
 
 typedef StatByFideTC = IMap<BroadcastFideTC, int>;
 
@@ -291,9 +319,13 @@ enum BroadcastPoints {
 
   BroadcastResult resultFor(Side side) => switch (this) {
     BroadcastPoints.one =>
-      side == Side.white ? BroadcastResult.whiteWins : BroadcastResult.blackWins,
+      side == Side.white
+          ? BroadcastResult.whiteWins
+          : BroadcastResult.blackWins,
     BroadcastPoints.zero =>
-      side == Side.white ? BroadcastResult.blackWins : BroadcastResult.whiteWins,
+      side == Side.white
+          ? BroadcastResult.blackWins
+          : BroadcastResult.whiteWins,
     BroadcastPoints.half => BroadcastResult.draw,
   };
 }
@@ -317,13 +349,16 @@ enum RoundStatus { live, finished, upcoming }
 
 @freezed
 sealed class BroadcastTeam with _$BroadcastTeam {
-  const factory BroadcastTeam({required String name, required double points}) = _BroadcastTeam;
+  const factory BroadcastTeam({required String name, required double points}) =
+      _BroadcastTeam;
 }
 
 @freezed
 sealed class BroadcastTeamGame with _$BroadcastTeamGame {
-  const factory BroadcastTeamGame({required BroadcastGameId id, required Side pov}) =
-      _BroadcastTeamGame;
+  const factory BroadcastTeamGame({
+    required BroadcastGameId id,
+    required Side pov,
+  }) = _BroadcastTeamGame;
 }
 
 @freezed

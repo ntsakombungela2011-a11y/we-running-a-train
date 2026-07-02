@@ -64,7 +64,8 @@ class PocketsMenu extends ConsumerWidget {
                 .where((role) => role != Role.king)
                 .map(
                   (role) => Container(
-                    color: side == sideToMove?.opposite && premoveDropRole == role
+                    color:
+                        side == sideToMove?.opposite && premoveDropRole == role
                         ? ref.watch(
                             boardPreferencesProvider.select(
                               (prefs) => prefs.boardTheme.colors.validPremoves,

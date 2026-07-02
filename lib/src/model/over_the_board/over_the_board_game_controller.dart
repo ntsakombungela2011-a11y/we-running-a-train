@@ -21,7 +21,10 @@ part 'over_the_board_game_controller.freezed.dart';
 final _random = Random();
 
 final overTheBoardGameControllerProvider =
-    NotifierProvider.autoDispose<OverTheBoardGameController, OverTheBoardGameState>(
+    NotifierProvider.autoDispose<
+      OverTheBoardGameController,
+      OverTheBoardGameState
+    >(
       OverTheBoardGameController.new,
       name: 'OverTheBoardGameControllerProvider',
     );
@@ -33,7 +36,11 @@ class OverTheBoardGameController extends Notifier<OverTheBoardGameState> {
     Speed.fromTimeIncrement(const TimeIncrement(0, 0)),
   );
 
-  void startNewGame(Variant variant, TimeIncrement timeIncrement, {String? initialFen}) {
+  void startNewGame(
+    Variant variant,
+    TimeIncrement timeIncrement, {
+    String? initialFen,
+  }) {
     state = OverTheBoardGameState.fromVariant(
       variant,
       Speed.fromTimeIncrement(timeIncrement),
@@ -42,7 +49,10 @@ class OverTheBoardGameController extends Notifier<OverTheBoardGameState> {
   }
 
   void loadOngoingGame(OverTheBoardGame game) {
-    state = OverTheBoardGameState(game: game, stepCursor: game.steps.length - 1);
+    state = OverTheBoardGameState(
+      game: game,
+      stepCursor: game.steps.length - 1,
+    );
   }
 
   void rematch() {
@@ -55,7 +65,10 @@ class OverTheBoardGameController extends Notifier<OverTheBoardGameState> {
 
   void resign() {
     state = state.copyWith(
-      game: state.game.copyWith(status: GameStatus.resign, winner: state.turn.opposite),
+      game: state.game.copyWith(
+        status: GameStatus.resign,
+        winner: state.turn.opposite,
+      ),
     );
   }
 
@@ -64,7 +77,9 @@ class OverTheBoardGameController extends Notifier<OverTheBoardGameState> {
   }
 
   void makeMove(Move move) {
-    final (newPos, newSan) = state.currentPosition.makeSan(Move.parse(move.uci)!);
+    final (newPos, newSan) = state.currentPosition.makeSan(
+      Move.parse(move.uci)!,
+    );
     final sanMove = SanMove(newSan, move);
     final newStep = GameStep(
       position: newPos,
@@ -85,31 +100,51 @@ class OverTheBoardGameController extends Notifier<OverTheBoardGameState> {
     );
 
     // check for threefold repetition
-    if (state.game.steps.count((p) => p.position.board == newStep.position.board) == 3) {
-      state = state.copyWith(game: state.game.copyWith(isThreefoldRepetition: true));
+    if (state.game.steps.count(
+          (p) => p.position.board == newStep.position.board,
+        ) ==
+        3) {
+      state = state.copyWith(
+        game: state.game.copyWith(isThreefoldRepetition: true),
+      );
     } else {
-      state = state.copyWith(game: state.game.copyWith(isThreefoldRepetition: false));
+      state = state.copyWith(
+        game: state.game.copyWith(isThreefoldRepetition: false),
+      );
     }
 
     if (state.currentPosition.isCheckmate) {
       state = state.copyWith(
-        game: state.game.copyWith(status: GameStatus.mate, winner: state.turn.opposite),
+        game: state.game.copyWith(
+          status: GameStatus.mate,
+          winner: state.turn.opposite,
+        ),
       );
     } else if (state.currentPosition.variantOutcome != null) {
       switch (state.currentPosition.variantOutcome!.winner) {
         case Side.white:
           state = state.copyWith(
-            game: state.game.copyWith(status: GameStatus.variantEnd, winner: Side.white),
+            game: state.game.copyWith(
+              status: GameStatus.variantEnd,
+              winner: Side.white,
+            ),
           );
         case Side.black:
           state = state.copyWith(
-            game: state.game.copyWith(status: GameStatus.variantEnd, winner: Side.black),
+            game: state.game.copyWith(
+              status: GameStatus.variantEnd,
+              winner: Side.black,
+            ),
           );
         case null:
-          state = state.copyWith(game: state.game.copyWith(status: GameStatus.variantEnd));
+          state = state.copyWith(
+            game: state.game.copyWith(status: GameStatus.variantEnd),
+          );
       }
     } else if (state.currentPosition.isStalemate) {
-      state = state.copyWith(game: state.game.copyWith(status: GameStatus.stalemate));
+      state = state.copyWith(
+        game: state.game.copyWith(status: GameStatus.stalemate),
+      );
     }
 
     _moveFeedback(sanMove);
@@ -117,7 +152,10 @@ class OverTheBoardGameController extends Notifier<OverTheBoardGameState> {
 
   void onFlag(Side side) {
     state = state.copyWith(
-      game: state.game.copyWith(status: GameStatus.outoftime, winner: side.opposite),
+      game: state.game.copyWith(
+        status: GameStatus.outoftime,
+        winner: side.opposite,
+      ),
     );
   }
 
@@ -154,12 +192,21 @@ sealed class OverTheBoardGameState with _$OverTheBoardGameState {
     @Default(0) int stepCursor,
   }) = _OverTheBoardGameState;
 
-  factory OverTheBoardGameState.fromVariant(Variant variant, Speed speed, {String? initialFen}) {
+  factory OverTheBoardGameState.fromVariant(
+    Variant variant,
+    Speed speed, {
+    String? initialFen,
+  }) {
     final Position position;
     final Variant effectiveVariant;
     if (initialFen != null) {
-      effectiveVariant = variant == Variant.standard ? Variant.fromPosition : variant;
-      position = Position.setupPosition(effectiveVariant.rule, Setup.parseFen(initialFen));
+      effectiveVariant = variant == Variant.standard
+          ? Variant.fromPosition
+          : variant;
+      position = Position.setupPosition(
+        effectiveVariant.rule,
+        Setup.parseFen(initialFen),
+      );
     } else if (variant == Variant.chess960) {
       position = randomChess960Position();
       effectiveVariant = variant;
@@ -167,7 +214,9 @@ sealed class OverTheBoardGameState with _$OverTheBoardGameState {
       position = variant.initialPosition;
       effectiveVariant = variant;
     }
-    final sessionId = StringId('otb_${_random.nextInt(1 << 32).toRadixString(16).padLeft(8, '0')}');
+    final sessionId = StringId(
+      'otb_${_random.nextInt(1 << 32).toRadixString(16).padLeft(8, '0')}',
+    );
     return OverTheBoardGameState(
       game: OverTheBoardGame(
         id: sessionId,
@@ -188,14 +237,16 @@ sealed class OverTheBoardGameState with _$OverTheBoardGameState {
   Position get currentPosition => game.stepAt(stepCursor).position;
   Side get turn => currentPosition.turn;
   bool get finished => game.finished;
-  Move? get lastMove =>
-      stepCursor > 0 ? Move.parse(game.steps[stepCursor].sanMove!.move.uci) : null;
+  Move? get lastMove => stepCursor > 0
+      ? Move.parse(game.steps[stepCursor].sanMove!.move.uci)
+      : null;
 
   MaterialDiffSide? currentMaterialDiff(Side side) {
     return game.steps[stepCursor].diff?.bySide(side);
   }
 
-  List<String> get moves => game.steps.skip(1).map((e) => e.sanMove!.san).toList(growable: false);
+  List<String> get moves =>
+      game.steps.skip(1).map((e) => e.sanMove!.san).toList(growable: false);
 
   bool get canGoForward => stepCursor < game.steps.length - 1;
   bool get canGoBack => stepCursor > 0;

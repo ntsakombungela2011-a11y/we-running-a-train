@@ -110,9 +110,12 @@ Future<ProviderContainer> _makeContainer(String inboxJson, String userJson) {
       httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
         return FakeHttpClientFactory(() => mockClient);
       }),
-      webSocketChannelFactoryProvider: webSocketChannelFactoryProvider.overrideWith((ref) {
-        return FakeWebSocketChannelFactory((uri) => FakeWebSocketChannel(uri));
-      }),
+      webSocketChannelFactoryProvider: webSocketChannelFactoryProvider
+          .overrideWith((ref) {
+            return FakeWebSocketChannelFactory(
+              (uri) => FakeWebSocketChannel(uri),
+            );
+          }),
     },
   );
 }
@@ -120,55 +123,91 @@ Future<ProviderContainer> _makeContainer(String inboxJson, String userJson) {
 void main() {
   group('ConversationController blocking logic', () {
     test('isBlocked is false for a normal user that is not blocked', () async {
-      final container = await _makeContainer(_inboxResponse, _userNotBlockedResponse);
+      final container = await _makeContainer(
+        _inboxResponse,
+        _userNotBlockedResponse,
+      );
       container.listen(conversationControllerProvider(_userId), (_, _) {});
-      final state = await container.read(conversationControllerProvider(_userId).future);
+      final state = await container.read(
+        conversationControllerProvider(_userId).future,
+      );
       expect(state.isBlocked, isFalse);
       expect(state.isBot, isFalse);
       expect(state.convo.postable, isTrue);
     });
 
     test('isBlocked is true when you have blocked the user', () async {
-      final container = await _makeContainer(_inboxResponse, _userBlockedResponse);
+      final container = await _makeContainer(
+        _inboxResponse,
+        _userBlockedResponse,
+      );
       container.listen(conversationControllerProvider(_userId), (_, _) {});
-      final state = await container.read(conversationControllerProvider(_userId).future);
+      final state = await container.read(
+        conversationControllerProvider(_userId).future,
+      );
       expect(state.isBlocked, isTrue);
     });
 
-    test('isBlocked is false when blocking field is absent from user response', () async {
-      final container = await _makeContainer(_inboxResponse, _userNoBlockingFieldResponse);
-      container.listen(conversationControllerProvider(_userId), (_, _) {});
-      final state = await container.read(conversationControllerProvider(_userId).future);
-      expect(state.isBlocked, isFalse);
-    });
+    test(
+      'isBlocked is false when blocking field is absent from user response',
+      () async {
+        final container = await _makeContainer(
+          _inboxResponse,
+          _userNoBlockingFieldResponse,
+        );
+        container.listen(conversationControllerProvider(_userId), (_, _) {});
+        final state = await container.read(
+          conversationControllerProvider(_userId).future,
+        );
+        expect(state.isBlocked, isFalse);
+      },
+    );
 
     test('isBot is true for a bot account', () async {
-      final container = await _makeContainer(_inboxBotResponse, _userNotBlockedResponse);
-      container.listen(conversationControllerProvider(_userId), (_, _) {});
-      final state = await container.read(conversationControllerProvider(_userId).future);
-      expect(state.isBot, isTrue);
-    });
-
-    test('postable is false when contact does not accept new messages', () async {
-      final container = await _makeContainer(_inboxNotPostableResponse, _userNotBlockedResponse);
-      container.listen(conversationControllerProvider(_userId), (_, _) {});
-      final state = await container.read(conversationControllerProvider(_userId).future);
-      expect(state.convo.postable, isFalse);
-      expect(state.isBlocked, isFalse);
-      expect(state.isBot, isFalse);
-    });
-
-    test('postable is true when existing conversation allows further messages', () async {
       final container = await _makeContainer(
-        _inboxPostableWithExistingConvoResponse,
+        _inboxBotResponse,
         _userNotBlockedResponse,
       );
       container.listen(conversationControllerProvider(_userId), (_, _) {});
-      final state = await container.read(conversationControllerProvider(_userId).future);
-      expect(state.convo.postable, isTrue);
-      expect(state.isBlocked, isFalse);
-      expect(state.isBot, isFalse);
+      final state = await container.read(
+        conversationControllerProvider(_userId).future,
+      );
+      expect(state.isBot, isTrue);
     });
+
+    test(
+      'postable is false when contact does not accept new messages',
+      () async {
+        final container = await _makeContainer(
+          _inboxNotPostableResponse,
+          _userNotBlockedResponse,
+        );
+        container.listen(conversationControllerProvider(_userId), (_, _) {});
+        final state = await container.read(
+          conversationControllerProvider(_userId).future,
+        );
+        expect(state.convo.postable, isFalse);
+        expect(state.isBlocked, isFalse);
+        expect(state.isBot, isFalse);
+      },
+    );
+
+    test(
+      'postable is true when existing conversation allows further messages',
+      () async {
+        final container = await _makeContainer(
+          _inboxPostableWithExistingConvoResponse,
+          _userNotBlockedResponse,
+        );
+        container.listen(conversationControllerProvider(_userId), (_, _) {});
+        final state = await container.read(
+          conversationControllerProvider(_userId).future,
+        );
+        expect(state.convo.postable, isTrue);
+        expect(state.isBlocked, isFalse);
+        expect(state.isBot, isFalse);
+      },
+    );
   });
 
   group('ConversationController socket events', () {
@@ -178,7 +217,10 @@ void main() {
     }
 
     test('adds incoming message from open contact', () async {
-      final container = await _makeContainer(_inboxResponse, _userNotBlockedResponse);
+      final container = await _makeContainer(
+        _inboxResponse,
+        _userNotBlockedResponse,
+      );
       await loadState(container);
 
       sendServerSocketMessages(Uri(path: kDefaultSocketRoute), [
@@ -186,14 +228,19 @@ void main() {
       ]);
       await Future<void>.delayed(.zero);
 
-      final state = container.read(conversationControllerProvider(_userId)).requireValue;
+      final state = container
+          .read(conversationControllerProvider(_userId))
+          .requireValue;
       expect(state.convo.messages.length, 1);
       expect(state.convo.messages[0].text, 'hello');
       expect(state.convo.messages[0].userId, _userId);
     });
 
     test('ignores incoming message from other contact', () async {
-      final container = await _makeContainer(_inboxResponse, _userNotBlockedResponse);
+      final container = await _makeContainer(
+        _inboxResponse,
+        _userNotBlockedResponse,
+      );
       await loadState(container);
 
       sendServerSocketMessages(Uri(path: kDefaultSocketRoute), [
@@ -201,29 +248,45 @@ void main() {
       ]);
       await Future<void>.delayed(.zero);
 
-      final state = container.read(conversationControllerProvider(_userId)).requireValue;
+      final state = container
+          .read(conversationControllerProvider(_userId))
+          .requireValue;
       expect(state.convo.messages, isEmpty);
     });
 
     test('shows typing indicator for open contact', () async {
-      final container = await _makeContainer(_inboxResponse, _userNotBlockedResponse);
+      final container = await _makeContainer(
+        _inboxResponse,
+        _userNotBlockedResponse,
+      );
       await loadState(container);
 
-      sendServerSocketMessages(Uri(path: kDefaultSocketRoute), ['{"t":"msgType","d":"opponent"}']);
+      sendServerSocketMessages(Uri(path: kDefaultSocketRoute), [
+        '{"t":"msgType","d":"opponent"}',
+      ]);
       await Future<void>.delayed(.zero);
 
-      final state = container.read(conversationControllerProvider(_userId)).requireValue;
+      final state = container
+          .read(conversationControllerProvider(_userId))
+          .requireValue;
       expect(state.contactTyping, isTrue);
     });
 
     test('ignores typing indicator from other contact', () async {
-      final container = await _makeContainer(_inboxResponse, _userNotBlockedResponse);
+      final container = await _makeContainer(
+        _inboxResponse,
+        _userNotBlockedResponse,
+      );
       await loadState(container);
 
-      sendServerSocketMessages(Uri(path: kDefaultSocketRoute), ['{"t":"msgType","d":"other"}']);
+      sendServerSocketMessages(Uri(path: kDefaultSocketRoute), [
+        '{"t":"msgType","d":"other"}',
+      ]);
       await Future<void>.delayed(.zero);
 
-      final state = container.read(conversationControllerProvider(_userId)).requireValue;
+      final state = container
+          .read(conversationControllerProvider(_userId))
+          .requireValue;
       expect(state.contactTyping, isNot(true));
     });
   });

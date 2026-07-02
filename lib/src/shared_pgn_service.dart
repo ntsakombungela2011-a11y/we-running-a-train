@@ -45,9 +45,13 @@ class SharedPgnService {
     });
 
     // PGN shared while the app is already running.
-    _subscription = _events.receiveBroadcastStream().listen((event) {
-      if (event is String) _handlePgn(event);
-    }, onError: (Object e, StackTrace st) => _logger.severe('Error in shared PGN stream: $e\n$st'));
+    _subscription = _events.receiveBroadcastStream().listen(
+      (event) {
+        if (event is String) _handlePgn(event);
+      },
+      onError: (Object e, StackTrace st) =>
+          _logger.severe('Error in shared PGN stream: $e\n$st'),
+    );
   }
 
   void _handlePgn(String pgnText) {

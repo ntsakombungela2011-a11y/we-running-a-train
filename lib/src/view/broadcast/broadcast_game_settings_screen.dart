@@ -20,12 +20,17 @@ class BroadcastGameSettingsScreen extends ConsumerWidget {
     required BroadcastRoundId roundId,
     required BroadcastGameId gameId,
   }) {
-    return buildScreenRoute(screen: BroadcastGameSettingsScreen(roundId, gameId));
+    return buildScreenRoute(
+      screen: BroadcastGameSettingsScreen(roundId, gameId),
+    );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = broadcastAnalysisControllerProvider((roundId: roundId, gameId: gameId));
+    final controller = broadcastAnalysisControllerProvider((
+      roundId: roundId,
+      gameId: gameId,
+    ));
 
     final broadcastPrefs = ref.watch(broadcastPreferencesProvider);
 
@@ -38,14 +43,16 @@ class BroadcastGameSettingsScreen extends ConsumerWidget {
               SwitchSettingTile(
                 title: Text(context.l10n.inlineNotation),
                 value: broadcastPrefs.inlineNotation,
-                onChanged: (value) =>
-                    ref.read(broadcastPreferencesProvider.notifier).toggleInlineNotation(),
+                onChanged: (value) => ref
+                    .read(broadcastPreferencesProvider.notifier)
+                    .toggleInlineNotation(),
               ),
               SwitchSettingTile(
                 title: const Text('Small board'), // TODO l10n
                 value: broadcastPrefs.smallBoard,
-                onChanged: (value) =>
-                    ref.read(broadcastPreferencesProvider.notifier).toggleSmallBoard(),
+                onChanged: (value) => ref
+                    .read(broadcastPreferencesProvider.notifier)
+                    .toggleSmallBoard(),
               ),
               ListTile(
                 title: Text(context.l10n.openingExplorer),
@@ -66,41 +73,49 @@ class BroadcastGameSettingsScreen extends ConsumerWidget {
                 title: Text(context.l10n.mobileServerAnalysis),
                 value: broadcastPrefs.enableServerAnalysis,
                 onChanged: (_) {
-                  ref.read(broadcastPreferencesProvider.notifier).toggleServerAnalysis();
+                  ref
+                      .read(broadcastPreferencesProvider.notifier)
+                      .toggleServerAnalysis();
                 },
               ),
               SwitchSettingTile(
                 // TODO: l10n
                 title: const Text('Show evaluation gauge'),
                 value: broadcastPrefs.showEvaluationGauge,
-                onChanged: (value) =>
-                    ref.read(broadcastPreferencesProvider.notifier).toggleShowEvaluationGauge(),
+                onChanged: (value) => ref
+                    .read(broadcastPreferencesProvider.notifier)
+                    .toggleShowEvaluationGauge(),
               ),
               SwitchSettingTile(
                 title: Text(context.l10n.toggleGlyphAnnotations),
                 value: broadcastPrefs.showAnnotations,
-                onChanged: (_) =>
-                    ref.read(broadcastPreferencesProvider.notifier).toggleAnnotations(),
+                onChanged: (_) => ref
+                    .read(broadcastPreferencesProvider.notifier)
+                    .toggleAnnotations(),
               ),
               SwitchSettingTile(
                 title: Text(context.l10n.mobileShowComments),
                 value: broadcastPrefs.showPgnComments,
-                onChanged: (_) =>
-                    ref.read(broadcastPreferencesProvider.notifier).togglePgnComments(),
+                onChanged: (_) => ref
+                    .read(broadcastPreferencesProvider.notifier)
+                    .togglePgnComments(),
               ),
               SwitchSettingTile(
                 title: Text(context.l10n.bestMoveArrow),
                 value: broadcastPrefs.showBestMoveArrow,
-                onChanged: (value) =>
-                    ref.read(broadcastPreferencesProvider.notifier).toggleShowBestMoveArrow(),
+                onChanged: (value) => ref
+                    .read(broadcastPreferencesProvider.notifier)
+                    .toggleShowBestMoveArrow(),
               ),
             ],
           ),
           EngineSettingsWidget(
             onSetEngineSearchTime: (value) =>
                 ref.read(controller.notifier).setEngineSearchTime(value),
-            onSetNumEvalLines: (value) => ref.read(controller.notifier).setNumEvalLines(value),
-            onSetEngineCores: (value) => ref.read(controller.notifier).setEngineCores(value),
+            onSetNumEvalLines: (value) =>
+                ref.read(controller.notifier).setNumEvalLines(value),
+            onSetEngineCores: (value) =>
+                ref.read(controller.notifier).setEngineCores(value),
           ),
         ],
       ),

@@ -63,7 +63,9 @@ class _PlayRatingRangeState extends State<PlayRatingRange> {
                         ? (num value) {
                             widget.onRatingDeltaChange(
                               value.toInt(),
-                              value == 0 && _add == 0 ? kAddingRatingRange[1] : _add,
+                              value == 0 && _add == 0
+                                  ? kAddingRatingRange[1]
+                                  : _add,
                             );
                           }
                         : null,
@@ -74,7 +76,9 @@ class _PlayRatingRangeState extends State<PlayRatingRange> {
                   children: [
                     SizedBox(
                       width: 44.0,
-                      child: Center(child: Text('${_subtract == 0 ? '-' : ''}$_subtract')),
+                      child: Center(
+                        child: Text('${_subtract == 0 ? '-' : ''}$_subtract'),
+                      ),
                     ),
                     const SizedBox(width: 8.0),
                     const Text('/'),
@@ -95,7 +99,9 @@ class _PlayRatingRangeState extends State<PlayRatingRange> {
                         ? (num value) {
                             widget.onRatingDeltaChange(
                               value == 0 && _subtract == 0
-                                  ? kSubtractingRatingRange[kSubtractingRatingRange.length - 2]
+                                  ? kSubtractingRatingRange[kSubtractingRatingRange
+                                            .length -
+                                        2]
                                   : _subtract,
                               value.toInt(),
                             );
@@ -111,7 +117,11 @@ class _PlayRatingRangeState extends State<PlayRatingRange> {
             onTap: () => showAdaptiveDialog<void>(
               context: context,
               builder: (context) => AlertDialog.adaptive(
-                content: Text(context.l10n.ratingRangeIsDisabledBecauseYourRatingIsProvisional),
+                content: Text(
+                  context
+                      .l10n
+                      .ratingRangeIsDisabledBecauseYourRatingIsProvisional,
+                ),
                 actions: [
                   PlatformDialogAction(
                     onPressed: () => Navigator.of(context).pop(),
@@ -126,7 +136,12 @@ class _PlayRatingRangeState extends State<PlayRatingRange> {
               subtitle: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Flexible(child: NonLinearSlider(value: -500, values: kSubtractingRatingRange)),
+                  Flexible(
+                    child: NonLinearSlider(
+                      value: -500,
+                      values: kSubtractingRatingRange,
+                    ),
+                  ),
                   const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -137,7 +152,12 @@ class _PlayRatingRangeState extends State<PlayRatingRange> {
                       SizedBox(width: 44.0, child: Center(child: Text('+500'))),
                     ],
                   ),
-                  Flexible(child: NonLinearSlider(value: 500, values: kAddingRatingRange)),
+                  Flexible(
+                    child: NonLinearSlider(
+                      value: 500,
+                      values: kAddingRatingRange,
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -39,7 +39,8 @@ class LobbyScreenLoadingContent extends StatefulWidget {
   final Future<void> Function() cancelGameCreation;
 
   @override
-  State<LobbyScreenLoadingContent> createState() => _LobbyScreenLoadingContentState();
+  State<LobbyScreenLoadingContent> createState() =>
+      _LobbyScreenLoadingContentState();
 }
 
 class _LobbyScreenLoadingContentState extends State<LobbyScreenLoadingContent> {
@@ -63,7 +64,8 @@ class _LobbyScreenLoadingContentState extends State<LobbyScreenLoadingContent> {
               _GameParamsDisplay.seek(widget.seek),
               //Do not show rating range if the default values (-500, +500) are used
               if (widget.seek.ratingRange != null &&
-                  !(widget.seek.ratingRange!.$1 + 1000 == widget.seek.ratingRange!.$2)) ...[
+                  !(widget.seek.ratingRange!.$1 + 1000 ==
+                      widget.seek.ratingRange!.$2)) ...[
                 const SizedBox(height: 8.0),
                 RatingPrefAware(
                   child: Text(
@@ -87,7 +89,8 @@ class _LobbyScreenLoadingContentState extends State<LobbyScreenLoadingContent> {
                       ? null
                       : () async {
                           setState(() {
-                            _cancelGameCreationFuture = widget.cancelGameCreation();
+                            _cancelGameCreationFuture = widget
+                                .cancelGameCreation();
                           });
                           try {
                             await _cancelGameCreationFuture;
@@ -124,10 +127,12 @@ class UserChallengeLoadingContent extends StatefulWidget {
   final Future<void> Function() cancelChallenge;
 
   @override
-  State<UserChallengeLoadingContent> createState() => _UserChallengeLoadingContentState();
+  State<UserChallengeLoadingContent> createState() =>
+      _UserChallengeLoadingContentState();
 }
 
-class _UserChallengeLoadingContentState extends State<UserChallengeLoadingContent> {
+class _UserChallengeLoadingContentState
+    extends State<UserChallengeLoadingContent> {
   Future<void>? _cancelChallengeFuture;
 
   @override
@@ -207,10 +212,12 @@ class OpenChallengeLoadingContent extends ConsumerStatefulWidget {
   final Future<void> Function() cancelChallenge;
 
   @override
-  ConsumerState<OpenChallengeLoadingContent> createState() => _OpenChallengeLoadingContentState();
+  ConsumerState<OpenChallengeLoadingContent> createState() =>
+      _OpenChallengeLoadingContentState();
 }
 
-class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadingContent> {
+class _OpenChallengeLoadingContentState
+    extends ConsumerState<OpenChallengeLoadingContent> {
   Future<void>? _cancelChallengeFuture;
 
   @override
@@ -238,17 +245,26 @@ class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadi
                   mainAxisSize: MainAxisSize.min,
                   spacing: 20.0,
                   children: [
-                    _GameParamsDisplay.challengeRequest(widget.challengeRequest),
+                    _GameParamsDisplay.challengeRequest(
+                      widget.challengeRequest,
+                    ),
                     Text(context.l10n.toInviteSomeoneToPlayGiveThisUrl),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0,
+                        vertical: 8.0,
+                      ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: GestureDetector(
                         onTap: () async {
-                          await Clipboard.setData(ClipboardData(text: challengeLink));
+                          await Clipboard.setData(
+                            ClipboardData(text: challengeLink),
+                          );
                           if (!context.mounted) return;
                           showSnackBar(context, 'Copied.'); // TODO l10n
                         },
@@ -263,13 +279,17 @@ class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadi
                             ],
                           ),
                           style: TextTheme.of(context).bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
                     ),
 
-                    Text(context.l10n.theFirstPersonToComeOnThisUrlWillPlayWithYou),
+                    Text(
+                      context.l10n.theFirstPersonToComeOnThisUrlWillPlayWithYou,
+                    ),
 
                     if (authUser != null)
                       FilledButton.tonalIcon(
@@ -278,22 +298,29 @@ class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadi
                             title: Text(context.l10n.challengeAFriend),
                             onUserTap: (user) async {
                               // Capture everything that needs BuildContext before the async gap.
-                              final rootNav = Navigator.of(context, rootNavigator: true);
-                              final directedChallengeReq = widget.challengeRequest.copyWith(
-                                destUser: user,
+                              final rootNav = Navigator.of(
+                                context,
+                                rootNavigator: true,
                               );
+                              final directedChallengeReq = widget
+                                  .challengeRequest
+                                  .copyWith(destUser: user);
                               final directedChallengeRoute =
                                   widget.challengeRequest.timeControl ==
                                       ChallengeTimeControlType.clock
                                   ? GameScreen.buildRoute(
-                                      source: UserChallengeSource(directedChallengeReq),
+                                      source: UserChallengeSource(
+                                        directedChallengeReq,
+                                      ),
                                     )
                                   : null;
 
                               try {
                                 await widget.cancelChallenge();
                               } catch (e) {
-                                debugPrint('Error cancelling open challenge: $e');
+                                debugPrint(
+                                  'Error cancelling open challenge: $e',
+                                );
                               }
 
                               if (!context.mounted) return;
@@ -311,7 +338,9 @@ class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadi
                                 // the stack without removing unrelated routes.
                                 rootNav.pushAndRemoveUntil(
                                   directedChallengeRoute,
-                                  (route) => route is! ScreenRoute || route.screen is! GameScreen,
+                                  (route) =>
+                                      route is! ScreenRoute ||
+                                      route.screen is! GameScreen,
                                 );
                               } else {
                                 await ref
@@ -321,29 +350,42 @@ class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadi
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      context.l10n.mobileChallengeCreated.replaceAll('\\n', '\n'),
+                                      context.l10n.mobileChallengeCreated
+                                          .replaceAll('\\n', '\n'),
                                     ),
                                   ),
                                 );
                                 // Back to home screen
-                                Navigator.of(context).popUntil((route) => route.isFirst);
+                                Navigator.of(
+                                  context,
+                                ).popUntil((route) => route.isFirst);
                               }
                             },
                           ),
                         ),
-                        label: Text(context.l10n.challengeInviteLichessUser.replaceAll(':', '')),
+                        label: Text(
+                          context.l10n.challengeInviteLichessUser.replaceAll(
+                            ':',
+                            '',
+                          ),
+                        ),
                         icon: const Icon(Icons.person_search),
                       ),
 
                     Container(
                       padding: const EdgeInsets.all(4.0),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: QrImageView(
                         data: challengeLink,
-                        eyeStyle: QrEyeStyle(color: qrColor, eyeShape: QrEyeShape.square),
+                        eyeStyle: QrEyeStyle(
+                          color: qrColor,
+                          eyeShape: QrEyeShape.square,
+                        ),
                         dataModuleStyle: QrDataModuleStyle(
                           color: qrColor,
                           dataModuleShape: QrDataModuleShape.square,
@@ -365,7 +407,8 @@ class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadi
           children: [
             BottomBarButton(
               label: 'Share challenge URL', // TODO l10n
-              onTap: () => launchShareDialog(context, ShareParams(text: challengeLink)),
+              onTap: () =>
+                  launchShareDialog(context, ShareParams(text: challengeLink)),
               showLabel: true,
               icon: Icons.share,
             ),
@@ -408,7 +451,11 @@ class _OpenChallengeLoadingContentState extends ConsumerState<OpenChallengeLoadi
 }
 
 class _GameParamsDisplay extends StatelessWidget {
-  const _GameParamsDisplay({required this.perf, required this.timeIncrement, required this.days});
+  const _GameParamsDisplay({
+    required this.perf,
+    required this.timeIncrement,
+    required this.days,
+  });
 
   _GameParamsDisplay.seek(GameSeek seek)
     : perf = seek.perf,
@@ -434,7 +481,9 @@ class _GameParamsDisplay extends StatelessWidget {
         const SizedBox(width: 8.0),
         Text(
           timeIncrement?.display ??
-              (days != null ? '${context.l10n.daysPerTurn}: $days' : context.l10n.unlimited),
+              (days != null
+                  ? '${context.l10n.daysPerTurn}: $days'
+                  : context.l10n.unlimited),
           style: TextTheme.of(context).titleLarge,
         ),
       ],
@@ -443,7 +492,11 @@ class _GameParamsDisplay extends StatelessWidget {
 }
 
 class StandaloneGameLoadingContent extends StatelessWidget {
-  const StandaloneGameLoadingContent({this.loadingParam, this.userActionsBar, super.key});
+  const StandaloneGameLoadingContent({
+    this.loadingParam,
+    this.userActionsBar,
+    super.key,
+  });
 
   final LoadingParam? loadingParam;
   final Widget? userActionsBar;
@@ -479,10 +532,8 @@ class StandaloneGameLoadingContent extends StatelessWidget {
                     // e.g. instead of P@c4 the UCI will be c4c4.
                     // This leads to a "duplicate key" error, since chessground would try to highlight the same square twice.
                     // The dropped role does not matter, since we just use it for the square highlight.
-                    NormalMove(:final from, :final to) when from == to => DropMove(
-                      to: to,
-                      role: Role.pawn,
-                    ),
+                    NormalMove(:final from, :final to) when from == to =>
+                      DropMove(to: to, role: Role.pawn),
                     _ => lastMove,
                   },
                 ),
@@ -582,7 +633,10 @@ class LoadGameError extends StatelessWidget {
 
 /// A board that shows a message that a challenge has been declined.
 class ChallengeDeclinedBoard extends StatelessWidget {
-  const ChallengeDeclinedBoard({required this.declineReason, required this.challenge});
+  const ChallengeDeclinedBoard({
+    required this.declineReason,
+    required this.challenge,
+  });
 
   final String declineReason;
   final Challenge challenge;
@@ -611,7 +665,10 @@ class ChallengeDeclinedBoard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8.0),
                     Divider(height: 26.0, thickness: 0.0, color: textColor),
-                    Text(declineReason, style: const TextStyle(fontStyle: FontStyle.italic)),
+                    Text(
+                      declineReason,
+                      style: const TextStyle(fontStyle: FontStyle.italic),
+                    ),
                     Divider(height: 26.0, thickness: 0.0, color: textColor),
                     if (challenge.destUser != null)
                       Align(
@@ -623,7 +680,10 @@ class ChallengeDeclinedBoard extends StatelessWidget {
                             UserFullNameWidget(user: challenge.destUser?.user),
                             if (challenge.destUser?.lagRating != null) ...[
                               const SizedBox(width: 6.0),
-                              LagIndicator(lagRating: challenge.destUser!.lagRating!, size: 13.0),
+                              LagIndicator(
+                                lagRating: challenge.destUser!.lagRating!,
+                                size: 13.0,
+                              ),
                             ],
                           ],
                         ),
@@ -688,7 +748,10 @@ class _BoardOverlayCard extends StatelessWidget {
     return Card(
       color: Theme.of(context).dialogTheme.backgroundColor,
       elevation: 2.0,
-      child: Padding(padding: padding ?? const EdgeInsets.all(30.0), child: child),
+      child: Padding(
+        padding: padding ?? const EdgeInsets.all(30.0),
+        child: child,
+      ),
     );
   }
 }

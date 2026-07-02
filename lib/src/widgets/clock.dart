@@ -52,7 +52,8 @@ class Clock extends StatelessWidget {
     final hours = timeLeft.inHours;
     final mins = timeLeft.inMinutes.remainder(60);
     final secs = timeLeft.inSeconds.remainder(60).toString().padLeft(2, '0');
-    final isEmergency = emergencyThreshold != null && timeLeft <= emergencyThreshold!;
+    final isEmergency =
+        emergencyThreshold != null && timeLeft <= emergencyThreshold!;
 
     final showTenths = switch (clockTenths) {
       ClockTenths.never => false,
@@ -60,13 +61,18 @@ class Clock extends StatelessWidget {
       ClockTenths.always => true,
     };
 
-    final hoursDisplay = padLeft ? hours.toString().padLeft(2, '0') : hours.toString();
-    final minsDisplay = padLeft ? mins.toString().padLeft(2, '0') : mins.toString();
+    final hoursDisplay = padLeft
+        ? hours.toString().padLeft(2, '0')
+        : hours.toString();
+    final minsDisplay = padLeft
+        ? mins.toString().padLeft(2, '0')
+        : mins.toString();
 
     final brightness = Theme.of(context).brightness;
     final colorScheme = ColorScheme.of(context);
     final effectiveClockStyle =
-        clockStyle ?? ClockStyle.defaultStyle(brightness, colorScheme, context.lichessColors);
+        clockStyle ??
+        ClockStyle.defaultStyle(brightness, colorScheme, context.lichessColors);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -108,13 +114,19 @@ class Clock extends StatelessWidget {
                   children: [
                     if (showTenths)
                       TextSpan(
-                        text: '.${timeLeft.inMilliseconds.remainder(1000) ~/ 100}',
-                        style: TextStyle(fontSize: _kClockTenthFontSize * fontScaleFactor),
+                        text:
+                            '.${timeLeft.inMilliseconds.remainder(1000) ~/ 100}',
+                        style: TextStyle(
+                          fontSize: _kClockTenthFontSize * fontScaleFactor,
+                        ),
                       ),
                     if (!active && timeLeft < const Duration(seconds: 1))
                       TextSpan(
-                        text: '${timeLeft.inMilliseconds.remainder(1000) ~/ 10 % 10}',
-                        style: TextStyle(fontSize: _kClockHundredsFontSize * fontScaleFactor),
+                        text:
+                            '${timeLeft.inMilliseconds.remainder(1000) ~/ 10 % 10}',
+                        style: TextStyle(
+                          fontSize: _kClockHundredsFontSize * fontScaleFactor,
+                        ),
                       ),
                   ],
                 ),
@@ -161,7 +173,9 @@ class ClockStyle {
     emergencyBackgroundColor: lichessColors.error.withValues(
       alpha: brightness == Brightness.dark ? 0.6 : 0.4,
     ),
-    emergencyTextColor: brightness == Brightness.dark ? Colors.white60 : Colors.black87,
+    emergencyTextColor: brightness == Brightness.dark
+        ? Colors.white60
+        : Colors.black87,
   );
 }
 

@@ -17,23 +17,38 @@ const _accountResponse =
 class FakeFlutterAppAuth implements FlutterAppAuth {
   FakeFlutterAppAuth(this.onAuthorize);
 
-  final Future<AuthorizationTokenResponse> Function(AuthorizationTokenRequest request) onAuthorize;
+  final Future<AuthorizationTokenResponse> Function(
+    AuthorizationTokenRequest request,
+  )
+  onAuthorize;
 
   @override
-  Future<AuthorizationTokenResponse> authorizeAndExchangeCode(AuthorizationTokenRequest request) =>
-      onAuthorize(request);
+  Future<AuthorizationTokenResponse> authorizeAndExchangeCode(
+    AuthorizationTokenRequest request,
+  ) => onAuthorize(request);
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-AuthorizationTokenResponse tokenResponse({String? accessToken = 'test-token'}) =>
-    AuthorizationTokenResponse(accessToken, null, null, null, 'Bearer', null, null, null);
-
-FlutterAppAuthUserCancelledException userCancelled() => FlutterAppAuthUserCancelledException(
-  code: 'user_cancelled',
-  platformErrorDetails: FlutterAppAuthPlatformErrorDetails(),
+AuthorizationTokenResponse tokenResponse({
+  String? accessToken = 'test-token',
+}) => AuthorizationTokenResponse(
+  accessToken,
+  null,
+  null,
+  null,
+  'Bearer',
+  null,
+  null,
+  null,
 );
+
+FlutterAppAuthUserCancelledException userCancelled() =>
+    FlutterAppAuthUserCancelledException(
+      code: 'user_cancelled',
+      platformErrorDetails: FlutterAppAuthPlatformErrorDetails(),
+    );
 
 MockClient accountClient() => MockClient((request) {
   switch (request.url.path) {
@@ -44,7 +59,10 @@ MockClient accountClient() => MockClient((request) {
   }
 });
 
-Future<ProviderContainer> appAuthContainer(MockClient mockClient, FlutterAppAuth appAuth) {
+Future<ProviderContainer> appAuthContainer(
+  MockClient mockClient,
+  FlutterAppAuth appAuth,
+) {
   return makeContainer(
     overrides: {
       httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
@@ -83,22 +101,27 @@ void main() {
       expect(redirectUrl, startsWith('org.lichess.mobile://'));
     });
 
-    test('throws SignInCancelledException when the user cancels the auth session', () async {
-      final container = await appAuthContainer(
-        accountClient(),
-        FakeFlutterAppAuth((request) async => throw userCancelled()),
-      );
+    test(
+      'throws SignInCancelledException when the user cancels the auth session',
+      () async {
+        final container = await appAuthContainer(
+          accountClient(),
+          FakeFlutterAppAuth((request) async => throw userCancelled()),
+        );
 
-      await expectLater(
-        container.read(authRepositoryProvider).signIn(),
-        throwsA(isA<SignInCancelledException>()),
-      );
-    });
+        await expectLater(
+          container.read(authRepositoryProvider).signIn(),
+          throwsA(isA<SignInCancelledException>()),
+        );
+      },
+    );
 
     test('rethrows non-cancellation errors', () async {
       final container = await appAuthContainer(
         accountClient(),
-        FakeFlutterAppAuth((request) async => throw Exception('authorization failed')),
+        FakeFlutterAppAuth(
+          (request) async => throw Exception('authorization failed'),
+        ),
       );
 
       await expectLater(
@@ -119,7 +142,10 @@ void main() {
         FakeFlutterAppAuth((request) async => tokenResponse(accessToken: null)),
       );
 
-      await expectLater(container.read(authRepositoryProvider).signIn(), throwsA(isA<Exception>()));
+      await expectLater(
+        container.read(authRepositoryProvider).signIn(),
+        throwsA(isA<Exception>()),
+      );
     });
   });
 }

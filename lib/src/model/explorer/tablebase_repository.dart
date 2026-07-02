@@ -10,7 +10,10 @@ import 'package:lichess_mobile/src/utils/riverpod.dart';
 
 /// A provider for fetching tablebase entries.
 final tablebaseProvider = FutureProvider.autoDispose
-    .family<TablebaseEntry?, ({String fen, Variant variant})>((ref, request) async {
+    .family<TablebaseEntry?, ({String fen, Variant variant})>((
+      ref,
+      request,
+    ) async {
       await ref.debounce(const Duration(milliseconds: 300));
 
       final tablebaseEntry = await ref
@@ -31,7 +34,10 @@ class TablebaseRepository {
 
   Future<TablebaseEntry> getTablebaseEntry(String fen, Variant variant) {
     return client.readJson(
-      Uri.https(kLichessTablebaseHost, _tablebasePath(variant), {'source': 'mobile', 'fen': fen}),
+      Uri.https(kLichessTablebaseHost, _tablebasePath(variant), {
+        'source': 'mobile',
+        'fen': fen,
+      }),
       mapper: TablebaseEntry.fromJson,
     );
   }
@@ -44,6 +50,10 @@ String _tablebasePath(Variant variant) {
     Variant.standard || Variant.fromPosition || Variant.chess960 => '/standard',
     Variant.atomic => '/atomic',
     Variant.antichess => '/antichess',
-    _ => throw ArgumentError.value(variant, 'variant', 'Unsupported tablebase variant.'),
+    _ => throw ArgumentError.value(
+      variant,
+      'variant',
+      'Unsupported tablebase variant.',
+    ),
   };
 }

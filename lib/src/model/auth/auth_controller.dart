@@ -12,14 +12,17 @@ part 'auth_controller.freezed.dart';
 part 'auth_controller.g.dart';
 
 /// A provider for [AuthController].
-final authControllerProvider = NotifierProvider.autoDispose<AuthController, AuthUser?>(
-  AuthController.new,
-  name: 'AuthControllerProvider',
-);
+final authControllerProvider =
+    NotifierProvider.autoDispose<AuthController, AuthUser?>(
+      AuthController.new,
+      name: 'AuthControllerProvider',
+    );
 
 /// A provider that indicates whether the user is logged in.
 final isLoggedInProvider = Provider.autoDispose<bool>((Ref ref) {
-  return ref.watch(authControllerProvider.select((authUser) => authUser != null));
+  return ref.watch(
+    authControllerProvider.select((authUser) => authUser != null),
+  );
 }, name: 'IsLoggedInProvider');
 
 final signInMutation = Mutation<void>();
@@ -80,7 +83,9 @@ class AuthController extends Notifier<AuthUser?> {
 
 @Freezed(fromJson: true, toJson: true)
 sealed class AuthUser with _$AuthUser {
-  const factory AuthUser({required LightUser user, required String token}) = _AuthUser;
+  const factory AuthUser({required LightUser user, required String token}) =
+      _AuthUser;
 
-  factory AuthUser.fromJson(Map<String, dynamic> json) => _$AuthUserFromJson(json);
+  factory AuthUser.fromJson(Map<String, dynamic> json) =>
+      _$AuthUserFromJson(json);
 }

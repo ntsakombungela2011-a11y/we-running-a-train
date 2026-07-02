@@ -8,7 +8,11 @@ import 'package:lichess_mobile/src/widgets/acpl_chart.dart';
 import 'package:lichess_mobile/src/widgets/game_summary_table.dart';
 
 class BroadcastGameSummary extends ConsumerWidget {
-  const BroadcastGameSummary({required this.roundId, required this.gameId, super.key});
+  const BroadcastGameSummary({
+    required this.roundId,
+    required this.gameId,
+    super.key,
+  });
 
   final BroadcastRoundId roundId;
   final BroadcastGameId gameId;
@@ -16,10 +20,14 @@ class BroadcastGameSummary extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final broadcastPrefs = ref.watch(broadcastPreferencesProvider);
-    final ctrlProvider = broadcastAnalysisControllerProvider((roundId: roundId, gameId: gameId));
+    final ctrlProvider = broadcastAnalysisControllerProvider((
+      roundId: roundId,
+      gameId: gameId,
+    ));
     final analysisState = ref.watch(ctrlProvider).requireValue;
 
-    if (!broadcastPrefs.enableServerAnalysis || analysisState.analysisSummary == null) {
+    if (!broadcastPrefs.enableServerAnalysis ||
+        analysisState.analysisSummary == null) {
       return const Center(child: Text('No server analysis available'));
     }
 
@@ -40,7 +48,10 @@ class _BroadcastAcplChart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ctrlProvider = broadcastAnalysisControllerProvider((roundId: roundId, gameId: gameId));
+    final ctrlProvider = broadcastAnalysisControllerProvider((
+      roundId: roundId,
+      gameId: gameId,
+    ));
     final state = ref.watch(ctrlProvider).requireValue;
     final acplChartData = state.acplChartData;
 
@@ -71,7 +82,10 @@ class _GameSummaryTable extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ctrlProvider = broadcastAnalysisControllerProvider((roundId: roundId, gameId: gameId));
+    final ctrlProvider = broadcastAnalysisControllerProvider((
+      roundId: roundId,
+      gameId: gameId,
+    ));
     final analysisState = ref.watch(ctrlProvider).requireValue;
 
     return GameSummaryTable(

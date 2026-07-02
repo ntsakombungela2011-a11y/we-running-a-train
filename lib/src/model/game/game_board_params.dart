@@ -23,8 +23,9 @@ sealed class GameBoardParams with _$GameBoardParams {
     Move? lastMove,
   }) = InteractiveBoardParams;
 
-  const factory GameBoardParams.empty({@Default(Variant.standard) Variant variant}) =
-      EmptyBoardParams;
+  const factory GameBoardParams.empty({
+    @Default(Variant.standard) Variant variant,
+  }) = EmptyBoardParams;
 
   static const emptyBoard = EmptyBoardParams();
 

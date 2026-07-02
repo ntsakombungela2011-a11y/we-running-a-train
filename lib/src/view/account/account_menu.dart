@@ -55,7 +55,8 @@ class AccountMenuScreen extends ConsumerStatefulWidget {
   ConsumerState<AccountMenuScreen> createState() => _AccountMenuScreenState();
 }
 
-class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen> with WidgetsBindingObserver {
+class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen>
+    with WidgetsBindingObserver {
   bool _errorLoadingFlair = false;
   bool _pendingKidModeRefresh = false;
 
@@ -86,7 +87,10 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen> with Widg
     final signInState = ref.watch(signInMutation);
     final signOutState = ref.watch(signOutMutation);
 
-    ref.listen(signInMutation, (_, next) => showSignInErrorSnackBar(context, next));
+    ref.listen(
+      signInMutation,
+      (_, next) => showSignInErrorSnackBar(context, next),
+    );
     final account = ref.watch(accountProvider);
     final authUser = ref.watch(authControllerProvider);
     final kidMode = account.value?.kid ?? false;
@@ -96,10 +100,14 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen> with Widg
     return PlatformScaffold(
       appBar: PlatformAppBar(
         title: Text(context.l10n.mobileAccount),
-        automaticallyImplyLeading: Theme.of(context).platform == TargetPlatform.iOS,
+        automaticallyImplyLeading:
+            Theme.of(context).platform == TargetPlatform.iOS,
         actions: [
           if (Theme.of(context).platform != TargetPlatform.iOS)
-            IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
         ],
       ),
       body: ListView(
@@ -108,20 +116,30 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen> with Widg
             ListSection(
               children: [
                 ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
                   leading: switch (account) {
                     AsyncData(:final value) =>
                       value == null
                           ? const Icon(Icons.account_circle_outlined, size: 30)
                           : CircleAvatar(
                               radius: 20,
-                              foregroundImage: value.flair != null && !_errorLoadingFlair
-                                  ? HttpNetworkImage(lichessFlairSrc(value.flair!), client)
+                              foregroundImage:
+                                  value.flair != null && !_errorLoadingFlair
+                                  ? HttpNetworkImage(
+                                      lichessFlairSrc(value.flair!),
+                                      client,
+                                    )
                                   : null,
                               onForegroundImageError: value.flair != null
-                                  ? (error, _) => setState(() => _errorLoadingFlair = true)
+                                  ? (error, _) => setState(
+                                      () => _errorLoadingFlair = true,
+                                    )
                                   : null,
-                              backgroundColor: value.flair == null || _errorLoadingFlair
+                              backgroundColor:
+                                  value.flair == null || _errorLoadingFlair
                                   ? null
                                   : ColorScheme.of(context).surfaceContainer,
                               child: value.flair == null || _errorLoadingFlair
@@ -151,7 +169,10 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen> with Widg
                   ListTile(
                     textColor: Theme.of(context).colorScheme.primary,
                     iconColor: Theme.of(context).colorScheme.primary,
-                    leading: const Icon(Symbols.sentiment_satisfied, weight: 600),
+                    leading: const Icon(
+                      Symbols.sentiment_satisfied,
+                      weight: 600,
+                    ),
                     title: Text(
                       context.l10n.kidModeIsEnabled,
                       style: const TextStyle(fontWeight: FontWeight.w600),
@@ -174,7 +195,9 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen> with Widg
                           // ignore the rethrown future so it does not become an
                           // unhandled exception.
                           signInMutation.run(ref, (tsx) async {
-                            await tsx.get(authControllerProvider.notifier).signIn();
+                            await tsx
+                                .get(authControllerProvider.notifier)
+                                .signIn();
                           }).ignore();
                         },
                       }
@@ -237,7 +260,8 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen> with Widg
                   ),
                   title: Text(context.l10n.patronDonate),
                   enabled: isOnline,
-                  onTap: () => launchUrl(Uri.parse('https://lichess.org/patron')),
+                  onTap: () =>
+                      launchUrl(Uri.parse('https://lichess.org/patron')),
                 ),
               ListTile(
                 leading: const Icon(Icons.info_outline),
@@ -363,7 +387,9 @@ class _AccountMenuButtonState extends ConsumerState<AccountMenuButton> {
                   backgroundColor: value.flair == null || _errorLoadingFlair
                       ? null
                       : ColorScheme.of(context).surfaceContainer,
-                  child: value.flair == null || _errorLoadingFlair ? Text(value.initials) : null,
+                  child: value.flair == null || _errorLoadingFlair
+                      ? Text(value.initials)
+                      : null,
                 ),
           onPressed: openMenu,
         ),
@@ -392,7 +418,10 @@ class AboutScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final packageInfo = ref.read(preloadedDataProvider).requireValue.packageInfo;
+    final packageInfo = ref
+        .read(preloadedDataProvider)
+        .requireValue
+        .packageInfo;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.about)),
@@ -510,7 +539,10 @@ class AboutScreen extends ConsumerWidget {
           ),
           Padding(
             padding: Styles.bodySectionPadding,
-            child: Text('v${packageInfo.version}', style: TextTheme.of(context).bodySmall),
+            child: Text(
+              'v${packageInfo.version}',
+              style: TextTheme.of(context).bodySmall,
+            ),
           ),
         ],
       ),

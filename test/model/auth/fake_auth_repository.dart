@@ -28,4 +28,9 @@ final fakeUser = User(
   }),
 );
 
-const _fakePerf = UserPerf(rating: 1500, ratingDeviation: 0, progression: 0, games: 0);
+const _fakePerf = UserPerf(
+  rating: 1500,
+  ratingDeviation: 0,
+  progression: 0,
+  games: 0,
+);

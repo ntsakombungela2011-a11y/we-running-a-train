@@ -7,17 +7,20 @@ import 'package:lichess_mobile/src/model/challenge/challenge.dart';
 import 'package:lichess_mobile/src/model/challenge/challenge_repository.dart';
 import 'package:lichess_mobile/src/model/challenge/challenge_service.dart';
 
-final challengesProvider = AsyncNotifierProvider.autoDispose<Challenges, ChallengesList>(
-  Challenges.new,
-  name: 'ChallengesProvider',
-);
+final challengesProvider =
+    AsyncNotifierProvider.autoDispose<Challenges, ChallengesList>(
+      Challenges.new,
+      name: 'ChallengesProvider',
+    );
 
 class Challenges extends AsyncNotifier<ChallengesList> {
   StreamSubscription<ChallengesList>? _subscription;
 
   @override
   Future<ChallengesList> build() {
-    _subscription = ChallengeService.stream.listen((list) => state = AsyncValue.data(list));
+    _subscription = ChallengeService.stream.listen(
+      (list) => state = AsyncValue.data(list),
+    );
 
     ref.onDispose(() {
       _subscription?.cancel();

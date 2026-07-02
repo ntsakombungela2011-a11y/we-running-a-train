@@ -58,7 +58,9 @@ class BoardWidget extends StatelessWidget {
       settings: settings,
     );
 
-    final overlay = boardOverlay ?? (error != null ? _ErrorWidget(errorMessage: error!) : null);
+    final overlay =
+        boardOverlay ??
+        (error != null ? _ErrorWidget(errorMessage: error!) : null);
 
     if (overlay != null) {
       return Stack(
@@ -102,7 +104,11 @@ class _ErrorWidget extends StatelessWidget {
 /// Executes a pending premove on [ctrl] if it is legal in [position], calling [onMove] via
 /// [scheduleMicrotask] to avoid modifying Riverpod providers inside widget lifecycle callbacks.
 /// Clears the premove if it is illegal.
-void tryExecutePremove(ChessboardController ctrl, Position position, void Function(Move) onMove) {
+void tryExecutePremove(
+  ChessboardController ctrl,
+  Position position,
+  void Function(Move) onMove,
+) {
   final premove = ctrl.premove;
   if (premove == null) return;
   if (position.isLegal(premove)) {
@@ -133,12 +139,18 @@ GameData buildGameData({
     fen: fen,
     playerSide: playerSide,
     sideToMove: position.turn,
-    validMoves: _makeLegalMoves(position, variant: variant, castlingMethod: castlingMethod),
+    validMoves: _makeLegalMoves(
+      position,
+      variant: variant,
+      castlingMethod: castlingMethod,
+    ),
     lastMove: lastMove,
     kingSquareInCheck: boardHighlights && position.isCheck
         ? position.board.kingOf(position.turn)
         : null,
-    validDropSquares: variant == Variant.crazyhouse ? position.legalDrops.squares.toSet() : null,
+    validDropSquares: variant == Variant.crazyhouse
+        ? position.legalDrops.squares.toSet()
+        : null,
   );
 }
 

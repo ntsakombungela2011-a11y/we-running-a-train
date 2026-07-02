@@ -24,7 +24,11 @@ class HttpLogStorage {
   /// Retrieves a paginated list of [HttpLogEntry] entries from the database.
   ///
   /// [searchQuery] filters entries whose request method, URL, or error message contain the query.
-  Future<HttpLog> page({int? cursor, String? searchQuery, int limit = 100}) async {
+  Future<HttpLog> page({
+    int? cursor,
+    String? searchQuery,
+    int limit = 100,
+  }) async {
     final whereParts = <String>[];
     final args = <dynamic>[];
 
@@ -33,7 +37,9 @@ class HttpLogStorage {
       args.add(cursor);
     }
     if (searchQuery != null && searchQuery.isNotEmpty) {
-      whereParts.add('(requestMethod LIKE ? OR requestUrl LIKE ? OR errorMessage LIKE ?)');
+      whereParts.add(
+        '(requestMethod LIKE ? OR requestUrl LIKE ? OR errorMessage LIKE ?)',
+      );
       final pattern = '%$searchQuery%';
       args.addAll([pattern, pattern, pattern]);
     }
@@ -104,7 +110,8 @@ sealed class HttpLogEntry with _$HttpLogEntry {
   const factory HttpLogEntry({
     required String httpLogId,
     required String requestMethod,
-    @JsonKey(toJson: _urlToJson, fromJson: _urlFromJson) required Uri requestUrl,
+    @JsonKey(toJson: _urlToJson, fromJson: _urlFromJson)
+    required Uri requestUrl,
     required DateTime requestDateTime,
     int? responseCode,
     DateTime? responseDateTime,
@@ -118,7 +125,8 @@ sealed class HttpLogEntry with _$HttpLogEntry {
     return responseDateTime!.difference(requestDateTime);
   }
 
-  factory HttpLogEntry.fromJson(Map<String, dynamic> json) => _$HttpLogEntryFromJson(json);
+  factory HttpLogEntry.fromJson(Map<String, dynamic> json) =>
+      _$HttpLogEntryFromJson(json);
 }
 
 String _urlToJson(Uri url) => url.toString();
@@ -131,7 +139,11 @@ Uri _urlFromJson(String url) => Uri.parse(url);
 /// - `next`: An optional integer representing the next cursor.
 @Freezed(fromJson: true, toJson: true)
 sealed class HttpLog with _$HttpLog {
-  const factory HttpLog({required IList<HttpLogEntry> items, required int? next}) = _HttpLog;
+  const factory HttpLog({
+    required IList<HttpLogEntry> items,
+    required int? next,
+  }) = _HttpLog;
 
-  factory HttpLog.fromJson(Map<String, dynamic> json) => _$HttpLogFromJson(json);
+  factory HttpLog.fromJson(Map<String, dynamic> json) =>
+      _$HttpLogFromJson(json);
 }

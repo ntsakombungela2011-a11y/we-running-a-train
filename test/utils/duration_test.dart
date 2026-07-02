@@ -10,9 +10,15 @@ void main() {
 
   setUpAll(() {
     for (final n in [0, 1, 2, 3, 5, 18, 24]) {
-      when(() => mockAppLocalizations.nbDays(n)).thenReturn('$n day${n == 1 ? '' : 's'}');
-      when(() => mockAppLocalizations.nbHours(n)).thenReturn('$n hour${n == 1 ? '' : 's'}');
-      when(() => mockAppLocalizations.nbMinutes(n)).thenReturn('$n minute${n == 1 ? '' : 's'}');
+      when(
+        () => mockAppLocalizations.nbDays(n),
+      ).thenReturn('$n day${n == 1 ? '' : 's'}');
+      when(
+        () => mockAppLocalizations.nbHours(n),
+      ).thenReturn('$n hour${n == 1 ? '' : 's'}');
+      when(
+        () => mockAppLocalizations.nbMinutes(n),
+      ).thenReturn('$n minute${n == 1 ? '' : 's'}');
     }
   });
 
@@ -20,9 +26,12 @@ void main() {
     // Mirrors lila's `translateDuration` in
     // `modules/coreI18n/src/main/i18n.scala`.
 
-    test('hours+minutes are joined with ", " and minutes shown when no days', () {
-      testTimeStr(mockAppLocalizations, 0, 2, 2, '2 hours, 2 minutes');
-    });
+    test(
+      'hours+minutes are joined with ", " and minutes shown when no days',
+      () {
+        testTimeStr(mockAppLocalizations, 0, 2, 2, '2 hours, 2 minutes');
+      },
+    );
 
     test('minutes are omitted when there is at least one day', () {
       testTimeStr(mockAppLocalizations, 3, 18, 24, '3 days, 18 hours');
@@ -79,10 +88,18 @@ void main() {
       expect(d2.toHoursMinutesSeconds(showTenths: true), '02:00.8');
     });
 
-    test('does not show tenths for durations over an hour even if showTenths is true', () {
-      const d = Duration(hours: 1, minutes: 5, seconds: 30, milliseconds: 600);
-      expect(d.toHoursMinutesSeconds(showTenths: true), '1:05:30');
-    });
+    test(
+      'does not show tenths for durations over an hour even if showTenths is true',
+      () {
+        const d = Duration(
+          hours: 1,
+          minutes: 5,
+          seconds: 30,
+          milliseconds: 600,
+        );
+        expect(d.toHoursMinutesSeconds(showTenths: true), '1:05:30');
+      },
+    );
   });
 }
 

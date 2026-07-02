@@ -14,9 +14,11 @@ import '../../example_data.dart';
 import '../../test_container.dart';
 import '../auth/fake_auth_storage.dart';
 
-class NotificationDisplayMock extends Mock implements FlutterLocalNotificationsPlugin {}
+class NotificationDisplayMock extends Mock
+    implements FlutterLocalNotificationsPlugin {}
 
-class CorrespondenceGameStorageMock extends Mock implements CorrespondenceGameStorage {}
+class CorrespondenceGameStorageMock extends Mock
+    implements CorrespondenceGameStorage {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -46,17 +48,17 @@ void main() {
       ),
     ).thenAnswer((_) => Future.value());
 
-    when(() => correspondenceGameStorageMock.save(any())).thenAnswer((_) => Future.value());
+    when(
+      () => correspondenceGameStorageMock.save(any()),
+    ).thenAnswer((_) => Future.value());
 
     final container = await makeContainer(
       authUser: fakeAuthUser,
       overrides: {
-        correspondenceGameStorageProvider: correspondenceGameStorageProvider.overrideWith(
-          (_) => correspondenceGameStorageMock,
-        ),
-        notificationDisplayProvider: notificationDisplayProvider.overrideWithValue(
-          notificationDisplayMock,
-        ),
+        correspondenceGameStorageProvider: correspondenceGameStorageProvider
+            .overrideWith((_) => correspondenceGameStorageMock),
+        notificationDisplayProvider: notificationDisplayProvider
+            .overrideWithValue(notificationDisplayMock),
       },
     );
 
@@ -97,21 +99,28 @@ void main() {
 
       verify(
         () => correspondenceGameStorageMock.save(
-          any(that: isA<OfflineCorrespondenceGame>().having((g) => g.fullId, 'fullId', fullId)),
+          any(
+            that: isA<OfflineCorrespondenceGame>().having(
+              (g) => g.fullId,
+              'fullId',
+              fullId,
+            ),
+          ),
         ),
       ).called(1);
     });
   });
 
   test('FCM game data message without notification', () async {
-    when(() => correspondenceGameStorageMock.save(any())).thenAnswer((_) => Future.value());
+    when(
+      () => correspondenceGameStorageMock.save(any()),
+    ).thenAnswer((_) => Future.value());
 
     final container = await makeContainer(
       authUser: fakeAuthUser,
       overrides: {
-        correspondenceGameStorageProvider: correspondenceGameStorageProvider.overrideWith(
-          (_) => correspondenceGameStorageMock,
-        ),
+        correspondenceGameStorageProvider: correspondenceGameStorageProvider
+            .overrideWith((_) => correspondenceGameStorageMock),
         notificationDisplayProvider: notificationDisplayProvider.overrideWith(
           (_) => notificationDisplayMock,
         ),
@@ -142,7 +151,13 @@ void main() {
 
       verify(
         () => correspondenceGameStorageMock.save(
-          any(that: isA<OfflineCorrespondenceGame>().having((g) => g.fullId, 'fullId', fullId)),
+          any(
+            that: isA<OfflineCorrespondenceGame>().having(
+              (g) => g.fullId,
+              'fullId',
+              fullId,
+            ),
+          ),
         ),
       ).called(1);
 

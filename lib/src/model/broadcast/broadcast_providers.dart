@@ -51,7 +51,9 @@ class BroadcastsSearchPaginator extends AsyncNotifier<BroadcastSearchList> {
 
   @override
   Future<BroadcastSearchList> build() {
-    return ref.read(broadcastRepositoryProvider).searchBroadcasts(searchTerm: searchTerm);
+    return ref
+        .read(broadcastRepositoryProvider)
+        .searchBroadcasts(searchTerm: searchTerm);
   }
 
   /// This function should be called only if there are more pages.
@@ -66,7 +68,9 @@ class BroadcastsSearchPaginator extends AsyncNotifier<BroadcastSearchList> {
         .searchBroadcasts(searchTerm: searchTerm, page: nextPage!);
 
     state = AsyncData((
-      broadcasts: broadcastSearchList.broadcasts.addAll(broadcastSearchListNewPage.broadcasts),
+      broadcasts: broadcastSearchList.broadcasts.addAll(
+        broadcastSearchListNewPage.broadcasts,
+      ),
       nextPage: broadcastSearchListNewPage.nextPage,
     ));
   }
@@ -77,11 +81,16 @@ final broadcastTournamentProvider = FutureProvider.autoDispose
       Ref ref,
       BroadcastTournamentId broadcastTournamentId,
     ) {
-      return ref.read(broadcastRepositoryProvider).getTournament(broadcastTournamentId);
+      return ref
+          .read(broadcastRepositoryProvider)
+          .getTournament(broadcastTournamentId);
     }, name: 'BroadcastTournamentProvider');
 
 final broadcastRoundProvider = FutureProvider.autoDispose
-    .family<BroadcastRoundResponse, BroadcastRoundId>((Ref ref, BroadcastRoundId roundId) {
+    .family<BroadcastRoundResponse, BroadcastRoundId>((
+      Ref ref,
+      BroadcastRoundId roundId,
+    ) {
       return ref.read(broadcastRepositoryProvider).getRound(roundId);
     }, name: 'BroadcastRoundProvider');
 
@@ -98,11 +107,16 @@ final broadcastPlayerProvider = FutureProvider.autoDispose
       Ref ref,
       (BroadcastTournamentId, String) params,
     ) {
-      return ref.read(broadcastRepositoryProvider).getPlayerResults(params.$1, params.$2);
+      return ref
+          .read(broadcastRepositoryProvider)
+          .getPlayerResults(params.$1, params.$2);
     }, name: 'BroadcastPlayerProvider');
 
 final broadcastTeamMatchesProvider = FutureProvider.autoDispose
-    .family<IList<BroadcastTeamMatch>, BroadcastRoundId>((Ref ref, BroadcastRoundId roundId) {
+    .family<IList<BroadcastTeamMatch>, BroadcastRoundId>((
+      Ref ref,
+      BroadcastRoundId roundId,
+    ) {
       return ref.read(broadcastRepositoryProvider).getTeamMatches(roundId);
     }, name: 'BroadcastTeamMatchesProvider');
 
@@ -112,7 +126,9 @@ final broadcastTeamStandingsProvider = FutureProvider.autoDispose
       BroadcastTournamentId tournamentId,
     ) {
       return ref.withClientCacheFor(
-        (client) => ref.read(broadcastRepositoryProvider).getTeamStandings(tournamentId),
+        (client) => ref
+            .read(broadcastRepositoryProvider)
+            .getTeamStandings(tournamentId),
         const Duration(seconds: 30),
       );
     }, name: 'BroadcastTeamStandingsProvider');

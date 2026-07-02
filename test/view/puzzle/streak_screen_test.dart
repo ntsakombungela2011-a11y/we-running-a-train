@@ -120,7 +120,9 @@ void main() {
       expect(find.textContaining(RegExp('0\$')), findsOneWidget);
     });
 
-    testWidgets('hasSkipped is persisted when exiting after skip', (tester) async {
+    testWidgets('hasSkipped is persisted when exiting after skip', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: Builder(
@@ -158,7 +160,8 @@ void main() {
 
       // verify skip button is enabled on second puzzle
       final skipButtonFinder = find.byWidgetPredicate(
-        (widget) => widget is BottomBarButton && widget.label == 'Skip this move',
+        (widget) =>
+            widget is BottomBarButton && widget.label == 'Skip this move',
       );
       expect(skipButtonFinder, findsOneWidget);
       expect(tester.widget<BottomBarButton>(skipButtonFinder).onTap, isNotNull);
@@ -183,7 +186,9 @@ void main() {
       expect(tester.widget<BottomBarButton>(skipButtonFinder).onTap, isNull);
     });
 
-    testWidgets('failing first puzzle allows restart correctly', (tester) async {
+    testWidgets('failing first puzzle allows restart correctly', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const StreakScreen(),

@@ -17,7 +17,8 @@ import '../../test_container.dart';
 import '../../test_helpers.dart';
 import '../auth/fake_auth_storage.dart';
 
-class NotificationDisplayMock extends Mock implements FlutterLocalNotificationsPlugin {}
+class NotificationDisplayMock extends Mock
+    implements FlutterLocalNotificationsPlugin {}
 
 class CorrespondenceServiceMock extends Mock implements CorrespondenceService {}
 
@@ -51,7 +52,8 @@ void main() {
 
       await notificationService.start();
 
-      final calls = testBinding.firebaseMessaging.verifyRequestPermissionCalls();
+      final calls = testBinding.firebaseMessaging
+          .verifyRequestPermissionCalls();
       expect(calls, hasLength(1));
       expect(
         calls.first,
@@ -91,28 +93,31 @@ void main() {
       },
     );
 
-    test("don't try to register device when permissions are not granted", () async {
-      final container = await makeContainer(
-        authUser: fakeAuthUser,
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(registerMockClient, ref),
-          ),
-        },
-      );
+    test(
+      "don't try to register device when permissions are not granted",
+      () async {
+        final container = await makeContainer(
+          authUser: fakeAuthUser,
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(registerMockClient, ref),
+            ),
+          },
+        );
 
-      final notificationService = container.read(notificationServiceProvider);
+        final notificationService = container.read(notificationServiceProvider);
 
-      FakeAsync().run((async) {
-        testBinding.firebaseMessaging.willGrantPermission = false;
+        FakeAsync().run((async) {
+          testBinding.firebaseMessaging.willGrantPermission = false;
 
-        notificationService.start();
+          notificationService.start();
 
-        async.flushMicrotasks();
+          async.flushMicrotasks();
 
-        expect(registerDeviceCalls, 0);
-      });
-    });
+          expect(registerDeviceCalls, 0);
+        });
+      },
+    );
 
     test("don't try to register device when user is not logged in", () async {
       final container = await makeContainer(
@@ -136,74 +141,87 @@ void main() {
   });
 
   group('FCM Correspondence notifications', () {
-    test('FCM message with associated notification will show it in foreground', () async {
-      final container = await makeContainer(
-        authUser: fakeAuthUser,
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(registerMockClient, ref),
+    test(
+      'FCM message with associated notification will show it in foreground',
+      () async {
+        final container = await makeContainer(
+          authUser: fakeAuthUser,
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(registerMockClient, ref),
+            ),
+            notificationDisplayProvider: notificationDisplayProvider
+                .overrideWith((_) => notificationDisplayMock),
+          },
+        );
+
+        final notificationService = container.read(notificationServiceProvider);
+
+        const fullId = GameFullId('9wlmxmibr9gh');
+
+        when(
+          () => notificationDisplayMock.show(
+            id: any(named: 'id'),
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            notificationDetails: any(named: 'notificationDetails'),
+            payload: any(named: 'payload'),
           ),
-          notificationDisplayProvider: notificationDisplayProvider.overrideWith(
-            (_) => notificationDisplayMock,
-          ),
-        },
-      );
+        ).thenAnswer((_) => Future.value());
 
-      final notificationService = container.read(notificationServiceProvider);
+        FakeAsync().run((async) {
+          notificationService.start();
 
-      const fullId = GameFullId('9wlmxmibr9gh');
+          async.flushMicrotasks();
 
-      when(
-        () => notificationDisplayMock.show(
-          id: any(named: 'id'),
-          title: any(named: 'title'),
-          body: any(named: 'body'),
-          notificationDetails: any(named: 'notificationDetails'),
-          payload: any(named: 'payload'),
-        ),
-      ).thenAnswer((_) => Future.value());
+          testBinding.firebaseMessaging.onMessage.add(
+            const RemoteMessage(
+              data: {
+                'lichess.type': 'gameMove',
+                'lichess.fullId': '9wlmxmibr9gh',
+              },
+              notification: RemoteNotification(
+                title: 'It is your turn!',
+                body: 'Dr-Alaakour played a move',
+              ),
+            ),
+          );
 
-      FakeAsync().run((async) {
-        notificationService.start();
+          async.flushMicrotasks();
 
-        async.flushMicrotasks();
+          const expectedNotif = CorresGameUpdateNotification(
+            fullId,
+            'It is your turn!',
+            'Dr-Alaakour played a move',
+          );
 
-        testBinding.firebaseMessaging.onMessage.add(
-          const RemoteMessage(
-            data: {'lichess.type': 'gameMove', 'lichess.fullId': '9wlmxmibr9gh'},
-            notification: RemoteNotification(
+          final result = verify(
+            () => notificationDisplayMock.show(
+              id: fullId.hashCode,
               title: 'It is your turn!',
               body: 'Dr-Alaakour played a move',
+              notificationDetails: captureAny(named: 'notificationDetails'),
+              payload: jsonEncode(expectedNotif.payload),
             ),
-          ),
-        );
+          );
 
-        async.flushMicrotasks();
-
-        const expectedNotif = CorresGameUpdateNotification(
-          fullId,
-          'It is your turn!',
-          'Dr-Alaakour played a move',
-        );
-
-        final result = verify(
-          () => notificationDisplayMock.show(
-            id: fullId.hashCode,
-            title: 'It is your turn!',
-            body: 'Dr-Alaakour played a move',
-            notificationDetails: captureAny(named: 'notificationDetails'),
-            payload: jsonEncode(expectedNotif.payload),
-          ),
-        );
-
-        result.called(1);
-        expect(
-          result.captured[0],
-          isA<NotificationDetails>()
-              .having((d) => d.android?.importance, 'importance', Importance.high)
-              .having((d) => d.android?.priority, 'priority', Priority.defaultPriority),
-        );
-      });
-    });
+          result.called(1);
+          expect(
+            result.captured[0],
+            isA<NotificationDetails>()
+                .having(
+                  (d) => d.android?.importance,
+                  'importance',
+                  Importance.high,
+                )
+                .having(
+                  (d) => d.android?.priority,
+                  'priority',
+                  Priority.defaultPriority,
+                ),
+          );
+        });
+      },
+    );
   });
 }

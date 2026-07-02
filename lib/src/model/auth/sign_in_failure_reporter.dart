@@ -12,14 +12,20 @@ import 'package:lichess_mobile/src/utils/system.dart';
 /// device that produced it, so failure-prone OS/browser combos can be identified from the reports.
 ///
 /// This never throws: telemetry must not interfere with the sign-in flow.
-Future<void> reportSignInFailure(Ref ref, Object error, StackTrace stack) async {
+Future<void> reportSignInFailure(
+  Ref ref,
+  Object error,
+  StackTrace stack,
+) async {
   try {
     final crashlytics = LichessBinding.instance.firebaseCrashlytics;
 
     // AppAuth's own error classification (type/code/oauth-error). See FlutterAppAuthPlatformErrorDetails.
     final details = switch (error) {
-      FlutterAppAuthUserCancelledException(:final platformErrorDetails) => platformErrorDetails,
-      FlutterAppAuthPlatformException(:final platformErrorDetails) => platformErrorDetails,
+      FlutterAppAuthUserCancelledException(:final platformErrorDetails) =>
+        platformErrorDetails,
+      FlutterAppAuthPlatformException(:final platformErrorDetails) =>
+        platformErrorDetails,
       _ => null,
     };
 
@@ -33,15 +39,33 @@ Future<void> reportSignInFailure(Ref ref, Object error, StackTrace stack) async 
       _ => (Platform.operatingSystem, null, null),
     };
 
-    await crashlytics.setCustomKey('auth_error_type', details?.type ?? 'unknown');
-    await crashlytics.setCustomKey('auth_error_code', details?.code ?? 'unknown');
-    await crashlytics.setCustomKey('auth_oauth_error', details?.error ?? 'none');
-    await crashlytics.setCustomKey('browser_package', browser?.package ?? 'unknown');
-    await crashlytics.setCustomKey('browser_version', browser?.version ?? 'unknown');
+    await crashlytics.setCustomKey(
+      'auth_error_type',
+      details?.type ?? 'unknown',
+    );
+    await crashlytics.setCustomKey(
+      'auth_error_code',
+      details?.code ?? 'unknown',
+    );
+    await crashlytics.setCustomKey(
+      'auth_oauth_error',
+      details?.error ?? 'none',
+    );
+    await crashlytics.setCustomKey(
+      'browser_package',
+      browser?.package ?? 'unknown',
+    );
+    await crashlytics.setCustomKey(
+      'browser_version',
+      browser?.version ?? 'unknown',
+    );
     await crashlytics.setCustomKey('os', osName);
     await crashlytics.setCustomKey('os_version', osVersion ?? 'unknown');
     await crashlytics.setCustomKey('device_model', deviceModel ?? 'unknown');
-    await crashlytics.setCustomKey('app_version', preloadedData?.packageInfo.version ?? 'unknown');
+    await crashlytics.setCustomKey(
+      'app_version',
+      preloadedData?.packageInfo.version ?? 'unknown',
+    );
 
     await crashlytics.recordError(
       error,

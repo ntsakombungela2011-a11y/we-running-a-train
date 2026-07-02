@@ -63,7 +63,9 @@ void main() {
         home: const OpeningExplorerScreen(options: options),
         authUser: authUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -103,7 +105,9 @@ void main() {
         home: const OpeningExplorerScreen(options: options),
         authUser: authUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -112,7 +116,9 @@ void main() {
             PrefCategory.openingExplorer.storageKey,
             authUser,
           ): jsonEncode(
-            OpeningExplorerPrefs.defaults().copyWith(db: OpeningDatabase.lichess).toJson(),
+            OpeningExplorerPrefs.defaults()
+                .copyWith(db: OpeningDatabase.lichess)
+                .toJson(),
           ),
         },
       );
@@ -147,7 +153,9 @@ void main() {
         tester,
         home: const OpeningExplorerScreen(options: options),
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -157,7 +165,9 @@ void main() {
             PrefCategory.openingExplorer.storageKey,
             authUser,
           ): jsonEncode(
-            OpeningExplorerPrefs.defaults(user: user).copyWith(db: OpeningDatabase.player).toJson(),
+            OpeningExplorerPrefs.defaults(
+              user: user,
+            ).copyWith(db: OpeningDatabase.player).toJson(),
           ),
         },
       );
@@ -188,12 +198,16 @@ void main() {
     }, variant: kPlatformVariant);
 
     // regression test for #2726
-    testWidgets('opening explorer does not use standalone analysis', (WidgetTester tester) async {
+    testWidgets('opening explorer does not use standalone analysis', (
+      WidgetTester tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const MoreTabScreen(),
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },

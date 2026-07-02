@@ -7,7 +7,8 @@ import 'package:lichess_mobile/src/model/game/playable_game.dart';
 
 void main() {
   final dateFormat = DateFormat('yyyy.MM.dd');
-  String formatDate(int millis) => dateFormat.format(DateTime.fromMillisecondsSinceEpoch(millis));
+  String formatDate(int millis) =>
+      dateFormat.format(DateTime.fromMillisecondsSinceEpoch(millis));
 
   group('PlayableGame', () {
     test('makePgn, unfinished game', () {
@@ -56,7 +57,9 @@ void main() {
 
     test('toExportedGame', () {
       for (final game in [_playableGameJson, _playable960GameJson]) {
-        final playableGame = PlayableGame.fromServerJson(jsonDecode(game) as Map<String, dynamic>);
+        final playableGame = PlayableGame.fromServerJson(
+          jsonDecode(game) as Map<String, dynamic>,
+        );
         final now = DateTime.now();
         final archivedGame = playableGame.toExportedGame(finishedAt: now);
 
@@ -85,7 +88,10 @@ void main() {
               : null,
         );
         expect(archivedGame.initialFen, playableGame.initialFen);
-        expect(archivedGame.isThreefoldRepetition, playableGame.isThreefoldRepetition);
+        expect(
+          archivedGame.isThreefoldRepetition,
+          playableGame.isThreefoldRepetition,
+        );
         expect(archivedGame.status, playableGame.status);
         expect(archivedGame.winner, playableGame.winner);
         expect(archivedGame.white, playableGame.white);

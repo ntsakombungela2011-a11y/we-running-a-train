@@ -73,7 +73,9 @@ void main() {
     test('three-check', () {
       final Position position = Position.setupPosition(
         Rule.threecheck,
-        Setup.parseFen('rnbqkbnr/ppp1pppp/3p4/1B6/4P3/8/PPPP1PPP/RNBQK1NR b KQkq - 2+3 1 2'),
+        Setup.parseFen(
+          'rnbqkbnr/ppp1pppp/3p4/1B6/4P3/8/PPPP1PPP/RNBQK1NR b KQkq - 2+3 1 2',
+        ),
       );
       final MaterialDiff diff = MaterialDiff.fromPosition(position);
 
@@ -84,7 +86,9 @@ void main() {
     test('horde returns empty material diff', () {
       final Position position = Position.setupPosition(
         Rule.horde,
-        Setup.parseFen('rnbqkbnr/pppppppp/8/8/pppppppp/pppppppp/PPPPPPPP/PPPPPPPP w kq - 0 1'),
+        Setup.parseFen(
+          'rnbqkbnr/pppppppp/8/8/pppppppp/pppppppp/PPPPPPPP/PPPPPPPP w kq - 0 1',
+        ),
       );
       final MaterialDiff diff = MaterialDiff.fromPosition(position);
 
@@ -100,7 +104,9 @@ void main() {
     test('crazyhouse returns empty material diff', () {
       final Position position = Position.setupPosition(
         Rule.crazyhouse,
-        Setup.parseFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'),
+        Setup.parseFen(
+          'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        ),
       );
       final MaterialDiff diff = MaterialDiff.fromPosition(position);
 

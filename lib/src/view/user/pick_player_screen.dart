@@ -14,7 +14,11 @@ import 'package:lichess_mobile/src/widgets/shimmer.dart';
 import 'package:lichess_mobile/src/widgets/user.dart';
 
 class PickPlayerScreen extends ConsumerWidget {
-  const PickPlayerScreen({required this.onUserTap, required this.title, super.key});
+  const PickPlayerScreen({
+    required this.onUserTap,
+    required this.title,
+    super.key,
+  });
 
   final void Function(LightUser) onUserTap;
   final Widget title;
@@ -48,8 +52,12 @@ class _Body extends ConsumerWidget {
     final following = ref.watch(followingProvider);
 
     if (following case AsyncError(:final error, :final stackTrace)) {
-      debugPrint('SEVERE: [PickPlayerScreen] could not load following users; $error\n$stackTrace');
-      return FullScreenRetryRequest(onRetry: () => ref.invalidate(followingProvider));
+      debugPrint(
+        'SEVERE: [PickPlayerScreen] could not load following users; $error\n$stackTrace',
+      );
+      return FullScreenRetryRequest(
+        onRetry: () => ref.invalidate(followingProvider),
+      );
     }
 
     return _PlayersList(
@@ -59,7 +67,8 @@ class _Body extends ConsumerWidget {
           AsyncData(:final value) when value.isNotEmpty => ListSection(
             header: Text(context.l10n.nbFriendsOnline(value.length)),
             children: [
-              for (final friend in value) _FriendTile(friend: friend.user, onUserTap: onUserTap),
+              for (final friend in value)
+                _FriendTile(friend: friend.user, onUserTap: onUserTap),
             ],
           ),
           _ => const SizedBox.shrink(),
@@ -68,12 +77,16 @@ class _Body extends ConsumerWidget {
           AsyncData(:final value) when value.isNotEmpty => ListSection(
             header: Text(context.l10n.following),
             children: [
-              for (final user in value) _FriendTile(friend: user.lightUser, onUserTap: onUserTap),
+              for (final user in value)
+                _FriendTile(friend: user.lightUser, onUserTap: onUserTap),
             ],
           ),
           AsyncData() => const SizedBox.shrink(),
           _ => Shimmer(
-            child: ShimmerLoading(isLoading: true, child: ListSection.loading(itemsNumber: 5)),
+            child: ShimmerLoading(
+              isLoading: true,
+              child: ListSection.loading(itemsNumber: 5),
+            ),
           ),
         },
       ],

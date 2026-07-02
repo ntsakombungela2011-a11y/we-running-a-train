@@ -44,7 +44,10 @@ class OverTheBoardScreen extends StatelessWidget {
 
   static Route<void> buildRoute({Variant? initialVariant, String? initialFen}) {
     return buildScreenRoute(
-      screen: OverTheBoardScreen(initialVariant: initialVariant, initialFen: initialFen),
+      screen: OverTheBoardScreen(
+        initialVariant: initialVariant,
+        initialFen: initialFen,
+      ),
     );
   }
 
@@ -61,7 +64,10 @@ class OverTheBoardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _Body(initialVariant: initialVariant ?? Variant.standard, initialFen: initialFen),
+      body: _Body(
+        initialVariant: initialVariant ?? Variant.standard,
+        initialFen: initialFen,
+      ),
     );
   }
 }
@@ -99,9 +105,15 @@ class _BodyState extends ConsumerState<_Body> {
         return;
       }
 
-      final ongoingGame = await ref.read(overTheBoardGameStorageProvider).fetchOngoingGame();
-      if (ongoingGame != null && ongoingGame.game.steps.length > 1 && !ongoingGame.game.finished) {
-        ref.read(overTheBoardGameControllerProvider.notifier).loadOngoingGame(ongoingGame.game);
+      final ongoingGame = await ref
+          .read(overTheBoardGameStorageProvider)
+          .fetchOngoingGame();
+      if (ongoingGame != null &&
+          ongoingGame.game.steps.length > 1 &&
+          !ongoingGame.game.finished) {
+        ref
+            .read(overTheBoardGameControllerProvider.notifier)
+            .loadOngoingGame(ongoingGame.game);
 
         ref
             .read(overTheBoardClockProvider.notifier)
@@ -112,7 +124,11 @@ class _BodyState extends ConsumerState<_Body> {
             );
       } else {
         if (!mounted) return;
-        showConfigureGameSheet(context, initialVariant: widget.initialVariant, isDismissible: true);
+        showConfigureGameSheet(
+          context,
+          initialVariant: widget.initialVariant,
+          isDismissible: true,
+        );
       }
     });
   }
@@ -136,7 +152,10 @@ class _BodyState extends ConsumerState<_Body> {
     final gameState = ref.watch(overTheBoardGameControllerProvider);
     final overTheBoardPrefs = ref.watch(overTheBoardPreferencesProvider);
 
-    ref.listen(overTheBoardClockProvider.select((value) => value.flagSide), (previous, flagSide) {
+    ref.listen(overTheBoardClockProvider.select((value) => value.flagSide), (
+      previous,
+      flagSide,
+    ) {
       if (previous == null && flagSide != null) {
         ref.read(overTheBoardGameControllerProvider.notifier).onFlag(flagSide);
       }
@@ -154,7 +173,9 @@ class _BodyState extends ConsumerState<_Body> {
                 onRematch: () {
                   setState(() {
                     orientation = orientation.opposite;
-                    ref.read(overTheBoardGameControllerProvider.notifier).rematch();
+                    ref
+                        .read(overTheBoardGameControllerProvider.notifier)
+                        .rematch();
                     ref.read(overTheBoardClockProvider.notifier).restart();
                     Navigator.pop(context);
                   });
@@ -182,7 +203,9 @@ class _BodyState extends ConsumerState<_Body> {
                 },
                 onNo: () {
                   Navigator.pop(context);
-                  ref.read(overTheBoardClockProvider.notifier).resume(previous!.turn);
+                  ref
+                      .read(overTheBoardClockProvider.notifier)
+                      .resume(previous!.turn);
                 },
               ),
             );
@@ -242,17 +265,21 @@ class _BodyState extends ConsumerState<_Body> {
                       clockKey: const ValueKey('topClock'),
                     ),
                     topTableUpsideDown:
-                        !overTheBoardPrefs.flipPiecesAfterMove || orientation != gameState.turn,
+                        !overTheBoardPrefs.flipPiecesAfterMove ||
+                        orientation != gameState.turn,
                     bottomTable: _Player(
                       side: orientation,
                       clockKey: const ValueKey('bottomClock'),
                     ),
                     bottomTableUpsideDown:
-                        overTheBoardPrefs.flipPiecesAfterMove && orientation != gameState.turn,
+                        overTheBoardPrefs.flipPiecesAfterMove &&
+                        orientation != gameState.turn,
                     orientation: orientation,
                     explosionSquares: gameState.stepCursor > 0
                         ? atomicExplosionSquares(
-                            gameState.game.stepAt(gameState.stepCursor - 1).position,
+                            gameState.game
+                                .stepAt(gameState.stepCursor - 1)
+                                .position,
                             gameState.lastMove,
                           )
                         : null,
@@ -266,9 +293,13 @@ class _BodyState extends ConsumerState<_Body> {
                           : PlayerSide.black,
                       lastMove: gameState.lastMove,
                       onMove: (move, {viaDragAndDrop}) {
-                        ref.read(overTheBoardGameControllerProvider.notifier).makeMove(move);
+                        ref
+                            .read(overTheBoardGameControllerProvider.notifier)
+                            .makeMove(move);
                         // Don't restart the clock on a game-ending move, or it keeps running.
-                        if (!ref.read(overTheBoardGameControllerProvider).finished) {
+                        if (!ref
+                            .read(overTheBoardGameControllerProvider)
+                            .finished) {
                           ref
                               .read(overTheBoardClockProvider.notifier)
                               .onMove(newSideToMove: gameState.turn.opposite);
@@ -279,7 +310,8 @@ class _BodyState extends ConsumerState<_Body> {
                     currentMoveIndex: gameState.stepCursor,
                     boardSettingsOverrides: BoardSettingsOverrides(
                       drawShape: const DrawShapeOptions(enable: false),
-                      pieceOrientationBehavior: overTheBoardPrefs.flipPiecesAfterMove
+                      pieceOrientationBehavior:
+                          overTheBoardPrefs.flipPiecesAfterMove
                           ? PieceOrientationBehavior.sideToPlay
                           : PieceOrientationBehavior.opponentUpsideDown,
                       pieceAssets: overTheBoardPrefs.symmetricPieces
@@ -333,7 +365,9 @@ class _BottomBar extends ConsumerWidget {
                     if (clock.active) {
                       ref.read(overTheBoardClockProvider.notifier).pause();
                     } else {
-                      ref.read(overTheBoardClockProvider.notifier).resume(gameState.turn);
+                      ref
+                          .read(overTheBoardClockProvider.notifier)
+                          .resume(gameState.turn);
                     }
                   },
             icon: clock.active ? CupertinoIcons.pause : CupertinoIcons.play,
@@ -342,11 +376,16 @@ class _BottomBar extends ConsumerWidget {
           label: 'Previous',
           onTap: gameState.canGoBack
               ? () {
-                  ref.read(overTheBoardGameControllerProvider.notifier).goBack();
+                  ref
+                      .read(overTheBoardGameControllerProvider.notifier)
+                      .goBack();
                   if (clock.active) {
                     ref
                         .read(overTheBoardClockProvider.notifier)
-                        .switchSide(newSideToMove: gameState.turn.opposite, addIncrement: false);
+                        .switchSide(
+                          newSideToMove: gameState.turn.opposite,
+                          addIncrement: false,
+                        );
                   }
                 }
               : null,
@@ -356,11 +395,16 @@ class _BottomBar extends ConsumerWidget {
           label: 'Next',
           onTap: gameState.canGoForward
               ? () {
-                  ref.read(overTheBoardGameControllerProvider.notifier).goForward();
+                  ref
+                      .read(overTheBoardGameControllerProvider.notifier)
+                      .goForward();
                   if (clock.active) {
                     ref
                         .read(overTheBoardClockProvider.notifier)
-                        .switchSide(newSideToMove: gameState.turn.opposite, addIncrement: false);
+                        .switchSide(
+                          newSideToMove: gameState.turn.opposite,
+                          addIncrement: false,
+                        );
                   }
                 }
               : null,
@@ -370,11 +414,16 @@ class _BottomBar extends ConsumerWidget {
           label: 'Takeback',
           onTap: gameState.canGoBack
               ? () {
-                  ref.read(overTheBoardGameControllerProvider.notifier).goBack();
+                  ref
+                      .read(overTheBoardGameControllerProvider.notifier)
+                      .goBack();
                   if (clock.active) {
                     ref
                         .read(overTheBoardClockProvider.notifier)
-                        .switchSide(newSideToMove: gameState.turn.opposite, addIncrement: false);
+                        .switchSide(
+                          newSideToMove: gameState.turn.opposite,
+                          addIncrement: false,
+                        );
                   }
                 }
               : null,
@@ -428,7 +477,9 @@ class _BottomBar extends ConsumerWidget {
                   content: Text('$offerer offers draw. Does opponent accept?'),
                   onYes: () {
                     Navigator.pop(context);
-                    ref.read(overTheBoardGameControllerProvider.notifier).draw();
+                    ref
+                        .read(overTheBoardGameControllerProvider.notifier)
+                        .draw();
                   },
                   onNo: () => Navigator.pop(context),
                 ),
@@ -447,7 +498,9 @@ class _BottomBar extends ConsumerWidget {
                   content: Text('Are you sure you want to resign as $offerer?'),
                   onYes: () {
                     Navigator.pop(context);
-                    ref.read(overTheBoardGameControllerProvider.notifier).resign();
+                    ref
+                        .read(overTheBoardGameControllerProvider.notifier)
+                        .resign();
                   },
                   onNo: () => Navigator.pop(context),
                 ),
@@ -485,11 +538,15 @@ class _Player extends ConsumerWidget {
       clock: clock.timeIncrement.isInfinite
           ? null
           : Clock(
-              timeLeft: Duration(milliseconds: max(0, clock.timeLeft(side)!.inMilliseconds)),
+              timeLeft: Duration(
+                milliseconds: max(0, clock.timeLeft(side)!.inMilliseconds),
+              ),
               key: clockKey,
               active: clock.activeClock == side,
               emergencyThreshold: Duration(
-                seconds: (clock.timeIncrement.time * 0.125).clamp(10, 60).toInt(),
+                seconds: (clock.timeIncrement.time * 0.125)
+                    .clamp(10, 60)
+                    .toInt(),
               ),
               clockTenths: clockTenths,
             ),

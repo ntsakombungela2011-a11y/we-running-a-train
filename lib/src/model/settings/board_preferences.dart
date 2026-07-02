@@ -19,7 +19,8 @@ final boardPreferencesProvider = NotifierProvider<BoardPreferences, BoardPrefs>(
   name: 'BoardPreferencesProvider',
 );
 
-class BoardPreferences extends Notifier<BoardPrefs> with PreferencesStorage<BoardPrefs> {
+class BoardPreferences extends Notifier<BoardPrefs>
+    with PreferencesStorage<BoardPrefs> {
   @override
   @protected
   PrefCategory get prefCategory => PrefCategory.board;
@@ -49,7 +50,9 @@ class BoardPreferences extends Notifier<BoardPrefs> with PreferencesStorage<Boar
   }
 
   Future<void> toggleConfirmResignAndDraw() async {
-    await save(state.copyWith(confirmResignAndDraw: !state.confirmResignAndDraw));
+    await save(
+      state.copyWith(confirmResignAndDraw: !state.confirmResignAndDraw),
+    );
   }
 
   Future<void> setPieceShiftMethod(PieceShiftMethod pieceShiftMethod) async {
@@ -70,7 +73,9 @@ class BoardPreferences extends Notifier<BoardPrefs> with PreferencesStorage<Boar
 
   Future<void> toggleImmersiveModeWhilePlaying() {
     return save(
-      state.copyWith(immersiveModeWhilePlaying: !(state.immersiveModeWhilePlaying ?? false)),
+      state.copyWith(
+        immersiveModeWhilePlaying: !(state.immersiveModeWhilePlaying ?? false),
+      ),
     );
   }
 
@@ -95,22 +100,30 @@ class BoardPreferences extends Notifier<BoardPrefs> with PreferencesStorage<Boar
   }
 
   Future<void> toggleMagnifyDraggedPiece() {
-    return save(state.copyWith(magnifyDraggedPiece: !state.magnifyDraggedPiece));
+    return save(
+      state.copyWith(magnifyDraggedPiece: !state.magnifyDraggedPiece),
+    );
   }
 
   Future<void> setDragTargetKind(DragTargetKind dragTargetKind) {
     return save(state.copyWith(dragTargetKind: dragTargetKind));
   }
 
-  Future<void> setMaterialDifferenceFormat(MaterialDifferenceFormat materialDifferenceFormat) {
-    return save(state.copyWith(materialDifferenceFormat: materialDifferenceFormat));
+  Future<void> setMaterialDifferenceFormat(
+    MaterialDifferenceFormat materialDifferenceFormat,
+  ) {
+    return save(
+      state.copyWith(materialDifferenceFormat: materialDifferenceFormat),
+    );
   }
 
   Future<void> setClockPosition(ClockPosition clockPosition) {
     return save(state.copyWith(clockPosition: clockPosition));
   }
 
-  Future<void> setLandscapeBoardPosition(LandscapeBoardPosition landscapeBoardPosition) {
+  Future<void> setLandscapeBoardPosition(
+    LandscapeBoardPosition landscapeBoardPosition,
+  ) {
     return save(state.copyWith(landscapeBoardPosition: landscapeBoardPosition));
   }
 
@@ -119,7 +132,9 @@ class BoardPreferences extends Notifier<BoardPrefs> with PreferencesStorage<Boar
   }
 
   Future<void> toggleEnableShapeDrawings() {
-    return save(state.copyWith(enableShapeDrawings: !state.enableShapeDrawings));
+    return save(
+      state.copyWith(enableShapeDrawings: !state.enableShapeDrawings),
+    );
   }
 
   Future<void> setShapeColor(ShapeColor shapeColor) {
@@ -127,7 +142,12 @@ class BoardPreferences extends Notifier<BoardPrefs> with PreferencesStorage<Boar
   }
 
   Future<void> adjustColors({double? brightness, double? hue}) {
-    return save(state.copyWith(brightness: brightness ?? state.brightness, hue: hue ?? state.hue));
+    return save(
+      state.copyWith(
+        brightness: brightness ?? state.brightness,
+        hue: hue ?? state.hue,
+      ),
+    );
   }
 }
 
@@ -137,7 +157,10 @@ sealed class BoardPrefs with _$BoardPrefs implements Serializable {
 
   @Assert('brightness >= 0.2 && brightness <= 1.4, hue >= 0.0 && hue <= 360.0')
   const factory BoardPrefs({
-    @JsonKey(defaultValue: PieceSet.cburnett, unknownEnumValue: PieceSet.cburnett)
+    @JsonKey(
+      defaultValue: PieceSet.cburnett,
+      unknownEnumValue: PieceSet.cburnett,
+    )
     required PieceSet pieceSet,
     @JsonKey(defaultValue: BoardTheme.brown, unknownEnumValue: BoardTheme.brown)
     required BoardTheme boardTheme,
@@ -152,14 +175,20 @@ sealed class BoardPrefs with _$BoardPrefs implements Serializable {
       unknownEnumValue: MaterialDifferenceFormat.materialDifference,
     )
     required MaterialDifferenceFormat materialDifferenceFormat,
-    @JsonKey(defaultValue: ClockPosition.right, unknownEnumValue: ClockPosition.right)
+    @JsonKey(
+      defaultValue: ClockPosition.right,
+      unknownEnumValue: ClockPosition.right,
+    )
     required ClockPosition clockPosition,
     @JsonKey(
       defaultValue: LandscapeBoardPosition.left,
       unknownEnumValue: LandscapeBoardPosition.left,
     )
     required LandscapeBoardPosition landscapeBoardPosition,
-    @JsonKey(defaultValue: PieceShiftMethod.either, unknownEnumValue: PieceShiftMethod.either)
+    @JsonKey(
+      defaultValue: PieceShiftMethod.either,
+      unknownEnumValue: PieceShiftMethod.either,
+    )
     required PieceShiftMethod pieceShiftMethod,
     @JsonKey(defaultValue: false) required bool moveOnRelease,
     @JsonKey(
@@ -174,12 +203,16 @@ sealed class BoardPrefs with _$BoardPrefs implements Serializable {
     /// Whether to enable shape drawings on the board for games and puzzles.
     @JsonKey(defaultValue: true) required bool enableShapeDrawings,
     @JsonKey(defaultValue: true) required bool magnifyDraggedPiece,
-    @JsonKey(defaultValue: DragTargetKind.circle, unknownEnumValue: DragTargetKind.circle)
+    @JsonKey(
+      defaultValue: DragTargetKind.circle,
+      unknownEnumValue: DragTargetKind.circle,
+    )
     required DragTargetKind dragTargetKind,
     @JsonKey(defaultValue: ShapeColor.green, unknownEnumValue: ShapeColor.green)
     required ShapeColor shapeColor,
     @JsonKey(defaultValue: false) required bool showBorder,
-    @JsonKey(defaultValue: kBoardDefaultBrightnessFilter) required double brightness,
+    @JsonKey(defaultValue: kBoardDefaultBrightnessFilter)
+    required double brightness,
     @JsonKey(defaultValue: kBoardDefaultHueFilter) required double hue,
   }) = _BoardPrefs;
 
@@ -211,7 +244,8 @@ sealed class BoardPrefs with _$BoardPrefs implements Serializable {
   );
 
   bool get hasColorAdjustments =>
-      brightness != kBoardDefaultBrightnessFilter || hue != kBoardDefaultHueFilter;
+      brightness != kBoardDefaultBrightnessFilter ||
+      hue != kBoardDefaultHueFilter;
 
   ChessboardSettings toBoardSettings(Variant variant) {
     return ChessboardSettings(
@@ -220,7 +254,10 @@ sealed class BoardPrefs with _$BoardPrefs implements Serializable {
       brightness: brightness,
       hue: hue,
       border: showBorder
-          ? BoardBorder(color: darken(boardTheme.colors.darkSquare, 0.2), width: 16.0)
+          ? BoardBorder(
+              color: darken(boardTheme.colors.darkSquare, 0.2),
+              width: 16.0,
+            )
           : null,
       showValidMoves: showLegalMoves,
       showLastMove: boardHighlights,
@@ -231,7 +268,10 @@ sealed class BoardPrefs with _$BoardPrefs implements Serializable {
       dragTargetKind: dragTargetKind,
       pieceShiftMethod: pieceShiftMethod,
       moveOnRelease: moveOnRelease,
-      drawShape: DrawShapeOptions(enable: enableShapeDrawings, newShapeColor: shapeColor.color),
+      drawShape: DrawShapeOptions(
+        enable: enableShapeDrawings,
+        newShapeColor: shapeColor.color,
+      ),
       enableDrops: variant == Variant.crazyhouse,
       canPromoteToKing: variant == Variant.antichess,
     );
@@ -375,7 +415,9 @@ enum BoardTheme {
           for (final c in const [1, 2, 3, 4, 5, 6])
             Container(
               width: 44,
-              color: c.isEven ? BoardTheme.ic.colors.darkSquare : BoardTheme.ic.colors.lightSquare,
+              color: c.isEven
+                  ? BoardTheme.ic.colors.darkSquare
+                  : BoardTheme.ic.colors.lightSquare,
             ),
         ],
       ),
@@ -396,9 +438,12 @@ enum MaterialDifferenceFormat {
   bool get visible => this != MaterialDifferenceFormat.hidden;
 
   String l10n(AppLocalizations l10n) => switch (this) {
-    MaterialDifferenceFormat.materialDifference => l10n.preferencesMaterialDifference,
-    MaterialDifferenceFormat.capturedPieces => l10n.mobileSettingsMaterialDifferenceCapturedPieces,
-    MaterialDifferenceFormat.hidden => l10n.puzzleHidden, // should be good to reuse this
+    MaterialDifferenceFormat.materialDifference =>
+      l10n.preferencesMaterialDifference,
+    MaterialDifferenceFormat.capturedPieces =>
+      l10n.mobileSettingsMaterialDifferenceCapturedPieces,
+    MaterialDifferenceFormat.hidden =>
+      l10n.puzzleHidden, // should be good to reuse this
   };
 }
 
@@ -435,8 +480,9 @@ enum CastlingMethod {
   };
 }
 
-String dragTargetKindLabel(AppLocalizations l10n, DragTargetKind kind) => switch (kind) {
-  DragTargetKind.circle => l10n.mobileSettingsDraggedTargetCircle,
-  DragTargetKind.square => l10n.mobileSettingsDraggedTargetSquare,
-  DragTargetKind.none => l10n.none,
-};
+String dragTargetKindLabel(AppLocalizations l10n, DragTargetKind kind) =>
+    switch (kind) {
+      DragTargetKind.circle => l10n.mobileSettingsDraggedTargetCircle,
+      DragTargetKind.square => l10n.mobileSettingsDraggedTargetSquare,
+      DragTargetKind.none => l10n.none,
+    };

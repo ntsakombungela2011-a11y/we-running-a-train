@@ -75,10 +75,9 @@ class _PgnGamesListScreenState extends State<PgnGamesListScreen> {
     final showSearchBar = widget.games.length > 5;
     final filteredIndices = _searchQuery.isEmpty
         ? List.generate(widget.games.length, (i) => i, growable: false)
-        : List.generate(
-            widget.games.length,
-            (i) => i,
-          ).where((i) => _matchesSearchQuery(_gameData[i], _searchQuery)).toList(growable: false);
+        : List.generate(widget.games.length, (i) => i)
+              .where((i) => _matchesSearchQuery(_gameData[i], _searchQuery))
+              .toList(growable: false);
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
@@ -87,7 +86,9 @@ class _PgnGamesListScreenState extends State<PgnGamesListScreen> {
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(56),
                 child: Padding(
-                  padding: Styles.horizontalBodyPadding.add(const EdgeInsets.only(bottom: 8)),
+                  padding: Styles.horizontalBodyPadding.add(
+                    const EdgeInsets.only(bottom: 8),
+                  ),
                   child: PlatformSearchBar(
                     controller: _searchController,
                     onChanged: (value) {
@@ -156,7 +157,9 @@ String _buildGameSubtitle(PgnLazyGame game) {
 
   return [
     if (event != null && event.isNotEmpty && event != '?')
-      (round != null && round.isNotEmpty && round != '?') ? '$event ($round)' : event,
+      (round != null && round.isNotEmpty && round != '?')
+          ? '$event ($round)'
+          : event,
     if (site != null && site.isNotEmpty && site != '?') site,
     if (date != null && date.isNotEmpty && date != '?') date,
   ].join(' • ');

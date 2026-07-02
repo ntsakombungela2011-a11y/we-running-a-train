@@ -8,7 +8,10 @@ import 'package:lichess_mobile/src/network/http.dart';
 
 /// A provider for [RelationRepository].
 final relationRepositoryProvider = Provider<RelationRepository>((ref) {
-  return RelationRepository(ref.watch(lichessClientProvider), ref.watch(aggregatorProvider));
+  return RelationRepository(
+    ref.watch(lichessClientProvider),
+    ref.watch(aggregatorProvider),
+  );
 }, name: 'RelationRepositoryProvider');
 
 class RelationRepository {

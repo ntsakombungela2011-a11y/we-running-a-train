@@ -12,13 +12,19 @@ part 'analysis_player.freezed.dart';
 sealed class AnalysisPlayer with _$AnalysisPlayer {
   const AnalysisPlayer._();
 
-  const factory AnalysisPlayer({required String name, String? title, int? rating}) =
-      _AnalysisPlayer;
+  const factory AnalysisPlayer({
+    required String name,
+    String? title,
+    int? rating,
+  }) = _AnalysisPlayer;
 
   /// Creates an AnalysisPlayer from PGN headers for the given side.
   ///
   /// Returns null if the player name is not available or is just a placeholder.
-  static AnalysisPlayer? fromPgnHeaders(IMap<String, String> pgnHeaders, Side side) {
+  static AnalysisPlayer? fromPgnHeaders(
+    IMap<String, String> pgnHeaders,
+    Side side,
+  ) {
     final nameKey = side == .white ? 'White' : 'Black';
     final titleKey = side == .white ? 'WhiteTitle' : 'BlackTitle';
     final eloKey = side == .white ? 'WhiteElo' : 'BlackElo';

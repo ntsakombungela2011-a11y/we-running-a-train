@@ -28,7 +28,8 @@ class OverTheBoardClock extends Notifier<OverTheBoardClockState> {
 
     _updateTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
       if (_stopwatch.isRunning) {
-        final newTime = state.timeLeft(state.activeClock!)! - _stopwatch.elapsed;
+        final newTime =
+            state.timeLeft(state.activeClock!)! - _stopwatch.elapsed;
 
         if (state.activeClock == Side.white) {
           state = state.copyWith(whiteTimeLeft: newTime);
@@ -44,10 +45,16 @@ class OverTheBoardClock extends Notifier<OverTheBoardClockState> {
       }
     });
 
-    return OverTheBoardClockState.fromTimeIncrement(OverTheBoardPrefs.defaults.timeIncrement);
+    return OverTheBoardClockState.fromTimeIncrement(
+      OverTheBoardPrefs.defaults.timeIncrement,
+    );
   }
 
-  void setupClock(TimeIncrement timeIncrement, {Duration? whiteTimeLeft, Duration? blackTimeLeft}) {
+  void setupClock(
+    TimeIncrement timeIncrement, {
+    Duration? whiteTimeLeft,
+    Duration? blackTimeLeft,
+  }) {
     _stopwatch.stop();
     _stopwatch.reset();
 
@@ -65,7 +72,9 @@ class OverTheBoardClock extends Notifier<OverTheBoardClockState> {
   void switchSide({required Side newSideToMove, required bool addIncrement}) {
     if (state.timeIncrement.isInfinite || state.flagSide != null) return;
 
-    final increment = Duration(seconds: addIncrement ? state.timeIncrement.increment : 0);
+    final increment = Duration(
+      seconds: addIncrement ? state.timeIncrement.increment : 0,
+    );
     if (newSideToMove == Side.black) {
       state = state.copyWith(
         whiteTimeLeft: state.whiteTimeLeft! + increment,
@@ -134,5 +143,6 @@ sealed class OverTheBoardClockState with _$OverTheBoardClockState {
 
   bool get active => activeClock != null || flagSide != null;
 
-  Duration? timeLeft(Side side) => side == Side.white ? whiteTimeLeft : blackTimeLeft;
+  Duration? timeLeft(Side side) =>
+      side == Side.white ? whiteTimeLeft : blackTimeLeft;
 }

@@ -110,7 +110,12 @@ class StormController extends Notifier<StormState> {
       }
 
       await Future<void>.delayed(moveDelay);
-      _addMove(state.expectedMove!, ComboState.increase, runStarted: true, userMove: false);
+      _addMove(
+        state.expectedMove!,
+        ComboState.increase,
+        runStarted: true,
+        userMove: false,
+      );
     } else {
       state = state.copyWith(errors: state.errors + 1);
       ref.read(soundServiceProvider).play(Sound.error);
@@ -136,7 +141,10 @@ class StormController extends Notifier<StormState> {
     final authUser = ref.read(authControllerProvider);
     if (authUser != null) {
       final res = await Result.capture(
-        ref.read(puzzleRepositoryProvider).postStormRun(stats).timeout(const Duration(seconds: 2)),
+        ref
+            .read(puzzleRepositoryProvider)
+            .postStormRun(stats)
+            .timeout(const Duration(seconds: 2)),
       );
 
       final newState = state.copyWith(stats: stats, mode: StormMode.ended);
@@ -184,7 +192,12 @@ class StormController extends Notifier<StormState> {
       ),
     );
     await Future<void>.delayed(moveDelay);
-    _addMove(state.expectedMove!, ComboState.noChange, runStarted: true, userMove: false);
+    _addMove(
+      state.expectedMove!,
+      ComboState.noChange,
+      runStarted: true,
+      userMove: false,
+    );
   }
 
   void _addMove(
@@ -214,16 +227,21 @@ class StormController extends Notifier<StormState> {
         best: math.max(state.combo.best, state.combo.current + 1),
       ),
     );
-    Future<void>.delayed(userMove ? Duration.zero : const Duration(milliseconds: 250), () {
-      if (!ref.mounted) return;
-      if (pos.board.pieceAt(move.to) != null) {
-        ref
-            .read(moveFeedbackServiceProvider)
-            .captureFeedback(Variant.standard, check: state.position.isCheck);
-      } else {
-        ref.read(moveFeedbackServiceProvider).moveFeedback(check: state.position.isCheck);
-      }
-    });
+    Future<void>.delayed(
+      userMove ? Duration.zero : const Duration(milliseconds: 250),
+      () {
+        if (!ref.mounted) return;
+        if (pos.board.pieceAt(move.to) != null) {
+          ref
+              .read(moveFeedbackServiceProvider)
+              .captureFeedback(Variant.standard, check: state.position.isCheck);
+        } else {
+          ref
+              .read(moveFeedbackServiceProvider)
+              .moveFeedback(check: state.position.isCheck);
+        }
+      },
+    );
   }
 
   StormRunStats _getStats() {
@@ -241,7 +259,10 @@ class StormController extends Notifier<StormState> {
       highest: wins.isNotEmpty
           ? wins
                 .map((e) => e.rating)
-                .reduce((maxRating, rating) => rating > maxRating ? rating : maxRating)
+                .reduce(
+                  (maxRating, rating) =>
+                      rating > maxRating ? rating : maxRating,
+                )
           : 0,
       history: state.history,
       slowPuzzleIds: state.history
@@ -320,7 +341,8 @@ sealed class StormState with _$StormState {
 
   Move? get expectedMove => Move.parse(puzzle.solution[moveIndex + 1]);
 
-  Move? get lastMove => moveIndex == -1 ? null : Move.parse(puzzle.solution[moveIndex]);
+  Move? get lastMove =>
+      moveIndex == -1 ? null : Move.parse(puzzle.solution[moveIndex]);
 
   bool get isOver => moveIndex >= puzzle.solution.length - 1;
 }
@@ -334,7 +356,8 @@ enum ComboState { increase, reset, noChange }
 sealed class StormCombo with _$StormCombo {
   const StormCombo._();
 
-  const factory StormCombo({required int current, required int best}) = _StormCombo;
+  const factory StormCombo({required int current, required int best}) =
+      _StormCombo;
 
   /// List representing the bonus awared at each level
   static const levelBonus = [3, 5, 6, 10];
@@ -355,7 +378,9 @@ sealed class StormCombo with _$StormCombo {
 
   /// Returns the level of the `current + 1` combo count
   int nextLevel() {
-    final lvl = levelsAndBonus.indexWhere((element) => element.level > current + 1);
+    final lvl = levelsAndBonus.indexWhere(
+      (element) => element.level > current + 1,
+    );
     return lvl >= 0 ? lvl - 1 : levelsAndBonus.length - 1;
   }
 
@@ -367,7 +392,8 @@ sealed class StormCombo with _$StormCombo {
     final lvl = getNext ? nextLevel() : currentLevel();
     final lastLevel = levelsAndBonus.last;
     if (lvl >= levelsAndBonus.length - 1) {
-      final range = lastLevel.level - levelsAndBonus[levelsAndBonus.length - 2].level;
+      final range =
+          lastLevel.level - levelsAndBonus[levelsAndBonus.length - 2].level;
       return (((currentCombo - lastLevel.level) / range) * 100) % 100;
     }
     final bounds = [levelsAndBonus[lvl].level, levelsAndBonus[lvl + 1].level];

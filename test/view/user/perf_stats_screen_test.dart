@@ -59,7 +59,9 @@ void main() {
       handle.dispose();
     }, variant: kPlatformVariant);
 
-    testWidgets('screen loads, required stats are shown', (WidgetTester tester) async {
+    testWidgets('screen loads, required stats are shown', (
+      WidgetTester tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: PerfStatsScreen(user: fakeUser, perf: testPerf),
@@ -95,28 +97,30 @@ void main() {
       }
     }, variant: kPlatformVariant);
 
-    testWidgets('a perf with zero games does not crash the stat columns', (
-      WidgetTester tester,
-    ) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: PerfStatsScreen(user: fakeUser, perf: testPerf),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith((ref) {
-            return LichessClient(zeroGamesClient, ref);
-          }),
-        },
-      );
+    testWidgets(
+      'a perf with zero games does not crash the stat columns',
+      (WidgetTester tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: PerfStatsScreen(user: fakeUser, perf: testPerf),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith((ref) {
+              return LichessClient(zeroGamesClient, ref);
+            }),
+          },
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      // wait for auth state and perf stats
-      await tester.pump(const Duration(milliseconds: 50));
+        // wait for auth state and perf stats
+        await tester.pump(const Duration(milliseconds: 50));
 
-      expect(tester.takeException(), isNull);
-      expect(find.byType(ErrorWidget), findsNothing);
-      expect(find.text('0%'), findsWidgets);
-    }, variant: kPlatformVariant);
+        expect(tester.takeException(), isNull);
+        expect(find.byType(ErrorWidget), findsNothing);
+        expect(find.text('0%'), findsWidgets);
+      },
+      variant: kPlatformVariant,
+    );
   });
 }
 

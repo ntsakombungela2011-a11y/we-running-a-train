@@ -33,7 +33,9 @@ class VariationsBar extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final crossAxisCount = (constraints.maxWidth / maxVarSize).floor().clamp(1, 8);
+        final crossAxisCount = (constraints.maxWidth / maxVarSize)
+            .floor()
+            .clamp(1, 8);
 
         final chunkedRows = <Widget>[];
         for (var i = 0; i < variations.length; i += crossAxisCount) {
@@ -46,7 +48,10 @@ class VariationsBar extends StatelessWidget {
                 final theme = Theme.of(context);
                 final borderColor = theme.dividerColor;
 
-                final annotation = showAnnotations && child.nags != null && child.nags!.isNotEmpty
+                final annotation =
+                    showAnnotations &&
+                        child.nags != null &&
+                        child.nags!.isNotEmpty
                     ? moveAnnotationChar(child.nags!)
                     : '';
 
@@ -67,7 +72,9 @@ class VariationsBar extends StatelessWidget {
                       child: InkWell(
                         onTap: () => onJump(currentPath + child.id),
                         child: Container(
-                          constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
+                          constraints: const BoxConstraints(
+                            minHeight: kMinInteractiveDimension,
+                          ),
                           alignment: .center,
                           padding: const EdgeInsets.symmetric(horizontal: 2.0),
                           child: FittedBox(

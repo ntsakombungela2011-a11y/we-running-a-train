@@ -17,11 +17,18 @@ import 'package:lichess_mobile/src/widgets/progression_widget.dart';
 
 final playersAndTournamentProvider = FutureProvider.autoDispose
     .family<
-      (IList<BroadcastPlayerWithOverallResult> players, BroadcastTournament tournament),
+      (
+        IList<BroadcastPlayerWithOverallResult> players,
+        BroadcastTournament tournament,
+      ),
       BroadcastTournamentId
     >((ref, tournamentId) async {
-      final players = await ref.watch(broadcastPlayersProvider(tournamentId).future);
-      final tournament = await ref.watch(broadcastTournamentProvider(tournamentId).future);
+      final players = await ref.watch(
+        broadcastPlayersProvider(tournamentId).future,
+      );
+      final tournament = await ref.watch(
+        broadcastTournamentProvider(tournamentId).future,
+      );
 
       return (players, tournament);
     });
@@ -36,7 +43,9 @@ class BroadcastPlayersTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (ref.watch(playersAndTournamentProvider(tournamentId))) {
       AsyncData(value: final data) => BroadcastPlayersList(data.$1, data.$2),
-      AsyncError(:final error) => Center(child: Text('Cannot load players data: $error')),
+      AsyncError(:final error) => Center(
+        child: Text('Cannot load players data: $error'),
+      ),
       _ => const Center(child: CircularProgressIndicator.adaptive()),
     };
   }
@@ -44,7 +53,8 @@ class BroadcastPlayersTab extends ConsumerWidget {
 
 enum _SortingTypes { elo, score }
 
-typedef _BroadcastPlayerPicker<T> = T? Function(BroadcastPlayerWithOverallResult player);
+typedef _BroadcastPlayerPicker<T> =
+    T? Function(BroadcastPlayerWithOverallResult player);
 
 const _kTableRowVerticalPadding = 12.0;
 const _kTableRowHorizontalPadding = 8.0;
@@ -52,7 +62,10 @@ const _kTableRowPadding = EdgeInsets.symmetric(
   horizontal: _kTableRowHorizontalPadding,
   vertical: _kTableRowVerticalPadding,
 );
-const _kHeaderTextStyle = TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis);
+const _kHeaderTextStyle = TextStyle(
+  fontWeight: FontWeight.bold,
+  overflow: TextOverflow.ellipsis,
+);
 
 class BroadcastPlayersList extends ConsumerStatefulWidget {
   const BroadcastPlayersList(this.players, this.tournament);
@@ -61,7 +74,8 @@ class BroadcastPlayersList extends ConsumerStatefulWidget {
   final BroadcastTournament tournament;
 
   @override
-  ConsumerState<BroadcastPlayersList> createState() => _BroadcastPlayersListState();
+  ConsumerState<BroadcastPlayersList> createState() =>
+      _BroadcastPlayersListState();
 }
 
 class _BroadcastPlayersListState extends ConsumerState<BroadcastPlayersList> {
@@ -100,25 +114,26 @@ class _BroadcastPlayersListState extends ConsumerState<BroadcastPlayersList> {
   /// Sort items by values from the [picker] in increasing order.
   ///
   /// Null values are smaller than any other value.
-  Comparator<BroadcastPlayerWithOverallResult> nullableCompare<T extends Comparable<T>>(
-    _BroadcastPlayerPicker<T> picker,
-  ) => (p1, p2) {
-    final field1 = picker(p1);
-    final field2 = picker(p2);
-    if (field1 == null && field2 == null) return 0;
-    if (field1 == null) return -1;
-    if (field2 == null) return 1;
+  Comparator<BroadcastPlayerWithOverallResult>
+  nullableCompare<T extends Comparable<T>>(_BroadcastPlayerPicker<T> picker) =>
+      (p1, p2) {
+        final field1 = picker(p1);
+        final field2 = picker(p2);
+        if (field1 == null && field2 == null) return 0;
+        if (field1 == null) return -1;
+        if (field2 == null) return 1;
 
-    return field1.compareTo(field2);
-  };
+        return field1.compareTo(field2);
+      };
 
   /// Sort items first by values from the [picker1] and solve ties by values from the [picker2].
   ///
   /// Null values are smaller than any other value.
-  Comparator<BroadcastPlayerWithOverallResult> bothCompare<
-    T extends Comparable<T>,
-    U extends Comparable<U>
-  >(_BroadcastPlayerPicker<T> picker1, _BroadcastPlayerPicker<U> picker2) => (p1, p2) {
+  Comparator<BroadcastPlayerWithOverallResult>
+  bothCompare<T extends Comparable<T>, U extends Comparable<U>>(
+    _BroadcastPlayerPicker<T> picker1,
+    _BroadcastPlayerPicker<U> picker2,
+  ) => (p1, p2) {
     final value = nullableCompare(picker1)(p1, p2);
 
     if (value == 0) {
@@ -142,16 +157,20 @@ class _BroadcastPlayersListState extends ConsumerState<BroadcastPlayersList> {
   void sort() {
     final compare = switch (currentSort) {
       _SortingTypes.elo =>
-        (BroadcastPlayerWithOverallResult p1, BroadcastPlayerWithOverallResult p2) =>
-            bothCompare((p) => p.player.rating, (p) => p.score)(p2, p1),
+        (
+          BroadcastPlayerWithOverallResult p1,
+          BroadcastPlayerWithOverallResult p2,
+        ) => bothCompare((p) => p.player.rating, (p) => p.score)(p2, p1),
       _SortingTypes.score =>
-        (BroadcastPlayerWithOverallResult p1, BroadcastPlayerWithOverallResult p2) =>
-            p1.rank != null && p2.rank != null
+        (
+          BroadcastPlayerWithOverallResult p1,
+          BroadcastPlayerWithOverallResult p2,
+        ) => p1.rank != null && p2.rank != null
             ? p1.rank!.compareTo(p2.rank!)
-            : bothCompare(withScores ? (p) => p.score : (p) => p.played, (p) => p.player.rating)(
-                p2,
-                p1,
-              ),
+            : bothCompare(
+                withScores ? (p) => p.score : (p) => p.played,
+                (p) => p.player.rating,
+              )(p2, p1),
     };
 
     setState(() {
@@ -161,14 +180,20 @@ class _BroadcastPlayersListState extends ConsumerState<BroadcastPlayersList> {
 
   @override
   Widget build(BuildContext context) {
-    final sortIcon = (reverse ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down);
+    final sortIcon = (reverse
+        ? Icons.keyboard_arrow_up
+        : Icons.keyboard_arrow_down);
     final withRank = players.any((p) => p.rank != null);
     final showSearchBar = players.length >= 15;
     final filteredPlayers = _searchQuery.isEmpty
         ? players
         : players
               .where(
-                (p) => p.player.name?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false,
+                (p) =>
+                    p.player.name?.toLowerCase().contains(
+                      _searchQuery.toLowerCase(),
+                    ) ??
+                    false,
               )
               .toIList();
 
@@ -211,7 +236,10 @@ class _BroadcastPlayersListState extends ConsumerState<BroadcastPlayersList> {
                           child: Text(
                             context.l10n.broadcastStandingsDisclaimer,
                             maxLines: 3,
-                            style: const TextStyle(fontSize: 13, overflow: .ellipsis),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              overflow: .ellipsis,
+                            ),
                           ),
                         ),
                       ],
@@ -223,18 +251,27 @@ class _BroadcastPlayersListState extends ConsumerState<BroadcastPlayersList> {
                     if (withRating)
                       Expanded(
                         child: _TableTitleCell(
-                          title: Text('${context.l10n.player} (Elo)', style: _kHeaderTextStyle),
+                          title: Text(
+                            '${context.l10n.player} (Elo)',
+                            style: _kHeaderTextStyle,
+                          ),
                           onTap: () => toggleSort(_SortingTypes.elo),
-                          sortIcon: (currentSort == _SortingTypes.elo) ? sortIcon : null,
+                          sortIcon: (currentSort == _SortingTypes.elo)
+                              ? sortIcon
+                              : null,
                         ),
                       ),
                     _TableTitleCell(
                       title: Text(
-                        withScores ? context.l10n.broadcastScore : context.l10n.games,
+                        withScores
+                            ? context.l10n.broadcastScore
+                            : context.l10n.games,
                         style: _kHeaderTextStyle,
                       ),
                       onTap: () => toggleSort(_SortingTypes.score),
-                      sortIcon: (currentSort == _SortingTypes.score) ? sortIcon : null,
+                      sortIcon: (currentSort == _SortingTypes.score)
+                          ? sortIcon
+                          : null,
                     ),
                   ],
                 ),
@@ -264,7 +301,11 @@ class _BroadcastPlayersListState extends ConsumerState<BroadcastPlayersList> {
 }
 
 class _TableTitleCell extends StatelessWidget {
-  const _TableTitleCell({required this.title, required this.onTap, this.sortIcon});
+  const _TableTitleCell({
+    required this.title,
+    required this.onTap,
+    this.sortIcon,
+  });
 
   final Widget title;
   final void Function() onTap;
@@ -318,7 +359,8 @@ class BroadcastPlayerRow extends StatelessWidget {
     final tieBreaks = playerWithOverallResult.tieBreaks;
     if (tieBreaks == null || tieBreaks.isEmpty) return;
 
-    final BroadcastPlayerWithOverallResult(:player, :score, :played) = playerWithOverallResult;
+    final BroadcastPlayerWithOverallResult(:player, :score, :played) =
+        playerWithOverallResult;
 
     showModalBottomSheet<void>(
       context: context,
@@ -351,7 +393,10 @@ class BroadcastPlayerRow extends StatelessWidget {
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text('Tie-breaking', style: Theme.of(context).textTheme.titleSmall),
+              child: Text(
+                'Tie-breaking',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
             ...tieBreaks.map(
               (tieBreak) => ListTile(
@@ -377,26 +422,44 @@ class BroadcastPlayerRow extends StatelessWidget {
       :tieBreaks,
     ) = playerWithOverallResult;
     final BroadcastPlayer(:federation, :rating) = player;
-    final pic = player.fideId != null ? tournament.photos?.get(player.fideId!) : null;
+    final pic = player.fideId != null
+        ? tournament.photos?.get(player.fideId!)
+        : null;
     final hasTieBreaks = tieBreaks != null && tieBreaks.isNotEmpty;
 
     return ListTile(
-      tileColor: index.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
+      tileColor: index.isEven
+          ? context.lichessTheme.rowEven
+          : context.lichessTheme.rowOdd,
       onTap: () {
         if (player.id != null) {
-          Navigator.of(
-            context,
-          ).push(BroadcastPlayerResultsScreen.buildRoute(tournament.data.id, player, player.id!));
+          Navigator.of(context).push(
+            BroadcastPlayerResultsScreen.buildRoute(
+              tournament.data.id,
+              player,
+              player.id!,
+            ),
+          );
         }
       },
-      onLongPress: hasTieBreaks ? () => _showTieBreaksBottomSheet(context) : null,
+      onLongPress: hasTieBreaks
+          ? () => _showTieBreaksBottomSheet(context)
+          : null,
       leading: ClipRRect(
         borderRadius: Styles.thumbnailBorderRadius,
         child: pic != null
             ? HttpNetworkImageWidget(pic.smallUrl, width: 40, height: 40)
             : player.isBot
-            ? Image.asset('assets/images/anon-engine.webp', width: 40, height: 40)
-            : Image.asset('assets/images/anon-face.webp', width: 40, height: 40),
+            ? Image.asset(
+                'assets/images/anon-engine.webp',
+                width: 40,
+                height: 40,
+              )
+            : Image.asset(
+                'assets/images/anon-face.webp',
+                width: 40,
+                height: 40,
+              ),
       ),
       title: Row(
         mainAxisSize: .min,
@@ -412,7 +475,11 @@ class BroadcastPlayerRow extends StatelessWidget {
             const SizedBox(width: 5),
           ],
           Expanded(
-            child: BroadcastPlayerWidget(player: player, showRating: false, showFederation: false),
+            child: BroadcastPlayerWidget(
+              player: player,
+              showRating: false,
+              showFederation: false,
+            ),
           ),
         ],
       ),
@@ -457,7 +524,9 @@ class BroadcastPlayerRow extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: score != null
                     ? Text(
-                        score.toStringAsFixed((score == score.roundToDouble()) ? 0 : 1),
+                        score.toStringAsFixed(
+                          (score == score.roundToDouble()) ? 0 : 1,
+                        ),
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

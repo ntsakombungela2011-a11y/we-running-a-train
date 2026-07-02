@@ -21,10 +21,12 @@ class AccountPreferencesScreen extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<AccountPreferencesScreen> createState() => _AccountPreferencesScreenState();
+  ConsumerState<AccountPreferencesScreen> createState() =>
+      _AccountPreferencesScreenState();
 }
 
-class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScreen>
+class _AccountPreferencesScreenState
+    extends ConsumerState<AccountPreferencesScreen>
     with WidgetsBindingObserver {
   bool isLoading = false;
   bool _pendingKidModeRefresh = false;
@@ -124,14 +126,18 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
                               _setPref(
                                 () => ref
                                     .read(accountPreferencesProvider.notifier)
-                                    .setPieceNotation(value ?? data.pieceNotation),
+                                    .setPieceNotation(
+                                      value ?? data.pieceNotation,
+                                    ),
                               );
                             },
                     );
                   },
                 ),
                 SettingsListTile(
-                  settingsLabel: Text(context.l10n.preferencesShowPlayerRatings),
+                  settingsLabel: Text(
+                    context.l10n.preferencesShowPlayerRatings,
+                  ),
                   settingsValue: data.showRatings.label(context.l10n),
                   onTap: () {
                     showChoicePicker(
@@ -155,11 +161,15 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
               ],
             ),
             ListSection(
-              header: SettingsSectionTitle(context.l10n.preferencesGameBehavior),
+              header: SettingsSectionTitle(
+                context.l10n.preferencesGameBehavior,
+              ),
               hasLeading: false,
               children: [
                 SettingsListTile(
-                  settingsLabel: Text(context.l10n.preferencesTakebacksWithOpponentApproval),
+                  settingsLabel: Text(
+                    context.l10n.preferencesTakebacksWithOpponentApproval,
+                  ),
                   settingsValue: data.takeback.label(context.l10n),
                   onTap: () {
                     showChoicePicker(
@@ -180,7 +190,9 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
                   },
                 ),
                 SettingsListTile(
-                  settingsLabel: Text(context.l10n.preferencesPromoteToQueenAutomatically),
+                  settingsLabel: Text(
+                    context.l10n.preferencesPromoteToQueenAutomatically,
+                  ),
                   settingsValue: data.autoQueen.label(context.l10n),
                   onTap: () {
                     showChoicePicker(
@@ -202,7 +214,9 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
                 ),
                 SettingsListTile(
                   settingsLabel: Text(
-                    context.l10n.preferencesClaimDrawOnThreefoldRepetitionAutomatically,
+                    context
+                        .l10n
+                        .preferencesClaimDrawOnThreefoldRepetitionAutomatically,
                   ),
                   settingsValue: data.autoThreefold.label(context.l10n),
                   onTap: () {
@@ -217,7 +231,9 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
                               _setPref(
                                 () => ref
                                     .read(accountPreferencesProvider.notifier)
-                                    .setAutoThreefold(value ?? data.autoThreefold),
+                                    .setAutoThreefold(
+                                      value ?? data.autoThreefold,
+                                    ),
                               );
                             },
                     );
@@ -242,7 +258,9 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
                       }
                     });
                   },
-                  explanation: context.l10n.preferencesExplainCanThenBeTemporarilyDisabled,
+                  explanation: context
+                      .l10n
+                      .preferencesExplainCanThenBeTemporarilyDisabled,
                 ),
               ],
             ),
@@ -272,7 +290,9 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
                   },
                 ),
                 SwitchSettingTile(
-                  title: Text(context.l10n.preferencesSoundWhenTimeGetsCritical),
+                  title: Text(
+                    context.l10n.preferencesSoundWhenTimeGetsCritical,
+                  ),
                   value: data.clockSound.value,
                   onChanged: isLoading
                       ? null
@@ -385,7 +405,11 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
               children: [
                 ListTile(
                   leading: const Icon(Symbols.sentiment_satisfied),
-                  title: Text(kidMode ? context.l10n.disableKidMode : context.l10n.enableKidMode),
+                  title: Text(
+                    kidMode
+                        ? context.l10n.disableKidMode
+                        : context.l10n.enableKidMode,
+                  ),
                   trailing: const _OpenInNewIcon(),
                   onTap: () {
                     _pendingKidModeRefresh = true;
@@ -445,7 +469,9 @@ class _AccountPreferencesScreenState extends ConsumerState<AccountPreferencesScr
       },
       loading: () => const Center(child: CircularProgressIndicator.adaptive()),
       error: (err, _) {
-        return FullScreenRetryRequest(onRetry: () => ref.invalidate(accountPreferencesProvider));
+        return FullScreenRetryRequest(
+          onRetry: () => ref.invalidate(accountPreferencesProvider),
+        );
       },
     );
 

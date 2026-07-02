@@ -28,7 +28,14 @@ class UserListTile extends StatelessWidget {
   }
 
   factory UserListTile.fromLightUser(LightUser user, {VoidCallback? onTap}) {
-    return UserListTile._(user.name, user.title, user.patronColor, user.flair, onTap, null);
+    return UserListTile._(
+      user.name,
+      user.title,
+      user.patronColor,
+      user.flair,
+      onTap,
+      null,
+    );
   }
 
   final String? title;
@@ -67,14 +74,18 @@ class _UserRating extends StatelessWidget {
     List<Perf> userPerfs = Perf.values
         .where((element) {
           final p = perfs[element];
-          return p != null && p.numberOfGamesOrRuns > 0 && p.ratingDeviation < kClueLessDeviation;
+          return p != null &&
+              p.numberOfGamesOrRuns > 0 &&
+              p.ratingDeviation < kClueLessDeviation;
         })
         .toList(growable: false);
 
     if (userPerfs.isEmpty) return const SizedBox.shrink();
 
     userPerfs.sort(
-      (p1, p2) => perfs[p1]!.numberOfGamesOrRuns.compareTo(perfs[p2]!.numberOfGamesOrRuns),
+      (p1, p2) => perfs[p1]!.numberOfGamesOrRuns.compareTo(
+        perfs[p2]!.numberOfGamesOrRuns,
+      ),
     );
     userPerfs = userPerfs.reversed.toList();
 

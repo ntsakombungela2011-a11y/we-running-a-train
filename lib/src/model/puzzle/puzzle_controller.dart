@@ -40,8 +40,9 @@ class PuzzleController extends Notifier<PuzzleState> {
   Timer? _viewSolutionTimer;
   IList<PuzzleId>? _replayRemaining;
 
-  Future<PuzzleService> get _service =>
-      ref.read(puzzleServiceFactoryProvider)(queueLength: kPuzzleLocalQueueLength);
+  Future<PuzzleService> get _service => ref.read(puzzleServiceFactoryProvider)(
+    queueLength: kPuzzleLocalQueueLength,
+  );
 
   @override
   PuzzleState build() {
@@ -96,7 +97,9 @@ class PuzzleController extends Notifier<PuzzleState> {
       initialPath: initialPath,
       currentPath: UciPath.empty,
       node: _gameTree.view,
-      pov: _gameTree.nodeAt(initialPath).position.ply.isEven ? Side.white : Side.black,
+      pov: _gameTree.nodeAt(initialPath).position.ply.isEven
+          ? Side.white
+          : Side.black,
       hintShown: false,
       resultSent: false,
       isChangingDifficulty: false,
@@ -110,14 +113,18 @@ class PuzzleController extends Notifier<PuzzleState> {
     if (state.mode == PuzzleMode.play) {
       state = state.copyWith(hintSquare: null);
       final nodeList = _gameTree.branchesOn(state.currentPath).toList();
-      final movesToTest = nodeList.sublist(state.initialPath.size).map((e) => e.sanMove);
+      final movesToTest = nodeList
+          .sublist(state.initialPath.size)
+          .map((e) => e.sanMove);
 
       final isGoodMove = state.puzzle.testSolution(movesToTest);
 
       if (isGoodMove) {
         state = state.copyWith(feedback: PuzzleFeedback.good);
 
-        final nextUci = state.puzzle.puzzle.solution.getOrNull(movesToTest.length);
+        final nextUci = state.puzzle.puzzle.solution.getOrNull(
+          movesToTest.length,
+        );
         // checkmate is always a win
         if (movesToTest.last.isCheckmate) {
           _completePuzzle();
@@ -126,7 +133,10 @@ class PuzzleController extends Notifier<PuzzleState> {
         else if (nextUci != null) {
           final correctPath = state.currentPath;
           await Future<void>.delayed(const Duration(milliseconds: 500));
-          final (nextPath, _) = _gameTree.addMoveAt(correctPath, Move.parse(nextUci)!);
+          final (nextPath, _) = _gameTree.addMoveAt(
+            correctPath,
+            Move.parse(nextUci)!,
+          );
           if (nextPath != null) {
             _setPath(nextPath, isNavigating: true);
           }
@@ -163,7 +173,10 @@ class PuzzleController extends Notifier<PuzzleState> {
 
     _mergeSolution();
 
-    state = state.copyWith(root: _gameTree.view, node: _gameTree.branchAt(state.currentPath).view);
+    state = state.copyWith(
+      root: _gameTree.view,
+      node: _gameTree.branchAt(state.currentPath).view,
+    );
 
     _onFailOrWin(PuzzleResult.lose);
 
@@ -180,14 +193,18 @@ class PuzzleController extends Notifier<PuzzleState> {
 
   void toggleHint() {
     if (state.hintSquare == null && state._nextSolutionMove != null) {
-      state = state.copyWith(hintShown: true, hintSquare: state._nextSolutionMove!.from);
+      state = state.copyWith(
+        hintShown: true,
+        hintSquare: state._nextSolutionMove!.from,
+      );
     } else {
       state = state.copyWith(hintSquare: null);
     }
   }
 
   void skipMove() {
-    if (initialContext.isPuzzleStreak == true && state._nextSolutionMove != null) {
+    if (initialContext.isPuzzleStreak == true &&
+        state._nextSolutionMove != null) {
       onUserMove(state._nextSolutionMove!);
     }
   }
@@ -195,7 +212,9 @@ class PuzzleController extends Notifier<PuzzleState> {
   Future<PuzzleContext?> changeDifficulty(PuzzleDifficulty difficulty) async {
     state = state.copyWith(isChangingDifficulty: true);
 
-    await ref.read(puzzlePreferencesProvider.notifier).setDifficulty(difficulty);
+    await ref
+        .read(puzzlePreferencesProvider.notifier)
+        .setDifficulty(difficulty);
 
     final nextPuzzle = (await _service).resetBatch(
       userId: initialContext.userId,
@@ -229,7 +248,10 @@ class PuzzleController extends Notifier<PuzzleState> {
 
   void _goToNextNode({bool isNavigating = false}) {
     if (state.node.children.isEmpty) return;
-    _setPath(state.currentPath + state.node.children.first.id, isNavigating: isNavigating);
+    _setPath(
+      state.currentPath + state.node.children.first.id,
+      isNavigating: isNavigating,
+    );
   }
 
   void _goToPreviousNode({bool isNavigating = false}) {
@@ -291,8 +313,13 @@ class PuzzleController extends Notifier<PuzzleState> {
         next = await _nextReplayPuzzle();
       } else {
         final service = await _service;
-        next = currentPuzzle.id == initialContext.puzzle.puzzle.id && initialContext.casual == true
-            ? await service.nextPuzzle(userId: initialContext.userId, angle: initialContext.angle)
+        next =
+            currentPuzzle.id == initialContext.puzzle.puzzle.id &&
+                initialContext.casual == true
+            ? await service.nextPuzzle(
+                userId: initialContext.userId,
+                angle: initialContext.angle,
+              )
             : await service.solve(
                 userId: initialContext.userId,
                 angle: initialContext.angle,
@@ -332,7 +359,11 @@ class PuzzleController extends Notifier<PuzzleState> {
     }
   }
 
-  void _setPath(UciPath path, {bool isNavigating = false, bool firstMove = false}) {
+  void _setPath(
+    UciPath path, {
+    bool isNavigating = false,
+    bool firstMove = false,
+  }) {
     final newNode = _gameTree.branchAt(path).view;
     final sanMove = newNode.sanMove;
     if (!isNavigating) {
@@ -340,7 +371,9 @@ class PuzzleController extends Notifier<PuzzleState> {
       if (isForward) {
         final isCheck = sanMove.isCheck;
         if (sanMove.isCapture) {
-          ref.read(moveFeedbackServiceProvider).captureFeedback(Variant.standard, check: isCheck);
+          ref
+              .read(moveFeedbackServiceProvider)
+              .captureFeedback(Variant.standard, check: isCheck);
         } else {
           ref.read(moveFeedbackServiceProvider).moveFeedback(check: isCheck);
         }
@@ -367,7 +400,10 @@ class PuzzleController extends Notifier<PuzzleState> {
   String makePgn() {
     final initPosition = _gameTree.nodeAt(state.initialPath).position;
     var currentPosition = initPosition;
-    final pgnMoves = state.puzzle.puzzle.solution.fold<List<String>>([], (List<String> acc, move) {
+    final pgnMoves = state.puzzle.puzzle.solution.fold<List<String>>([], (
+      List<String> acc,
+      move,
+    ) {
       final moveObj = Move.parse(move);
       if (moveObj != null) {
         final String san;
@@ -403,7 +439,9 @@ class PuzzleController extends Notifier<PuzzleState> {
         final (newPos, newSan) = pos.makeSan(normalizedMove);
         return (
           newPos,
-          nodes.add(Branch(position: newPos, sanMove: SanMove(newSan, normalizedMove))),
+          nodes.add(
+            Branch(position: newPos, sanMove: SanMove(newSan, normalizedMove)),
+          ),
         );
       },
     );
@@ -451,7 +489,9 @@ sealed class PuzzleState with _$PuzzleState {
   bool get canGoBack => currentPath.size > initialPath.penultimate.size;
 
   NormalMove? get _nextSolutionMove {
-    final uci = puzzle.puzzle.solution.getOrNull(currentPath.size - initialPath.size);
+    final uci = puzzle.puzzle.solution.getOrNull(
+      currentPath.size - initialPath.size,
+    );
     return uci == null ? null : NormalMove.fromUci(uci);
   }
 

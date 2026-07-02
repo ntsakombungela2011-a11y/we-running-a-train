@@ -4,11 +4,12 @@ import 'package:lichess_mobile/src/model/lobby/correspondence_seek.dart';
 import 'package:lichess_mobile/src/model/lobby/game_seek.dart';
 import 'package:lichess_mobile/src/network/http.dart';
 
-final correspondenceSeeksProvider = FutureProvider.autoDispose<IList<CorrespondenceSeek>>((
-  Ref ref,
-) {
-  return ref.withClient((client) => LobbyRepository(client).getCorrespondenceSeeks());
-}, name: 'CorrespondenceSeeksProvider');
+final correspondenceSeeksProvider =
+    FutureProvider.autoDispose<IList<CorrespondenceSeek>>((Ref ref) {
+      return ref.withClient(
+        (client) => LobbyRepository(client).getCorrespondenceSeeks(),
+      );
+    }, name: 'CorrespondenceSeeksProvider');
 
 class LobbyRepository {
   LobbyRepository(this.client);

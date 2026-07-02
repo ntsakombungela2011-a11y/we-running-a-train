@@ -11,10 +11,11 @@ import 'package:lichess_mobile/src/model/user/user.dart';
 part 'challenge_preferences.freezed.dart';
 part 'challenge_preferences.g.dart';
 
-final challengePreferencesProvider = NotifierProvider<ChallengePreferences, ChallengePrefs>(
-  ChallengePreferences.new,
-  name: 'ChallengePreferencesProvider',
-);
+final challengePreferencesProvider =
+    NotifierProvider<ChallengePreferences, ChallengePrefs>(
+      ChallengePreferences.new,
+      name: 'ChallengePreferencesProvider',
+    );
 
 class ChallengePreferences extends Notifier<ChallengePrefs>
     with SessionPreferencesStorage<ChallengePrefs> {
@@ -26,7 +27,8 @@ class ChallengePreferences extends Notifier<ChallengePrefs>
   ChallengePrefs defaults({LightUser? user}) => ChallengePrefs.defaults;
 
   @override
-  ChallengePrefs fromJson(Map<String, dynamic> json) => ChallengePrefs.fromJson(json);
+  ChallengePrefs fromJson(Map<String, dynamic> json) =>
+      ChallengePrefs.fromJson(json);
 
   @override
   ChallengePrefs build() {
@@ -81,22 +83,31 @@ sealed class ChallengePrefs with _$ChallengePrefs implements Serializable {
   );
 
   Speed get speed => timeControl == ChallengeTimeControlType.clock
-      ? Speed.fromTimeIncrement(TimeIncrement(clock.time.inSeconds, clock.increment.inSeconds))
+      ? Speed.fromTimeIncrement(
+          TimeIncrement(clock.time.inSeconds, clock.increment.inSeconds),
+        )
       : Speed.correspondence;
 
   // for correspondence game only standard can be rated
   // for real time fromPosition cannot be rated
   bool get isRatedAllowed => timeControl == ChallengeTimeControlType.clock
       ? variant != Variant.fromPosition
-      : timeControl == ChallengeTimeControlType.correspondence && variant == Variant.standard;
+      : timeControl == ChallengeTimeControlType.correspondence &&
+            variant == Variant.standard;
 
-  ChallengeRequest makeRequest(User? challengingUser, LightUser? destUser, [String? initialFen]) {
+  ChallengeRequest makeRequest(
+    User? challengingUser,
+    LightUser? destUser, [
+    String? initialFen,
+  ]) {
     return ChallengeRequest(
       destUser: destUser,
       variant: variant,
       timeControl: timeControl,
       clock: timeControl == ChallengeTimeControlType.clock ? clock : null,
-      days: timeControl == ChallengeTimeControlType.correspondence ? days : null,
+      days: timeControl == ChallengeTimeControlType.correspondence
+          ? days
+          : null,
       // Anonymous users cannot create rated challenges.
       rated: challengingUser != null && isRatedAllowed && rated,
       sideChoice: sideChoice,

@@ -17,7 +17,11 @@ Future<void> showBroadcastShareMenu(
       onPressed: () {
         launchShareDialog(
           context,
-          ShareParams(uri: lichessUri('/broadcast/${broadcastData.slug}/${broadcastData.id}')),
+          ShareParams(
+            uri: lichessUri(
+              '/broadcast/${broadcastData.slug}/${broadcastData.id}',
+            ),
+          ),
         );
       },
     ),
@@ -27,7 +31,9 @@ Future<void> showBroadcastShareMenu(
         launchShareDialog(
           context,
           ShareParams(
-            uri: lichessUri('/broadcast/${broadcastData.slug}/${round.slug}/${round.id}'),
+            uri: lichessUri(
+              '/broadcast/${broadcastData.slug}/${round.slug}/${round.id}',
+            ),
           ),
         );
       },
@@ -38,7 +44,9 @@ Future<void> showBroadcastShareMenu(
         launchShareDialog(
           context,
           ShareParams(
-            uri: lichessUri('/broadcast/${broadcastData.slug}/${round.slug}/${round.id}.pgn'),
+            uri: lichessUri(
+              '/broadcast/${broadcastData.slug}/${round.slug}/${round.id}.pgn',
+            ),
           ),
         );
       },

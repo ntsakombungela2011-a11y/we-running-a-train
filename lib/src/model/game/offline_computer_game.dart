@@ -16,7 +16,8 @@ part 'offline_computer_game.g.dart';
 
 /// An offline game played against the local Stockfish engine.
 @Freezed(fromJson: true, toJson: true)
-abstract class OfflineComputerGame with BaseGame, _$OfflineComputerGame, LocalGame, IndexableSteps {
+abstract class OfflineComputerGame
+    with BaseGame, _$OfflineComputerGame, LocalGame, IndexableSteps {
   const OfflineComputerGame._();
 
   @Assert('steps.isNotEmpty')
@@ -25,7 +26,8 @@ abstract class OfflineComputerGame with BaseGame, _$OfflineComputerGame, LocalGa
     required GameMeta meta,
     required String? initialFen,
     required GameStatus status,
-    @JsonKey(fromJson: stepsFromJson, toJson: stepsToJson) required IList<GameStep> steps,
+    @JsonKey(fromJson: stepsFromJson, toJson: stepsToJson)
+    required IList<GameStep> steps,
 
     /// The side the human player is playing as.
     required Side playerSide,

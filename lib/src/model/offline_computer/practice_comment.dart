@@ -54,7 +54,8 @@ enum MoveVerdict {
     if (!hasBetterMove) return .goodMove;
     if (shift < kGoodMoveThreshold) return .goodMove;
     // If the position was winning and is still winning, the move is suboptimal but not a real mistake.
-    if (winningChancesBefore >= kWinningThreshold && winningChancesAfter >= kWinningThreshold) {
+    if (winningChancesBefore >= kWinningThreshold &&
+        winningChancesAfter >= kWinningThreshold) {
       return .notBest;
     }
     if (shift < kInaccuracyThreshold) return .inaccuracy;
@@ -77,7 +78,8 @@ enum MoveVerdict {
 sealed class PracticeComment with _$PracticeComment {
   const PracticeComment._();
 
-  factory PracticeComment.fromJson(Map<String, dynamic> json) => _$PracticeCommentFromJson(json);
+  factory PracticeComment.fromJson(Map<String, dynamic> json) =>
+      _$PracticeCommentFromJson(json);
 
   const factory PracticeComment({
     /// The verdict for the move.

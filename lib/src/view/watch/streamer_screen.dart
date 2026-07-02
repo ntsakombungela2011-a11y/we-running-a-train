@@ -26,8 +26,12 @@ class StreamerScreen extends StatelessWidget {
     return PlatformScaffold(
       appBar: PlatformAppBar(title: Text(context.l10n.mobileLiveStreamers)),
       body: ListView.separated(
-        separatorBuilder: (context, index) => Theme.of(context).platform == TargetPlatform.iOS
-            ? const PlatformDivider(height: 1, indent: 16 + _kThumbnailSize + 10)
+        separatorBuilder: (context, index) =>
+            Theme.of(context).platform == TargetPlatform.iOS
+            ? const PlatformDivider(
+                height: 1,
+                indent: 16 + _kThumbnailSize + 10,
+              )
             : const SizedBox.shrink(),
         itemCount: streamers.length,
         itemBuilder: (context, index) => StreamerListTile(
@@ -62,8 +66,13 @@ class StreamerListTile extends StatelessWidget {
     final locale = Locale(codes[0], codes.length > 1 ? codes[1] : null);
 
     Future<void> onTap() async {
-      final url = streamer.platform == 'twitch' ? streamer.twitch : streamer.youTube;
-      if (!await launchUrl(Uri.parse(url!), mode: LaunchMode.externalApplication)) {
+      final url = streamer.platform == 'twitch'
+          ? streamer.twitch
+          : streamer.youTube;
+      if (!await launchUrl(
+        Uri.parse(url!),
+        mode: LaunchMode.externalApplication,
+      )) {
         debugPrint('ERROR: [StreamerWidget] Could not launch $url');
       }
     }
@@ -92,11 +101,16 @@ class StreamerListTile extends StatelessWidget {
         if (streamer.title != null) ...[
           Text(
             streamer.title!,
-            style: TextStyle(color: context.lichessColors.brag, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: context.lichessColors.brag,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(width: 5),
         ],
-        Flexible(child: Text(streamer.username, overflow: TextOverflow.ellipsis)),
+        Flexible(
+          child: Text(streamer.username, overflow: TextOverflow.ellipsis),
+        ),
       ],
     );
 
@@ -125,7 +139,10 @@ class StreamerListTile extends StatelessWidget {
         : InkWell(
             onTap: onTap,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -136,7 +153,10 @@ class StreamerListTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         DefaultTextStyle.merge(
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                           child: title,
                         ),
                         subtitle,

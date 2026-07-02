@@ -8,19 +8,17 @@ class PalettePickerScreen extends ConsumerWidget {
   const PalettePickerScreen({super.key});
 
   static Route<void> buildRoute() {
-    return MaterialPageRoute(
-      builder: (context) => const PalettePickerScreen(),
-    );
+    return MaterialPageRoute(builder: (context) => const PalettePickerScreen());
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedPaletteId = ref.watch(generalPreferencesProvider).selectedPaletteId;
+    final selectedPaletteId = ref
+        .watch(generalPreferencesProvider)
+        .selectedPaletteId;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Themes'),
-      ),
+      appBar: AppBar(title: const Text('Themes')),
       body: ListView(
         children: [
           for (final category in PaletteCategory.values)
@@ -51,16 +49,22 @@ class _CategorySection extends StatelessWidget {
     return ListSection(
       header: Text(category.label),
       children: palettes.map((palette) {
-        return Consumer(builder: (context, ref, child) {
-          return ListTile(
-            title: Text(palette.name),
-            trailing: palette.id == selectedPaletteId ? const Icon(Icons.check) : null,
-            leading: _PalettePreview(palette: palette),
-            onTap: () {
-              ref.read(generalPreferencesProvider.notifier).setPalette(palette.id);
-            },
-          );
-        });
+        return Consumer(
+          builder: (context, ref, child) {
+            return ListTile(
+              title: Text(palette.name),
+              trailing: palette.id == selectedPaletteId
+                  ? const Icon(Icons.check)
+                  : null,
+              leading: _PalettePreview(palette: palette),
+              onTap: () {
+                ref
+                    .read(generalPreferencesProvider.notifier)
+                    .setPalette(palette.id);
+              },
+            );
+          },
+        );
       }).toList(),
     );
   }
@@ -84,9 +88,7 @@ class _PalettePreview extends StatelessWidget {
         child: Row(
           children: [
             for (final color in palette.colors)
-              Expanded(
-                child: Container(color: color),
-              ),
+              Expanded(child: Container(color: color)),
           ],
         ),
       ),

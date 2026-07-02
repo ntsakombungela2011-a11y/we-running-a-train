@@ -41,8 +41,13 @@ Future<String> get _databasePath async {
 
 Future<int?> _getDatabaseVersion(Database db) async {
   try {
-    final versionStr = (await db.rawQuery('SELECT sqlite_version()')).first.values.first.toString();
-    final versionCells = versionStr.split('.').map((i) => int.parse(i)).toList();
+    final versionStr = (await db.rawQuery(
+      'SELECT sqlite_version()',
+    )).first.values.first.toString();
+    final versionCells = versionStr
+        .split('.')
+        .map((i) => int.parse(i))
+        .toList();
     return versionCells[0] * 100000 + versionCells[1] * 1000 + versionCells[2];
   } catch (e) {
     _logger.warning('Error occurred while fetching SQLite version: $e');
@@ -231,14 +236,22 @@ void _createAppLogTableV5(Batch batch) {
     ''');
 }
 
-Future<void> _deleteOldEntries(DatabaseExecutor db, String table, Duration ttl) async {
+Future<void> _deleteOldEntries(
+  DatabaseExecutor db,
+  String table,
+  Duration ttl,
+) async {
   final date = DateTime.now().subtract(ttl);
 
   if (!await _doesTableExist(db, table)) {
     return;
   }
 
-  await db.delete(table, where: 'lastModified < ?', whereArgs: [date.toIso8601String()]);
+  await db.delete(
+    table,
+    where: 'lastModified < ?',
+    whereArgs: [date.toIso8601String()],
+  );
 }
 
 Future<bool> _doesTableExist(DatabaseExecutor db, String table) async {

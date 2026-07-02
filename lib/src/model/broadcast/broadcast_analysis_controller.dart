@@ -36,11 +36,18 @@ part 'broadcast_analysis_controller.freezed.dart';
 
 final _logger = Logger('BroadcastAnalysisController');
 
-typedef BroadcastAnalysisControllerParams = ({BroadcastRoundId roundId, BroadcastGameId gameId});
+typedef BroadcastAnalysisControllerParams = ({
+  BroadcastRoundId roundId,
+  BroadcastGameId gameId,
+});
 
 /// A provider for [BroadcastAnalysisController].
 final broadcastAnalysisControllerProvider = AsyncNotifierProvider.autoDispose
-    .family<BroadcastAnalysisController, BroadcastAnalysisState, BroadcastAnalysisControllerParams>(
+    .family<
+      BroadcastAnalysisController,
+      BroadcastAnalysisState,
+      BroadcastAnalysisControllerParams
+    >(
       BroadcastAnalysisController.new,
       name: 'BroadcastAnalysisControllerProvider',
     );
@@ -174,7 +181,9 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
       final wasOnLivePath = curState.broadcastLivePath == curState.currentPath;
       final game = PgnGame.parsePgn(pgnWithAnalysisSummary.pgn);
       final pgnHeaders = IMap(game.headers);
-      final rootComments = IList(game.comments.map((c) => PgnComment.fromPgn(c)));
+      final rootComments = IList(
+        game.comments.map((c) => PgnComment.fromPgn(c)),
+      );
 
       final newRoot = Root.fromPgnGame(game, isLichessAnalysis: true);
 
@@ -187,7 +196,9 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
 
       _root = newRoot;
 
-      final newCurrentPath = wasOnLivePath ? broadcastPath : curState.currentPath;
+      final newCurrentPath = wasOnLivePath
+          ? broadcastPath
+          : curState.currentPath;
       final newCurrentNode = wasOnLivePath
           ? AnalysisCurrentNode.fromNode(_root.nodeAt(newCurrentPath))
           : curState.currentNode;
@@ -218,7 +229,9 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
     state = AsyncData(
       state.requireValue.copyWith(
         root: recomputeRootView ? _root.view : state.requireValue.root,
-        currentNode: AnalysisCurrentNode.fromNode(_root.nodeAt(state.requireValue.currentPath)),
+        currentNode: AnalysisCurrentNode.fromNode(
+          _root.nodeAt(state.requireValue.currentPath),
+        ),
       ),
     );
   }
@@ -237,7 +250,11 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
   }
 
   void _handleAddNodeEvent(SocketEvent event) {
-    final broadcastGameId = pick(event.data, 'p', 'chapterId').asBroadcastGameIdOrThrow();
+    final broadcastGameId = pick(
+      event.data,
+      'p',
+      'chapterId',
+    ).asBroadcastGameIdOrThrow();
 
     // We check if the event is for this game
     if (broadcastGameId != params.gameId) return;
@@ -252,7 +269,11 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
     // The path for the node that was received
     final path = pick(event.data, 'p', 'path').asUciPathOrThrow();
     final uciMove = pick(event.data, 'n', 'uci').asUciMoveOrThrow();
-    final clock = pick(event.data, 'n', 'clock').asDurationFromCentiSecondsOrNull();
+    final clock = pick(
+      event.data,
+      'n',
+      'clock',
+    ).asDurationFromCentiSecondsOrNull();
 
     final (UciPath? newPath, bool isNewNode) result;
     try {
@@ -286,17 +307,22 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
   }
 
   void _handleSetTagsEvent(SocketEvent event) {
-    final broadcastGameId = pick(event.data, 'chapterId').asBroadcastGameIdOrThrow();
+    final broadcastGameId = pick(
+      event.data,
+      'chapterId',
+    ).asBroadcastGameIdOrThrow();
 
     // We check if the event is for this game
     if (broadcastGameId != params.gameId) return;
 
-    final pgnHeadersEntries = pick(
-      event.data,
-      'tags',
-    ).asListOrThrow((header) => MapEntry(header(0).asStringOrThrow(), header(1).asStringOrThrow()));
+    final pgnHeadersEntries = pick(event.data, 'tags').asListOrThrow(
+      (header) =>
+          MapEntry(header(0).asStringOrThrow(), header(1).asStringOrThrow()),
+    );
 
-    final pgnHeaders = state.requireValue.pgnHeaders.addEntries(pgnHeadersEntries);
+    final pgnHeaders = state.requireValue.pgnHeaders.addEntries(
+      pgnHeadersEntries,
+    );
     state = AsyncData(state.requireValue.copyWith(pgnHeaders: pgnHeaders));
   }
 
@@ -305,9 +331,16 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
 
     if (!state.requireValue.currentPosition.isLegal(move)) return;
 
-    final (newPath, isNewNode) = _root.addMoveAt(state.requireValue.currentPath, move);
+    final (newPath, isNewNode) = _root.addMoveAt(
+      state.requireValue.currentPath,
+      move,
+    );
     if (newPath != null) {
-      _setPath(newPath, shouldRecomputeRootView: isNewNode, shouldForceShowVariation: true);
+      _setPath(
+        newPath,
+        shouldRecomputeRootView: isNewNode,
+        shouldForceShowVariation: true,
+      );
     }
   }
 
@@ -352,7 +385,9 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
   void toggleBoard() {
     if (!state.hasValue) return;
 
-    state = AsyncData(state.requireValue.copyWith(pov: state.requireValue.pov.opposite));
+    state = AsyncData(
+      state.requireValue.copyWith(pov: state.requireValue.pov.opposite),
+    );
   }
 
   @override
@@ -421,7 +456,9 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
     final (currentNode, branchOpening) = nodeOpeningAt(_root, path);
 
     // always show variation if the user plays a move
-    if (shouldForceShowVariation && currentNode is Branch && currentNode.isCollapsed) {
+    if (shouldForceShowVariation &&
+        currentNode is Branch &&
+        currentNode.isCollapsed) {
       _root.updateAt(path, (node) {
         if (node is Branch) node.isCollapsed = false;
       });
@@ -497,7 +534,9 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
     final curState = state.requireValue;
     state = AsyncData(
       curState.copyWith(
-        currentNode: AnalysisCurrentNode.fromNode(_root.nodeAt(curState.currentPath)),
+        currentNode: AnalysisCurrentNode.fromNode(
+          _root.nodeAt(curState.currentPath),
+        ),
         currentBranchOpening: currentBranchOpeningAt(curState.currentPath),
       ),
     );
@@ -522,7 +561,9 @@ class BroadcastAnalysisController extends AsyncNotifier<BroadcastAnalysisState>
           (node) => (
             node.position.isCheckmate,
             node.position.turn,
-            node.lichessAnalysisComments?.firstWhereOrNull((c) => c.eval != null)?.eval,
+            node.lichessAnalysisComments
+                ?.firstWhereOrNull((c) => c.eval != null)
+                ?.eval,
           ),
         )
         .map((el) {
@@ -637,20 +678,26 @@ sealed class BroadcastAnalysisState
   /// If the starting FEN is different from the standard one we assume it's a chess960 game, otherwise it's a standard game.
   // TODO: get the variant from the server when it's supported
   @override
-  Variant get variant => pgnHeaders['FEN'] != null && pgnHeaders['FEN'] != kInitialFEN
+  Variant get variant =>
+      pgnHeaders['FEN'] != null && pgnHeaders['FEN'] != kInitialFEN
       ? Variant.chess960
       : Variant.standard;
 
   @override
-  EvaluationContext get evaluationContext =>
-      EvaluationContext(id: id, variant: variant, initialPosition: root.position);
+  EvaluationContext get evaluationContext => EvaluationContext(
+    id: id,
+    variant: variant,
+    initialPosition: root.position,
+  );
 
   /// Whether the server analysis is available.
-  bool get hasServerAnalysis => root.mainline.any((node) => node.serverEval != null);
+  bool get hasServerAnalysis =>
+      root.mainline.any((node) => node.serverEval != null);
 
   /// Whether an evaluation can be available
   bool hasAvailableEval(EngineEvaluationPrefState prefs) =>
-      isEngineAvailable(prefs) || (isServerAnalysisEnabled && hasServerAnalysis);
+      isEngineAvailable(prefs) ||
+      (isServerAnalysisEnabled && hasServerAnalysis);
 
   @override
   bool isEngineAvailable(EngineEvaluationPrefState prefs) => prefs.isEnabled;

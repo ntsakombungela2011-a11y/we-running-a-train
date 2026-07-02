@@ -80,7 +80,9 @@ void main() {
     });
 
     test('all supported locales are sorted by their localized name', () {
-      final sorted = localesSortedByLocalizedName(AppLocalizations.supportedLocales);
+      final sorted = localesSortedByLocalizedName(
+        AppLocalizations.supportedLocales,
+      );
       final names = sorted.map(localeToLocalizedName).toList();
       final expected = [...names]..sort();
       expect(names, expected);

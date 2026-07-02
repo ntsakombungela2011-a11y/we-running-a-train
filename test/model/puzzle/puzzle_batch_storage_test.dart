@@ -21,10 +21,17 @@ void main() {
 
       final storage = await container.read(puzzleBatchStorageProvider.future);
 
-      await storage.save(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix), data: data);
+      await storage.save(
+        userId: null,
+        angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        data: data,
+      );
 
       expect(
-        storage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
+        storage.fetch(
+          userId: null,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        ),
         completion(equals(data)),
       );
     });
@@ -34,7 +41,11 @@ void main() {
 
       final storage = await container.read(puzzleBatchStorageProvider.future);
 
-      await storage.save(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix), data: data);
+      await storage.save(
+        userId: null,
+        angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        data: data,
+      );
       await storage.save(
         userId: null,
         angle: const PuzzleTheme(PuzzleThemeKey.rookEndgame),
@@ -65,8 +76,16 @@ void main() {
 
       final storage = await container.read(puzzleBatchStorageProvider.future);
 
-      await storage.save(userId: null, angle: const PuzzleOpening('test_opening'), data: data);
-      await storage.save(userId: null, angle: const PuzzleOpening('test_opening2'), data: data);
+      await storage.save(
+        userId: null,
+        angle: const PuzzleOpening('test_opening'),
+        data: data,
+      );
+      await storage.save(
+        userId: null,
+        angle: const PuzzleOpening('test_opening2'),
+        data: data,
+      );
 
       expect(
         storage.fetchSavedOpenings(userId: null),
@@ -89,10 +108,26 @@ void main() {
         }, conflictAlgorithm: ConflictAlgorithm.replace);
       }
 
-      await save(const PuzzleTheme(PuzzleThemeKey.rookEndgame), data, '2021-01-02T00:00:00Z');
-      await save(const PuzzleTheme(PuzzleThemeKey.doubleBishopMate), data, '2021-01-03T00:00:00Z');
-      await save(const PuzzleOpening('test_opening'), data, '2021-01-04T00:00:00Z');
-      await save(const PuzzleOpening('test_opening2'), data, '2021-01-04T80:00:00Z');
+      await save(
+        const PuzzleTheme(PuzzleThemeKey.rookEndgame),
+        data,
+        '2021-01-02T00:00:00Z',
+      );
+      await save(
+        const PuzzleTheme(PuzzleThemeKey.doubleBishopMate),
+        data,
+        '2021-01-03T00:00:00Z',
+      );
+      await save(
+        const PuzzleOpening('test_opening'),
+        data,
+        '2021-01-04T00:00:00Z',
+      );
+      await save(
+        const PuzzleOpening('test_opening2'),
+        data,
+        '2021-01-04T80:00:00Z',
+      );
 
       expect(
         storage.fetchAll(userId: null),

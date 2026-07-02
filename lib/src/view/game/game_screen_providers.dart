@@ -27,7 +27,9 @@ sealed class GameScreenState {}
 /// - A game has been created from a lobby seek.
 /// - A challenge has been accepted and a game has been created from it.
 @freezed
-sealed class GameCreatedState with _$GameCreatedState implements GameScreenState {
+sealed class GameCreatedState
+    with _$GameCreatedState
+    implements GameScreenState {
   const GameCreatedState._();
 
   const factory GameCreatedState(GameFullId createdGameId) = _GameCreatedState;
@@ -36,23 +38,31 @@ sealed class GameCreatedState with _$GameCreatedState implements GameScreenState
 /// An open challenge has been created but not yet accepted.
 /// We're waiting for someone to accept it via the challenge link.
 @freezed
-sealed class OpenChallengeCreatedState with _$OpenChallengeCreatedState implements GameScreenState {
+sealed class OpenChallengeCreatedState
+    with _$OpenChallengeCreatedState
+    implements GameScreenState {
   const OpenChallengeCreatedState._();
 
-  const factory OpenChallengeCreatedState(Challenge challenge) = _OpenChallengeCreatedState;
+  const factory OpenChallengeCreatedState(Challenge challenge) =
+      _OpenChallengeCreatedState;
 }
 
 /// We challenged another user and are currently waiting for them to accept or decline.
 @freezed
-sealed class UserChallengeCreatedState with _$UserChallengeCreatedState implements GameScreenState {
+sealed class UserChallengeCreatedState
+    with _$UserChallengeCreatedState
+    implements GameScreenState {
   const UserChallengeCreatedState._();
 
-  const factory UserChallengeCreatedState(Challenge challenge) = _UserChallengeCreatedState;
+  const factory UserChallengeCreatedState(Challenge challenge) =
+      _UserChallengeCreatedState;
 }
 
 /// A real time challenge has been declined.
 @freezed
-sealed class ChallengeDeclinedState with _$ChallengeDeclinedState implements GameScreenState {
+sealed class ChallengeDeclinedState
+    with _$ChallengeDeclinedState
+    implements GameScreenState {
   const ChallengeDeclinedState._();
 
   const factory ChallengeDeclinedState(ChallengeResponseDeclined response) =
@@ -61,7 +71,9 @@ sealed class ChallengeDeclinedState with _$ChallengeDeclinedState implements Gam
 
 /// A game seek has been cancelled.
 @freezed
-sealed class SeekCancelledState with _$SeekCancelledState implements GameScreenState {
+sealed class SeekCancelledState
+    with _$SeekCancelledState
+    implements GameScreenState {
   const SeekCancelledState._();
 
   const factory SeekCancelledState() = _SeekCancelledState;
@@ -69,7 +81,9 @@ sealed class SeekCancelledState with _$SeekCancelledState implements GameScreenS
 
 /// A real time challenge has been cancelled.
 @freezed
-sealed class ChallengeCancelledState with _$ChallengeCancelledState implements GameScreenState {
+sealed class ChallengeCancelledState
+    with _$ChallengeCancelledState
+    implements GameScreenState {
   const ChallengeCancelledState._();
 
   const factory ChallengeCancelledState() = _ChallengeCancelledState;
@@ -88,7 +102,9 @@ sealed class GameScreenSource {}
 
 /// An existing game source for [GameScreen], identified by its [GameFullId].
 @freezed
-sealed class ExistingGameSource with _$ExistingGameSource implements GameScreenSource {
+sealed class ExistingGameSource
+    with _$ExistingGameSource
+    implements GameScreenSource {
   const ExistingGameSource._();
 
   const factory ExistingGameSource(GameFullId id) = _ExistingGameSource;
@@ -104,10 +120,13 @@ sealed class LobbySource with _$LobbySource implements GameScreenSource {
 
 /// A user challenge source for [GameScreen], identified by the [ChallengeRequest] from which the game will be created.
 @freezed
-sealed class UserChallengeSource with _$UserChallengeSource implements GameScreenSource {
+sealed class UserChallengeSource
+    with _$UserChallengeSource
+    implements GameScreenSource {
   const UserChallengeSource._();
 
-  const factory UserChallengeSource(ChallengeRequest challengeRequest) = _UserChallengeSource;
+  const factory UserChallengeSource(ChallengeRequest challengeRequest) =
+      _UserChallengeSource;
 }
 
 /// A provider that loads or creates a game for the [GameScreen].
@@ -138,11 +157,15 @@ class GameScreenLoaderNotifier extends AsyncNotifier<GameScreenState> {
             );
       case UserChallengeSource(:final challengeRequest):
         {
-          final challenge = await service.newOpenOrRealTimeChallenge(challengeRequest);
+          final challenge = await service.newOpenOrRealTimeChallenge(
+            challengeRequest,
+          );
           service.waitForChallengeResponse(challenge).then((data) {
             if (!ref.mounted) return;
             state = AsyncValue.data(switch (data) {
-              ChallengeResponseAccepted(:final gameFullId) => GameCreatedState(gameFullId),
+              ChallengeResponseAccepted(:final gameFullId) => GameCreatedState(
+                gameFullId,
+              ),
               ChallengeResponseDeclined() => ChallengeDeclinedState(data),
               ChallengeResponseCancelled() => const ChallengeCancelledState(),
             });
@@ -182,10 +205,11 @@ class GameScreenLoaderNotifier extends AsyncNotifier<GameScreenState> {
   }
 }
 
-final isBoardTurnedProvider = NotifierProvider.autoDispose<IsBoardTurnedNotifier, bool>(
-  IsBoardTurnedNotifier.new,
-  name: 'IsBoardTurnedProvider',
-);
+final isBoardTurnedProvider =
+    NotifierProvider.autoDispose<IsBoardTurnedNotifier, bool>(
+      IsBoardTurnedNotifier.new,
+      name: 'IsBoardTurnedProvider',
+    );
 
 class IsBoardTurnedNotifier extends Notifier<bool> {
   @override
@@ -199,16 +223,20 @@ class IsBoardTurnedNotifier extends Notifier<bool> {
 }
 
 /// A provider that indicates whether the game is bookmarked.
-final isGameBookmarkedProvider = FutureProvider.autoDispose.family<bool, GameFullId>((
-  Ref ref,
-  GameFullId gameId,
-) async {
-  return (await ref.watch(gameControllerProvider(gameId).future)).game.bookmarked ?? false;
-}, name: 'IsGameBookmarkedProvider');
+final isGameBookmarkedProvider = FutureProvider.autoDispose
+    .family<bool, GameFullId>((Ref ref, GameFullId gameId) async {
+      return (await ref.watch(
+            gameControllerProvider(gameId).future,
+          )).game.bookmarked ??
+          false;
+    }, name: 'IsGameBookmarkedProvider');
 
 /// A provider that exposes data needed for sharing the game.
 final gameShareDataProvider = FutureProvider.autoDispose
-    .family<({bool finished, Side? pov}), GameFullId>((Ref ref, GameFullId gameId) async {
+    .family<({bool finished, Side? pov}), GameFullId>((
+      Ref ref,
+      GameFullId gameId,
+    ) async {
       final state = await ref.watch(gameControllerProvider(gameId).future);
       return (finished: state.game.finished, pov: state.game.youAre);
     }, name: 'GameShareDataProvider');
@@ -216,7 +244,12 @@ final gameShareDataProvider = FutureProvider.autoDispose
 /// User game preferences, defined server-side.
 final userGamePrefsProvider = FutureProvider.autoDispose
     .family<
-      ({ServerGamePrefs? prefs, bool shouldConfirmMove, bool isZenModeEnabled, bool canAutoQueen}),
+      ({
+        ServerGamePrefs? prefs,
+        bool shouldConfirmMove,
+        bool isZenModeEnabled,
+        bool canAutoQueen,
+      }),
       GameFullId
     >((Ref ref, GameFullId gameId) async {
       final state = await ref.watch(gameControllerProvider(gameId).future);

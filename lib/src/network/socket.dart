@@ -40,7 +40,12 @@ const _kDisconnectOnBackgroundTimeout = Duration(minutes: 1);
 final _logger = Logger('Socket');
 
 /// Set of topics that are allowed to be broadcasted to the global stream.
-const _globalSocketStreamAllowedTopics = {'n', 'message', 'challenges', 'announce'};
+const _globalSocketStreamAllowedTopics = {
+  'n',
+  'message',
+  'challenges',
+  'announce',
+};
 
 final _globalStreamController = StreamController<SocketEvent>.broadcast();
 
@@ -53,7 +58,10 @@ final _globalStreamController = StreamController<SocketEvent>.broadcast();
 final socketGlobalStream = _globalStreamController.stream;
 
 /// Creates a WebSocket URI for the lichess server.
-Uri lichessWSUri(String unencodedPath, [Map<String, String>? queryParameters]) =>
+Uri lichessWSUri(
+  String unencodedPath, [
+  Map<String, String>? queryParameters,
+]) =>
     kLichessWSHost.startsWith('localhost') ||
         kLichessWSHost.startsWith('10.') ||
         kLichessWSHost.startsWith('192.168.')
@@ -97,9 +105,18 @@ class SocketClient {
     this.resendAckDelay = _kResendAckDelay,
   }) : assert(route.path.isNotEmpty, 'Route path must not be empty'),
        assert(pingDelay > Duration.zero, 'Ping delay must be greater than 0'),
-       assert(pingMaxLag > Duration.zero, 'Ping max lag must be greater than 0'),
-       assert(autoReconnectDelay > Duration.zero, 'Auto reconnect delay must be greater than 0'),
-       assert(resendAckDelay > Duration.zero, 'Resend ack delay must be greater than 0');
+       assert(
+         pingMaxLag > Duration.zero,
+         'Ping max lag must be greater than 0',
+       ),
+       assert(
+         autoReconnectDelay > Duration.zero,
+         'Auto reconnect delay must be greater than 0',
+       ),
+       assert(
+         resendAckDelay > Duration.zero,
+         'Resend ack delay must be greater than 0',
+       );
 
   final WebSocketChannelFactory channelFactory;
 
@@ -140,9 +157,13 @@ class SocketClient {
   final VoidCallback? onEventGapFailure;
 
   late final StreamController<SocketEvent> _streamController =
-      StreamController<SocketEvent>.broadcast(onListen: onStreamListen, onCancel: onStreamCancel);
+      StreamController<SocketEvent>.broadcast(
+        onListen: onStreamListen,
+        onCancel: onStreamCancel,
+      );
 
-  late final StreamController<void> _socketOpenController = StreamController<void>.broadcast();
+  late final StreamController<void> _socketOpenController =
+      StreamController<void>.broadcast();
 
   Completer<void> _firstConnection = Completer<void>();
 
@@ -226,12 +247,20 @@ class SocketClient {
     if (version != null) {
       queryParameters['v'] = version.toString();
     }
-    final uri = lichessWSUri(route.path, queryParameters.isNotEmpty ? queryParameters : null);
+    final uri = lichessWSUri(
+      route.path,
+      queryParameters.isNotEmpty ? queryParameters : null,
+    );
 
     final Map<String, String> headers = authUser != null
         ? {'Authorization': 'Bearer ${signBearerToken(authUser.token)}'}
         : {};
-    WebSocket.userAgent = makeUserAgent(packageInfo, deviceInfo, sri, authUser?.user);
+    WebSocket.userAgent = makeUserAgent(
+      packageInfo,
+      deviceInfo,
+      sri,
+      authUser?.user,
+    );
 
     _logger.info('Creating WebSocket connection to $route');
 
@@ -257,7 +286,9 @@ class SocketClient {
             if (raw == '0') {
               return SocketEvent.pong;
             }
-            final event = SocketEvent.fromJson(jsonDecode(raw as String) as Map<String, dynamic>);
+            final event = SocketEvent.fromJson(
+              jsonDecode(raw as String) as Map<String, dynamic>,
+            );
             return event;
           })
           .listen(_handleEvent);
@@ -325,7 +356,10 @@ class SocketClient {
       message = {
         't': topic,
         if (data != null && data is Map<String, Object>)
-          'd': {...data, if (withLag == true) 'l': _averageLag.value.inMilliseconds}
+          'd': {
+            ...data,
+            if (withLag == true) 'l': _averageLag.value.inMilliseconds,
+          }
         else if (data != null)
           'd': data,
       };
@@ -385,14 +419,19 @@ class SocketClient {
         _sink
             ?.close()
             .then((_) {
-              _logger.fine('WebSocket connection to $route was properly closed.');
+              _logger.fine(
+                'WebSocket connection to $route was properly closed.',
+              );
               if (isDisposed) {
                 return;
               }
               _averageLag.value = Duration.zero;
             })
             .catchError((Object? error) {
-              _logger.warning('WebSocket connection to $route could not be closed: $error', error);
+              _logger.warning(
+                'WebSocket connection to $route could not be closed: $error',
+                error,
+              );
               if (isDisposed) {
                 return;
               }
@@ -428,7 +467,10 @@ class SocketClient {
           LichessBinding.instance.firebaseCrashlytics.recordError(
             'Cannot solve event gap: version incoming ${event.version} vs current $version',
             null,
-            information: ['socket.route: $route', 'event.topic: ${event.topic}'],
+            information: [
+              'socket.route: $route',
+              'event.topic: ${event.topic}',
+            ],
           );
         }
         return;
@@ -467,7 +509,10 @@ class SocketClient {
   void _sendPing() {
     _sink?.add(
       _pongCount % 10 == 2
-          ? jsonEncode({'t': 'p', 'l': (_averageLag.value.inMilliseconds * 0.1).round()})
+          ? jsonEncode({
+              't': 'p',
+              'l': (_averageLag.value.inMilliseconds * 0.1).round(),
+            })
           : 'p',
     );
     _lastPing = clock_package.clock.now();
@@ -484,7 +529,10 @@ class SocketClient {
     _schedulePing(pingDelay);
     _pongCount++;
     final currentLag = Duration(
-      milliseconds: math.min(clock_package.clock.now().difference(_lastPing).inMilliseconds, 10000),
+      milliseconds: math.min(
+        clock_package.clock.now().difference(_lastPing).inMilliseconds,
+        10000,
+      ),
     );
 
     // Average first 4 pings, then switch to decaying average.
@@ -500,7 +548,9 @@ class SocketClient {
         _averageLag.value = Duration.zero;
         connect();
       } else {
-        _logger.warning('Scheduled reconnect after $delay failed since client is disposed.');
+        _logger.warning(
+          'Scheduled reconnect after $delay failed since client is disposed.',
+        );
       }
     });
   }
@@ -513,7 +563,9 @@ class SocketClient {
   }
 
   void _resendAcks() {
-    final resendCutoff = clock_package.clock.now().subtract(const Duration(milliseconds: 2500));
+    final resendCutoff = clock_package.clock.now().subtract(
+      const Duration(milliseconds: 2500),
+    );
     for (final (at, _, ack) in _acks) {
       if (at.isBefore(resendCutoff)) {
         _sink?.add(jsonEncode(ack));
@@ -774,7 +826,9 @@ class SocketPingNotifier extends Notifier<SocketPingState> {
 }
 
 /// A provider for the [WebSocketChannelFactory].
-final webSocketChannelFactoryProvider = Provider<WebSocketChannelFactory>((Ref ref) {
+final webSocketChannelFactoryProvider = Provider<WebSocketChannelFactory>((
+  Ref ref,
+) {
   return const WebSocketChannelFactory();
 });
 
@@ -793,7 +847,10 @@ class WebSocketChannelFactory {
     Map<String, dynamic>? headers,
     Duration timeout = const Duration(seconds: 10),
   }) async {
-    final socket = await WebSocket.connect(url, headers: headers).timeout(timeout);
+    final socket = await WebSocket.connect(
+      url,
+      headers: headers,
+    ).timeout(timeout);
 
     return IOWebSocketChannel(socket);
   }

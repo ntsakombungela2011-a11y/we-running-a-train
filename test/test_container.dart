@@ -53,21 +53,29 @@ Future<ProviderContainer> makeContainer({
   FlutterSecureStorage.setMockInitialValues({kSRIStorageKey: 'test'});
 
   final Map<ProviderOrFamily, Override> overrideMap = {
-    nnueServiceProvider: nnueServiceProvider.overrideWithValue(FakeNnueService()),
+    nnueServiceProvider: nnueServiceProvider.overrideWithValue(
+      FakeNnueService(),
+    ),
     connectivityPluginProvider: connectivityPluginProvider.overrideWith((_) {
       return FakeConnectivity();
     }),
-    notificationDisplayProvider: notificationDisplayProvider.overrideWith((ref) {
+    notificationDisplayProvider: notificationDisplayProvider.overrideWith((
+      ref,
+    ) {
       return FakeNotificationDisplay();
     }),
     databaseProvider: databaseProvider.overrideWith((ref) async {
-      final db = await openAppDatabase(databaseFactoryFfi, inMemoryDatabasePath);
+      final db = await openAppDatabase(
+        databaseFactoryFfi,
+        inMemoryDatabasePath,
+      );
       ref.onDispose(db.close);
       return db;
     }),
-    webSocketChannelFactoryProvider: webSocketChannelFactoryProvider.overrideWith((ref) {
-      return defaultFakeWebSocketChannelFactory;
-    }),
+    webSocketChannelFactoryProvider: webSocketChannelFactoryProvider
+        .overrideWith((ref) {
+          return defaultFakeWebSocketChannelFactory;
+        }),
     socketPoolProvider: socketPoolProvider.overrideWith((ref) {
       final pool = SocketPool(ref);
       ref.onDispose(pool.dispose);
@@ -76,7 +84,9 @@ Future<ProviderContainer> makeContainer({
     httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
       return FakeHttpClientFactory(() => testContainerMockClient);
     }),
-    soundServiceProvider: soundServiceProvider.overrideWithValue(FakeSoundService()),
+    soundServiceProvider: soundServiceProvider.overrideWithValue(
+      FakeSoundService(),
+    ),
     preloadedDataProvider: preloadedDataProvider.overrideWith((ref) {
       return (
         sri: 'test-sri',

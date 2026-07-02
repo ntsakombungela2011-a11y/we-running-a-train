@@ -30,58 +30,66 @@ const _nbPerPage = 20;
 /// If the user is logged in, the recent games are fetched from the server.
 /// If the user is not logged in, or there is no connectivity, the recent games
 /// stored locally are fetched instead.
-final myRecentGamesProvider = FutureProvider.autoDispose<IList<LightExportedGameWithPov>>((
-  Ref ref,
-) async {
-  final online = await ref.watch(onlineStatusProvider.future);
-  final authUser = ref.watch(authControllerProvider);
-  if (authUser != null && online) {
-    return ref
-        .read(gameRepositoryProvider)
-        .getUserGames(authUser.user.id, max: kNumberOfRecentGames);
-  } else {
-    final storage = await ref.watch(gameStorageProvider.future);
-    return storage
-        .page(userId: authUser?.user.id, max: kNumberOfRecentGames)
-        .then(
-          (value) => value
-              // we can assume that `youAre` is not null either for logged
-              // in users or for anonymous users
-              .map((e) => (game: e.game.data, pov: e.game.youAre ?? Side.white))
-              .toIList(),
-        );
-  }
-}, name: 'MyRecentGamesProvider');
+final myRecentGamesProvider =
+    FutureProvider.autoDispose<IList<LightExportedGameWithPov>>((
+      Ref ref,
+    ) async {
+      final online = await ref.watch(onlineStatusProvider.future);
+      final authUser = ref.watch(authControllerProvider);
+      if (authUser != null && online) {
+        return ref
+            .read(gameRepositoryProvider)
+            .getUserGames(authUser.user.id, max: kNumberOfRecentGames);
+      } else {
+        final storage = await ref.watch(gameStorageProvider.future);
+        return storage
+            .page(userId: authUser?.user.id, max: kNumberOfRecentGames)
+            .then(
+              (value) => value
+                  // we can assume that `youAre` is not null either for logged
+                  // in users or for anonymous users
+                  .map(
+                    (e) =>
+                        (game: e.game.data, pov: e.game.youAre ?? Side.white),
+                  )
+                  .toIList(),
+            );
+      }
+    }, name: 'MyRecentGamesProvider');
 
 /// A provider that fetches the total number of games played by given user, or the current app user if no user is provided.
 ///
 /// If the user is logged in, the number of games is fetched from the server.
 /// If the user is not logged in, or there is no connectivity, the number of games
 /// stored locally are fetched instead.
-final userNumberOfGamesProvider = FutureProvider.autoDispose.family<int, LightUser?>((
-  Ref ref,
-  LightUser? user,
-) async {
-  final authUser = ref.watch(authControllerProvider);
-  final online = await ref.watch(onlineStatusProvider.future);
-  return user != null
-      ? (await ref.watch(userProvider(user.id).future)).count?.all ?? 0
-      : authUser != null && online
-      ? (await ref.watch(accountProvider.future))?.count?.all ?? 0
-      : (await ref.watch(gameStorageProvider.future)).count(userId: user?.id);
-}, name: 'UserNumberOfGamesProvider');
+final userNumberOfGamesProvider = FutureProvider.autoDispose
+    .family<int, LightUser?>((Ref ref, LightUser? user) async {
+      final authUser = ref.watch(authControllerProvider);
+      final online = await ref.watch(onlineStatusProvider.future);
+      return user != null
+          ? (await ref.watch(userProvider(user.id).future)).count?.all ?? 0
+          : authUser != null && online
+          ? (await ref.watch(accountProvider.future))?.count?.all ?? 0
+          : (await ref.watch(
+              gameStorageProvider.future,
+            )).count(userId: user?.id);
+    }, name: 'UserNumberOfGamesProvider');
 
-typedef UserGameHistoryNotifierParams = ({UserId? userId, GameFilterState filter});
+typedef UserGameHistoryNotifierParams = ({
+  UserId? userId,
+  GameFilterState filter,
+});
 
 /// A provider that paginates the game history for a given user, or the current app user if no user is provided.
 ///
 /// The game history is fetched from the server if the user is logged in and app is online.
 /// Otherwise, the game history is fetched from the local storage.
 final userGameHistoryProvider = AsyncNotifierProvider.autoDispose
-    .family<UserGameHistoryNotifier, UserGameHistoryState, UserGameHistoryNotifierParams>(
-      UserGameHistoryNotifier.new,
-      name: 'UserGameHistoryProvider',
-    );
+    .family<
+      UserGameHistoryNotifier,
+      UserGameHistoryState,
+      UserGameHistoryNotifierParams
+    >(UserGameHistoryNotifier.new, name: 'UserGameHistoryProvider');
 
 class UserGameHistoryNotifier extends AsyncNotifier<UserGameHistoryState> {
   UserGameHistoryNotifier(this.params);
@@ -97,12 +105,15 @@ class UserGameHistoryNotifier extends AsyncNotifier<UserGameHistoryState> {
   @override
   Future<UserGameHistoryState> build() async {
     _bookmarkChangesSubscription?.cancel();
-    _bookmarkChangesSubscription = ref.read(accountServiceProvider).bookmarkChanges.listen((data) {
-      final (id, bookmarked) = data;
-      if (state.hasValue) {
-        setBookmark(id, bookmarked: bookmarked);
-      }
-    });
+    _bookmarkChangesSubscription = ref
+        .read(accountServiceProvider)
+        .bookmarkChanges
+        .listen((data) {
+          final (id, bookmarked) = data;
+          if (state.hasValue) {
+            setBookmark(id, bookmarked: bookmarked);
+          }
+        });
 
     ref.cacheFor(const Duration(minutes: 5));
     ref.onDispose(() {
@@ -129,7 +140,10 @@ class UserGameHistoryNotifier extends AsyncNotifier<UserGameHistoryState> {
                 (value) => value
                     // we can assume that `youAre` is not null either for logged
                     // in users or for anonymous users
-                    .map((e) => (game: e.game.data, pov: e.game.youAre ?? Side.white))
+                    .map(
+                      (e) =>
+                          (game: e.game.data, pov: e.game.youAre ?? Side.white),
+                    )
                     .toIList(),
               );
 
@@ -178,12 +192,19 @@ class UserGameHistoryNotifier extends AsyncNotifier<UserGameHistoryState> {
                   (value) => value
                       // we can assume that `youAre` is not null either for logged
                       // in users or for anonymous users
-                      .map((e) => (game: e.game.data, pov: e.game.youAre ?? Side.white))
+                      .map(
+                        (e) => (
+                          game: e.game.data,
+                          pov: e.game.youAre ?? Side.white,
+                        ),
+                      )
                       .toIList(),
                 ));
 
       if (value.isEmpty) {
-        state = AsyncData(currentVal.copyWith(hasMore: false, isLoading: false));
+        state = AsyncData(
+          currentVal.copyWith(hasMore: false, isLoading: false),
+        );
         return;
       }
 
@@ -213,7 +234,10 @@ class UserGameHistoryNotifier extends AsyncNotifier<UserGameHistoryState> {
 
     state = AsyncData(
       state.requireValue.copyWith(
-        gameList: gameList.replace(index, (game: game.copyWith(bookmarked: bookmarked), pov: pov)),
+        gameList: gameList.replace(index, (
+          game: game.copyWith(bookmarked: bookmarked),
+          pov: pov,
+        )),
       ),
     );
   }

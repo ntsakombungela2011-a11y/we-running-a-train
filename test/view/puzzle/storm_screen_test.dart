@@ -58,7 +58,10 @@ void main() {
       await tester.pumpWidget(app);
 
       expect(find.byType(Chessboard), findsOneWidget);
-      expect(find.text('You play the white pieces in all puzzles'), findsWidgets);
+      expect(
+        find.text('You play the white pieces in all puzzles'),
+        findsWidgets,
+      );
     }, variant: kPlatformVariant);
 
     testWidgets('Play one puzzle', (tester) async {
@@ -77,7 +80,9 @@ void main() {
 
       // before the first move is played, puzzle is not interactable
       expect(boardHasPiece(tester, Square.h5, Piece.whiteRook), isTrue);
-      await tester.tapAt(squareOffset(Square.h5, tester.getRect(find.byType(Chessboard))));
+      await tester.tapAt(
+        squareOffset(Square.h5, tester.getRect(find.byType(Chessboard))),
+      );
       await tester.pump();
       expect(find.byKey(const Key('h5-selected')), findsNothing);
 

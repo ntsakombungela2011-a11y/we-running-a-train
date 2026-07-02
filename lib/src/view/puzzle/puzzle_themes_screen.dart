@@ -16,7 +16,12 @@ import 'package:lichess_mobile/src/widgets/platform_search_bar.dart';
 
 final _themesProvider =
     FutureProvider.autoDispose<
-      (bool, IMap<PuzzleThemeKey, int>, IMap<PuzzleThemeKey, PuzzleThemeData>?, bool)
+      (
+        bool,
+        IMap<PuzzleThemeKey, int>,
+        IMap<PuzzleThemeKey, PuzzleThemeData>?,
+        bool,
+      )
     >((ref) async {
       final isOnline = await ref.watch(onlineStatusProvider.future);
       final savedThemes = await ref.watch(savedThemeBatchesProvider.future);
@@ -73,7 +78,8 @@ class _BodyState extends ConsumerState<_Body> {
 
     return themes.when(
       data: (data) {
-        final (hasConnectivity, savedThemes, onlineThemes, hasSavedOpenings) = data;
+        final (hasConnectivity, savedThemes, onlineThemes, hasSavedOpenings) =
+            data;
 
         final openingsAvailable = hasConnectivity || hasSavedOpenings;
         final searchBar = Padding(
@@ -94,8 +100,16 @@ class _BodyState extends ConsumerState<_Body> {
           final matched = [
             for (final (_, categoryThemes) in list)
               for (final theme in categoryThemes)
-                if (theme.l10n(context.l10n).name.toLowerCase().contains(query) ||
-                    theme.l10n(context.l10n).description.toLowerCase().contains(query))
+                if (theme
+                        .l10n(context.l10n)
+                        .name
+                        .toLowerCase()
+                        .contains(query) ||
+                    theme
+                        .l10n(context.l10n)
+                        .description
+                        .toLowerCase()
+                        .contains(query))
                   theme,
           ];
 
@@ -105,7 +119,8 @@ class _BodyState extends ConsumerState<_Body> {
               ListSection(
                 hasLeading: true,
                 children: matched.map((theme) {
-                  final isThemeAvailable = hasConnectivity || savedThemes.containsKey(theme);
+                  final isThemeAvailable =
+                      hasConnectivity || savedThemes.containsKey(theme);
                   return _ThemeTile(
                     theme: theme,
                     isThemeAvailable: isThemeAvailable,
@@ -128,7 +143,9 @@ class _BodyState extends ConsumerState<_Body> {
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: openingsAvailable
                   ? () {
-                      Navigator.of(context).push(OpeningThemeScreen.buildRoute());
+                      Navigator.of(
+                        context,
+                      ).push(OpeningThemeScreen.buildRoute());
                     }
                   : null,
             ),
@@ -143,7 +160,8 @@ class _BodyState extends ConsumerState<_Body> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-      error: (error, stack) => const Center(child: Text('Could not load themes.')),
+      error: (error, stack) =>
+          const Center(child: Text('Could not load themes.')),
     );
   }
 }
@@ -176,7 +194,10 @@ class _ThemeTile extends StatelessWidget {
       trailing: hasConnectivity && onlineThemes?.containsKey(theme) == true
           ? Padding(
               padding: const EdgeInsets.only(left: 6.0),
-              child: Text('${onlineThemes![theme]!.count}', style: themeCountStyle),
+              child: Text(
+                '${onlineThemes![theme]!.count}',
+                style: themeCountStyle,
+              ),
             )
           : savedThemes.containsKey(theme)
           ? Padding(
@@ -228,7 +249,8 @@ class _Category extends StatelessWidget {
           ListSection(
             hasLeading: true,
             children: themes.map((theme) {
-              final isThemeAvailable = hasConnectivity || savedThemes.containsKey(theme);
+              final isThemeAvailable =
+                  hasConnectivity || savedThemes.containsKey(theme);
               return _ThemeTile(
                 theme: theme,
                 isThemeAvailable: isThemeAvailable,

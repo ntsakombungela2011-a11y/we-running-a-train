@@ -17,7 +17,10 @@ const defaultFakeWebSocketChannelFactory = FakeWebSocketChannelFactory(
 
 /// Creates a fake WebSocket channel with default connection lag with the given [socketRoute].
 FakeWebSocketChannel createDefaultFakeWebSocketChannel(Uri socketRoute) {
-  return FakeWebSocketChannel(socketRoute, connectionLag: kFakeWebSocketConnectionLag);
+  return FakeWebSocketChannel(
+    socketRoute,
+    connectionLag: kFakeWebSocketConnectionLag,
+  );
 }
 
 /// A [WebSocketChannelFactory] that creates fake WebSocket channels and exposes a stream of outgoing messages (except ping).
@@ -114,7 +117,10 @@ class FakeWebSocketChannel implements WebSocketChannel {
     this.serverHandlers = const {},
   }) : route = Uri(path: socketRoute.path),
        assert(socketRoute.path.isNotEmpty, 'Route path must not be empty'),
-       assert(connectionLag > Duration.zero, 'Connection lag must be greater than 0') {
+       assert(
+         connectionLag > Duration.zero,
+         'Connection lag must be greater than 0',
+       ) {
     _sink = _FakeWebSocketSink(this, serverHandlers);
   }
 
@@ -181,26 +187,33 @@ class FakeWebSocketChannel implements WebSocketChannel {
   WebSocketSink get sink => _sink;
 
   @override
-  Stream<dynamic> get stream =>
-      _incomingController.stream.where((event) => event.$1 == route).map((event) => event.$2);
+  Stream<dynamic> get stream => _incomingController.stream
+      .where((event) => event.$1 == route)
+      .map((event) => event.$2);
 
   @override
   void pipe(StreamChannel<dynamic> other) {}
 
   @override
-  StreamChannel<S> transform<S>(StreamChannelTransformer<S, dynamic> transformer) {
+  StreamChannel<S> transform<S>(
+    StreamChannelTransformer<S, dynamic> transformer,
+  ) {
     // TODO: implement transform
     throw UnimplementedError();
   }
 
   @override
-  StreamChannel<dynamic> transformSink(StreamSinkTransformer<dynamic, dynamic> transformer) {
+  StreamChannel<dynamic> transformSink(
+    StreamSinkTransformer<dynamic, dynamic> transformer,
+  ) {
     // TODO: implement transformSink
     throw UnimplementedError();
   }
 
   @override
-  StreamChannel<dynamic> transformStream(StreamTransformer<dynamic, dynamic> transformer) {
+  StreamChannel<dynamic> transformStream(
+    StreamTransformer<dynamic, dynamic> transformer,
+  ) {
     // TODO: implement transformStream
     throw UnimplementedError();
   }
@@ -212,13 +225,17 @@ class FakeWebSocketChannel implements WebSocketChannel {
   }
 
   @override
-  StreamChannel<dynamic> changeSink(StreamSink<dynamic> Function(StreamSink<dynamic> p1) change) {
+  StreamChannel<dynamic> changeSink(
+    StreamSink<dynamic> Function(StreamSink<dynamic> p1) change,
+  ) {
     // TODO: implement changeSink
     throw UnimplementedError();
   }
 
   @override
-  StreamChannel<dynamic> changeStream(Stream<dynamic> Function(Stream<dynamic> p1) change) {
+  StreamChannel<dynamic> changeStream(
+    Stream<dynamic> Function(Stream<dynamic> p1) change,
+  ) {
     // TODO: implement changeStream
     throw UnimplementedError();
   }

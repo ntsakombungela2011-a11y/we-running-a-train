@@ -162,7 +162,9 @@ Future<Widget> makeTestProviderScope(
   };
 
   await binding.setInitialSharedPreferencesValues(
-    defaultPreferences != null ? {...defaultTestPrefs, ...defaultPreferences} : defaultTestPrefs,
+    defaultPreferences != null
+        ? {...defaultTestPrefs, ...defaultPreferences}
+        : defaultTestPrefs,
   );
 
   FlutterSecureStorage.setMockInitialValues({
@@ -193,11 +195,16 @@ Future<Widget> makeTestProviderScope(
   FlutterError.onError = ignoreOverflowErrors;
 
   final Map<ProviderOrFamily, Override> overrideMap = {
-    notificationDisplayProvider: notificationDisplayProvider.overrideWith((ref) {
+    notificationDisplayProvider: notificationDisplayProvider.overrideWith((
+      ref,
+    ) {
       return FakeNotificationDisplay();
     }),
     databaseProvider: databaseProvider.overrideWith((ref) async {
-      final testDb = await openAppDatabase(databaseFactoryFfiNoIsolate, inMemoryDatabasePath);
+      final testDb = await openAppDatabase(
+        databaseFactoryFfiNoIsolate,
+        inMemoryDatabasePath,
+      );
       ref.onDispose(testDb.close);
       return testDb;
     }),
@@ -206,20 +213,32 @@ Future<Widget> makeTestProviderScope(
     }),
     aggregatorProvider: aggregatorProvider.overrideWith((ref) {
       // Use a zero aggregation interval to disable aggregation for tests.
-      return Aggregator(ref.watch(lichessClientProvider), aggregationInterval: Duration.zero);
+      return Aggregator(
+        ref.watch(lichessClientProvider),
+        aggregationInterval: Duration.zero,
+      );
     }),
-    webSocketChannelFactoryProvider: webSocketChannelFactoryProvider.overrideWith((ref) {
-      return defaultFakeWebSocketChannelFactory;
-    }),
+    webSocketChannelFactoryProvider: webSocketChannelFactoryProvider
+        .overrideWith((ref) {
+          return defaultFakeWebSocketChannelFactory;
+        }),
     socketPoolProvider: socketPoolProvider.overrideWith((ref) {
       final pool = SocketPool(ref);
       ref.onDispose(pool.dispose);
       return pool;
     }),
-    connectivityPluginProvider: connectivityPluginProvider.overrideWith((_) => FakeConnectivity()),
-    showRatingsPrefProvider: showRatingsPrefProvider.overrideWith((ref) => ShowRatings.yes),
-    soundServiceProvider: soundServiceProvider.overrideWithValue(FakeSoundService()),
-    openingServiceProvider: openingServiceProvider.overrideWithValue(const FakeOpeningService()),
+    connectivityPluginProvider: connectivityPluginProvider.overrideWith(
+      (_) => FakeConnectivity(),
+    ),
+    showRatingsPrefProvider: showRatingsPrefProvider.overrideWith(
+      (ref) => ShowRatings.yes,
+    ),
+    soundServiceProvider: soundServiceProvider.overrideWithValue(
+      FakeSoundService(),
+    ),
+    openingServiceProvider: openingServiceProvider.overrideWithValue(
+      const FakeOpeningService(),
+    ),
     preloadedDataProvider: preloadedDataProvider.overrideWith((ref) {
       return (
         sri: 'test-sri',

@@ -27,7 +27,9 @@ class AppLogPaginator extends AsyncNotifier<AppLogState> {
   @override
   Future<AppLogState> build() async {
     final storage = await ref.read(appLogStorageProvider.future);
-    final minLevelValue = ref.watch(logPreferencesProvider.select((p) => p.level.value));
+    final minLevelValue = ref.watch(
+      logPreferencesProvider.select((p) => p.level.value),
+    );
     return AppLogState(
       data: IList.new([
         await AsyncValue.guard(
@@ -45,7 +47,9 @@ class AppLogPaginator extends AsyncNotifier<AppLogState> {
   Future<void> next() async {
     if (state.hasValue && state.requireValue.hasMore) {
       final storage = await ref.read(appLogStorageProvider.future);
-      final minLevelValue = ref.read(logPreferencesProvider.select((p) => p.level.value));
+      final minLevelValue = ref.read(
+        logPreferencesProvider.select((p) => p.level.value),
+      );
       final asyncPage = await AsyncValue.guard(
         () => storage.page(
           limit: _pageSize,
@@ -55,7 +59,9 @@ class AppLogPaginator extends AsyncNotifier<AppLogState> {
         ),
       );
       state = AsyncValue.data(
-        state.requireValue.copyWith(data: state.requireValue.data.add(asyncPage)),
+        state.requireValue.copyWith(
+          data: state.requireValue.data.add(asyncPage),
+        ),
       );
     }
   }
@@ -77,11 +83,13 @@ class AppLogPaginator extends AsyncNotifier<AppLogState> {
 sealed class AppLogState with _$AppLogState {
   const AppLogState._();
 
-  const factory AppLogState({required IList<AsyncValue<AppLogPage>> data}) = _AppLogState;
+  const factory AppLogState({required IList<AsyncValue<AppLogPage>> data}) =
+      _AppLogState;
 
   bool get initialized => data.isNotEmpty;
-  List<AppLogEntry> get logs =>
-      data.expand<AppLogEntry>((e) => e.value?.items ?? <AppLogEntry>[]).toList();
+  List<AppLogEntry> get logs => data
+      .expand<AppLogEntry>((e) => e.value?.items ?? <AppLogEntry>[])
+      .toList();
   int? get nextPage => data.lastOrNull?.value?.next;
   bool get hasMore => initialized && nextPage != null;
   bool get isLoading => data.lastOrNull?.isLoading == true;

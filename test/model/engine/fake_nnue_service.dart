@@ -24,7 +24,10 @@ class FakeNnueService implements NnueService {
   @override
   NNUEFiles get nnueFiles {
     // Return dummy file paths - these won't be accessed by FakeStockfish
-    return (bigNet: File('/tmp/fake_big.nnue'), smallNet: File('/tmp/fake_small.nnue'));
+    return (
+      bigNet: File('/tmp/fake_big.nnue'),
+      smallNet: File('/tmp/fake_small.nnue'),
+    );
   }
 
   @override
@@ -66,7 +69,10 @@ class FakeNnueServiceUnavailable implements NnueService {
 
   @override
   NNUEFiles get nnueFiles {
-    return (bigNet: File('/tmp/fake_big.nnue'), smallNet: File('/tmp/fake_small.nnue'));
+    return (
+      bigNet: File('/tmp/fake_big.nnue'),
+      smallNet: File('/tmp/fake_small.nnue'),
+    );
   }
 
   @override

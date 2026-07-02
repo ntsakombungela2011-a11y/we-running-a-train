@@ -9,7 +9,9 @@ void main() {
     test('save and fetch data', () async {
       final container = await makeContainer();
 
-      final storage = await container.read(correspondenceGameStorageProvider.future);
+      final storage = await container.read(
+        correspondenceGameStorageProvider.future,
+      );
 
       await storage.save(offlineCorrespondenceGame);
       expect(

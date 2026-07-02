@@ -68,7 +68,9 @@ void main() {
       expect(currentMove, findsOneWidget);
       expect(
         tester
-            .widget<InlineMove>(find.ancestor(of: currentMove, matching: find.byType(InlineMove)))
+            .widget<InlineMove>(
+              find.ancestor(of: currentMove, matching: find.byType(InlineMove)),
+            )
             .isCurrentMove,
         isTrue,
       );
@@ -91,11 +93,18 @@ void main() {
       await tester.pumpWidget(app);
 
       // cannot go forward
-      expect(tester.widget<BottomBarButton>(find.byKey(const Key('goto-next'))).onTap, isNull);
+      expect(
+        tester
+            .widget<BottomBarButton>(find.byKey(const Key('goto-next')))
+            .onTap,
+        isNull,
+      );
 
       // can go back
       expect(
-        tester.widget<BottomBarButton>(find.byKey(const Key('goto-previous'))).onTap,
+        tester
+            .widget<BottomBarButton>(find.byKey(const Key('goto-previous')))
+            .onTap,
         isNotNull,
       );
 
@@ -107,12 +116,16 @@ void main() {
       expect(currentMove, findsOneWidget);
       expect(
         tester
-            .widget<InlineMove>(find.ancestor(of: currentMove, matching: find.byType(InlineMove)))
+            .widget<InlineMove>(
+              find.ancestor(of: currentMove, matching: find.byType(InlineMove)),
+            )
             .isCurrentMove,
         isTrue,
       );
     });
-    testWidgets('Variations bar displays variations and can be tapped', (tester) async {
+    testWidgets('Variations bar displays variations and can be tapped', (
+      tester,
+    ) async {
       // A PGN where black has two responses to 1. e4 : e5 and c5
       const pgn = '1. e4 e5 (1... c5)';
 
@@ -137,7 +150,10 @@ void main() {
       // So e5 should only be visible in the notation but not in the variations bar
       expect(find.text('e5'), findsOneWidget);
       expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('e4')),
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('e4'),
+        ),
         findsNothing,
       );
 
@@ -148,16 +164,27 @@ void main() {
       // The variations bar should now display both e5 and c5
       expect(find.byType(VariationsBar), findsOneWidget);
       expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('e5')),
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('e5'),
+        ),
         findsOneWidget,
       );
       expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('c5')),
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('c5'),
+        ),
         findsOneWidget,
       );
 
       // Tap the 'c5' variation in the VariationsBar
-      await tester.tap(find.descendant(of: find.byType(VariationsBar), matching: find.text('c5')));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('c5'),
+        ),
+      );
       await tester.pump();
 
       // Verify that the tree successfully jumped to c5
@@ -167,11 +194,17 @@ void main() {
       // The variations bar should now display both e5 and c5 again
       expect(find.byType(VariationsBar), findsOneWidget);
       expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('e5')),
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('e5'),
+        ),
         findsOneWidget,
       );
       expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('c5')),
+        find.descendant(
+          of: find.byType(VariationsBar),
+          matching: find.text('c5'),
+        ),
         findsOneWidget,
       );
       //pressing next should play the mainline move e5, not c5
@@ -183,7 +216,9 @@ void main() {
     testWidgets('change variant in standalone analysis', (tester) async {
       final app = await makeTestProviderScopeApp(
         tester,
-        home: const AnalysisScreen(options: AnalysisOptions.standalone(variant: Variant.standard)),
+        home: const AnalysisScreen(
+          options: AnalysisOptions.standalone(variant: Variant.standard),
+        ),
       );
 
       await tester.pumpWidget(app);
@@ -198,7 +233,10 @@ void main() {
       await tester.tap(find.text('Variant'));
       await tester.pumpAndSettle(); // wait for dialog to open
 
-      expect(find.textContaining('Standard'), findsNWidgets(2)); // title and description
+      expect(
+        find.textContaining('Standard'),
+        findsNWidgets(2),
+      ); // title and description
       expect(find.textContaining('Chess960'), findsNothing);
       expect(find.textContaining('From Position'), findsNothing);
       expect(find.textContaining('Antichess'), findsOneWidget);
@@ -209,10 +247,13 @@ void main() {
       expect(find.textContaining('Racing Kings'), findsOneWidget);
       expect(find.textContaining('Crazyhouse'), findsOneWidget);
 
-      await tester.ensureVisible(find.textContaining('Horde')); // scroll if needed
+      await tester.ensureVisible(
+        find.textContaining('Horde'),
+      ); // scroll if needed
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Horde'));
-      await tester.pumpAndSettle(); // wait for dialog to close and new variant to be loaded
+      await tester
+          .pumpAndSettle(); // wait for dialog to close and new variant to be loaded
 
       expect(find.byType(PocketsMenu), findsNothing);
 
@@ -224,10 +265,13 @@ void main() {
       await tester.pumpAndSettle(); // wait for menu to open
       await tester.tap(find.text('Variant'));
       await tester.pumpAndSettle(); // wait for dialog to open
-      await tester.ensureVisible(find.textContaining('Crazyhouse')); // scroll if needed
+      await tester.ensureVisible(
+        find.textContaining('Crazyhouse'),
+      ); // scroll if needed
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Crazyhouse'));
-      await tester.pumpAndSettle(); // wait for dialog to close and new variant to be loaded
+      await tester
+          .pumpAndSettle(); // wait for dialog to close and new variant to be loaded
 
       // One for white, one for black
       expect(find.byType(PocketsMenu), findsNWidgets(2));
@@ -358,11 +402,16 @@ void main() {
         defaultPreferences: {
           PrefCategory.analysis.storageKey: jsonEncode(
             AnalysisPrefs.defaults
-                .copyWith(inlineNotation: displayMode == PgnTreeDisplayMode.inlineNotation)
+                .copyWith(
+                  inlineNotation:
+                      displayMode == PgnTreeDisplayMode.inlineNotation,
+                )
                 .toJson(),
           ),
           PrefCategory.engineEvaluation.storageKey: jsonEncode(
-            EngineEvaluationPrefState.defaults.copyWith(isEnabled: false).toJson(),
+            EngineEvaluationPrefState.defaults
+                .copyWith(isEnabled: false)
+                .toJson(),
           ),
         },
         home: AnalysisScreen(
@@ -388,7 +437,9 @@ void main() {
     }
 
     Text parentText(WidgetTester tester, String move) {
-      return tester.widget<Text>(find.ancestor(of: find.text(move), matching: find.byType(Text)));
+      return tester.widget<Text>(
+        find.ancestor(of: find.text(move), matching: find.byType(Text)),
+      );
     }
 
     void expectSameLine(WidgetTester tester, Iterable<String> moves) {
@@ -404,26 +455,36 @@ void main() {
     void expectDifferentLines(WidgetTester tester, List<String> moves) {
       for (int i = 0; i < moves.length; i++) {
         for (int j = i + 1; j < moves.length; j++) {
-          expect(parentText(tester, moves[i]), isNot(parentText(tester, moves[j])));
+          expect(
+            parentText(tester, moves[i]),
+            isNot(parentText(tester, moves[j])),
+          );
         }
       }
     }
 
     group('PgnTreeDisplayMode.inlineNotation', () {
-      testWidgets('inline notation displays short sideline as inline', (tester) async {
+      testWidgets('inline notation displays short sideline as inline', (
+        tester,
+      ) async {
         await buildTree(
           tester,
           '1. e4 e5 (1... d5 2. exd5) 2. Nf3 *',
           PgnTreeDisplayMode.inlineNotation,
         );
 
-        final mainline = find.ancestor(of: find.text('1. e4'), matching: find.byType(Text));
+        final mainline = find.ancestor(
+          of: find.text('1. e4'),
+          matching: find.byType(Text),
+        );
         expect(mainline, findsOneWidget);
 
         expectSameLine(tester, ['1. e4', 'e5', '1… d5', '2. exd5', '2. Nf3']);
       });
 
-      testWidgets('inline notation displays long sideline on its own line', (tester) async {
+      testWidgets('inline notation displays long sideline on its own line', (
+        tester,
+      ) async {
         await buildTree(
           tester,
           '1. e4 e5 (1... d5 2. exd5 Qxd5 3. Nc3 Qd8 4. d4 Nf6) 2. Nc3 *',
@@ -431,28 +492,37 @@ void main() {
         );
 
         expectSameLine(tester, ['1. e4', 'e5']);
-        expectSameLine(tester, ['1… d5', '2. exd5', 'Qxd5', '3. Nc3', 'Qd8', '4. d4', 'Nf6']);
+        expectSameLine(tester, [
+          '1… d5',
+          '2. exd5',
+          'Qxd5',
+          '3. Nc3',
+          'Qd8',
+          '4. d4',
+          'Nf6',
+        ]);
         expectSameLine(tester, ['2. Nc3']);
 
         expectDifferentLines(tester, ['1. e4', '1… d5', '2. Nc3']);
       });
 
-      testWidgets('inline notation displays sideline with branching on its own line', (
-        tester,
-      ) async {
-        await buildTree(
-          tester,
-          '1. e4 e5 (1... d5 2. exd5 (2. Nc3)) *',
-          PgnTreeDisplayMode.inlineNotation,
-        );
+      testWidgets(
+        'inline notation displays sideline with branching on its own line',
+        (tester) async {
+          await buildTree(
+            tester,
+            '1. e4 e5 (1... d5 2. exd5 (2. Nc3)) *',
+            PgnTreeDisplayMode.inlineNotation,
+          );
 
-        expectSameLine(tester, ['1. e4', 'e5']);
+          expectSameLine(tester, ['1. e4', 'e5']);
 
-        // 2nd branch is rendered inline again
-        expectSameLine(tester, ['1… d5', '2. exd5', '2. Nc3']);
+          // 2nd branch is rendered inline again
+          expectSameLine(tester, ['1… d5', '2. exd5', '2. Nc3']);
 
-        expectDifferentLines(tester, ['1. e4', '1… d5']);
-      });
+          expectDifferentLines(tester, ['1. e4', '1… d5']);
+        },
+      );
 
       testWidgets('multiple sidelines', (tester) async {
         await buildTree(
@@ -514,54 +584,57 @@ void main() {
         expect(find.text('2… Qd7'), findsNothing);
       });
 
-      testWidgets('Expanding one line does not expand the following one (regression test)', (
+      testWidgets(
+        'Expanding one line does not expand the following one (regression test)',
+        (tester) async {
+          /// Will be rendered as:
+          /// -------------------
+          /// 1. e4 e5
+          /// |- 1... d5 2. Nf3 (2.Nc3)
+          /// 2. Nf3
+          /// |- 2. a4 d5 (2... f5)
+          /// -------------------
+          await buildTree(
+            tester,
+            '1. e4 e5 (1... d5 2. Nf3 (2. Nc3)) 2. Nf3 (2. a4 d5 (2... f5))',
+            PgnTreeDisplayMode.inlineNotation,
+          );
+
+          expect(find.byIcon(Icons.add_box), findsNothing);
+
+          // Collapse both lines
+          await tester.longPress(find.text('1… d5'));
+          await tester.pumpAndSettle(); // wait for context menu to appear
+          await tester.tap(find.text('Collapse variations'));
+
+          // wait for dialog to close and tree to refresh
+          await tester.pumpAndSettle(const Duration(milliseconds: 200));
+
+          await tester.longPress(find.text('2. a4'));
+          await tester.pumpAndSettle(); // wait for context menu to appear
+          await tester.tap(find.text('Collapse variations'));
+
+          // wait for dialog to close and tree to refresh
+          await tester.pumpAndSettle(const Duration(milliseconds: 200));
+
+          // In this state, there used to be a bug where expanding the first line would
+          // also expand the second line.
+          expect(find.byIcon(Icons.add_box), findsNWidgets(2));
+          await tester.tap(find.byIcon(Icons.add_box).first);
+
+          // need to wait for current move change debounce delay
+          await tester.pumpAndSettle();
+
+          expect(find.byIcon(Icons.add_box), findsOneWidget);
+
+          // Second sideline should still be collapsed
+          expect(find.text('2. a4'), findsNothing);
+        },
+      );
+
+      testWidgets('subtrees not part of the current mainline part are cached', (
         tester,
       ) async {
-        /// Will be rendered as:
-        /// -------------------
-        /// 1. e4 e5
-        /// |- 1... d5 2. Nf3 (2.Nc3)
-        /// 2. Nf3
-        /// |- 2. a4 d5 (2... f5)
-        /// -------------------
-        await buildTree(
-          tester,
-          '1. e4 e5 (1... d5 2. Nf3 (2. Nc3)) 2. Nf3 (2. a4 d5 (2... f5))',
-          PgnTreeDisplayMode.inlineNotation,
-        );
-
-        expect(find.byIcon(Icons.add_box), findsNothing);
-
-        // Collapse both lines
-        await tester.longPress(find.text('1… d5'));
-        await tester.pumpAndSettle(); // wait for context menu to appear
-        await tester.tap(find.text('Collapse variations'));
-
-        // wait for dialog to close and tree to refresh
-        await tester.pumpAndSettle(const Duration(milliseconds: 200));
-
-        await tester.longPress(find.text('2. a4'));
-        await tester.pumpAndSettle(); // wait for context menu to appear
-        await tester.tap(find.text('Collapse variations'));
-
-        // wait for dialog to close and tree to refresh
-        await tester.pumpAndSettle(const Duration(milliseconds: 200));
-
-        // In this state, there used to be a bug where expanding the first line would
-        // also expand the second line.
-        expect(find.byIcon(Icons.add_box), findsNWidgets(2));
-        await tester.tap(find.byIcon(Icons.add_box).first);
-
-        // need to wait for current move change debounce delay
-        await tester.pumpAndSettle();
-
-        expect(find.byIcon(Icons.add_box), findsOneWidget);
-
-        // Second sideline should still be collapsed
-        expect(find.text('2. a4'), findsNothing);
-      });
-
-      testWidgets('subtrees not part of the current mainline part are cached', (tester) async {
         await buildTree(
           tester,
           '1. e4 e5 (1... d5 2. exd5) (1... Nf6 2. e5) 2. Nf3 Nc6 (2... a5) *',
@@ -584,7 +657,10 @@ void main() {
         expect(
           tester
               .widgetList<InlineMove>(
-                find.ancestor(of: find.textContaining('Nc6'), matching: find.byType(InlineMove)),
+                find.ancestor(
+                  of: find.textContaining('Nc6'),
+                  matching: find.byType(InlineMove),
+                ),
               )
               .last
               .isCurrentMove,
@@ -598,7 +674,10 @@ void main() {
         expect(
           tester
               .widgetList<InlineMove>(
-                find.ancestor(of: find.textContaining('Nf3'), matching: find.byType(InlineMove)),
+                find.ancestor(
+                  of: find.textContaining('Nf3'),
+                  matching: find.byType(InlineMove),
+                ),
               )
               .last
               .isCurrentMove,
@@ -607,7 +686,10 @@ void main() {
 
         // first mainline part has not changed since the current move is
         // not part of it
-        expect(identical(firstMainlinePart, parentText(tester, '1. e4')), isTrue);
+        expect(
+          identical(firstMainlinePart, parentText(tester, '1. e4')),
+          isTrue,
+        );
 
         final secondMainlinePartOnMoveNf3 = parentText(tester, '2. Nf3');
 
@@ -621,7 +703,10 @@ void main() {
         expect(
           tester
               .widgetList<InlineMove>(
-                find.ancestor(of: find.textContaining('e5'), matching: find.byType(InlineMove)),
+                find.ancestor(
+                  of: find.textContaining('e5'),
+                  matching: find.byType(InlineMove),
+                ),
               )
               .first
               .isCurrentMove,
@@ -645,7 +730,10 @@ void main() {
         expect(
           tester
               .firstWidget<InlineMove>(
-                find.ancestor(of: find.textContaining('e4'), matching: find.byType(InlineMove)),
+                find.ancestor(
+                  of: find.textContaining('e4'),
+                  matching: find.byType(InlineMove),
+                ),
               )
               .isCurrentMove,
           isTrue,
@@ -658,7 +746,10 @@ void main() {
         expect(firstMainlinePartOnMoveE4, isNot(firstMainlinePartOnMoveE5));
 
         // second mainline part has not changed since the current move is not part of it
-        expect(identical(secondMainlinePartOnMoveE5, secondMainlinePartOnMoveE4), isTrue);
+        expect(
+          identical(secondMainlinePartOnMoveE5, secondMainlinePartOnMoveE4),
+          isTrue,
+        );
       });
 
       testWidgets(
@@ -670,7 +761,11 @@ void main() {
           /// |- 1. d4
           /// |- 1. c4
           /// -------------------
-          await buildTree(tester, '1. e4 (1. d4) (1. c4)', PgnTreeDisplayMode.inlineNotation);
+          await buildTree(
+            tester,
+            '1. e4 (1. d4) (1. c4)',
+            PgnTreeDisplayMode.inlineNotation,
+          );
 
           await tester.tap(find.text('1. d4'));
           // need to wait for current move change debounce delay
@@ -697,40 +792,48 @@ void main() {
         );
       }
 
-      testWidgets('two column view does NOT display short sideline on its own line', (
-        tester,
-      ) async {
-        await buildTree(tester, '1. e4 (1. d4 2. d5) 1... e5 *', PgnTreeDisplayMode.twoColumn);
+      testWidgets(
+        'two column view does NOT display short sideline on its own line',
+        (tester) async {
+          await buildTree(
+            tester,
+            '1. e4 (1. d4 2. d5) 1... e5 *',
+            PgnTreeDisplayMode.twoColumn,
+          );
 
-        expect(parentRow(tester, 'e4'), isNot(parentRow(tester, 'e5')));
-      });
+          expect(parentRow(tester, 'e4'), isNot(parentRow(tester, 'e5')));
+        },
+      );
 
-      testWidgets('two column view adds "..." if mainline part starts with black move', (
-        tester,
-      ) async {
-        await buildTree(
-          tester,
-          '1. e4 (1. d4 2. d5) 1... e5 2. Nf3 Nc6 *',
-          PgnTreeDisplayMode.twoColumn,
-        );
+      testWidgets(
+        'two column view adds "..." if mainline part starts with black move',
+        (tester) async {
+          await buildTree(
+            tester,
+            '1. e4 (1. d4 2. d5) 1... e5 2. Nf3 Nc6 *',
+            PgnTreeDisplayMode.twoColumn,
+          );
 
-        // Test that it's rendered like this:
-        /// 1  e4 ...
-        /// |- 1. d4 2. d5
-        /// 1 ... e5
-        /// 2 Nf3 Nc6
-        ///
-        /// ... and not like this:
-        /// 1  e4 ...
-        /// |- 1. d4 2. d5
-        /// 1 e5
-        /// 2 Nf3 Nc6
+          // Test that it's rendered like this:
+          /// 1  e4 ...
+          /// |- 1. d4 2. d5
+          /// 1 ... e5
+          /// 2 Nf3 Nc6
+          ///
+          /// ... and not like this:
+          /// 1  e4 ...
+          /// |- 1. d4 2. d5
+          /// 1 e5
+          /// 2 Nf3 Nc6
 
-        expect(find.text('...'), findsNWidgets(2));
-      });
+          expect(find.text('...'), findsNWidgets(2));
+        },
+      );
     });
 
-    testWidgets('Displays conditional premove lines saved on server', (tester) async {
+    testWidgets('Displays conditional premove lines saved on server', (
+      tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/$kGameFullId/forecasts') {
           return mockResponse(
@@ -738,7 +841,10 @@ void main() {
               pgn: 'e4 e5',
               youAre: Side.white,
               forecast: [
-                [SanMove('Nf3', Move.parse('g1f3')!), SanMove('Nc6', Move.parse('b8c6')!)].lock,
+                [
+                  SanMove('Nf3', Move.parse('g1f3')!),
+                  SanMove('Nc6', Move.parse('b8c6')!),
+                ].lock,
               ].lock,
             ),
             200,
@@ -764,7 +870,9 @@ void main() {
       expectSameLine(tester, ['1. e4', 'e5', '2. Nf3', 'Nc6']);
     });
 
-    testWidgets('Regaining focus refreshes correspondence moves', (tester) async {
+    testWidgets('Regaining focus refreshes correspondence moves', (
+      tester,
+    ) async {
       var liveGamePgn = 'e4 e5';
       final mockClient = MockClient((request) {
         if (request.url.path == '/$kGameFullId/forecasts') {
@@ -824,10 +932,14 @@ void main() {
         await playMove(tester, 'e2', 'e4');
         expect(find.byType(InlineMove), findsOne);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.widgetWithText(InlineMove, '+0.2'), findsOne);
         await playMove(tester, 'e7', 'e5');
-        await tester.pump(kLocalEngineAfterCloudEvalDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kLocalEngineAfterCloudEvalDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.widgetWithText(InlineMove, '+0.2'), findsNWidgets(2));
       });
 
@@ -863,26 +975,35 @@ void main() {
         },
       );
 
-      testWidgets('eval is updated in move tree when it corresponds to current path', (
+      testWidgets(
+        'eval is updated in move tree when it corresponds to current path',
+        (tester) async {
+          await makeEngineTestApp(tester, isCloudEvalEnabled: false);
+
+          // Make a move (1. e4)
+          await playMove(tester, 'e2', 'e4');
+          expect(find.byType(InlineMove), findsOne);
+
+          // Before any eval is emitted, no eval should be displayed
+          expect(find.widgetWithText(InlineMove, '+0.2'), findsNothing);
+
+          await tester.pump(
+            kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+          );
+
+          expect(find.widgetWithText(InlineMove, '+0.2'), findsOne);
+        },
+      );
+
+      testWidgets('different positions show different evals in move tree', (
         tester,
       ) async {
-        await makeEngineTestApp(tester, isCloudEvalEnabled: false);
-
-        // Make a move (1. e4)
-        await playMove(tester, 'e2', 'e4');
-        expect(find.byType(InlineMove), findsOne);
-
-        // Before any eval is emitted, no eval should be displayed
-        expect(find.widgetWithText(InlineMove, '+0.2'), findsNothing);
-
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
-
-        expect(find.widgetWithText(InlineMove, '+0.2'), findsOne);
-      });
-
-      testWidgets('different positions show different evals in move tree', (tester) async {
         final stockfish = AnalysisTestStockfish();
-        await makeEngineTestApp(tester, isCloudEvalEnabled: false, stockfish: stockfish);
+        await makeEngineTestApp(
+          tester,
+          isCloudEvalEnabled: false,
+          stockfish: stockfish,
+        );
 
         await playMove(tester, 'e2', 'e4');
         await tester.pump(kRequestEvalDebounceDelay);
@@ -904,7 +1025,9 @@ void main() {
         await playMove(tester, 'e7', 'e5');
         expect(find.byType(InlineMove), findsNWidgets(2));
 
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
 
         expect(stockfish.requestedPositions.length, 2);
 
@@ -920,9 +1043,15 @@ void main() {
     });
 
     group('Engine analysis on move navigation', () {
-      testWidgets('evaluation is debounced when jumping quickly between moves', (tester) async {
+      testWidgets('evaluation is debounced when jumping quickly between moves', (
+        tester,
+      ) async {
         final stockfish = AnalysisTestStockfish();
-        await makeEngineTestApp(tester, isCloudEvalEnabled: false, stockfish: stockfish);
+        await makeEngineTestApp(
+          tester,
+          isCloudEvalEnabled: false,
+          stockfish: stockfish,
+        );
 
         // Make several moves
         await playMove(tester, 'e2', 'e4');
@@ -973,47 +1102,69 @@ void main() {
       testWidgets('are displayed', (tester) async {
         await makeEngineTestApp(tester);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(Engineline), findsOne);
-        expect(find.widgetWithText(Engineline, '1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 '), findsOne);
+        expect(
+          find.widgetWithText(Engineline, '1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 '),
+          findsOne,
+        );
       });
 
-      testWidgets('are not displayed if computer analysis is not allowed', (tester) async {
-        await makeEngineTestApp(tester, isComputerAnalysisAllowed: false);
-        // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
-        expect(find.byType(Engineline), findsNothing);
-      });
-
-      testWidgets('are not displayed if computer analysis is not enabled (on an analysed game)', (
+      testWidgets('are not displayed if computer analysis is not allowed', (
         tester,
       ) async {
-        await makeEngineTestApp(
-          tester,
-          gameId: const GameId('xze7RH66'),
-          isServerAnalysisEnabled: false,
-          isEngineEnabled: false,
-        );
+        await makeEngineTestApp(tester, isComputerAnalysisAllowed: false);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(Engineline), findsNothing);
       });
 
-      testWidgets('are not displayed if engine is disabled by user preferences', (tester) async {
+      testWidgets(
+        'are not displayed if computer analysis is not enabled (on an analysed game)',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            gameId: const GameId('xze7RH66'),
+            isServerAnalysisEnabled: false,
+            isEngineEnabled: false,
+          );
+          // ensure that the eval is displayed and pending eval throttle time is over
+          await tester.pump(
+            kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+          );
+          expect(find.byType(Engineline), findsNothing);
+        },
+      );
+
+      testWidgets('are not displayed if engine is disabled by user preferences', (
+        tester,
+      ) async {
         await makeEngineTestApp(tester, isEngineEnabled: false);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(Engineline), findsNothing);
       });
 
-      testWidgets('are not displayed if they are disabled by user preferences', (tester) async {
+      testWidgets('are not displayed if they are disabled by user preferences', (
+        tester,
+      ) async {
         await makeEngineTestApp(tester, numEvalLines: 0);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(Engineline), findsNothing);
       });
 
-      testWidgets('can be tapped to play a drop move in crazyhouse', (tester) async {
+      testWidgets('can be tapped to play a drop move in crazyhouse', (
+        tester,
+      ) async {
         final binding = TestLichessBinding.ensureInitialized();
         final stockfish = FakeCrazyhouseDropMoveStockfish();
         binding.stockfish = stockfish;
@@ -1042,17 +1193,20 @@ void main() {
             ),
           ),
           overrides: {
-            webSocketChannelFactoryProvider: webSocketChannelFactoryProvider.overrideWith(
-              (_) => FakeWebSocketChannelFactory(
-                (uri) => FakeWebSocketChannel(uri, serverHandlers: {}),
-              ),
-            ),
+            webSocketChannelFactoryProvider: webSocketChannelFactoryProvider
+                .overrideWith(
+                  (_) => FakeWebSocketChannelFactory(
+                    (uri) => FakeWebSocketChannel(uri, serverHandlers: {}),
+                  ),
+                ),
           },
         );
         await tester.pumpWidget(app);
 
         // Wait for engine to start and emit eval
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
 
         // Engine line starting with a drop move should be displayed
         expect(find.byType(Engineline), findsOneWidget);
@@ -1067,102 +1221,141 @@ void main() {
     });
 
     group('Engine gauge', () {
-      testWidgets('is not displayed if computer analysis is not allowed', (tester) async {
-        await makeEngineTestApp(tester, isComputerAnalysisAllowed: false);
-        // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
-        expect(find.byType(EngineGauge), findsNothing);
-      });
-
-      testWidgets('is not displayed if computer analysis is not enabled (on an analysed game)', (
+      testWidgets('is not displayed if computer analysis is not allowed', (
         tester,
       ) async {
-        await makeEngineTestApp(
-          tester,
-          isServerAnalysisEnabled: false,
-          isEngineEnabled: false,
-          gameId: const GameId('xze7RH66'),
-        );
+        await makeEngineTestApp(tester, isComputerAnalysisAllowed: false);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(EngineGauge), findsNothing);
       });
 
-      testWidgets('is not displayed if engine is disabled by user preferences', (tester) async {
+      testWidgets(
+        'is not displayed if computer analysis is not enabled (on an analysed game)',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            isServerAnalysisEnabled: false,
+            isEngineEnabled: false,
+            gameId: const GameId('xze7RH66'),
+          );
+          // ensure that the eval is displayed and pending eval throttle time is over
+          await tester.pump(
+            kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+          );
+          expect(find.byType(EngineGauge), findsNothing);
+        },
+      );
+
+      testWidgets('is not displayed if engine is disabled by user preferences', (
+        tester,
+      ) async {
         await makeEngineTestApp(tester, isEngineEnabled: false);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(EngineGauge), findsNothing);
       });
 
       testWidgets('is displayed if engine is available', (tester) async {
         await makeEngineTestApp(tester);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(EngineGauge), findsOne);
         expect(find.widgetWithText(EngineGauge, '+0.2'), findsOne);
       });
 
-      testWidgets('is displayed on an analysed game, even if engine eval is disabled', (
-        tester,
-      ) async {
-        await makeEngineTestApp(tester, isEngineEnabled: false, gameId: const GameId('xze7RH66'));
+      testWidgets(
+        'is displayed on an analysed game, even if engine eval is disabled',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            isEngineEnabled: false,
+            gameId: const GameId('xze7RH66'),
+          );
 
-        expect(find.byType(CircularProgressIndicator), findsOne);
-        // wait for the game to be loaded
-        await tester.pump(const Duration(milliseconds: 50));
+          expect(find.byType(CircularProgressIndicator), findsOne);
+          // wait for the game to be loaded
+          await tester.pump(const Duration(milliseconds: 50));
 
-        expect(find.byType(EngineGauge), findsOne);
-        expect(find.widgetWithText(EngineGauge, '#'), findsOne);
-      });
+          expect(find.byType(EngineGauge), findsOne);
+          expect(find.widgetWithText(EngineGauge, '#'), findsOne);
+        },
+      );
     });
 
     group('Engine best move arrow', () {
-      testWidgets('is not displayed if best move arrow is disabled', (tester) async {
+      testWidgets('is not displayed if best move arrow is disabled', (
+        tester,
+      ) async {
         await makeEngineTestApp(tester, showBestMoveArrow: false);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(BoardShapeWidget), findsNothing);
       });
 
-      testWidgets('is not displayed if computer analysis is not allowed', (tester) async {
+      testWidgets('is not displayed if computer analysis is not allowed', (
+        tester,
+      ) async {
         await makeEngineTestApp(tester, isComputerAnalysisAllowed: false);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(BoardShapeWidget), findsNothing);
       });
 
-      testWidgets('is not displayed if engine is disabled by user preferences', (tester) async {
+      testWidgets('is not displayed if engine is disabled by user preferences', (
+        tester,
+      ) async {
         await makeEngineTestApp(tester, isEngineEnabled: false);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(BoardShapeWidget), findsNothing);
       });
 
       testWidgets('is displayed if engine is available', (tester) async {
         await makeEngineTestApp(tester);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(BoardShapeWidget), findsOne);
       });
 
-      testWidgets('is displayed even when number of engine lines is set to 0', (tester) async {
+      testWidgets('is displayed even when number of engine lines is set to 0', (
+        tester,
+      ) async {
         await makeEngineTestApp(tester, numEvalLines: 0);
         // ensure that the eval is displayed and pending eval throttle time is over
-        await tester.pump(kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.byType(BoardShapeWidget), findsOne);
       });
     });
 
     group('show threat button', () {
-      testWidgets('is visible when engine is available and position is normal', (tester) async {
-        await makeEngineTestApp(tester, pgn: 'e4 e5');
+      testWidgets(
+        'is visible when engine is available and position is normal',
+        (tester) async {
+          await makeEngineTestApp(tester, pgn: 'e4 e5');
 
-        await tester.tap(find.bySemanticsLabel('Menu'));
-        await tester.pumpAndSettle();
+          await tester.tap(find.bySemanticsLabel('Menu'));
+          await tester.pumpAndSettle();
 
-        expect(find.text('Show threat'), findsOneWidget);
-      });
+          expect(find.text('Show threat'), findsOneWidget);
+        },
+      );
 
       testWidgets('is hidden when king is in check', (tester) async {
         await makeEngineTestApp(
@@ -1189,7 +1382,9 @@ void main() {
         expect(find.text('Show threat'), findsNothing);
       });
 
-      testWidgets('is hidden when opponent would be in stalemate', (tester) async {
+      testWidgets('is hidden when opponent would be in stalemate', (
+        tester,
+      ) async {
         await makeEngineTestApp(
           tester,
           pgn: '''
@@ -1204,7 +1399,9 @@ void main() {
         expect(find.text('Show threat'), findsNothing);
       });
 
-      testWidgets('is hidden when position is stalemate for both sides', (tester) async {
+      testWidgets('is hidden when position is stalemate for both sides', (
+        tester,
+      ) async {
         await makeEngineTestApp(
           tester,
           pgn: '''
@@ -1219,20 +1416,23 @@ void main() {
         expect(find.text('Show threat'), findsNothing);
       });
 
-      testWidgets('is visible when position is stalemate but opponent can move', (tester) async {
-        await makeEngineTestApp(
-          tester,
-          pgn: '''
+      testWidgets(
+        'is visible when position is stalemate but opponent can move',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            pgn: '''
 [Variant "From Position"]
 [FEN "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10"]
 ''',
-        );
+          );
 
-        await tester.tap(find.bySemanticsLabel('Menu'));
-        await tester.pumpAndSettle();
+          await tester.tap(find.bySemanticsLabel('Menu'));
+          await tester.pumpAndSettle();
 
-        expect(find.text('Show threat'), findsOneWidget);
-      });
+          expect(find.text('Show threat'), findsOneWidget);
+        },
+      );
     });
   });
 
@@ -1241,12 +1441,16 @@ void main() {
         '1. e4 e5 2. Nf3 Nf6 3. Bc4 Bc5 4. d3 d6 5. Bd2 Bd7 6. Nc3 Nc6 7. Qe2 Qe7';
 
     for (final castlingMethod in CastlingMethod.values) {
-      testWidgets('respect castling preference ($castlingMethod)', (tester) async {
+      testWidgets('respect castling preference ($castlingMethod)', (
+        tester,
+      ) async {
         final app = await makeTestProviderScopeApp(
           tester,
           defaultPreferences: {
             PrefCategory.board.storageKey: jsonEncode(
-              BoardPrefs.defaults.copyWith(castlingMethod: castlingMethod).toJson(),
+              BoardPrefs.defaults
+                  .copyWith(castlingMethod: castlingMethod)
+                  .toJson(),
             ),
           },
           home: const AnalysisScreen(
@@ -1296,7 +1500,9 @@ void main() {
           tester,
           defaultPreferences: {
             PrefCategory.board.storageKey: jsonEncode(
-              BoardPrefs.defaults.copyWith(castlingMethod: castlingMethod).toJson(),
+              BoardPrefs.defaults
+                  .copyWith(castlingMethod: castlingMethod)
+                  .toJson(),
             ),
           },
           home: AnalysisScreen(
@@ -1330,14 +1536,18 @@ void main() {
       });
     }
   });
-  testWidgets('saves and restores root and path when navigating away and back', (tester) async {
+  testWidgets('saves and restores root and path when navigating away and back', (
+    tester,
+  ) async {
     // open from More tab and navigate to board analysis
     final app = await makeTestProviderScopeApp(
       tester,
       home: const MoreTabScreen(),
       defaultPreferences: {
         PrefCategory.engineEvaluation.storageKey: jsonEncode(
-          EngineEvaluationPrefState.defaults.copyWith(isEnabled: false).toJson(),
+          EngineEvaluationPrefState.defaults
+              .copyWith(isEnabled: false)
+              .toJson(),
         ),
       },
     );
@@ -1404,7 +1614,9 @@ void main() {
       home: const MoreTabScreen(),
       defaultPreferences: {
         PrefCategory.engineEvaluation.storageKey: jsonEncode(
-          EngineEvaluationPrefState.defaults.copyWith(isEnabled: false).toJson(),
+          EngineEvaluationPrefState.defaults
+              .copyWith(isEnabled: false)
+              .toJson(),
         ),
       },
     );
@@ -1453,63 +1665,68 @@ void main() {
     expect(boardHasPiece(tester, Square.e4, Piece.whitePawn), isFalse);
   });
 
-  testWidgets('Opening a position from board editor overwrites saved standalone analysis', (
-    tester,
-  ) async {
-    // Open from More tab and navigate to board analysis
-    final app = await makeTestProviderScopeApp(
-      tester,
-      home: const MoreTabScreen(),
-      defaultPreferences: {
-        PrefCategory.engineEvaluation.storageKey: jsonEncode(
-          EngineEvaluationPrefState.defaults.copyWith(isEnabled: false).toJson(),
-        ),
-      },
-    );
+  testWidgets(
+    'Opening a position from board editor overwrites saved standalone analysis',
+    (tester) async {
+      // Open from More tab and navigate to board analysis
+      final app = await makeTestProviderScopeApp(
+        tester,
+        home: const MoreTabScreen(),
+        defaultPreferences: {
+          PrefCategory.engineEvaluation.storageKey: jsonEncode(
+            EngineEvaluationPrefState.defaults
+                .copyWith(isEnabled: false)
+                .toJson(),
+          ),
+        },
+      );
 
-    await tester.pumpWidget(app);
+      await tester.pumpWidget(app);
 
-    // Open analysis board
-    await tester.tap(find.text('Analysis board'));
-    await tester.pumpAndSettle();
+      // Open analysis board
+      await tester.tap(find.text('Analysis board'));
+      await tester.pumpAndSettle();
 
-    // Make some moves
-    await playMove(tester, 'e2', 'e4');
-    await playMove(tester, 'e7', 'e5');
-    await playMove(tester, 'f2', 'f4');
+      // Make some moves
+      await playMove(tester, 'e2', 'e4');
+      await playMove(tester, 'e7', 'e5');
+      await playMove(tester, 'f2', 'f4');
 
-    // Verify we made the moves
-    expect(find.textContaining('f4'), findsOneWidget);
-    expect(boardHasPiece(tester, Square.f4, Piece.whitePawn), isTrue);
+      // Verify we made the moves
+      expect(find.textContaining('f4'), findsOneWidget);
+      expect(boardHasPiece(tester, Square.f4, Piece.whitePawn), isTrue);
 
-    // Navigate back to More tab
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+      // Navigate back to More tab
+      await tester.pageBack();
+      await tester.pumpAndSettle();
 
-    // Verify we're back at More tab
-    expect(find.text('Tools'), findsOneWidget);
+      // Verify we're back at More tab
+      expect(find.text('Tools'), findsOneWidget);
 
-    // Navigate to board editor
-    await tester.tap(find.text('Board editor'));
-    await tester.pumpAndSettle();
+      // Navigate to board editor
+      await tester.tap(find.text('Board editor'));
+      await tester.pumpAndSettle();
 
-    //make moves that result in a different position than the previous analysis
-    await dragFromTo(tester, 'd2', 'd4');
-    await dragFromTo(tester, 'd7', 'd5');
+      //make moves that result in a different position than the previous analysis
+      await dragFromTo(tester, 'd2', 'd4');
+      await dragFromTo(tester, 'd7', 'd5');
 
-    //Open analysis from editor
-    expect(find.byTooltip('Analysis board'), findsOneWidget);
-    await tester.tap(find.byTooltip('Analysis board'));
-    await tester.pumpAndSettle();
+      //Open analysis from editor
+      expect(find.byTooltip('Analysis board'), findsOneWidget);
+      await tester.tap(find.byTooltip('Analysis board'));
+      await tester.pumpAndSettle();
 
-    // Verify board state is correct and previous analysis was overwritten
-    expect(boardHasPiece(tester, Square.d4, Piece.whitePawn), isTrue);
-    expect(boardHasPiece(tester, Square.d5, Piece.blackPawn), isTrue);
-    expect(boardHasPiece(tester, Square.f4, Piece.whitePawn), isFalse);
-  });
+      // Verify board state is correct and previous analysis was overwritten
+      expect(boardHasPiece(tester, Square.d4, Piece.whitePawn), isTrue);
+      expect(boardHasPiece(tester, Square.d5, Piece.blackPawn), isTrue);
+      expect(boardHasPiece(tester, Square.f4, Piece.whitePawn), isFalse);
+    },
+  );
 
   group('conditional premoves', () {
-    testWidgets('no conditional premove tab for standalone analysis', (tester) async {
+    testWidgets('no conditional premove tab for standalone analysis', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: AnalysisScreen(
@@ -1526,10 +1743,16 @@ void main() {
       await tester.pumpWidget(app);
 
       expect(find.bySemanticsLabel(RegExp('Moves played')), findsOneWidget);
-      expect(find.bySemanticsLabel(RegExp('Opening explorer & tablebase')), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('Opening explorer & tablebase')),
+        findsOneWidget,
+      );
 
       // Should not display the conditional premoves tab.
-      expect(find.bySemanticsLabel(RegExp('Conditional premoves')), findsNothing);
+      expect(
+        find.bySemanticsLabel(RegExp('Conditional premoves')),
+        findsNothing,
+      );
     });
 
     Future<void> switchToPremoveTab(WidgetTester tester) async {
@@ -1543,12 +1766,18 @@ void main() {
     }
 
     void expectPremoveLineAddable(WidgetTester tester) {
-      expect(find.text('Play a variation to create conditional premoves'), findsNothing);
+      expect(
+        find.text('Play a variation to create conditional premoves'),
+        findsNothing,
+      );
       expect(find.text('Add current variation'), findsOneWidget);
     }
 
     void expectNoPremoveLineAddable(WidgetTester tester) {
-      expect(find.text('Play a variation to create conditional premoves'), findsOneWidget);
+      expect(
+        find.text('Play a variation to create conditional premoves'),
+        findsOneWidget,
+      );
       expect(find.text('Add current variation'), findsNothing);
     }
 
@@ -1582,26 +1811,32 @@ void main() {
       },
     ];
 
-    testWidgets("Can add and remove premove lines on opponent's turn", (tester) async {
+    testWidgets("Can add and remove premove lines on opponent's turn", (
+      tester,
+    ) async {
       Set<List<Map<String, dynamic>>>? lastForecastJsonRequest;
 
       final mockClient = MockClient((request) {
         if (request.url.path == '/$kGameFullId/forecasts') {
           if (request.method == 'POST') {
-            lastForecastJsonRequest = (jsonDecode(request.body) as List<dynamic>)
-                .map(
-                  (steps) => (steps as List<dynamic>)
-                      .map((step) => step as Map<String, dynamic>)
-                      .toList(growable: false),
-                )
-                .toSet();
+            lastForecastJsonRequest =
+                (jsonDecode(request.body) as List<dynamic>)
+                    .map(
+                      (steps) => (steps as List<dynamic>)
+                          .map((step) => step as Map<String, dynamic>)
+                          .toList(growable: false),
+                    )
+                    .toSet();
             return mockResponse('', 200);
           } else {
             return mockResponse(
               makeCorrespondenceGameJsonWithForecast(
                 pgn: '',
                 forecast: [
-                  [SanMove('e4', Move.parse('e2e4')!), SanMove('e5', Move.parse('e7e5')!)].lock,
+                  [
+                    SanMove('e4', Move.parse('e2e4')!),
+                    SanMove('e5', Move.parse('e7e5')!),
+                  ].lock,
                 ].lock,
                 youAre: Side.black,
               ),
@@ -1655,7 +1890,10 @@ void main() {
       // We've added the line, so should not display the "add" button anymore
       expectNoPremoveLineAddable(tester);
 
-      expect(lastForecastJsonRequest, {queensPawnGameForecast, kingsPawnGameForeast});
+      expect(lastForecastJsonRequest, {
+        queensPawnGameForecast,
+        kingsPawnGameForeast,
+      });
 
       expect(find.byIcon(CupertinoIcons.delete), findsNWidgets(2));
 
@@ -1680,7 +1918,8 @@ void main() {
       Set<List<Map<String, dynamic>>>? lastForecastJsonRequest;
 
       final mockClient = MockClient((request) {
-        if (request.url.path.startsWith('/$kGameFullId/forecasts/') && request.method == 'POST') {
+        if (request.url.path.startsWith('/$kGameFullId/forecasts/') &&
+            request.method == 'POST') {
           lastForecastJsonRequest = (jsonDecode(request.body) as List<dynamic>)
               .map(
                 (steps) => (steps as List<dynamic>)
@@ -1690,7 +1929,8 @@ void main() {
               .toSet();
           playedMoveUci = request.url.pathSegments.last;
           return mockResponse('', 200);
-        } else if (request.url.path == '/$kGameFullId/forecasts' && request.method == 'GET') {
+        } else if (request.url.path == '/$kGameFullId/forecasts' &&
+            request.method == 'GET') {
           return mockResponse(
             makeCorrespondenceGameJsonWithForecast(
               pgn: '',
@@ -1804,13 +2044,15 @@ void main() {
             'ply': 2,
             'san': 'd5',
             'uci': 'd7d5',
-            'fen': 'rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2',
+            'fen':
+                'rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 0 2',
           },
           {
             'ply': 3,
             'san': 'c4',
             'uci': 'c2c4',
-            'fen': 'rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2',
+            'fen':
+                'rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2',
           },
         ],
         [
@@ -1818,19 +2060,23 @@ void main() {
             'ply': 2,
             'san': 'Nf6',
             'uci': 'g8f6',
-            'fen': 'rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2',
+            'fen':
+                'rnbqkb1r/pppppppp/5n2/8/3P4/8/PPP1PPPP/RNBQKBNR w KQkq - 1 2',
           },
           {
             'ply': 3,
             'san': 'c4',
             'uci': 'c2c4',
-            'fen': 'rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2',
+            'fen':
+                'rnbqkb1r/pppppppp/5n2/8/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2',
           },
         ],
       });
     });
 
-    testWidgets('Tapping a premove line jumps to its final position', (tester) async {
+    testWidgets('Tapping a premove line jumps to its final position', (
+      tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/$kGameFullId/forecasts') {
           return mockResponse(
@@ -1838,7 +2084,10 @@ void main() {
               pgn: '',
               youAre: Side.black,
               forecast: [
-                [SanMove('e4', Move.parse('e2e4')!), SanMove('e5', Move.parse('e7e5')!)].lock,
+                [
+                  SanMove('e4', Move.parse('e2e4')!),
+                  SanMove('e5', Move.parse('e7e5')!),
+                ].lock,
               ].lock,
             ),
             200,
@@ -2051,7 +2300,10 @@ String makeCorrespondenceGameJsonWithForecast({
 
 Future<void> dragFromTo(WidgetTester tester, String from, String to) async {
   final fromOffset = editorSquareOffset(tester, Square.fromName(from));
-  await tester.dragFrom(fromOffset, editorSquareOffset(tester, Square.fromName(to)) - fromOffset);
+  await tester.dragFrom(
+    fromOffset,
+    editorSquareOffset(tester, Square.fromName(to)) - fromOffset,
+  );
   await tester.pumpAndSettle();
 }
 

@@ -44,14 +44,20 @@ class AppBarTitleText extends StatelessWidget {
       minFontSize: minFontSize ?? 15.0,
       maxFontSize:
           maxFontSize ??
-          (maxLines > 1 ? 18 : AppBarTheme.of(context).titleTextStyle?.fontSize ?? 20.0),
+          (maxLines > 1
+              ? 18
+              : AppBarTheme.of(context).titleTextStyle?.fontSize ?? 20.0),
       overflow: TextOverflow.ellipsis,
     );
   }
 }
 
 class LichessMessage extends StatefulWidget {
-  const LichessMessage({super.key, this.style, this.textAlign = TextAlign.start});
+  const LichessMessage({
+    super.key,
+    this.style,
+    this.textAlign = TextAlign.start,
+  });
 
   final TextStyle? style;
   final TextAlign textAlign;
@@ -81,7 +87,10 @@ class _LichessMessageState extends State<LichessMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final trans = context.l10n.xIsAFreeYLibreOpenSourceChessServer('Lichess', context.l10n.really);
+    final trans = context.l10n.xIsAFreeYLibreOpenSourceChessServer(
+      'Lichess',
+      context.l10n.really,
+    );
     final regexp = RegExp(r'''^([^(]*\()([^)]*)(\).*)$''');
     final match = regexp.firstMatch(trans);
     final List<TextSpan> spans = [];
@@ -90,7 +99,9 @@ class _LichessMessageState extends State<LichessMessage> {
         spans.add(
           TextSpan(
             text: match[i],
-            style: i == 2 ? TextStyle(color: ColorScheme.of(context).primary) : null,
+            style: i == 2
+                ? TextStyle(color: ColorScheme.of(context).primary)
+                : null,
             recognizer: i == 2 ? _recognizer : null,
           ),
         );

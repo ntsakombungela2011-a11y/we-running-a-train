@@ -39,7 +39,10 @@ void showConfigureGameSheet(
 }
 
 class _ConfigureOverTheBoardGameSheet extends ConsumerStatefulWidget {
-  const _ConfigureOverTheBoardGameSheet({required this.initialVariant, this.initialFen});
+  const _ConfigureOverTheBoardGameSheet({
+    required this.initialVariant,
+    this.initialFen,
+  });
 
   final Variant initialVariant;
 
@@ -50,7 +53,8 @@ class _ConfigureOverTheBoardGameSheet extends ConsumerStatefulWidget {
       _ConfigureOverTheBoardGameSheetState();
 }
 
-class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverTheBoardGameSheet> {
+class _ConfigureOverTheBoardGameSheetState
+    extends ConsumerState<_ConfigureOverTheBoardGameSheet> {
   late Variant chosenVariant;
   late TimeControlType chosenTimeControlType;
 
@@ -65,9 +69,11 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
     // standard game (mirrors the controller's fromVariant logic), and fall back
     // to standard when fromPosition arrives without a FEN (e.g. "New game"
     // after a fromPosition game).
-    if (widget.initialFen != null && widget.initialVariant == Variant.standard) {
+    if (widget.initialFen != null &&
+        widget.initialVariant == Variant.standard) {
       chosenVariant = Variant.fromPosition;
-    } else if (widget.initialFen == null && widget.initialVariant == Variant.fromPosition) {
+    } else if (widget.initialFen == null &&
+        widget.initialVariant == Variant.fromPosition) {
       chosenVariant = Variant.standard;
     } else {
       chosenVariant = widget.initialVariant;
@@ -77,7 +83,11 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
       _fenController.text = widget.initialFen!;
     }
     _fenController.addListener(() {
-      setState(() => _fromPositionFen = _fenController.text.isEmpty ? null : _fenController.text);
+      setState(
+        () => _fromPositionFen = _fenController.text.isEmpty
+            ? null
+            : _fenController.text,
+      );
     });
     final clockProvider = ref.read(overTheBoardClockProvider);
     timeIncrement = clockProvider.timeIncrement;
@@ -108,7 +118,9 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
 
   void _setTotalTime(num seconds) {
     setState(() {
-      _updateTimeIncrement(TimeIncrement(seconds.toInt(), timeIncrement.increment));
+      _updateTimeIncrement(
+        TimeIncrement(seconds.toInt(), timeIncrement.increment),
+      );
     });
   }
 
@@ -119,7 +131,9 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
   }
 
   void _updateTimeIncrement(TimeIncrement newIncrement) {
-    ref.read(overTheBoardPreferencesProvider.notifier).setTimeIncrement(newIncrement);
+    ref
+        .read(overTheBoardPreferencesProvider.notifier)
+        .setTimeIncrement(newIncrement);
     setState(() {
       timeIncrement = newIncrement;
       if (timeIncrement.isInfinite) {
@@ -152,8 +166,10 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
                   title: Text(context.l10n.timeControl),
                   choices: TimeControlType.values,
                   selectedItem: chosenTimeControlType,
-                  labelBuilder: (TimeControlType control) => Text(control.label(context.l10n)),
-                  onSelectedItemChanged: (TimeControlType control) => _setTimeControlType(control),
+                  labelBuilder: (TimeControlType control) =>
+                      Text(control.label(context.l10n)),
+                  onSelectedItemChanged: (TimeControlType control) =>
+                      _setTimeControlType(control),
                 );
               },
             ),
@@ -170,7 +186,10 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
                               text: '${context.l10n.minutesPerSide}: ',
                               children: [
                                 TextSpan(
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                   text: clockLabelInMinutes(timeIncrement.time),
                                 ),
                               ],
@@ -190,7 +209,10 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
                               text: '${context.l10n.incrementInSeconds}: ',
                               children: [
                                 TextSpan(
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                   text: timeIncrement.increment.toString(),
                                 ),
                               ],
@@ -237,7 +259,8 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
                         ),
                         controller: _fenController,
                         readOnly: true,
-                        onTap: () => pasteFenFromClipboard(context, _fenController),
+                        onTap: () =>
+                            pasteFenFromClipboard(context, _fenController),
                       ),
                     )
                   : const SizedBox.shrink(),
@@ -249,10 +272,16 @@ class _ConfigureOverTheBoardGameSheetState extends ConsumerState<_ConfigureOverT
           child: FilledButton(
             onPressed: _isPlayEnabled
                 ? () {
-                    ref.read(overTheBoardClockProvider.notifier).setupClock(timeIncrement);
+                    ref
+                        .read(overTheBoardClockProvider.notifier)
+                        .setupClock(timeIncrement);
                     ref
                         .read(overTheBoardGameControllerProvider.notifier)
-                        .startNewGame(chosenVariant, timeIncrement, initialFen: _fromPositionFen);
+                        .startNewGame(
+                          chosenVariant,
+                          timeIncrement,
+                          initialFen: _fromPositionFen,
+                        );
                     Navigator.pop(context);
                   }
                 : null,
@@ -287,14 +316,16 @@ class OverTheBoardDisplaySettings extends ConsumerWidget {
         SwitchSettingTile(
           title: const Text('Use symmetric pieces'),
           value: prefs.symmetricPieces,
-          onChanged: (_) =>
-              ref.read(overTheBoardPreferencesProvider.notifier).toggleSymmetricPieces(),
+          onChanged: (_) => ref
+              .read(overTheBoardPreferencesProvider.notifier)
+              .toggleSymmetricPieces(),
         ),
         SwitchSettingTile(
           title: const Text('Flip pieces and opponent info after move'),
           value: prefs.flipPiecesAfterMove,
-          onChanged: (_) =>
-              ref.read(overTheBoardPreferencesProvider.notifier).toggleFlipPiecesAfterMove(),
+          onChanged: (_) => ref
+              .read(overTheBoardPreferencesProvider.notifier)
+              .toggleFlipPiecesAfterMove(),
         ),
       ],
     );

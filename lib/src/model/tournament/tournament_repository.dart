@@ -11,7 +11,11 @@ import 'package:lichess_mobile/src/network/http.dart';
 
 /// A provider for [TournamentRepository].
 final tournamentRepositoryProvider = Provider<TournamentRepository>((Ref ref) {
-  return TournamentRepository(ref.watch(lichessClientProvider), ref.watch(aggregatorProvider), ref);
+  return TournamentRepository(
+    ref.watch(lichessClientProvider),
+    ref.watch(aggregatorProvider),
+    ref,
+  );
 }, name: 'TournamentRepositoryProvider');
 
 class TournamentRepository {
@@ -25,7 +29,8 @@ class TournamentRepository {
     return aggregator.readJson(
       Uri(path: '/tournament/featured'),
       headers: {'Accept': 'application/json'},
-      atomicMapper: (Map<String, dynamic> json) => pick(json, 'featured').asTournamentListOrThrow(),
+      atomicMapper: (Map<String, dynamic> json) =>
+          pick(json, 'featured').asTournamentListOrThrow(),
     );
   }
 
@@ -45,25 +50,36 @@ class TournamentRepository {
 
   Future<Tournament> getTournament(TournamentId id) {
     return client.readJson(
-      Uri(path: '/api/tournament/$id', queryParameters: {'chat': '1', 'socketVersion': '1'}),
+      Uri(
+        path: '/api/tournament/$id',
+        queryParameters: {'chat': '1', 'socketVersion': '1'},
+      ),
       headers: {'Accept': 'application/json'},
       mapper: (Map<String, dynamic> json) => Tournament.fromServerJson(json),
     );
   }
 
-  Future<TournamentPlayer> getTournamentPlayer(TournamentId tournamentId, UserId userId) {
+  Future<TournamentPlayer> getTournamentPlayer(
+    TournamentId tournamentId,
+    UserId userId,
+  ) {
     return client.readJson(
       Uri(path: '/tournament/$tournamentId/player/$userId'),
       headers: {'Accept': 'application/json'},
-      mapper: (Map<String, dynamic> json) => TournamentPlayer.fromServerJson(json),
+      mapper: (Map<String, dynamic> json) =>
+          TournamentPlayer.fromServerJson(json),
     );
   }
 
-  Future<TournamentTeam> getTournamentTeam(TournamentId tournamentId, TeamId teamId) {
+  Future<TournamentTeam> getTournamentTeam(
+    TournamentId tournamentId,
+    TeamId teamId,
+  ) {
     return client.readJson(
       Uri(path: '/tournament/$tournamentId/team/$teamId'),
       headers: {'Accept': 'application/json'},
-      mapper: (Map<String, dynamic> json) => TournamentTeam.fromServerJson(json),
+      mapper: (Map<String, dynamic> json) =>
+          TournamentTeam.fromServerJson(json),
     );
   }
 
@@ -71,15 +87,23 @@ class TournamentRepository {
     return client.readJson(
       Uri(path: '/api/tournament/$id/teams'),
       headers: {'Accept': 'application/json'},
-      mapper: (Map<String, dynamic> json) => pick(json, 'teams').asTeamStandingListOrThrow(),
+      mapper: (Map<String, dynamic> json) =>
+          pick(json, 'teams').asTeamStandingListOrThrow(),
     );
   }
 
-  Future<bool> downloadTournamentGames(TournamentId id, File file, {UserId? userId}) {
+  Future<bool> downloadTournamentGames(
+    TournamentId id,
+    File file, {
+    UserId? userId,
+  }) {
     final client = _ref.read(defaultClientProvider);
     return downloadFile(
       client,
-      lichessUri('/api/tournament/$id/games', userId != null ? {'player': userId.value} : null),
+      lichessUri(
+        '/api/tournament/$id/games',
+        userId != null ? {'player': userId.value} : null,
+      ),
       file,
     );
   }
@@ -89,12 +113,14 @@ class TournamentRepository {
       Uri(
         path: tournament.reloadEndpoint ?? '/api/tournament/${tournament.id}',
         queryParameters: {
-          if (tournament.standing != null) 'page': tournament.standing!.page.toString(),
+          if (tournament.standing != null)
+            'page': tournament.standing!.page.toString(),
           'partial': 'true',
         },
       ),
       headers: {'Accept': 'application/json'},
-      mapper: (Map<String, dynamic> json) => tournament.updateFromPartialServerJson(json),
+      mapper: (Map<String, dynamic> json) =>
+          tournament.updateFromPartialServerJson(json),
     );
   }
 
@@ -102,11 +128,16 @@ class TournamentRepository {
     return client.readJson(
       Uri(path: '/tournament/${tournament.id}/standing/$page'),
       headers: {'Accept': 'application/json'},
-      mapper: (Map<String, dynamic> json) => tournament.updateStandingsFromServerJson(json),
+      mapper: (Map<String, dynamic> json) =>
+          tournament.updateStandingsFromServerJson(json),
     );
   }
 
-  Future<void> join(TournamentId id, {TeamId? teamId, String? entryCode}) async {
+  Future<void> join(
+    TournamentId id, {
+    TeamId? teamId,
+    String? entryCode,
+  }) async {
     await client.postRead(
       Uri(path: '/api/tournament/$id/join'),
       body: {

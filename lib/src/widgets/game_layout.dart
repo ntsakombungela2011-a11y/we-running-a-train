@@ -196,7 +196,8 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
 
   /// The controller actually rendered by the board: the externally owned one if
   /// provided, otherwise the one we created.
-  ChessboardController? get _controller => widget.controllerParams?.controller ?? _ownController;
+  ChessboardController? get _controller =>
+      widget.controllerParams?.controller ?? _ownController;
 
   @override
   void initState() {
@@ -283,7 +284,8 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
   }
 
   /// Whether a move list can be rendered (either inline moves or a builder).
-  bool get _hasMoveList => widget.moves != null || widget.moveListBuilder != null;
+  bool get _hasMoveList =>
+      widget.moves != null || widget.moveListBuilder != null;
 
   /// Builds the move list content for [type], using the [GameLayout.moveListBuilder]
   /// when provided, otherwise the inline [GameLayout.moves]. Must only be called
@@ -306,7 +308,12 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
   GameData _gameDataFor(GameBoardParams params) {
     final boardPrefs = ref.read(boardPreferencesProvider);
     return switch (params) {
-      InteractiveBoardParams(:final variant, :final position, :final playerSide, :final lastMove) =>
+      InteractiveBoardParams(
+        :final variant,
+        :final position,
+        :final playerSide,
+        :final lastMove,
+      ) =>
         buildGameData(
           fen: position.fen,
           variant: variant,
@@ -375,7 +382,9 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
         final defaultSettings = boardPrefs
             .toBoardSettings(variant)
             .copyWith(
-              borderRadius: isTablet ? Styles.boardBorderRadius : BorderRadius.zero,
+              borderRadius: isTablet
+                  ? Styles.boardBorderRadius
+                  : BorderRadius.zero,
               boxShadow: isTablet ? boardShadows : const <BoxShadow>[],
             );
 
@@ -404,7 +413,10 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
                   sideToMove: sideToMove,
                   playerSide: playerSide,
                   pockets: pockets,
-                  squareSize: pocketSquareSize(boardSize: boardSize, isTablet: isTablet),
+                  squareSize: pocketSquareSize(
+                    boardSize: boardSize,
+                    isTablet: isTablet,
+                  ),
                   isUpsideDown: widget.topTableUpsideDown,
                   premoveDropRole: premoveDropRole,
                 ),
@@ -428,7 +440,10 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
                   sideToMove: sideToMove,
                   playerSide: playerSide,
                   pockets: pockets,
-                  squareSize: pocketSquareSize(boardSize: boardSize, isTablet: isTablet),
+                  squareSize: pocketSquareSize(
+                    boardSize: boardSize,
+                    isTablet: isTablet,
+                  ),
                   isUpsideDown: widget.bottomTableUpsideDown,
                   premoveDropRole: premoveDropRole,
                 ),
@@ -438,11 +453,13 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
 
         if (orientation == Orientation.landscape) {
           final defaultBoardSize =
-              constraints.biggest.shortestSide - (kTabletBoardTableSidePadding * 2);
+              constraints.biggest.shortestSide -
+              (kTabletBoardTableSidePadding * 2);
           final sideWidth = constraints.biggest.longestSide - defaultBoardSize;
           final boardSize = sideWidth >= 250
               ? defaultBoardSize
-              : constraints.biggest.longestSide / kGoldenRatio - (kTabletBoardTableSidePadding * 2);
+              : constraints.biggest.longestSide / kGoldenRatio -
+                    (kTabletBoardTableSidePadding * 2);
 
           return Padding(
             padding: const EdgeInsets.all(kTabletBoardTableSidePadding),
@@ -471,7 +488,9 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       topTable(boardSize: boardSize),
-                      if (boardPrefs.moveListDisplay && !widget.zenMode && _hasMoveList)
+                      if (boardPrefs.moveListDisplay &&
+                          !widget.zenMode &&
+                          _hasMoveList)
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 16.0),
@@ -499,12 +518,15 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
 
           final isShortScreen = isShortVerticalScreen(context);
 
-          final pocketsPadding = (pockets != null && (isTablet || isShortScreen))
+          final pocketsPadding =
+              (pockets != null && (isTablet || isShortScreen))
               ? _kAdditionalBoardSidePaddingForPockets
               : 0;
 
           double effectiveBoardSize =
-              (isTablet ? defaultBoardSize - kTabletBoardTableSidePadding * 2 : defaultBoardSize) -
+              (isTablet
+                  ? defaultBoardSize - kTabletBoardTableSidePadding * 2
+                  : defaultBoardSize) -
               pocketsPadding;
 
           if (isShortScreen) {
@@ -521,7 +543,11 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
                   !(isTablet && pockets != null))
                 if (widget.zenMode)
                   // display empty move list to keep the layout consistent in zen mode
-                  const MoveList(type: MoveListType.inline, slicedMoves: [], currentMoveIndex: 0)
+                  const MoveList(
+                    type: MoveListType.inline,
+                    slicedMoves: [],
+                    currentMoveIndex: 0,
+                  )
                 else
                   _moveListContent(MoveListType.inline),
               Expanded(
@@ -535,7 +561,9 @@ class _GameLayoutState extends ConsumerState<GameLayout> {
               ),
               Padding(
                 padding: isTablet
-                    ? const EdgeInsets.symmetric(horizontal: kTabletBoardTableSidePadding)
+                    ? const EdgeInsets.symmetric(
+                        horizontal: kTabletBoardTableSidePadding,
+                      )
                     : EdgeInsets.zero,
                 child: BoardWidget(
                   size: effectiveBoardSize,

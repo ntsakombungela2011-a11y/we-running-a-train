@@ -10,10 +10,11 @@ import 'package:lichess_mobile/src/network/socket.dart';
 
 typedef OnlineFriend = ({LightUser user, bool playing});
 
-final onlineFriendsProvider = AsyncNotifierProvider.autoDispose<OnlineFriends, IList<OnlineFriend>>(
-  OnlineFriends.new,
-  name: 'OnlineFriendsProvider',
-);
+final onlineFriendsProvider =
+    AsyncNotifierProvider.autoDispose<OnlineFriends, IList<OnlineFriend>>(
+      OnlineFriends.new,
+      name: 'OnlineFriendsProvider',
+    );
 
 class OnlineFriends extends AsyncNotifier<IList<OnlineFriend>> {
   StreamSubscription<SocketEvent>? _socketSubscription;
@@ -80,17 +81,23 @@ class OnlineFriends extends AsyncNotifier<IList<OnlineFriend>> {
         final patronColor = event.json?['patronColor'] as int?;
         final user = _parseFriend(event.data.toString(), patronColor);
         final playing = event.json?['playing'] as bool? ?? false;
-        state = AsyncValue.data(currentList.add((user: user, playing: playing)));
+        state = AsyncValue.data(
+          currentList.add((user: user, playing: playing)),
+        );
 
       case 'following_leaves':
         final data = _parseFriend(event.data.toString());
-        state = AsyncValue.data(currentList.removeWhere((v) => v.user.id == data.id));
+        state = AsyncValue.data(
+          currentList.removeWhere((v) => v.user.id == data.id),
+        );
 
       case 'following_playing':
         final data = _parseFriend(event.data.toString());
         state = AsyncValue.data(
           currentList
-              .map((v) => v.user.id == data.id ? (user: v.user, playing: true) : v)
+              .map(
+                (v) => v.user.id == data.id ? (user: v.user, playing: true) : v,
+              )
               .toIList(),
         );
 
@@ -98,7 +105,10 @@ class OnlineFriends extends AsyncNotifier<IList<OnlineFriend>> {
         final data = _parseFriend(event.data.toString());
         state = AsyncValue.data(
           currentList
-              .map((v) => v.user.id == data.id ? (user: v.user, playing: false) : v)
+              .map(
+                (v) =>
+                    v.user.id == data.id ? (user: v.user, playing: false) : v,
+              )
               .toIList(),
         );
     }
@@ -123,7 +133,9 @@ class OnlineFriends extends AsyncNotifier<IList<OnlineFriend>> {
     final patronColors = event.json?['patronColors'] as List<dynamic>? ?? [];
     final playing = event.json?['playing'] as List<dynamic>? ?? [];
     return friends.mapIndexed((i, v) {
-      final patronColor = friends.length == patronColors.length ? patronColors[i] as int? : null;
+      final patronColor = friends.length == patronColors.length
+          ? patronColors[i] as int?
+          : null;
       final user = _parseFriend(
         v.toString(),
         // patron colors here being sent as 0 when the user is not a patron

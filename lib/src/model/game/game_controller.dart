@@ -46,7 +46,8 @@ final gameControllerProvider = AsyncNotifierProvider.autoDispose
       name: 'GameControllerProvider',
     );
 
-class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> {
+class GameController extends AsyncNotifier<GameState>
+    with ChatMixin<GameState> {
   GameController(this.gameFullId);
 
   final GameFullId gameFullId;
@@ -75,7 +76,8 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
   /// Whether the app was put in background since the previous move was sent.
   bool _wasInBackground = false;
 
-  static Uri socketUri(GameFullId gameFullId) => Uri(path: '/play/$gameFullId/v6');
+  static Uri socketUri(GameFullId gameFullId) =>
+      Uri(path: '/play/$gameFullId/v6');
 
   SocketPool get _socketPool => ref.read(socketPoolProvider);
 
@@ -118,8 +120,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
     _socketSubscription?.cancel();
     _socketSubscription = _socketClient.stream.listen(handleSocketEvent);
 
-    final rawFullEvent = await _socketClient.stream.firstWhere((e) => e.topic == 'full');
-    final fullEvent = GameFullEvent.fromJson(rawFullEvent.data as Map<String, dynamic>);
+    final rawFullEvent = await _socketClient.stream.firstWhere(
+      (e) => e.topic == 'full',
+    );
+    final fullEvent = GameFullEvent.fromJson(
+      rawFullEvent.data as Map<String, dynamic>,
+    );
     _socketClient.version = fullEvent.socketEventVersion;
 
     final game = fullEvent.game;
@@ -157,9 +163,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
       gameFullId: gameFullId,
       game: game,
       stepCursor: game.steps.length - 1,
-      liveClock: _clock != null ? (white: _clock!.whiteTime, black: _clock!.blackTime) : null,
+      liveClock: _clock != null
+          ? (white: _clock!.whiteTime, black: _clock!.blackTime)
+          : null,
       chatState: await initChat(game.chat),
-      chatDisabledViaPrefs: ref.read(gamePreferencesProvider).enableChat == false,
+      chatDisabledViaPrefs:
+          ref.read(gamePreferencesProvider).enableChat == false,
     );
   }
 
@@ -283,7 +292,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         'Invalid confirm move: $e',
         null,
         reason: 'PlayException thrown when making SAN of confirm move',
-        information: ['move: $moveToConfirm', 'position: ${curState.game.lastPosition}'],
+        information: [
+          'move: $moveToConfirm',
+          'position: ${curState.game.lastPosition}',
+        ],
       );
       _logger.warning('Invalid confirm move: $e');
       state = AsyncValue.data(curState.copyWith(moveToConfirm: null));
@@ -333,7 +345,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
     if (state.hasValue) {
       final curState = state.requireValue;
       if (curState.stepCursor < curState.game.steps.length - 1) {
-        state = AsyncValue.data(curState.copyWith(stepCursor: curState.stepCursor + 1));
+        state = AsyncValue.data(
+          curState.copyWith(stepCursor: curState.stepCursor + 1),
+        );
         final san = curState.game.stepAt(curState.stepCursor + 1).sanMove?.san;
         if (san != null) {
           _playReplayMoveSound(san);
@@ -348,9 +362,16 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
       if (curState.stepCursor > 0) {
         final (newState, didCancel) = _tryCancelMoveConfirmation(curState);
         state = AsyncValue.data(
-          newState.copyWith(stepCursor: didCancel ? newState.stepCursor : newState.stepCursor - 1),
+          newState.copyWith(
+            stepCursor: didCancel
+                ? newState.stepCursor
+                : newState.stepCursor - 1,
+          ),
         );
-        final san = state.requireValue.game.stepAt(state.requireValue.stepCursor).sanMove?.san;
+        final san = state.requireValue.game
+            .stepAt(state.requireValue.stepCursor)
+            .sanMove
+            ?.san;
         if (san != null) {
           _playReplayMoveSound(san);
         }
@@ -378,7 +399,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
   void toggleMoveConfirmation() {
     final curState = state.requireValue;
     state = AsyncValue.data(
-      curState.copyWith(moveConfirmSettingOverride: !(curState.moveConfirmSettingOverride ?? true)),
+      curState.copyWith(
+        moveConfirmSettingOverride:
+            !(curState.moveConfirmSettingOverride ?? true),
+      ),
     );
   }
 
@@ -390,7 +414,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         ? (initial != null && initial != Zen.no ? initial : Zen.gameAuto)
         : Zen.no;
     state = AsyncValue.data(
-      curState.copyWith.game(prefs: curState.game.prefs?.copyWith(zenMode: newZen)),
+      curState.copyWith.game(
+        prefs: curState.game.prefs?.copyWith(zenMode: newZen),
+      ),
     );
     ref.read(accountPreferencesProvider.notifier).setZen(newZen);
   }
@@ -398,12 +424,16 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
   void toggleAutoQueen() {
     final curState = state.requireValue;
     state = AsyncValue.data(
-      curState.copyWith(autoQueenSettingOverride: !(curState.autoQueenSettingOverride ?? true)),
+      curState.copyWith(
+        autoQueenSettingOverride: !(curState.autoQueenSettingOverride ?? true),
+      ),
     );
   }
 
   void onToggleChat(bool isChatEnabled) {
-    state = AsyncValue.data(state.requireValue.copyWith(chatDisabledViaPrefs: !isChatEnabled));
+    state = AsyncValue.data(
+      state.requireValue.copyWith(chatDisabledViaPrefs: !isChatEnabled),
+    );
     if (isChatEnabled) {
       // if chat is enabled, we need to resync the game data to get the chat messages
       _reloadGame();
@@ -510,7 +540,11 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
     }
   }
 
-  void _sendMoveToSocket(Move move, {required bool isPremove, required bool withLag}) {
+  void _sendMoveToSocket(
+    Move move, {
+    required bool isPremove,
+    required bool withLag,
+  }) {
     final thinkTime = _clock?.stop();
     final moveTime = _clock != null
         ? isPremove == true
@@ -520,7 +554,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
 
     final (topic, data) = switch (move) {
       NormalMove() => ('move', {'u': move.uci}),
-      DropMove(:final role, :final to) => ('drop', {'role': role.name, 'pos': to.name}),
+      DropMove(:final role, :final to) => (
+        'drop',
+        {'role': role.name, 'pos': to.name},
+      ),
     };
 
     final withBlur = _wasInBackground;
@@ -529,7 +566,8 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
       topic,
       {
         ...data,
-        if (moveTime != null) 's': (moveTime.inMilliseconds * 0.1).round().toRadixString(36),
+        if (moveTime != null)
+          's': (moveTime.inMilliseconds * 0.1).round().toRadixString(36),
         if (withBlur) 'b': 1,
       },
       ackable: true,
@@ -541,7 +579,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
 
   /// Move feedback while playing
   void _playMoveFeedback(SanMove sanMove, {bool skipAnimationDelay = false}) {
-    final animationDuration = ref.read(boardPreferencesProvider).pieceAnimationDuration;
+    final animationDuration = ref
+        .read(boardPreferencesProvider)
+        .pieceAnimationDuration;
 
     final delay = animationDuration ~/ 2;
 
@@ -559,7 +599,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
     if (sanMove.san.contains('x')) {
       ref
           .read(moveFeedbackServiceProvider)
-          .captureFeedback(state.requireValue.game.meta.variant, check: isCheck);
+          .captureFeedback(
+            state.requireValue.game.meta.variant,
+            check: isCheck,
+          );
     } else {
       ref.read(moveFeedbackServiceProvider).moveFeedback(check: isCheck);
     }
@@ -610,7 +653,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
     switch (event.topic) {
       // First message sent when the socket is reconnected
       case 'full':
-        final fullEvent = GameFullEvent.fromJson(event.data as Map<String, dynamic>);
+        final fullEvent = GameFullEvent.fromJson(
+          event.data as Map<String, dynamic>,
+        );
         _socketClient.version = fullEvent.socketEventVersion;
 
         // The resync replaces our steps with the server's authoritative ones, so
@@ -622,13 +667,15 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
 
         final newGame = fullEvent.game;
         final isOpponentOnGame =
-            newGame.playerOf(newGame.youAre?.opposite ?? Side.white).onGame ?? false;
+            newGame.playerOf(newGame.youAre?.opposite ?? Side.white).onGame ??
+            false;
 
         // A pending (unconfirmed) move was selected for the previous live
         // position. If the server resync changed that position (e.g. a takeback),
         // the move could be applied to a different position and render an illegal
         // one, so it must be dropped.
-        final positionChanged = newGame.lastPosition.fen != curState.game.lastPosition.fen;
+        final positionChanged =
+            newGame.lastPosition.fen != curState.game.lastPosition.fen;
 
         state = AsyncValue.data(
           state.requireValue.copyWith(
@@ -637,8 +684,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
             stepCursor: curState.isReplaying
                 ? curState.stepCursor.clamp(0, newGame.steps.length - 1)
                 : newGame.steps.length - 1,
-            moveToConfirm: curState.isReplaying || positionChanged ? null : curState.moveToConfirm,
-            opponentLeftCountdown: isOpponentOnGame ? null : curState.opponentLeftCountdown,
+            moveToConfirm: curState.isReplaying || positionChanged
+                ? null
+                : curState.moveToConfirm,
+            opponentLeftCountdown: isOpponentOnGame
+                ? null
+                : curState.opponentLeftCountdown,
           ),
         );
 
@@ -663,7 +714,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
             _reloadGame();
             return;
           }
-          final reloadEvent = SocketEvent(topic: data['t'] as String, data: data['d']);
+          final reloadEvent = SocketEvent(
+            topic: data['t'] as String,
+            data: data['d'],
+          );
           handleSocketEvent(reloadEvent);
         } else {
           _reloadGame();
@@ -707,7 +761,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
           );
 
           newState = newState.copyWith(
-            game: newState.game.copyWith(steps: newState.game.steps.add(newStep)),
+            game: newState.game.copyWith(
+              steps: newState.game.steps.add(newStep),
+            ),
             // Clear any pending move confirmation since the position has changed.
             moveToConfirm: null,
           );
@@ -765,15 +821,21 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         }
 
         if (curState.game.meta.speed == Speed.correspondence) {
-          ref.read(correspondenceServiceProvider).updateStoredGame(gameFullId, newState.game);
-          ref.read(ongoingGamesProvider.notifier).updateGame(gameFullId, newState.game);
+          ref
+              .read(correspondenceServiceProvider)
+              .updateStoredGame(gameFullId, newState.game);
+          ref
+              .read(ongoingGamesProvider.notifier)
+              .updateGame(gameFullId, newState.game);
         }
 
         state = AsyncValue.data(newState);
 
       // End game event
       case 'endData':
-        final endData = GameEndEvent.fromJson(event.data as Map<String, dynamic>);
+        final endData = GameEndEvent.fromJson(
+          event.data as Map<String, dynamic>,
+        );
 
         // A move (typically an auto-fired premove) may have been applied
         // optimistically to the board but never confirmed by the server because
@@ -783,7 +845,8 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         // derived from it) matches the server.
         // See https://github.com/lichess-org/mobile/issues/2130.
         GameState curState = state.requireValue;
-        if (_transientMoveTimer?.isActive == true && curState.game.steps.length > 1) {
+        if (_transientMoveTimer?.isActive == true &&
+            curState.game.steps.length > 1) {
           final confirmedSteps = curState.game.steps.removeLast();
           curState = curState.copyWith(
             game: curState.game.copyWith(steps: confirmedSteps),
@@ -799,8 +862,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
             status: endData.status,
             winner: endData.winner,
             boosted: endData.boosted,
-            white: curState.game.white.copyWith(ratingDiff: endData.ratingDiff?.white),
-            black: curState.game.black.copyWith(ratingDiff: endData.ratingDiff?.black),
+            white: curState.game.white.copyWith(
+              ratingDiff: endData.ratingDiff?.white,
+            ),
+            black: curState.game.black.copyWith(
+              ratingDiff: endData.ratingDiff?.black,
+            ),
           ),
         );
 
@@ -824,8 +891,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         }
 
         if (curState.game.meta.speed == Speed.correspondence) {
-          ref.read(correspondenceServiceProvider).updateStoredGame(gameFullId, newState.game);
-          ref.read(ongoingGamesProvider.notifier).updateGame(gameFullId, newState.game);
+          ref
+              .read(correspondenceServiceProvider)
+              .updateStoredGame(gameFullId, newState.game);
+          ref
+              .read(ongoingGamesProvider.notifier)
+              .updateGame(gameFullId, newState.game);
         }
 
         state = AsyncValue.data(newState);
@@ -835,7 +906,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
               .then((data) {
                 if (!ref.mounted) return;
                 final game = _mergePostGameData(state.requireValue.game, data);
-                state = AsyncValue.data(state.requireValue.copyWith(game: game));
+                state = AsyncValue.data(
+                  state.requireValue.copyWith(game: game),
+                );
                 _storeGame(game);
               })
               .catchError((Object e, StackTrace s) {
@@ -870,13 +943,17 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         final opponent = curState.game.youAre?.opposite;
         GameState newState = curState;
         if (whiteOnGame != null) {
-          newState = newState.copyWith.game(white: newState.game.white.setOnGame(whiteOnGame));
+          newState = newState.copyWith.game(
+            white: newState.game.white.setOnGame(whiteOnGame),
+          );
           if (opponent == Side.white && whiteOnGame == true) {
             newState = newState.copyWith(opponentLeftCountdown: null);
           }
         }
         if (blackOnGame != null) {
-          newState = newState.copyWith.game(black: newState.game.black.setOnGame(blackOnGame));
+          newState = newState.copyWith.game(
+            black: newState.game.black.setOnGame(blackOnGame),
+          );
           if (opponent == Side.black && blackOnGame == true) {
             newState = newState.copyWith(opponentLeftCountdown: null);
           }
@@ -885,7 +962,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         if (watcherData != null && watcherData is Map<String, dynamic>) {
           final nb = watcherData['nb'] as int? ?? 0;
           final users =
-              (watcherData['users'] as List<dynamic>?)?.map((e) => e.toString()).toIList() ??
+              (watcherData['users'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toIList() ??
               const IList.empty();
           newState = newState.copyWith(nbWatchers: nb, watcherNames: users);
         }
@@ -899,8 +978,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         GameState newState = state.requireValue;
         final youAre = newState.game.youAre;
         newState = newState.copyWith.game(
-          white: youAre == Side.white ? newState.game.white : newState.game.white.setGone(isGone),
-          black: youAre == Side.black ? newState.game.black : newState.game.black.setGone(isGone),
+          white: youAre == Side.white
+              ? newState.game.white
+              : newState.game.white.setGone(isGone),
+          black: youAre == Side.black
+              ? newState.game.black
+              : newState.game.black.setGone(isGone),
         );
         state = AsyncValue.data(newState);
 
@@ -909,7 +992,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
       case 'goneIn':
         final timeLeft = Duration(seconds: event.data as int);
         state = AsyncValue.data(
-          state.requireValue.copyWith(opponentLeftCountdown: (timeLeft, DateTime.now())),
+          state.requireValue.copyWith(
+            opponentLeftCountdown: (timeLeft, DateTime.now()),
+          ),
         );
 
       // Event sent when a player adds or cancels a draw offer
@@ -941,8 +1026,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         state = AsyncValue.data(
           curState.copyWith(
             game: curState.game.copyWith(
-              white: curState.game.white.copyWith(proposingTakeback: white ?? false),
-              black: curState.game.black.copyWith(proposingTakeback: black ?? false),
+              white: curState.game.white.copyWith(
+                proposingTakeback: white ?? false,
+              ),
+              black: curState.game.black.copyWith(
+                proposingTakeback: black ?? false,
+              ),
             ),
           ),
         );
@@ -968,16 +1057,22 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
       // sending another rematch offer, which should not happen
       case 'rematchTaken':
         final nextId = pick(event.data).asGameIdOrThrow();
-        state = AsyncValue.data(state.requireValue.copyWith.game(rematch: nextId));
+        state = AsyncValue.data(
+          state.requireValue.copyWith.game(rematch: nextId),
+        );
 
       // Event sent after a rematch is taken, to redirect to the new game
       case 'redirect':
         final data = event.data as Map<String, dynamic>;
         final fullId = pick(data['id']).asGameFullIdOrThrow();
-        state = AsyncValue.data(state.requireValue.copyWith(redirectGameId: fullId));
+        state = AsyncValue.data(
+          state.requireValue.copyWith(redirectGameId: fullId),
+        );
 
       case 'analysisProgress':
-        final data = ServerEvalEvent.fromJson(event.data as Map<String, dynamic>);
+        final data = ServerEvalEvent.fromJson(
+          event.data as Map<String, dynamic>,
+        );
         final curState = state.requireValue;
         state = AsyncValue.data(
           curState.copyWith.game(
@@ -996,10 +1091,12 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
         state = AsyncValue.data(
           curState.copyWith.game(
             white: curState.game.white.copyWith(
-              berserk: side == Side.white || curState.game.white.berserk == true,
+              berserk:
+                  side == Side.white || curState.game.white.berserk == true,
             ),
             black: curState.game.black.copyWith(
-              berserk: side == Side.black || curState.game.black.berserk == true,
+              berserk:
+                  side == Side.black || curState.game.black.berserk == true,
             ),
           ),
         );
@@ -1021,7 +1118,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
 
   Future<void> _onFinishedGameLoad(PlayableGame game) async {
     if (game.meta.speed == Speed.correspondence) {
-      ref.read(correspondenceServiceProvider).updateStoredGame(gameFullId, game);
+      ref
+          .read(correspondenceServiceProvider)
+          .updateStoredGame(gameFullId, game);
     }
 
     PlayableGame gameWithPostData = game;
@@ -1036,7 +1135,9 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
 
     if (!ref.mounted) return;
 
-    state = AsyncValue.data(state.requireValue.copyWith(game: gameWithPostData));
+    state = AsyncValue.data(
+      state.requireValue.copyWith(game: gameWithPostData),
+    );
   }
 
   PlayableGame _mergePostGameData(
@@ -1054,7 +1155,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
       final initialTime = game.meta.clock!.initial;
       newSteps = game.steps.mapIndexed((index, element) {
         if (index == 0) {
-          return element.copyWith(archivedWhiteClock: initialTime, archivedBlackClock: initialTime);
+          return element.copyWith(
+            archivedWhiteClock: initialTime,
+            archivedBlackClock: initialTime,
+          );
         }
         final prevClock = index > 1 ? data.clocks![index - 2] : initialTime;
         final stepClock = data.clocks![index - 1];
@@ -1068,7 +1172,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
     return game.copyWith(
       steps: newSteps,
       clocks: data.clocks,
-      meta: game.meta.copyWith(opening: data.meta.opening, division: data.meta.division),
+      meta: game.meta.copyWith(
+        opening: data.meta.opening,
+        division: data.meta.division,
+      ),
       white: game.white.copyWith(analysis: data.white.analysis),
       black: game.black.copyWith(analysis: data.black.analysis),
       evals: data.evals,
@@ -1076,7 +1183,10 @@ class GameController extends AsyncNotifier<GameState> with ChatMixin<GameState> 
   }
 }
 
-typedef LiveGameClock = ({ValueListenable<Duration> white, ValueListenable<Duration> black});
+typedef LiveGameClock = ({
+  ValueListenable<Duration> white,
+  ValueListenable<Duration> black,
+});
 
 @freezed
 sealed class GameState with _$GameState, ChatMixinState {
@@ -1122,7 +1232,8 @@ sealed class GameState with _$GameState, ChatMixinState {
   ///
   /// For finished games, only [Zen.yes] keeps zen mode active.
   /// For playable games, zen is active when account pref is [Zen.yes] or [Zen.gameAuto].
-  bool get isZenModeActive => game.playable ? isZenModeEnabled : game.prefs?.zenMode == Zen.yes;
+  bool get isZenModeActive =>
+      game.playable ? isZenModeEnabled : game.prefs?.zenMode == Zen.yes;
 
   /// Whether zen mode is enabled by account preference
   bool get isZenModeEnabled {
@@ -1136,11 +1247,14 @@ sealed class GameState with _$GameState, ChatMixinState {
   }
 
   bool get canPremove => game.meta.speed != Speed.correspondence;
-  bool get canAutoQueen => autoQueenSettingOverride ?? (game.prefs?.autoQueen == AutoQueen.always);
+  bool get canAutoQueen =>
+      autoQueenSettingOverride ?? (game.prefs?.autoQueen == AutoQueen.always);
   bool get canAutoQueenOnPremove =>
       autoQueenSettingOverride ??
-      (game.prefs?.autoQueen == AutoQueen.always || game.prefs?.autoQueen == AutoQueen.premove);
-  bool get shouldConfirmMove => moveConfirmSettingOverride ?? game.prefs?.submitMove ?? false;
+      (game.prefs?.autoQueen == AutoQueen.always ||
+          game.prefs?.autoQueen == AutoQueen.premove);
+  bool get shouldConfirmMove =>
+      moveConfirmSettingOverride ?? game.prefs?.submitMove ?? false;
 
   bool get isReplaying => stepCursor < game.steps.length - 1;
   bool get canGoForward => stepCursor < game.steps.length - 1;
@@ -1151,7 +1265,8 @@ sealed class GameState with _$GameState, ChatMixinState {
       game.playable &&
       game.steps.length <= 2 &&
       game.youAre != null;
-  bool get hasBerserked => game.youAre != null && game.playerOf(game.youAre!).berserk == true;
+  bool get hasBerserked =>
+      game.youAre != null && game.playerOf(game.youAre!).berserk == true;
 
   // Only if this game is part of a tournament
   TournamentMeta? get tournament => game.meta.tournament;
@@ -1161,12 +1276,14 @@ sealed class GameState with _$GameState, ChatMixinState {
       game.meta.speed != Speed.correspondence &&
       (game.source == GameSource.lobby || game.source == GameSource.pool);
 
-  bool get canOfferDraw => game.drawable && (lastDrawOfferAtPly ?? -99) < game.lastPly - 20;
+  bool get canOfferDraw =>
+      game.drawable && (lastDrawOfferAtPly ?? -99) < game.lastPly - 20;
 
   bool get canShowClaimWinCountdown =>
       !game.isMyTurn &&
       game.resignable &&
-      (game.meta.rules == null || !game.meta.rules!.contains(GameRule.noClaimWin));
+      (game.meta.rules == null ||
+          !game.meta.rules!.contains(GameRule.noClaimWin));
 
   bool get canOfferRematch => game.rematch == null && game.rematchable;
 
@@ -1176,7 +1293,8 @@ sealed class GameState with _$GameState, ChatMixinState {
       return null;
     }
     final timeLeft =
-        game.expiration!.movedAt.difference(DateTime.now()) + game.expiration!.timeToMove;
+        game.expiration!.movedAt.difference(DateTime.now()) +
+        game.expiration!.timeToMove;
 
     if (timeLeft.isNegative) {
       return Duration.zero;
@@ -1206,7 +1324,9 @@ sealed class GameState with _$GameState, ChatMixinState {
           initialMoveCursor: stepCursor,
           gameId: gameFullId.gameId,
         )
-      : game.playable && game.meta.speed == Speed.correspondence && game.youAre != null
+      : game.playable &&
+            game.meta.speed == Speed.correspondence &&
+            game.youAre != null
       ? AnalysisOptions.activeCorrespondenceGame(
           orientation: game.youAre ?? Side.white,
           initialMoveCursor: stepCursor,
@@ -1226,7 +1346,9 @@ sealed class GameState with _$GameState, ChatMixinState {
       ? null
       : GameChatOptions(
           id: gameFullId,
-          opponent: game.youAre != null ? game.playerOf(game.youAre!.opposite).user : null,
+          opponent: game.youAre != null
+              ? game.playerOf(game.youAre!.opposite).user
+              : null,
         );
 
   @override

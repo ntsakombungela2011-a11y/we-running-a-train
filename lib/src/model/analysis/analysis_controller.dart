@@ -160,7 +160,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
       _socketSubscription?.cancel();
     });
 
-    socketClient = ref.watch(socketPoolProvider).open(AnalysisController.socketUri);
+    socketClient = ref
+        .watch(socketPoolProvider)
+        .open(AnalysisController.socketUri);
     _socketSubscription?.cancel();
     _socketSubscription = socketClient.stream.listen(_handleSocketEvent);
 
@@ -201,7 +203,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
         }
       case Standalone(:final variant):
         {
-          _variant = _savedStandalone != null ? _savedStandalone!.variant : variant;
+          _variant = _savedStandalone != null
+              ? _savedStandalone!.variant
+              : variant;
           pgn = '';
           opening = null;
           division = null;
@@ -211,13 +215,19 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
           // We want to keep the standalone analysis session alive even if the user navigates away
           ref.onCancel(() {
             if (_root.mainline.isNotEmpty) {
-              _savedStandalone = (root: _root, path: _currentPath, variant: _variant);
+              _savedStandalone = (
+                root: _root,
+                path: _currentPath,
+                variant: _variant,
+              );
             }
           });
         }
       case ActiveCorrespondenceGame(:final gameFullId):
         {
-          final game = await _gameRepository.getActiveCorrespondenceGame(gameFullId);
+          final game = await _gameRepository.getActiveCorrespondenceGame(
+            gameFullId,
+          );
           _variant = game.meta.variant;
           pgn = game.makePgn();
           opening = game.meta.opening;
@@ -268,7 +278,8 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
         onVisitNode: (root, branch, isMainline) {
           if (isMainline &&
               options.initialMoveCursor != null &&
-              branch.position.ply <= root.position.ply + options.initialMoveCursor!) {
+              branch.position.ply <=
+                  root.position.ply + options.initialMoveCursor!) {
             path = path + branch.id;
             lastMove = branch.sanMove.move;
           }
@@ -303,10 +314,15 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
         }
         _root.addNodesAt(gameMainlinePath, nodes);
 
-        paths.add(UciPath.fromUciMoves(line.map((sanMove) => sanMove.move.uci)));
+        paths.add(
+          UciPath.fromUciMoves(line.map((sanMove) => sanMove.move.uci)),
+        );
       }
 
-      forecast = Forecast(onMyTurn: activeCorrespondenceGame.isMyTurn, lines: paths.lock);
+      forecast = Forecast(
+        onMyTurn: activeCorrespondenceGame.isMyTurn,
+        lines: paths.lock,
+      );
     } else {
       forecast = null;
     }
@@ -371,7 +387,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
 
   Future<void> onFocusRegained() async {
     if (options case ActiveCorrespondenceGame(:final gameFullId)) {
-      final updatedGame = await _gameRepository.getActiveCorrespondenceGame(gameFullId);
+      final updatedGame = await _gameRepository.getActiveCorrespondenceGame(
+        gameFullId,
+      );
       _addNewLiveMoves(
         updatedGame.steps
             // Skip one more step, since the first one is the initial position
@@ -382,7 +400,10 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
   }
 
   void _addNewLiveMoves(Iterable<Move> moves) {
-    final newLiveMovePath = _root.addMovesAt(state.requireValue.pathToLiveMove!, moves);
+    final newLiveMovePath = _root.addMovesAt(
+      state.requireValue.pathToLiveMove!,
+      moves,
+    );
 
     _root.promoteAt(newLiveMovePath!, toMainline: true);
     _setPath(
@@ -413,7 +434,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
 
     switch (event.topic) {
       case 'fen':
-        _handleFenEvent(FenSocketEvent.fromJson(event.data as Map<String, dynamic>));
+        _handleFenEvent(
+          FenSocketEvent.fromJson(event.data as Map<String, dynamic>),
+        );
     }
   }
 
@@ -440,7 +463,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     state = AsyncData(
       state.requireValue.copyWith(
         root: recomputeRootView ? _root.view : state.requireValue.root,
-        currentNode: AnalysisCurrentNode.fromNode(_root.nodeAt(state.requireValue.currentPath)),
+        currentNode: AnalysisCurrentNode.fromNode(
+          _root.nodeAt(state.requireValue.currentPath),
+        ),
       ),
     );
   }
@@ -455,7 +480,11 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
       isUserAdded: options.isLichessGameAnalysis,
     );
     if (newPath != null) {
-      _setPath(newPath, shouldRecomputeRootView: isNewNode, shouldForceShowVariation: true);
+      _setPath(
+        newPath,
+        shouldRecomputeRootView: isNewNode,
+        shouldForceShowVariation: true,
+      );
     }
   }
 
@@ -471,7 +500,8 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     final curState = state.requireValue;
     if (!curState.currentNode.hasChild) return;
     _setPath(
-      curState.currentPath + _root.nodeAt(curState.currentPath).children.first.id,
+      curState.currentPath +
+          _root.nodeAt(curState.currentPath).children.first.id,
       isNavigating: true,
       keepCollapsed: fastSeek,
     );
@@ -514,7 +544,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
   void expandVariations(UciPath path) {
     final node = _root.nodeAt(path);
 
-    final childrenToShow = _root.isOnMainline(path) ? node.children.skip(1) : node.children;
+    final childrenToShow = _root.isOnMainline(path)
+        ? node.children.skip(1)
+        : node.children;
 
     for (final child in childrenToShow) {
       child.isCollapsed = false;
@@ -541,7 +573,10 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     _root.promoteAt(path, toMainline: toMainline);
     final curState = state.requireValue;
     state = AsyncData(
-      curState.copyWith(isOnMainline: _root.isOnMainline(curState.currentPath), root: _root.view),
+      curState.copyWith(
+        isOnMainline: _root.isOnMainline(curState.currentPath),
+        root: _root.view,
+      ),
     );
   }
 
@@ -555,7 +590,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     state = AsyncData(
       state.requireValue.copyWith(
         forecast: state.requireValue.forecast!.add(
-          state.requireValue.currentPath.stripPrefix(state.requireValue.pathToLiveMove!),
+          state.requireValue.currentPath.stripPrefix(
+            state.requireValue.pathToLiveMove!,
+          ),
         ),
       ),
     );
@@ -579,7 +616,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
 
     _gameRepository.saveForecast(
       gameId: (options as ActiveCorrespondenceGame).gameFullId,
-      forecast: newForecast.toApiForecast(_root.branchAt(newLiveMovePath)!.view),
+      forecast: newForecast.toApiForecast(
+        _root.branchAt(newLiveMovePath)!.view,
+      ),
       moveToPlay: moveToPlay,
     );
 
@@ -593,7 +632,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
 
   void removePremovePath(UciPath path) {
     state = AsyncData(
-      state.requireValue.copyWith(forecast: state.requireValue.forecast!.remove(path)),
+      state.requireValue.copyWith(
+        forecast: state.requireValue.forecast!.remove(path),
+      ),
     );
 
     _syncForecast();
@@ -605,7 +646,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     _gameRepository.saveForecast(
       gameId: (options as ActiveCorrespondenceGame).gameFullId,
       forecast: state.requireValue.forecast!.toApiForecast(
-        pathToLiveMove.isEmpty ? _root.view : _root.branchAt(pathToLiveMove)!.view,
+        pathToLiveMove.isEmpty
+            ? _root.view
+            : _root.branchAt(pathToLiveMove)!.view,
       ),
     );
   }
@@ -620,7 +663,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     final curState = state.requireValue;
     state = AsyncData(
       curState.copyWith(
-        currentNode: AnalysisCurrentNode.fromNode(_root.nodeAt(curState.currentPath)),
+        currentNode: AnalysisCurrentNode.fromNode(
+          _root.nodeAt(curState.currentPath),
+        ),
         currentBranchOpening: currentBranchOpeningAt(curState.currentPath),
       ),
     );
@@ -643,7 +688,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
       final game = state.requireValue.archivedGame;
       if (game == null) return;
       final toggledBookmark = !(game.data.bookmarked ?? false);
-      await ref.read(accountServiceProvider).setGameBookmark(game.id, bookmark: toggledBookmark);
+      await ref
+          .read(accountServiceProvider)
+          .setGameBookmark(game.id, bookmark: toggledBookmark);
       if (!ref.mounted) return;
       state = AsyncValue.data(
         state.requireValue.copyWith(
@@ -680,7 +727,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     }
 
     // always show variation if the user plays a move
-    if (shouldForceShowVariation && currentNode is Branch && currentNode.isCollapsed) {
+    if (shouldForceShowVariation &&
+        currentNode is Branch &&
+        currentNode.isCollapsed) {
       _root.updateAt(path, (node) {
         if (node is Branch) node.isCollapsed = false;
       });
@@ -689,7 +738,8 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
     // root view is only used to display move list, so we need to
     // recompute the root view only when the nodelist length changes
     // or a variation is hidden/shown
-    final rootView = shouldForceShowVariation || shouldRecomputeRootView || pathWasExpanded
+    final rootView =
+        shouldForceShowVariation || shouldRecomputeRootView || pathWasExpanded
         ? _root.view
         : curState.root;
 
@@ -699,7 +749,9 @@ class AnalysisController extends AsyncNotifier<AnalysisState>
       if (!isNavigating && isForward) {
         final isCheck = currentNode.sanMove.isCheck;
         if (currentNode.sanMove.isCapture) {
-          ref.read(moveFeedbackServiceProvider).captureFeedback(curState.variant, check: isCheck);
+          ref
+              .read(moveFeedbackServiceProvider)
+              .captureFeedback(curState.variant, check: isCheck);
         } else {
           ref.read(moveFeedbackServiceProvider).moveFeedback(check: isCheck);
         }
@@ -868,12 +920,14 @@ sealed class AnalysisState
   /// It must be a finished lichess game or an imported game.
   @override
   ServerAnalysisSource? get serverAnalysisSource =>
-      gameId != null && (pgnHeaders['Result'] != '*' || archivedGame?.source == .import)
+      gameId != null &&
+          (pgnHeaders['Result'] != '*' || archivedGame?.source == .import)
       ? ServerAnalysisSource.game(gameId: gameId!)
       : null;
 
   /// Whether the user can request server analysis and has not yet done so.
-  bool get canRequestServerAnalysis => serverAnalysisSource != null && !hasServerAnalysis;
+  bool get canRequestServerAnalysis =>
+      serverAnalysisSource != null && !hasServerAnalysis;
 
   /// Whether the server analysis is available.
   bool get hasServerAnalysis => playersAnalysis != null;
@@ -881,7 +935,9 @@ sealed class AnalysisState
   /// Whether an evaluation can be available
   bool hasAvailableEval(EngineEvaluationPrefState prefs) =>
       isEngineAvailable(prefs) ||
-      (isComputerAnalysisAllowed && isServerAnalysisEnabled && hasServerAnalysis);
+      (isComputerAnalysisAllowed &&
+          isServerAnalysisEnabled &&
+          hasServerAnalysis);
 
   /// Whether the engine is allowed for this analysis.
   bool get isEngineAllowed => isComputerAnalysisAllowed;
@@ -917,15 +973,20 @@ sealed class AnalysisState
 
   /// If it's our turn and we have branched off from the main line, this is the move we would play
   /// if we to save the entire current path as a premove line.
-  SanMove? get pendingMove => forecast?.onMyTurn == true && branchedOffFromLiveMove
-      ? liveMoveNode!.childById(currentPath.stripPrefix(pathToLiveMove!).head!)?.sanMove
+  SanMove? get pendingMove =>
+      forecast?.onMyTurn == true && branchedOffFromLiveMove
+      ? liveMoveNode!
+            .childById(currentPath.stripPrefix(pathToLiveMove!).head!)
+            ?.sanMove
       : null;
 
-  IList<UciPath>? get linesForPendingMove =>
-      pendingMove != null ? forecast?.linesStartingWith(pendingMove!.move) : null;
+  IList<UciPath>? get linesForPendingMove => pendingMove != null
+      ? forecast?.linesStartingWith(pendingMove!.move)
+      : null;
 
   @override
-  bool isEngineAvailable(EngineEvaluationPrefState prefs) => isEngineAllowed && prefs.isEnabled;
+  bool isEngineAvailable(EngineEvaluationPrefState prefs) =>
+      isEngineAllowed && prefs.isEnabled;
 
   @override
   Position get currentPosition => currentNode.position;
@@ -999,7 +1060,9 @@ sealed class AnalysisCurrentNode
   ///
   /// For now we only trust the eval coming from lichess analysis.
   ExternalEval? get serverEval {
-    final pgnEval = lichessAnalysisComments?.firstWhereOrNull((c) => c.eval != null)?.eval;
+    final pgnEval = lichessAnalysisComments
+        ?.firstWhereOrNull((c) => c.eval != null)
+        ?.eval;
     return pgnEval != null
         ? ExternalEval(
             cp: pgnEval.pawns != null ? cpFromPawns(pgnEval.pawns!) : null,

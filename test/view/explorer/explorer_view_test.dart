@@ -41,7 +41,9 @@ void main() {
   });
 
   group('ExplorerView', () {
-    testWidgets('shows opening explorer for initial position', (WidgetTester tester) async {
+    testWidgets('shows opening explorer for initial position', (
+      WidgetTester tester,
+    ) async {
       const position = Chess.initial;
 
       final app = await makeTestProviderScopeApp(
@@ -56,7 +58,9 @@ void main() {
         ),
         authUser: authUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -69,9 +73,13 @@ void main() {
       expect(find.byType(OpeningExplorerView), findsOneWidget);
       expect(find.byType(TablebaseView), findsNothing);
     });
-    testWidgets('shows opening explorer for position with >8 pieces', (WidgetTester tester) async {
+    testWidgets('shows opening explorer for position with >8 pieces', (
+      WidgetTester tester,
+    ) async {
       final position = Chess.fromSetup(
-        Setup.parseFen('r4rk1/pb2qppp/2n1pn2/1pb5/8/PP1N1NP1/1Q2PPBP/R1B2RK1 b - - 2 15'),
+        Setup.parseFen(
+          'r4rk1/pb2qppp/2n1pn2/1pb5/8/PP1N1NP1/1Q2PPBP/R1B2RK1 b - - 2 15',
+        ),
       );
 
       final app = await makeTestProviderScopeApp(
@@ -86,7 +94,9 @@ void main() {
         ),
         authUser: authUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -100,7 +110,48 @@ void main() {
       expect(find.byType(TablebaseView), findsNothing);
     });
 
-    testWidgets('uses lichess database for crazyhouse when masters is selected', (
+    testWidgets(
+      'uses lichess database for crazyhouse when masters is selected',
+      (WidgetTester tester) async {
+        Uri? openingExplorerUrl;
+        final mockClient = MockClient((request) {
+          if (request.url.host == kLichessOpeningExplorerHost) {
+            openingExplorerUrl = request.url;
+            if (request.url.path == '/lichess') {
+              return mockResponse(mastersOpeningExplorerResponse, 200);
+            }
+          }
+          return mockResponse('', 404);
+        });
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: Scaffold(
+            body: ExplorerView(
+              pov: Side.white,
+              position: Crazyhouse.initial,
+              onMoveSelected: (move) {},
+              isComputerAnalysisAllowed: true,
+            ),
+          ),
+          authUser: authUser,
+          overrides: {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
+              return FakeHttpClientFactory(() => mockClient);
+            }),
+          },
+        );
+        await tester.pumpWidget(app);
+        await tester.pump(const Duration(milliseconds: 350));
+
+        expect(openingExplorerUrl?.path, '/lichess');
+        expect(openingExplorerUrl?.queryParameters['variant'], 'crazyhouse');
+      },
+    );
+
+    testWidgets('sends variant for crazyhouse lichess database', (
       WidgetTester tester,
     ) async {
       Uri? openingExplorerUrl;
@@ -126,43 +177,9 @@ void main() {
         ),
         authUser: authUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
-            return FakeHttpClientFactory(() => mockClient);
-          }),
-        },
-      );
-      await tester.pumpWidget(app);
-      await tester.pump(const Duration(milliseconds: 350));
-
-      expect(openingExplorerUrl?.path, '/lichess');
-      expect(openingExplorerUrl?.queryParameters['variant'], 'crazyhouse');
-    });
-
-    testWidgets('sends variant for crazyhouse lichess database', (WidgetTester tester) async {
-      Uri? openingExplorerUrl;
-      final mockClient = MockClient((request) {
-        if (request.url.host == kLichessOpeningExplorerHost) {
-          openingExplorerUrl = request.url;
-          if (request.url.path == '/lichess') {
-            return mockResponse(mastersOpeningExplorerResponse, 200);
-          }
-        }
-        return mockResponse('', 404);
-      });
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: Scaffold(
-          body: ExplorerView(
-            pov: Side.white,
-            position: Crazyhouse.initial,
-            onMoveSelected: (move) {},
-            isComputerAnalysisAllowed: true,
-          ),
-        ),
-        authUser: authUser,
-        overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -186,9 +203,13 @@ void main() {
       expect(openingExplorerUrl?.queryParameters['variant'], 'crazyhouse');
     });
 
-    testWidgets('shows tablebase for 8-piece endgame', (WidgetTester tester) async {
+    testWidgets('shows tablebase for 8-piece endgame', (
+      WidgetTester tester,
+    ) async {
       // 8-piece endgame position
-      final position = Chess.fromSetup(Setup.parseFen('6k1/8/8/8/3RPP1P/4K3/4N2q/8 b - - 0 114'));
+      final position = Chess.fromSetup(
+        Setup.parseFen('6k1/8/8/8/3RPP1P/4K3/4N2q/8 b - - 0 114'),
+      );
 
       final app = await makeTestProviderScopeApp(
         tester,
@@ -202,7 +223,9 @@ void main() {
         ),
         authUser: authUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -215,8 +238,12 @@ void main() {
       expect(find.byType(TablebaseView), findsOneWidget);
       expect(find.byType(OpeningExplorerView), findsNothing);
     });
-    testWidgets('shows tablebase for endgame position', (WidgetTester tester) async {
-      final position = Chess.fromSetup(Setup.parseFen('4k3/8/4q3/4PR2/5P2/6NK/8/8 w - - 3 131'));
+    testWidgets('shows tablebase for endgame position', (
+      WidgetTester tester,
+    ) async {
+      final position = Chess.fromSetup(
+        Setup.parseFen('4k3/8/4q3/4PR2/5P2/6NK/8/8 w - - 3 131'),
+      );
 
       final app = await makeTestProviderScopeApp(
         tester,
@@ -230,7 +257,9 @@ void main() {
         ),
         authUser: authUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -247,10 +276,14 @@ void main() {
       expect(find.text('Kh4'), findsOneWidget);
     });
 
-    testWidgets('shows checkmate message for checkmate position', (WidgetTester tester) async {
+    testWidgets('shows checkmate message for checkmate position', (
+      WidgetTester tester,
+    ) async {
       // Fool's mate position
       final position = Chess.fromSetup(
-        Setup.parseFen('r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4'),
+        Setup.parseFen(
+          'r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4',
+        ),
       );
 
       final app = await makeTestProviderScopeApp(
@@ -264,7 +297,9 @@ void main() {
           ),
         ),
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -276,9 +311,13 @@ void main() {
       expect(find.byType(TablebaseView), findsNothing);
     });
 
-    testWidgets('shows stalemate message for stalemate position', (WidgetTester tester) async {
+    testWidgets('shows stalemate message for stalemate position', (
+      WidgetTester tester,
+    ) async {
       // Stalemate position
-      final position = Chess.fromSetup(Setup.parseFen('6k1/6P1/6K1/8/8/8/8/8 b - - 0 1'));
+      final position = Chess.fromSetup(
+        Setup.parseFen('6k1/6P1/6K1/8/8/8/8/8 b - - 0 1'),
+      );
 
       final app = await makeTestProviderScopeApp(
         tester,
@@ -291,7 +330,9 @@ void main() {
           ),
         ),
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -305,36 +346,43 @@ void main() {
   });
 
   group('OpeningExplorerMoveTable', () {
-    testWidgets('calls onMoveSelected with a DropMove when tapping a drop move row', (
-      tester,
-    ) async {
-      Move? selectedMove;
+    testWidgets(
+      'calls onMoveSelected with a DropMove when tapping a drop move row',
+      (tester) async {
+        Move? selectedMove;
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: Scaffold(
-          body: OpeningExplorerMoveTable(
-            moves: IList(const [
-              OpeningMove(uci: 'P@c4', san: 'P@c4', white: 50, draws: 10, black: 40),
-            ]),
-            whiteWins: 50,
-            draws: 10,
-            blackWins: 40,
-            onMoveSelected: (move) => selectedMove = move,
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: Scaffold(
+            body: OpeningExplorerMoveTable(
+              moves: IList(const [
+                OpeningMove(
+                  uci: 'P@c4',
+                  san: 'P@c4',
+                  white: 50,
+                  draws: 10,
+                  black: 40,
+                ),
+              ]),
+              whiteWins: 50,
+              draws: 10,
+              blackWins: 40,
+              onMoveSelected: (move) => selectedMove = move,
+            ),
           ),
-        ),
-      );
-      await tester.pumpWidget(app);
+        );
+        await tester.pumpWidget(app);
 
-      // Tap the move SAN cell to trigger onMoveSelected
-      await tester.tap(find.text('P@c4'));
-      await tester.pump();
+        // Tap the move SAN cell to trigger onMoveSelected
+        await tester.tap(find.text('P@c4'));
+        await tester.pump();
 
-      expect(selectedMove, isNotNull);
-      expect(selectedMove, isA<DropMove>());
-      expect((selectedMove as DropMove?)?.role, Role.pawn);
-      expect(selectedMove?.to, Square.c4);
-    });
+        expect(selectedMove, isNotNull);
+        expect(selectedMove, isA<DropMove>());
+        expect((selectedMove as DropMove?)?.role, Role.pawn);
+        expect(selectedMove?.to, Square.c4);
+      },
+    );
   });
 }
 

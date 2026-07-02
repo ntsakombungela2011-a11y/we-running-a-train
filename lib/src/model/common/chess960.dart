@@ -12,11 +12,14 @@ Position chess960Position(int index) {
   final rank8 = _positions[index];
 
   return Chess.fromSetup(
-    Setup.parseFen('$rank8/pppppppp/8/8/8/8/PPPPPPPP/${rank8.toUpperCase()} w KQkq - 0 1'),
+    Setup.parseFen(
+      '$rank8/pppppppp/8/8/8/8/PPPPPPPP/${rank8.toUpperCase()} w KQkq - 0 1',
+    ),
   );
 }
 
-Position randomChess960Position() => chess960Position(_random.nextInt(_positions.length));
+Position randomChess960Position() =>
+    chess960Position(_random.nextInt(_positions.length));
 
 // https://github.com/lichess-org/scalachess/blob/bd139c6dc1acdc8fff08c46e412f784d49a16578/core/src/main/scala/variant/Chess960.scala#L49
 final _positions = [

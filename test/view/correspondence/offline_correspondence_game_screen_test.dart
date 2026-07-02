@@ -27,7 +27,9 @@ void main() {
       expect(getBoardLastMove(tester), Move.parse('d1d2'));
     });
 
-    testWidgets('Last move is highlighted after playing a move', (tester) async {
+    testWidgets('Last move is highlighted after playing a move', (
+      tester,
+    ) async {
       // A game where it's the user's (white's) turn from the initial position.
       final game = offlineCorrespondenceGame.copyWith(
         steps: [const GameStep(position: Chess.initial)].lock,
@@ -35,7 +37,9 @@ void main() {
 
       final app = await makeTestProviderScopeApp(
         tester,
-        home: OfflineCorrespondenceGameScreen(initialGame: (DateTime(2021, 1, 1), game)),
+        home: OfflineCorrespondenceGameScreen(
+          initialGame: (DateTime(2021, 1, 1), game),
+        ),
       );
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();

@@ -8,7 +8,9 @@ import 'package:lichess_mobile/src/model/settings/general_preferences.dart';
 import 'package:lichess_mobile/src/model/settings/preferences_storage.dart';
 
 Locale getSystemLocale(WidgetsBinding widgetsBinding) {
-  return AppLocalizations.delegate.isSupported(widgetsBinding.platformDispatcher.locale)
+  return AppLocalizations.delegate.isSupported(
+        widgetsBinding.platformDispatcher.locale,
+      )
       ? widgetsBinding.platformDispatcher.locale
       : const Locale('en');
 }
@@ -18,7 +20,9 @@ Future<Locale> setupIntl(WidgetsBinding widgetsBinding) async {
   final systemLocale = getSystemLocale(widgetsBinding);
 
   // Get locale from shared preferences, if any
-  final json = LichessBinding.instance.sharedPreferences.getString(PrefCategory.general.storageKey);
+  final json = LichessBinding.instance.sharedPreferences.getString(
+    PrefCategory.general.storageKey,
+  );
   final generalPref = json != null
       ? GeneralPrefs.fromJson(jsonDecode(json) as Map<String, dynamic>)
       : GeneralPrefs.defaults;

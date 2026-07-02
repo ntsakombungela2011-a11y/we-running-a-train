@@ -34,7 +34,9 @@ void main() {
   // Used to configure FakeOpeningService, which matches on EPD.
   final afterE4Epd = _epd(Chess.initial.playUnchecked(Move.parse('e2e4')!));
   final afterE5Epd = _epd(
-    Chess.initial.playUnchecked(Move.parse('e2e4')!).playUnchecked(Move.parse('e7e5')!),
+    Chess.initial
+        .playUnchecked(Move.parse('e2e4')!)
+        .playUnchecked(Move.parse('e7e5')!),
   );
 
   const options = AnalysisOptions.pgn(
@@ -46,18 +48,24 @@ void main() {
   );
 
   AnalysisState readState(WidgetTester tester) {
-    final container = ProviderScope.containerOf(tester.element(find.byType(AnalysisScreen)));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(AnalysisScreen)),
+    );
     return container.read(analysisControllerProvider(options)).requireValue;
   }
 
   group('Analysis opening detection', () {
-    testWidgets('opening is set when navigating to a mainline position', (tester) async {
+    testWidgets('opening is set when navigating to a mainline position', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const AnalysisScreen(options: options),
         overrides: {
           openingServiceProvider: openingServiceProvider.overrideWithValue(
-            FakeOpeningService(openings: {afterE4Epd: _kingsOpeningGame, afterE5Epd: _openGame}),
+            FakeOpeningService(
+              openings: {afterE4Epd: _kingsOpeningGame, afterE5Epd: _openGame},
+            ),
           ),
         },
       );
@@ -72,63 +80,77 @@ void main() {
       expect(readState(tester).currentBranchOpening?.name, 'Open Game');
     });
 
-    testWidgets('ancestor opening is used when current node has no direct opening', (tester) async {
-      // The Nf3 position has no opening in the service. The e5 ancestor does.
-      // _nodeOpeningAt walks up the path and returns the nearest ancestor opening.
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const AnalysisScreen(options: options),
-        overrides: {
-          openingServiceProvider: openingServiceProvider.overrideWithValue(
-            FakeOpeningService(
-              openings: {
-                afterE4Epd: _kingsOpeningGame,
-                afterE5Epd: _openGame,
-                // No opening for the Nf3 position — intentionally omitted.
-              },
+    testWidgets(
+      'ancestor opening is used when current node has no direct opening',
+      (tester) async {
+        // The Nf3 position has no opening in the service. The e5 ancestor does.
+        // _nodeOpeningAt walks up the path and returns the nearest ancestor opening.
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const AnalysisScreen(options: options),
+          overrides: {
+            openingServiceProvider: openingServiceProvider.overrideWithValue(
+              FakeOpeningService(
+                openings: {
+                  afterE4Epd: _kingsOpeningGame,
+                  afterE5Epd: _openGame,
+                  // No opening for the Nf3 position — intentionally omitted.
+                },
+              ),
             ),
-          ),
-        },
-      );
+          },
+        );
 
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle();
 
-      // At end of mainline (after Nf3): no direct opening, but e5 ancestor has 'Open Game'.
-      expect(readState(tester).currentBranchOpening?.name, 'Open Game');
-    });
+        // At end of mainline (after Nf3): no direct opening, but e5 ancestor has 'Open Game'.
+        expect(readState(tester).currentBranchOpening?.name, 'Open Game');
+      },
+    );
 
-    testWidgets('opening updates correctly when navigating forward and backward', (tester) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const AnalysisScreen(options: options),
-        overrides: {
-          openingServiceProvider: openingServiceProvider.overrideWithValue(
-            FakeOpeningService(openings: {afterE4Epd: _kingsOpeningGame, afterE5Epd: _openGame}),
-          ),
-        },
-      );
+    testWidgets(
+      'opening updates correctly when navigating forward and backward',
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const AnalysisScreen(options: options),
+          overrides: {
+            openingServiceProvider: openingServiceProvider.overrideWithValue(
+              FakeOpeningService(
+                openings: {
+                  afterE4Epd: _kingsOpeningGame,
+                  afterE5Epd: _openGame,
+                },
+              ),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle();
 
-      // At Nf3: ancestor (e5) opening.
-      expect(readState(tester).currentBranchOpening?.name, 'Open Game');
+        // At Nf3: ancestor (e5) opening.
+        expect(readState(tester).currentBranchOpening?.name, 'Open Game');
 
-      // Navigate back to e5.
-      await tester.tap(find.byKey(const Key('goto-previous')));
-      await tester.pumpAndSettle();
-      expect(readState(tester).currentBranchOpening?.name, 'Open Game');
+        // Navigate back to e5.
+        await tester.tap(find.byKey(const Key('goto-previous')));
+        await tester.pumpAndSettle();
+        expect(readState(tester).currentBranchOpening?.name, 'Open Game');
 
-      // Navigate back to e4.
-      await tester.tap(find.byKey(const Key('goto-previous')));
-      await tester.pumpAndSettle();
-      expect(readState(tester).currentBranchOpening?.name, "King's Pawn Game");
+        // Navigate back to e4.
+        await tester.tap(find.byKey(const Key('goto-previous')));
+        await tester.pumpAndSettle();
+        expect(
+          readState(tester).currentBranchOpening?.name,
+          "King's Pawn Game",
+        );
 
-      // Navigate forward to e5.
-      await tester.tap(find.byKey(const Key('goto-next')));
-      await tester.pumpAndSettle();
-      expect(readState(tester).currentBranchOpening?.name, 'Open Game');
-    });
+        // Navigate forward to e5.
+        await tester.tap(find.byKey(const Key('goto-next')));
+        await tester.pumpAndSettle();
+        expect(readState(tester).currentBranchOpening?.name, 'Open Game');
+      },
+    );
   });
 }

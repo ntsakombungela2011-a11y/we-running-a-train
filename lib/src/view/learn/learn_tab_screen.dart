@@ -18,7 +18,9 @@ import 'package:lichess_mobile/src/widgets/list.dart';
 import 'package:lichess_mobile/src/widgets/platform.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-final _hotStudiesProvider = FutureProvider.autoDispose<IList<StudyPageItem>>((Ref ref) {
+final _hotStudiesProvider = FutureProvider.autoDispose<IList<StudyPageItem>>((
+  Ref ref,
+) {
   return ref.withClientCacheFor(
     (client) => StudyRepository(ref, client)
         .getStudies(category: StudyCategory.all, order: StudyListOrder.hot)
@@ -39,13 +41,18 @@ final _myStudiesLengthProvider = FutureProvider.autoDispose<int>((Ref ref) {
   );
 });
 
-final _myFavoriteStudiesLengthProvider = FutureProvider.autoDispose<int>((Ref ref) {
+final _myFavoriteStudiesLengthProvider = FutureProvider.autoDispose<int>((
+  Ref ref,
+) {
   final authUser = ref.watch(authControllerProvider);
   if (authUser == null) return Future.value(0);
 
   return ref.withClientCacheFor(
     (client) => StudyRepository(ref, client)
-        .getStudies(category: StudyCategory.likes, order: StudyListOrder.updated)
+        .getStudies(
+          category: StudyCategory.likes,
+          order: StudyListOrder.updated,
+        )
         .then((value) => value.studies.length),
     const Duration(hours: 6),
   );
@@ -85,9 +92,12 @@ class _Body extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isOnline = ref.watch(onlineStatusProvider).value ?? false;
     final authUser = ref.watch(authControllerProvider);
-    final haveIStudies = authUser != null && (ref.watch(_myStudiesLengthProvider).value ?? 0) > 0;
+    final haveIStudies =
+        authUser != null &&
+        (ref.watch(_myStudiesLengthProvider).value ?? 0) > 0;
     final haveIFavoriteStudies =
-        authUser != null && (ref.watch(_myFavoriteStudiesLengthProvider).value ?? 0) > 0;
+        authUser != null &&
+        (ref.watch(_myFavoriteStudiesLengthProvider).value ?? 0) > 0;
 
     return ListTileTheme.merge(
       iconColor: Theme.of(context).colorScheme.primary,
@@ -102,7 +112,10 @@ class _Body extends ConsumerWidget {
                 trailing: Theme.of(context).platform == TargetPlatform.iOS
                     ? const CupertinoListTileChevron()
                     : null,
-                title: Text(context.l10n.coordinatesCoordinateTraining, style: Styles.callout),
+                title: Text(
+                  context.l10n.coordinatesCoordinateTraining,
+                  style: Styles.callout,
+                ),
                 onTap: () => Navigator.of(
                   context,
                   rootNavigator: true,
@@ -113,15 +126,20 @@ class _Body extends ConsumerWidget {
           if (isOnline) ...[
             ListSection(
               header: Text(context.l10n.studyMenu),
-              onHeaderTap: () =>
-                  Navigator.of(context, rootNavigator: true).push(StudyListScreen.buildRoute()),
+              onHeaderTap: () => Navigator.of(
+                context,
+                rootNavigator: true,
+              ).push(StudyListScreen.buildRoute()),
               hasLeading: true,
               children: [
                 ...(switch (ref.watch(_hotStudiesProvider)) {
                   AsyncData(:final value) =>
                     value
                         .take(5)
-                        .map((study) => StudyListItem(study: study, titleMaxLines: 1))
+                        .map(
+                          (study) =>
+                              StudyListItem(study: study, titleMaxLines: 1),
+                        )
                         .toList(growable: false),
                   _ => [],
                 }),
@@ -130,7 +148,9 @@ class _Body extends ConsumerWidget {
             if (haveIStudies || haveIFavoriteStudies)
               ListSection(
                 hasLeading: true,
-                margin: Styles.horizontalBodyPadding.add(Styles.sectionBottomPadding),
+                margin: Styles.horizontalBodyPadding.add(
+                  Styles.sectionBottomPadding,
+                ),
                 children: [
                   if (haveIStudies)
                     ListTile(
@@ -140,9 +160,11 @@ class _Body extends ConsumerWidget {
                           : null,
                       title: Text(context.l10n.studyMyStudies),
                       onTap: isOnline
-                          ? () => Navigator.of(
-                              context,
-                            ).push(StudyListScreen.buildRoute(initialCategory: StudyCategory.mine))
+                          ? () => Navigator.of(context).push(
+                              StudyListScreen.buildRoute(
+                                initialCategory: StudyCategory.mine,
+                              ),
+                            )
                           : null,
                     ),
                   if (haveIFavoriteStudies)
@@ -153,9 +175,11 @@ class _Body extends ConsumerWidget {
                           : null,
                       title: Text(context.l10n.studyMyFavoriteStudies),
                       onTap: isOnline
-                          ? () => Navigator.of(
-                              context,
-                            ).push(StudyListScreen.buildRoute(initialCategory: StudyCategory.likes))
+                          ? () => Navigator.of(context).push(
+                              StudyListScreen.buildRoute(
+                                initialCategory: StudyCategory.likes,
+                              ),
+                            )
                           : null,
                     ),
                 ],

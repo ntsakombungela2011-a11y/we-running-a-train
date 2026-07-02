@@ -15,12 +15,13 @@ const _nbPerPage = 20;
 
 /// A provider that paginates the game bookmarks for the current app user.
 final gameBookmarksPaginatorProvider =
-    AsyncNotifierProvider.autoDispose<GameBookmarksPaginator, GameBookmarksPaginatorState>(
-      GameBookmarksPaginator.new,
-      name: 'GameBookmarksPaginatorProvider',
-    );
+    AsyncNotifierProvider.autoDispose<
+      GameBookmarksPaginator,
+      GameBookmarksPaginatorState
+    >(GameBookmarksPaginator.new, name: 'GameBookmarksPaginatorProvider');
 
-class GameBookmarksPaginator extends AsyncNotifier<GameBookmarksPaginatorState> {
+class GameBookmarksPaginator
+    extends AsyncNotifier<GameBookmarksPaginatorState> {
   final _list = <LightExportedGameWithPov>[];
 
   GameRepository get _gameRepository => ref.read(gameRepositoryProvider);
@@ -71,7 +72,9 @@ class GameBookmarksPaginator extends AsyncNotifier<GameBookmarksPaginatorState> 
         until: _list.last.game.createdAt,
       );
       if (value.isEmpty) {
-        state = AsyncData(currentVal.copyWith(hasMore: false, isLoading: false));
+        state = AsyncData(
+          currentVal.copyWith(hasMore: false, isLoading: false),
+        );
         return;
       }
 
@@ -98,7 +101,9 @@ class GameBookmarksPaginator extends AsyncNotifier<GameBookmarksPaginatorState> 
 
     final index = gameList.indexOf(entry);
 
-    state = AsyncData(state.requireValue.copyWith(gameList: gameList.removeAt(index)));
+    state = AsyncData(
+      state.requireValue.copyWith(gameList: gameList.removeAt(index)),
+    );
   }
 }
 

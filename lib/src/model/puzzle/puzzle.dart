@@ -31,7 +31,8 @@ sealed class Puzzle with _$Puzzle {
       if (sanMove.isCheckmate) {
         return true;
       }
-      if (uci != solutionUci && (!sanMove.isCastles || altCastles[uci] != solutionUci)) {
+      if (uci != solutionUci &&
+          (!sanMove.isCastles || altCastles[uci] != solutionUci)) {
         return false;
       }
     }
@@ -54,7 +55,8 @@ sealed class PuzzleData with _$PuzzleData {
 
   Side get sideToMove => initialPly.isEven ? Side.black : Side.white;
 
-  factory PuzzleData.fromJson(Map<String, dynamic> json) => _$PuzzleDataFromJson(json);
+  factory PuzzleData.fromJson(Map<String, dynamic> json) =>
+      _$PuzzleDataFromJson(json);
 }
 
 @Freezed(fromJson: true, toJson: true)
@@ -67,13 +69,17 @@ sealed class PuzzleGlicko with _$PuzzleGlicko {
     bool? provisional,
   }) = _PuzzleGlicko;
 
-  factory PuzzleGlicko.fromJson(Map<String, dynamic> json) => _$PuzzleGlickoFromJson(json);
+  factory PuzzleGlicko.fromJson(Map<String, dynamic> json) =>
+      _$PuzzleGlickoFromJson(json);
 }
 
 @freezed
 sealed class PuzzleRound with _$PuzzleRound {
-  const factory PuzzleRound({required PuzzleId id, required int ratingDiff, required bool win}) =
-      _PuzzleRound;
+  const factory PuzzleRound({
+    required PuzzleId id,
+    required int ratingDiff,
+    required bool win,
+  }) = _PuzzleRound;
 }
 
 @Freezed(fromJson: true, toJson: true)
@@ -87,23 +93,32 @@ sealed class PuzzleGame with _$PuzzleGame {
     required String pgn,
   }) = _PuzzleGame;
 
-  factory PuzzleGame.fromJson(Map<String, dynamic> json) => _$PuzzleGameFromJson(json);
+  factory PuzzleGame.fromJson(Map<String, dynamic> json) =>
+      _$PuzzleGameFromJson(json);
 }
 
 @Freezed(fromJson: true, toJson: true)
 sealed class PuzzleGamePlayer with _$PuzzleGamePlayer {
-  const factory PuzzleGamePlayer({required Side side, required String name, String? title}) =
-      _PuzzleGamePlayer;
+  const factory PuzzleGamePlayer({
+    required Side side,
+    required String name,
+    String? title,
+  }) = _PuzzleGamePlayer;
 
-  factory PuzzleGamePlayer.fromJson(Map<String, dynamic> json) => _$PuzzleGamePlayerFromJson(json);
+  factory PuzzleGamePlayer.fromJson(Map<String, dynamic> json) =>
+      _$PuzzleGamePlayerFromJson(json);
 }
 
 @Freezed(fromJson: true, toJson: true)
 sealed class PuzzleSolution with _$PuzzleSolution {
-  const factory PuzzleSolution({required PuzzleId id, required bool win, required bool rated}) =
-      _PuzzleSolution;
+  const factory PuzzleSolution({
+    required PuzzleId id,
+    required bool win,
+    required bool rated,
+  }) = _PuzzleSolution;
 
-  factory PuzzleSolution.fromJson(Map<String, dynamic> json) => _$PuzzleSolutionFromJson(json);
+  factory PuzzleSolution.fromJson(Map<String, dynamic> json) =>
+      _$PuzzleSolutionFromJson(json);
 }
 
 @freezed
@@ -136,7 +151,8 @@ sealed class LitePuzzle with _$LitePuzzle {
     required int rating,
   }) = _LitePuzzle;
 
-  factory LitePuzzle.fromJson(Map<String, dynamic> json) => _$LitePuzzleFromJson(json);
+  factory LitePuzzle.fromJson(Map<String, dynamic> json) =>
+      _$LitePuzzleFromJson(json);
 
   (Side, String, Move) get preview {
     final pos1 = Chess.fromSetup(Setup.parseFen(fen));
@@ -178,7 +194,11 @@ sealed class PuzzleHistoryEntry with _$PuzzleHistoryEntry {
     Duration? solvingTime,
   }) = _PuzzleHistoryEntry;
 
-  factory PuzzleHistoryEntry.fromLitePuzzle(LitePuzzle puzzle, bool win, Duration duration) {
+  factory PuzzleHistoryEntry.fromLitePuzzle(
+    LitePuzzle puzzle,
+    bool win,
+    Duration duration,
+  ) {
     final (_, fen, move) = puzzle.preview;
     return PuzzleHistoryEntry(
       date: DateTime.now(),
@@ -191,5 +211,6 @@ sealed class PuzzleHistoryEntry with _$PuzzleHistoryEntry {
     );
   }
 
-  (String, Side, Move) get preview => (fen, Chess.fromSetup(Setup.parseFen(fen)).turn, lastMove);
+  (String, Side, Move) get preview =>
+      (fen, Chess.fromSetup(Setup.parseFen(fen)).turn, lastMove);
 }

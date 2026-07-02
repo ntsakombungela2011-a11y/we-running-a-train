@@ -28,9 +28,10 @@ class CreateGameWidget extends ConsumerWidget {
     final userPerf = account?.perfs[playPrefs.realTimePerf];
     final canUseRatingRange = userPerf != null && userPerf.provisional != true;
 
-    final labelStyle = Theme.of(
-      context,
-    ).textTheme.labelMedium?.copyWith(color: textShade(context, 0.5), height: 1.0);
+    final labelStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
+      color: textShade(context, 0.5),
+      height: 1.0,
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -55,11 +56,15 @@ class CreateGameWidget extends ConsumerWidget {
                       style: const TextStyle(letterSpacing: 2.0),
                     ),
                     onPressed: () {
-                      final double screenHeight = MediaQuery.sizeOf(context).height;
+                      final double screenHeight = MediaQuery.sizeOf(
+                        context,
+                      ).height;
                       showModalBottomSheet<void>(
                         context: context,
                         isScrollControlled: true,
-                        constraints: BoxConstraints(maxHeight: screenHeight - (screenHeight / 10)),
+                        constraints: BoxConstraints(
+                          maxHeight: screenHeight - (screenHeight / 10),
+                        ),
                         builder: (BuildContext context) {
                           return TimeControlModal(
                             timeIncrement: playPrefs.timeIncrement,
@@ -101,7 +106,9 @@ class CreateGameWidget extends ConsumerWidget {
                         selectedItem: playPrefs.customVariant,
                         labelBuilder: (variant) => VariantLabel(variant),
                         onSelectedItemChanged: (Variant variant) {
-                          ref.read(gameSetupPreferencesProvider.notifier).setCustomVariant(variant);
+                          ref
+                              .read(gameSetupPreferencesProvider.notifier)
+                              .setCustomVariant(variant);
                         },
                       );
                     },
@@ -141,7 +148,11 @@ class CreateGameWidget extends ConsumerWidget {
                           },
                         );
                       },
-                      child: Text(playPrefs.customRated ? context.l10n.rated : context.l10n.casual),
+                      child: Text(
+                        playPrefs.customRated
+                            ? context.l10n.rated
+                            : context.l10n.casual,
+                      ),
                     ),
                   ],
                 ),
@@ -175,14 +186,17 @@ class CreateGameWidget extends ConsumerWidget {
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Theme.of(context).dividerColor),
-                        foregroundColor: canUseRatingRange ? null : Theme.of(context).disabledColor,
+                        foregroundColor: canUseRatingRange
+                            ? null
+                            : Theme.of(context).disabledColor,
                       ),
                       onPressed: canUseRatingRange
                           ? () {
                               showModalBottomSheet<void>(
                                 context: context,
                                 constraints: BoxConstraints(
-                                  minHeight: MediaQuery.sizeOf(context).height * 0.4,
+                                  minHeight:
+                                      MediaQuery.sizeOf(context).height * 0.4,
                                 ),
                                 isScrollControlled: true,
                                 builder: (BuildContext context) {
@@ -190,12 +204,20 @@ class CreateGameWidget extends ConsumerWidget {
                                     children: [
                                       PlayRatingRange(
                                         perf: userPerf,
-                                        ratingDelta: playPrefs.customRatingDelta,
-                                        onRatingDeltaChange: (int subtract, int add) {
-                                          ref
-                                              .read(gameSetupPreferencesProvider.notifier)
-                                              .setCustomRatingRange(subtract, add);
-                                        },
+                                        ratingDelta:
+                                            playPrefs.customRatingDelta,
+                                        onRatingDeltaChange:
+                                            (int subtract, int add) {
+                                              ref
+                                                  .read(
+                                                    gameSetupPreferencesProvider
+                                                        .notifier,
+                                                  )
+                                                  .setCustomRatingRange(
+                                                    subtract,
+                                                    add,
+                                                  );
+                                            },
                                       ),
                                     ],
                                   );
@@ -220,7 +242,9 @@ class CreateGameWidget extends ConsumerWidget {
           onPressed: isOnline
               ? () {
                   // Pops the play bottom sheet
-                  Navigator.of(context).popUntil((route) => route is! ModalBottomSheetRoute);
+                  Navigator.of(
+                    context,
+                  ).popUntil((route) => route is! ModalBottomSheetRoute);
 
                   final playban = ref.read(accountProvider).value?.playban;
                   if (playban != null) {
@@ -229,7 +253,9 @@ class CreateGameWidget extends ConsumerWidget {
                   }
 
                   Navigator.of(context, rootNavigator: true).push(
-                    GameScreen.buildRoute(source: LobbySource(GameSeek.custom(playPrefs, account))),
+                    GameScreen.buildRoute(
+                      source: LobbySource(GameSeek.custom(playPrefs, account)),
+                    ),
                   );
                 }
               : null,
@@ -243,7 +269,9 @@ class CreateGameWidget extends ConsumerWidget {
     showAdaptiveDialog<void>(
       context: context,
       builder: (context) => AlertDialog.adaptive(
-        content: Text(context.l10n.ratingRangeIsDisabledBecauseYourRatingIsProvisional),
+        content: Text(
+          context.l10n.ratingRangeIsDisabledBecauseYourRatingIsProvisional,
+        ),
         actions: [
           PlatformDialogAction(
             onPressed: () => Navigator.of(context).pop(),

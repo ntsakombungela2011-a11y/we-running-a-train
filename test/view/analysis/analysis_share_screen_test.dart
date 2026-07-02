@@ -37,8 +37,14 @@ void main() {
       expect(blackEloLabel, findsOneWidget);
 
       // The TextField is a sibling of the label inside a Row
-      final blackEloRow = find.ancestor(of: blackEloLabel, matching: find.byType(Row));
-      final blackEloField = find.descendant(of: blackEloRow, matching: find.byType(TextField));
+      final blackEloRow = find.ancestor(
+        of: blackEloLabel,
+        matching: find.byType(Row),
+      );
+      final blackEloField = find.descendant(
+        of: blackEloRow,
+        matching: find.byType(TextField),
+      );
       expect(blackEloField, findsOneWidget);
 
       // Enter a value without leaving the field
@@ -51,12 +57,19 @@ void main() {
       await tester.pump();
 
       // Verify the state has the updated BlackElo (not "?")
-      final container = ProviderScope.containerOf(tester.element(find.byType(AnalysisShareScreen)));
-      final headers = container.read(analysisControllerProvider(options)).requireValue.pgnHeaders;
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(AnalysisShareScreen)),
+      );
+      final headers = container
+          .read(analysisControllerProvider(options))
+          .requireValue
+          .pgnHeaders;
       expect(headers['BlackElo'], '2400');
     });
 
-    testWidgets('WhiteElo is also saved when it is the last edited field', (tester) async {
+    testWidgets('WhiteElo is also saved when it is the last edited field', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const AnalysisShareScreen(options: options),
@@ -66,8 +79,14 @@ void main() {
       await tester.pumpAndSettle();
 
       final whiteEloLabel = find.text('WhiteElo');
-      final whiteEloRow = find.ancestor(of: whiteEloLabel, matching: find.byType(Row));
-      final whiteEloField = find.descendant(of: whiteEloRow, matching: find.byType(TextField));
+      final whiteEloRow = find.ancestor(
+        of: whiteEloLabel,
+        matching: find.byType(Row),
+      );
+      final whiteEloField = find.descendant(
+        of: whiteEloRow,
+        matching: find.byType(TextField),
+      );
 
       await tester.tap(whiteEloField);
       await tester.enterText(whiteEloField, '1800');
@@ -76,8 +95,13 @@ void main() {
       await tester.tap(find.text('Share PGN'));
       await tester.pump();
 
-      final container = ProviderScope.containerOf(tester.element(find.byType(AnalysisShareScreen)));
-      final headers = container.read(analysisControllerProvider(options)).requireValue.pgnHeaders;
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(AnalysisShareScreen)),
+      );
+      final headers = container
+          .read(analysisControllerProvider(options))
+          .requireValue
+          .pgnHeaders;
       expect(headers['WhiteElo'], '1800');
     });
   });

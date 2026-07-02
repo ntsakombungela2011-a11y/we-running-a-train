@@ -85,7 +85,8 @@ Future<void> makeEngineTestApp(
       if (gameId != null)
         lichessClientProvider: lichessClientProvider.overrideWith((ref) {
           final client = MockClient((request) {
-            if (request.url.path == '/game/export/$gameId' && gameResponses.containsKey(gameId)) {
+            if (request.url.path == '/game/export/$gameId' &&
+                gameResponses.containsKey(gameId)) {
               return mockResponse(gameResponses[gameId]!, 200);
             }
             return mockResponse('', 404);
@@ -98,12 +99,16 @@ Future<void> makeEngineTestApp(
           final client = MockClient((request) {
             if (request.url.path == '/api/broadcast/-/-/${broadcastGame.$2}') {
               return mockResponse(
-                broadcastRoundMockResponses[(broadcastGame.$1, broadcastGame.$2)]!,
+                broadcastRoundMockResponses[(
+                  broadcastGame.$1,
+                  broadcastGame.$2,
+                )]!,
                 200,
                 headers: {'content-type': 'application/json; charset=utf-8'},
               );
             }
-            if (request.url.path == '/api/study/${broadcastGame.$2}/${broadcastGame.$3}.pgn') {
+            if (request.url.path ==
+                '/api/study/${broadcastGame.$2}/${broadcastGame.$3}.pgn') {
               return mockResponse(
                 broadcastGamePgnResponses[broadcastGame.$3]!,
                 200,
@@ -115,33 +120,37 @@ Future<void> makeEngineTestApp(
 
           return LichessClient(client, ref);
         }),
-      webSocketChannelFactoryProvider: webSocketChannelFactoryProvider.overrideWith(
-        (_) => FakeWebSocketChannelFactory(
-          (uri) => FakeWebSocketChannel(
-            uri,
-            connectionLag: connectionLag,
-            serverHandlers: {
-              if (isCloudEvalEnabled)
-                'evalGet': (json) {
-                  final data = json['d'] as Map<String, dynamic>;
-                  // final fen = data['fen'] as String;
-                  return {
-                    't': 'evalHit',
-                    'd': {
-                      'path': data['path'],
-                      'knodes': '119234',
-                      'depth': '36',
-                      'pvs': [
-                        for (var i = 0; i < max(1, numEvalLines); i++)
-                          {'moves': 'e2e4 e7e5 g1f3 b8c6 f1b5 g8f6', 'cp': '23'},
-                      ],
+      webSocketChannelFactoryProvider: webSocketChannelFactoryProvider
+          .overrideWith(
+            (_) => FakeWebSocketChannelFactory(
+              (uri) => FakeWebSocketChannel(
+                uri,
+                connectionLag: connectionLag,
+                serverHandlers: {
+                  if (isCloudEvalEnabled)
+                    'evalGet': (json) {
+                      final data = json['d'] as Map<String, dynamic>;
+                      // final fen = data['fen'] as String;
+                      return {
+                        't': 'evalHit',
+                        'd': {
+                          'path': data['path'],
+                          'knodes': '119234',
+                          'depth': '36',
+                          'pvs': [
+                            for (var i = 0; i < max(1, numEvalLines); i++)
+                              {
+                                'moves': 'e2e4 e7e5 g1f3 b8c6 f1b5 g8f6',
+                                'cp': '23',
+                              },
+                          ],
+                        },
+                      };
                     },
-                  };
                 },
-            },
+              ),
+            ),
           ),
-        ),
-      ),
     },
     home: broadcastGame != null
         ? BroadcastGameScreen(
@@ -151,7 +160,10 @@ Future<void> makeEngineTestApp(
           )
         : AnalysisScreen(
             options: gameId != null
-                ? AnalysisOptions.archivedGame(orientation: Side.white, gameId: gameId)
+                ? AnalysisOptions.archivedGame(
+                    orientation: Side.white,
+                    gameId: gameId,
+                  )
                 : AnalysisOptions.pgn(
                     id: const StringId('standalone'),
                     orientation: Side.white,

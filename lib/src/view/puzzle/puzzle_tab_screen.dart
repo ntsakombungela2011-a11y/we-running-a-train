@@ -105,8 +105,16 @@ class _MaterialTabBodyState extends ConsumerState<_MaterialTabBody> {
   Widget build(BuildContext context) {
     final isTablet = isTabletOrLarger(context);
 
-    Widget buildItem(BuildContext context, int index, Animation<double> animation) =>
-        _buildMainListItem(context, index, animation, (index) => _angles[index]);
+    Widget buildItem(
+      BuildContext context,
+      int index,
+      Animation<double> animation,
+    ) => _buildMainListItem(
+      context,
+      index,
+      animation,
+      (index) => _angles[index],
+    );
 
     return PopScope(
       canPop: false,
@@ -136,7 +144,9 @@ class _MaterialTabBodyState extends ConsumerState<_MaterialTabBody> {
                       itemBuilder: buildItem,
                     ),
                   ),
-                  Expanded(child: ListView(children: const [PuzzleHistoryWidget()])),
+                  Expanded(
+                    child: ListView(children: const [PuzzleHistoryWidget()]),
+                  ),
                 ],
               )
             : AnimatedList(
@@ -170,10 +180,11 @@ Widget _buildMainListItem(
       return PuzzleAnglePreview(
         angle: const PuzzleTheme(PuzzleThemeKey.mix),
         onTap: () {
-          Navigator.of(
-            context,
-            rootNavigator: true,
-          ).push(PuzzleScreen.buildRoute(angle: const PuzzleTheme(PuzzleThemeKey.mix)));
+          Navigator.of(context, rootNavigator: true).push(
+            PuzzleScreen.buildRoute(
+              angle: const PuzzleTheme(PuzzleThemeKey.mix),
+            ),
+          );
         },
       );
     default:
@@ -181,7 +192,10 @@ Widget _buildMainListItem(
       return PuzzleAnglePreview(
         angle: angle,
         onTap: () {
-          Navigator.of(context, rootNavigator: true).push(PuzzleScreen.buildRoute(angle: angle));
+          Navigator.of(
+            context,
+            rootNavigator: true,
+          ).push(PuzzleScreen.buildRoute(angle: angle));
         },
       );
   }
@@ -274,7 +288,10 @@ class _PuzzleMenu extends ConsumerWidget {
               (context.l10n.puzzleStreakDescription.contains('.') ? '.' : ''),
           onTap: isOnline
               ? () {
-                  Navigator.of(context, rootNavigator: true).push(StreakScreen.buildRoute());
+                  Navigator.of(
+                    context,
+                    rootNavigator: true,
+                  ).push(StreakScreen.buildRoute());
                 }
               : null,
         ),
@@ -285,7 +302,10 @@ class _PuzzleMenu extends ConsumerWidget {
           subtitle: context.l10n.mobilePuzzleStormSubtitle,
           onTap: isOnline
               ? () {
-                  Navigator.of(context, rootNavigator: true).push(StormScreen.buildRoute());
+                  Navigator.of(
+                    context,
+                    rootNavigator: true,
+                  ).push(StormScreen.buildRoute());
                 }
               : null,
         ),
@@ -296,7 +316,9 @@ class _PuzzleMenu extends ConsumerWidget {
             subtitle: context.l10n.puzzlePuzzleDashboardDescription,
             enabled: isOnline,
             onTap: isOnline
-                ? () => Navigator.of(context).push(PuzzleDashboardScreen.buildRoute())
+                ? () => Navigator.of(
+                    context,
+                  ).push(PuzzleDashboardScreen.buildRoute())
                 : null,
           ),
           _PuzzleMenuListTile(
@@ -337,7 +359,10 @@ class PuzzleHistoryWidget extends ConsumerWidget {
             children: [
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 8.0,
+                  ),
                   child: Text(context.l10n.puzzleNoPuzzlesToShow),
                 ),
               ),
@@ -354,13 +379,21 @@ class PuzzleHistoryWidget extends ConsumerWidget {
           clipBehavior: Clip.none,
           header: showHeader ? Text(context.l10n.puzzleHistory) : null,
           onHeaderTap: showHeader
-              ? () => Navigator.of(context).push(PuzzleHistoryScreen.buildRoute())
+              ? () =>
+                    Navigator.of(context).push(PuzzleHistoryScreen.buildRoute())
               : null,
-          children: [PuzzleHistoryPreview(recentActivity.take(maxItems).toIList(), maxRows: 5)],
+          children: [
+            PuzzleHistoryPreview(
+              recentActivity.take(maxItems).toIList(),
+              maxRows: 5,
+            ),
+          ],
         );
       },
       error: (e, s) {
-        debugPrint('SEVERE: [PuzzleHistoryWidget] could not load puzzle history');
+        debugPrint(
+          'SEVERE: [PuzzleHistoryWidget] could not load puzzle history',
+        );
         return const Padding(
           padding: Styles.bodySectionPadding,
           child: Text('Could not load Puzzle history.'),
@@ -406,9 +439,14 @@ class DailyPuzzle extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(context.l10n.puzzlePuzzleOfTheDay, style: Styles.boardPreviewTitle),
                   Text(
-                    context.l10n.puzzlePlayedXTimes(data.puzzle.plays).localizeNumbers(),
+                    context.l10n.puzzlePuzzleOfTheDay,
+                    style: Styles.boardPreviewTitle,
+                  ),
+                  Text(
+                    context.l10n
+                        .puzzlePlayedXTimes(data.puzzle.plays)
+                        .localizeNumbers(),
                     style: _puzzlePreviewSubtitleStyle(context),
                   ),
                 ],
@@ -437,14 +475,20 @@ class DailyPuzzle extends ConsumerWidget {
           onTap: () {
             if (!context.mounted) return;
             Navigator.of(context, rootNavigator: true).push(
-              PuzzleScreen.buildRoute(angle: const PuzzleTheme(PuzzleThemeKey.mix), puzzle: data),
+              PuzzleScreen.buildRoute(
+                angle: const PuzzleTheme(PuzzleThemeKey.mix),
+                puzzle: data,
+              ),
             );
           },
         );
       },
       loading: () => isOnline
           ? const Shimmer(
-              child: ShimmerLoading(isLoading: true, child: SmallBoardPreview.loading()),
+              child: ShimmerLoading(
+                isLoading: true,
+                child: SmallBoardPreview.loading(),
+              ),
             )
           : const SizedBox.shrink(),
       error: (error, _) {
@@ -476,7 +520,10 @@ class PuzzleAnglePreview extends ConsumerWidget {
 
       return loading
           ? const Shimmer(
-              child: ShimmerLoading(isLoading: true, child: SmallBoardPreview.loading()),
+              child: ShimmerLoading(
+                isLoading: true,
+                child: SmallBoardPreview.loading(),
+              ),
             )
           : Slidable(
               dragStartBehavior: DragStartBehavior.start,
@@ -487,7 +534,9 @@ class PuzzleAnglePreview extends ConsumerWidget {
                   SlidableAction(
                     icon: Icons.delete,
                     onPressed: (context) async {
-                      final service = await ref.read(puzzleServiceProvider.future);
+                      final service = await ref.read(
+                        puzzleServiceProvider.future,
+                      );
                       if (context.mounted) {
                         await service.deleteBatch(
                           userId: ref.read(authControllerProvider)?.user.id,
@@ -559,11 +608,14 @@ class PuzzleAnglePreview extends ConsumerWidget {
                       children: [
                         Icon(
                           switch (angle) {
-                            PuzzleTheme(themeKey: final themeKey) => themeKey.icon,
+                            PuzzleTheme(themeKey: final themeKey) =>
+                              themeKey.icon,
                             PuzzleOpening() => PuzzleIcons.opening,
                           },
                           size: 32,
-                          color: DefaultTextStyle.of(context).style.color?.withValues(alpha: 0.6),
+                          color: DefaultTextStyle.of(
+                            context,
+                          ).style.color?.withValues(alpha: 0.6),
                         ),
                         const SizedBox(width: 8),
                         if (puzzle != null)
@@ -578,7 +630,9 @@ class PuzzleAnglePreview extends ConsumerWidget {
                           )
                         else
                           const Flexible(
-                            child: Text('No puzzles available, please go online to fetch them.'),
+                            child: Text(
+                              'No puzzles available, please go online to fetch them.',
+                            ),
                           ),
                       ],
                     ),

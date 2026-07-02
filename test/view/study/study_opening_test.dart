@@ -60,7 +60,9 @@ Study _makeStudy() {
     ownerId: null,
     features: (cloneable: false, chat: false, sticky: false),
     topics: const IList.empty(),
-    chapters: IList(const [StudyChapterMeta(id: StudyChapterId('1'), name: '', fen: null)]),
+    chapters: IList(const [
+      StudyChapterMeta(id: StudyChapterId('1'), name: '', fen: null),
+    ]),
     chapter: chapter,
     members: IMap(const {
       UserId(''): StudyMember(
@@ -76,18 +78,24 @@ Study _makeStudy() {
 void main() {
   final afterE4Epd = _epd(Chess.initial.playUnchecked(Move.parse('e2e4')!));
   final afterE5Epd = _epd(
-    Chess.initial.playUnchecked(Move.parse('e2e4')!).playUnchecked(Move.parse('e7e5')!),
+    Chess.initial
+        .playUnchecked(Move.parse('e2e4')!)
+        .playUnchecked(Move.parse('e7e5')!),
   );
 
   const options = (id: _testId, initialChapter: null);
 
   StudyState readState(WidgetTester tester) {
-    final container = ProviderScope.containerOf(tester.element(find.byType(StudyScreen)));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(StudyScreen)),
+    );
     return container.read(studyControllerProvider(options)).requireValue;
   }
 
   group('Study opening detection', () {
-    testWidgets('opening is set when navigating to a mainline position', (tester) async {
+    testWidgets('opening is set when navigating to a mainline position', (
+      tester,
+    ) async {
       final mockRepository = MockStudyRepository();
       when(
         () => mockRepository.getStudy(id: _testId),
@@ -97,9 +105,13 @@ void main() {
         tester,
         home: const StudyScreen(options: options),
         overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
+          studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+            (ref) => mockRepository,
+          ),
           openingServiceProvider: openingServiceProvider.overrideWithValue(
-            FakeOpeningService(openings: {afterE4Epd: _kingsPawnGame, afterE5Epd: _openGame}),
+            FakeOpeningService(
+              openings: {afterE4Epd: _kingsPawnGame, afterE5Epd: _openGame},
+            ),
           ),
         },
       );
@@ -117,42 +129,47 @@ void main() {
       expect(readState(tester).currentBranchOpening?.name, 'Open Game');
     });
 
-    testWidgets('ancestor opening is used when current node has no direct opening', (tester) async {
-      final mockRepository = MockStudyRepository();
-      when(
-        () => mockRepository.getStudy(id: _testId),
-      ).thenAnswer((_) async => (_makeStudy(), null, '1. e4 e5 2. Nf3'));
+    testWidgets(
+      'ancestor opening is used when current node has no direct opening',
+      (tester) async {
+        final mockRepository = MockStudyRepository();
+        when(
+          () => mockRepository.getStudy(id: _testId),
+        ).thenAnswer((_) async => (_makeStudy(), null, '1. e4 e5 2. Nf3'));
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const StudyScreen(options: options),
-        overrides: {
-          studyRepositoryProvider: studyRepositoryProvider.overrideWith((ref) => mockRepository),
-          openingServiceProvider: openingServiceProvider.overrideWithValue(
-            FakeOpeningService(
-              openings: {
-                afterE4Epd: _kingsPawnGame,
-                afterE5Epd: _openGame,
-                // No opening for the Nf3 position — intentionally omitted.
-              },
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const StudyScreen(options: options),
+          overrides: {
+            studyRepositoryProvider: studyRepositoryProvider.overrideWith(
+              (ref) => mockRepository,
             ),
-          ),
-        },
-      );
+            openingServiceProvider: openingServiceProvider.overrideWithValue(
+              FakeOpeningService(
+                openings: {
+                  afterE4Epd: _kingsPawnGame,
+                  afterE5Epd: _openGame,
+                  // No opening for the Nf3 position — intentionally omitted.
+                },
+              ),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle();
 
-      // Navigate to the last mainline move (Nf3): no direct opening, but the e5
-      // ancestor has 'Open Game'.
-      await tester.tap(find.byKey(const Key('goto-next')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('goto-next')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('goto-next')));
-      await tester.pumpAndSettle();
+        // Navigate to the last mainline move (Nf3): no direct opening, but the e5
+        // ancestor has 'Open Game'.
+        await tester.tap(find.byKey(const Key('goto-next')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('goto-next')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('goto-next')));
+        await tester.pumpAndSettle();
 
-      expect(readState(tester).currentBranchOpening?.name, 'Open Game');
-    });
+        expect(readState(tester).currentBranchOpening?.name, 'Open Game');
+      },
+    );
   });
 }

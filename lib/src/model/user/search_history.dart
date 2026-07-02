@@ -10,17 +10,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'search_history.g.dart';
 part 'search_history.freezed.dart';
 
-final searchHistoryProvider = NotifierProvider<SearchHistory, SearchHistoryState>(
-  SearchHistory.new,
-  name: 'SearchHistoryProvider',
-);
+final searchHistoryProvider =
+    NotifierProvider<SearchHistory, SearchHistoryState>(
+      SearchHistory.new,
+      name: 'SearchHistoryProvider',
+    );
 
 class SearchHistory extends Notifier<SearchHistoryState> {
   static const maxHistory = 10;
 
-  String _storageKey(AuthUser? authUser) => 'search.history.${authUser?.user.id ?? '**anon**'}';
+  String _storageKey(AuthUser? authUser) =>
+      'search.history.${authUser?.user.id ?? '**anon**'}';
 
-  SharedPreferencesWithCache get _prefs => LichessBinding.instance.sharedPreferences;
+  SharedPreferencesWithCache get _prefs =>
+      LichessBinding.instance.sharedPreferences;
 
   @override
   SearchHistoryState build() {
@@ -28,7 +31,9 @@ class SearchHistory extends Notifier<SearchHistoryState> {
     final stored = _prefs.getString(_storageKey(authUser));
 
     return stored != null
-        ? SearchHistoryState.fromJson(jsonDecode(stored) as Map<String, dynamic>)
+        ? SearchHistoryState.fromJson(
+            jsonDecode(stored) as Map<String, dynamic>,
+          )
         : SearchHistoryState(history: IList());
   }
 
@@ -43,7 +48,10 @@ class SearchHistory extends Notifier<SearchHistoryState> {
     currentList.insert(0, term);
     final newState = SearchHistoryState(history: currentList.toIList());
     final authUser = ref.read(authControllerProvider);
-    await _prefs.setString(_storageKey(authUser), jsonEncode(newState.toJson()));
+    await _prefs.setString(
+      _storageKey(authUser),
+      jsonEncode(newState.toJson()),
+    );
     if (!ref.mounted) return;
     state = newState;
   }
@@ -59,7 +67,8 @@ class SearchHistory extends Notifier<SearchHistoryState> {
 
 @Freezed(fromJson: true, toJson: true)
 sealed class SearchHistoryState with _$SearchHistoryState {
-  const factory SearchHistoryState({required IList<String> history}) = _SearchHistoryState;
+  const factory SearchHistoryState({required IList<String> history}) =
+      _SearchHistoryState;
 
   factory SearchHistoryState.fromJson(Map<String, dynamic> json) =>
       _$SearchHistoryStateFromJson(json);

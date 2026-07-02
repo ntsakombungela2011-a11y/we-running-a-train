@@ -56,11 +56,13 @@ mixin AnalysisExplosionMixin implements CommonAnalysisState {
 
   @override
   ISet<Square>? get explosionSquares {
-    if (variant != Variant.atomic || lastMove == null || currentPath.isEmpty) return null;
+    if (variant != Variant.atomic || lastMove == null || currentPath.isEmpty)
+      return null;
     final root = analysisRoot;
     if (root == null) return null;
     final parentPos =
-        root.branchesOn(currentPath.penultimate).lastOrNull?.position ?? root.position;
+        root.branchesOn(currentPath.penultimate).lastOrNull?.position ??
+        root.position;
     if (parentPos is! Atomic) return null;
     final squareSet = parentPos.explosionSquares(lastMove!);
     return squareSet.isEmpty ? null : squareSet.squares.toISet();

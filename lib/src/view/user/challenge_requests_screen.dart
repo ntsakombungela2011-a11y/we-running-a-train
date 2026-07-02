@@ -34,13 +34,20 @@ class _Body extends ConsumerWidget {
 
     switch (challengesAsync) {
       case AsyncError():
-        return const SafeArea(child: Center(child: Text('Error loading challenges.')));
+        return const SafeArea(
+          child: Center(child: Text('Error loading challenges.')),
+        );
       case AsyncData(value: final challenges):
         final list = challenges.inward.addAll(challenges.outward);
 
         if (list.isEmpty) {
           return SafeArea(
-            child: Center(child: Text(context.l10n.noChallenges, style: Styles.noResultTextStyle)),
+            child: Center(
+              child: Text(
+                context.l10n.noChallenges,
+                style: Styles.noResultTextStyle,
+              ),
+            ),
           );
         }
 
@@ -54,17 +61,25 @@ class _Body extends ConsumerWidget {
 
             if (user == null) return null;
 
-            return _ChallengeListItem(challenge: challenge, challengerUser: user);
+            return _ChallengeListItem(
+              challenge: challenge,
+              challengerUser: user,
+            );
           },
         );
       case _:
-        return const SafeArea(child: Center(child: CircularProgressIndicator.adaptive()));
+        return const SafeArea(
+          child: Center(child: CircularProgressIndicator.adaptive()),
+        );
     }
   }
 }
 
 class _ChallengeListItem extends ConsumerWidget {
-  const _ChallengeListItem({required this.challenge, required this.challengerUser});
+  const _ChallengeListItem({
+    required this.challenge,
+    required this.challengerUser,
+  });
 
   final Challenge challenge;
   final LightUser challengerUser;
@@ -84,14 +99,16 @@ class _ChallengeListItem extends ConsumerWidget {
             )
           : null,
       onAccept:
-          challenge.direction == ChallengeDirection.outward || !challenge.variant.isPlaySupported
+          challenge.direction == ChallengeDirection.outward ||
+              !challenge.variant.isPlaySupported
           ? null
           : () => challengeService.acceptChallenge(challenge.id),
       onCancel: challenge.direction == ChallengeDirection.outward
           ? () => ref.read(challengeRepositoryProvider).cancel(challenge.id)
           : null,
       onDecline: challenge.direction == ChallengeDirection.inward
-          ? (reason) => challengeService.showDeclineDialog(context, challenge.id)
+          ? (reason) =>
+                challengeService.showDeclineDialog(context, challenge.id)
           : null,
     );
   }

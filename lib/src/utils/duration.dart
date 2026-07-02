@@ -24,7 +24,8 @@ extension DurationExtensions on Duration {
     final slots = <({String text, bool dropIfZero, int value})>[
       (text: l10n.nbDays(days), dropIfZero: true, value: days),
       (text: l10n.nbHours(hours), dropIfZero: true, value: hours),
-      if (days == 0) (text: l10n.nbMinutes(minutes), dropIfZero: false, value: minutes),
+      if (days == 0)
+        (text: l10n.nbMinutes(minutes), dropIfZero: false, value: minutes),
     ];
 
     final parts = <String>[];

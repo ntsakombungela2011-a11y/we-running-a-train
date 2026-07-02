@@ -7,10 +7,11 @@ import 'package:lichess_mobile/src/model/settings/general_preferences.dart';
 typedef ActiveLocalizations = ({Locale locale, AppLocalizations strings});
 
 /// A provider for [Localizations].
-final localizationsProvider = NotifierProvider<Localizations, ActiveLocalizations>(
-  Localizations.new,
-  name: 'LocalizationsProvider',
-);
+final localizationsProvider =
+    NotifierProvider<Localizations, ActiveLocalizations>(
+      Localizations.new,
+      name: 'LocalizationsProvider',
+    );
 
 class Localizations extends Notifier<ActiveLocalizations> {
   @override
@@ -33,10 +34,16 @@ class Localizations extends Notifier<ActiveLocalizations> {
 
   ActiveLocalizations _getLocale(GeneralPrefs prefs) {
     if (prefs.locale != null) {
-      return (locale: prefs.locale!, strings: lookupAppLocalizations(prefs.locale!));
+      return (
+        locale: prefs.locale!,
+        strings: lookupAppLocalizations(prefs.locale!),
+      );
     }
     final systemLocale = getSystemLocale(WidgetsBinding.instance);
-    return (locale: systemLocale, strings: lookupAppLocalizations(systemLocale));
+    return (
+      locale: systemLocale,
+      strings: lookupAppLocalizations(systemLocale),
+    );
   }
 }
 

@@ -109,7 +109,9 @@ class RetroController extends AsyncNotifier<RetroState>
       _incorrectMoveTimer?.cancel();
     });
 
-    socketClient = ref.watch(socketPoolProvider).open(AnalysisController.socketUri);
+    socketClient = ref
+        .watch(socketPoolProvider)
+        .open(AnalysisController.socketUri);
 
     // Don't use archivedGameProvider, as its value gets cached when we watch it in AnalysisController,
     // so when a server analysis is already running, _game.serverAnalysis would still be null.
@@ -140,7 +142,8 @@ class RetroController extends AsyncNotifier<RetroState>
 
       state = AsyncValue.data(retroState);
 
-      if (currentServerAnalysis.value != ServerAnalysisSource.game(gameId: options.id)) {
+      if (currentServerAnalysis.value !=
+          ServerAnalysisSource.game(gameId: options.id)) {
         requestServerAnalysis().catchError((Object e, StackTrace s) {
           _logger.warning('Failed to request server analysis', e, s);
           state = AsyncError(e, s);
@@ -155,7 +158,9 @@ class RetroController extends AsyncNotifier<RetroState>
               'Server analysis did not finish within $kMaxWaitForServerAnalysis for game ${options.id}',
             );
             state = AsyncError(
-              Exception('Server analysis did not finish within $kMaxWaitForServerAnalysis'),
+              Exception(
+                'Server analysis did not finish within $kMaxWaitForServerAnalysis',
+              ),
               StackTrace.current,
             );
           },
@@ -190,9 +195,11 @@ class RetroController extends AsyncNotifier<RetroState>
         }
 
         final bigEvalSwing =
-            Eval.winningChancesPovDiff(side, eval, newEval).abs() > _kEvalSwingThreshold;
+            Eval.winningChancesPovDiff(side, eval, newEval).abs() >
+            _kEvalSwingThreshold;
 
-        final lostEasyMate = eval.mate != null && newEval.mate == null && eval.mate!.abs() <= 3;
+        final lostEasyMate =
+            eval.mate != null && newEval.mate == null && eval.mate!.abs() <= 3;
 
         final hasSolution = branch.children.length > 1;
 
@@ -205,7 +212,10 @@ class RetroController extends AsyncNotifier<RetroState>
           try {
             final entry = await ref
                 .read(openingExplorerRepositoryProvider)
-                .getMasterDatabase(branch.position.fen, since: MasterDb.kEarliestYear);
+                .getMasterDatabase(
+                  branch.position.fen,
+                  since: MasterDb.kEarliestYear,
+                );
 
             final masterMovesPlayedMoreThanOnce = entry.moves.where(
               (move) => move.white + move.draws + move.black > 1,
@@ -229,7 +239,10 @@ class RetroController extends AsyncNotifier<RetroState>
           }
         }
 
-        return Mistake(branch: branch.view, openingExplorerSolutions: openingExplorerSolutions);
+        return Mistake(
+          branch: branch.view,
+          openingExplorerSolutions: openingExplorerSolutions,
+        );
       }),
     )).nonNulls.toIList();
 
@@ -238,10 +251,14 @@ class RetroController extends AsyncNotifier<RetroState>
       serverAnalysisAvailable: true,
       mistakes: mistakes,
       currentMistakeIndex: 0,
-      feedback: mistakes.isNotEmpty ? RetroFeedback.findMove : RetroFeedback.done,
+      feedback: mistakes.isNotEmpty
+          ? RetroFeedback.findMove
+          : RetroFeedback.done,
       mainlinePath: _root.mainlinePath,
       pov: side,
-      currentNode: RetroCurrentNode.fromNode(mistakes.firstOrNull?.branch.branch ?? _root),
+      currentNode: RetroCurrentNode.fromNode(
+        mistakes.firstOrNull?.branch.branch ?? _root,
+      ),
       lastMove: mistakes.firstOrNull?.branch.sanMove.move,
       variant: _game.meta.variant,
       root: _root.view,
@@ -259,7 +276,10 @@ class RetroController extends AsyncNotifier<RetroState>
   void onUserMove(Move move) {
     if (!state.requireValue.currentPosition.isLegal(move)) return;
 
-    final (newPath, isNewNode) = _root.addMoveAt(state.requireValue.currentPath, move);
+    final (newPath, isNewNode) = _root.addMoveAt(
+      state.requireValue.currentPath,
+      move,
+    );
     if (newPath != null) {
       _setPath(newPath);
     }
@@ -281,12 +301,16 @@ class RetroController extends AsyncNotifier<RetroState>
     final currentMistake = state.value?.currentMistake;
     if (currentMistake != null) {
       onUserMove(currentMistake.serverMove);
-      state = AsyncValue.data(state.requireValue.copyWith(feedback: RetroFeedback.viewingSolution));
+      state = AsyncValue.data(
+        state.requireValue.copyWith(feedback: RetroFeedback.viewingSolution),
+      );
     }
   }
 
   Future<void> flipSide() async {
-    state = AsyncValue.data(await _computeMistakes(state.requireValue.pov.opposite));
+    state = AsyncValue.data(
+      await _computeMistakes(state.requireValue.pov.opposite),
+    );
   }
 
   void restart() {
@@ -303,7 +327,9 @@ class RetroController extends AsyncNotifier<RetroState>
 
     _setPath(
       _root.mainlinePath.truncate(
-        mistake?.branch.position.ply ?? lastMistake?.branch.position.ply ?? _root.mainlinePath.size,
+        mistake?.branch.position.ply ??
+            lastMistake?.branch.position.ply ??
+            _root.mainlinePath.size,
       ),
     );
 
@@ -336,7 +362,9 @@ class RetroController extends AsyncNotifier<RetroState>
       if (!isNavigating && isForward) {
         final isCheck = currentNode.sanMove.isCheck;
         if (currentNode.sanMove.isCapture) {
-          ref.read(moveFeedbackServiceProvider).captureFeedback(state.variant, check: isCheck);
+          ref
+              .read(moveFeedbackServiceProvider)
+              .captureFeedback(state.variant, check: isCheck);
         } else {
           ref.read(moveFeedbackServiceProvider).moveFeedback(check: isCheck);
         }
@@ -371,7 +399,9 @@ class RetroController extends AsyncNotifier<RetroState>
     }
 
     if (pathChange) {
-      this.state = AsyncValue.data(this.state.requireValue.copyWith(engineInThreatMode: false));
+      this.state = AsyncValue.data(
+        this.state.requireValue.copyWith(engineInThreatMode: false),
+      );
       requestEval();
     }
 
@@ -379,12 +409,16 @@ class RetroController extends AsyncNotifier<RetroState>
   }
 
   void _onIncorrectMove() {
-    state = AsyncValue.data(state.requireValue.copyWith(feedback: RetroFeedback.incorrect));
+    state = AsyncValue.data(
+      state.requireValue.copyWith(feedback: RetroFeedback.incorrect),
+    );
     userPrevious();
   }
 
   void _onCorrectMove() {
-    state = AsyncValue.data(state.requireValue.copyWith(feedback: RetroFeedback.correct));
+    state = AsyncValue.data(
+      state.requireValue.copyWith(feedback: RetroFeedback.correct),
+    );
   }
 
   @override
@@ -421,7 +455,9 @@ class RetroController extends AsyncNotifier<RetroState>
     state = AsyncData(
       state.requireValue.copyWith(
         root: recomputeRootView ? _root.view : state.requireValue.root,
-        currentNode: RetroCurrentNode.fromNode(_root.nodeAt(state.requireValue.currentPath)),
+        currentNode: RetroCurrentNode.fromNode(
+          _root.nodeAt(state.requireValue.currentPath),
+        ),
       ),
     );
   }
@@ -431,17 +467,22 @@ class RetroController extends AsyncNotifier<RetroState>
     switch (state.feedback) {
       case RetroFeedback.incorrect:
       case RetroFeedback.findMove:
-        if (state.currentPosition.ply == state.currentMistake!.serverBranch.position.ply) {
+        if (state.currentPosition.ply ==
+            state.currentMistake!.serverBranch.position.ply) {
           if (state.currentMistake!.isSolution(state.currentNode)) {
             _onCorrectMove();
-          } else if (state.currentPosition == state.currentMistake!.userBranch.position) {
+          } else if (state.currentPosition ==
+              state.currentMistake!.userBranch.position) {
             _incorrectMoveTimer?.cancel();
             _incorrectMoveTimer = Timer(const Duration(milliseconds: 500), () {
               _onIncorrectMove();
             });
           } else {
             this.state = AsyncValue.data(
-              state.copyWith(feedback: RetroFeedback.evalMove, evalRequestedAt: DateTime.now()),
+              state.copyWith(
+                feedback: RetroFeedback.evalMove,
+                evalRequestedAt: DateTime.now(),
+              ),
             );
             // Be sure to get enough depth to evaluate the move properly
             requestEval(goDeeper: true);
@@ -455,8 +496,11 @@ class RetroController extends AsyncNotifier<RetroState>
   Future<void> onServerAnalysisEvent(ServerEvalEvent event) async {
     if (!state.hasValue) return;
 
-    final progress = event.evals.where((e) => e.hasEval).length / _root.mainline.length;
-    state = AsyncValue.data(state.requireValue.copyWith(serverAnalysisProgress: progress));
+    final progress =
+        event.evals.where((e) => e.hasEval).length / _root.mainline.length;
+    state = AsyncValue.data(
+      state.requireValue.copyWith(serverAnalysisProgress: progress),
+    );
 
     if (event.isAnalysisComplete) {
       if (_serverAnalysisCompleter.isCompleted == false) {
@@ -468,7 +512,14 @@ class RetroController extends AsyncNotifier<RetroState>
   }
 }
 
-enum RetroFeedback { findMove, evalMove, correct, incorrect, viewingSolution, done }
+enum RetroFeedback {
+  findMove,
+  evalMove,
+  correct,
+  incorrect,
+  viewingSolution,
+  done,
+}
 
 @freezed
 sealed class RetroState
@@ -506,7 +557,8 @@ sealed class RetroState
   }) = _RetroState;
 
   @override
-  ServerAnalysisSource get serverAnalysisSource => ServerAnalysisSource.game(gameId: gameId);
+  ServerAnalysisSource get serverAnalysisSource =>
+      ServerAnalysisSource.game(gameId: gameId);
 
   @override
   bool get alwaysRequestCloudEval => false;
@@ -516,10 +568,12 @@ sealed class RetroState
       feedback == RetroFeedback.incorrect ||
       feedback == RetroFeedback.evalMove;
 
-  Duration? get evalTime =>
-      evalRequestedAt != null ? DateTime.now().difference(evalRequestedAt!) : null;
+  Duration? get evalTime => evalRequestedAt != null
+      ? DateTime.now().difference(evalRequestedAt!)
+      : null;
 
-  double get evalProgress => feedback == RetroFeedback.evalMove && currentNode.eval != null
+  double get evalProgress =>
+      feedback == RetroFeedback.evalMove && currentNode.eval != null
       ? min(1.0, currentNode.eval!.depth / _kEvalDepthThreshold)
       : 0.0;
 
@@ -550,7 +604,9 @@ sealed class RetroState
 }
 
 @freezed
-sealed class RetroCurrentNode with _$RetroCurrentNode implements AnalysisCurrentNodeInterface {
+sealed class RetroCurrentNode
+    with _$RetroCurrentNode
+    implements AnalysisCurrentNodeInterface {
   const RetroCurrentNode._();
 
   const factory RetroCurrentNode({

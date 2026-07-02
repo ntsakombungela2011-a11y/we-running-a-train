@@ -7,12 +7,14 @@ import 'package:logging/logging.dart';
 part 'log_preferences.freezed.dart';
 part 'log_preferences.g.dart';
 
-final logPreferencesProvider = NotifierProvider<LogPreferencesNotifier, LogPrefs>(
-  LogPreferencesNotifier.new,
-  name: 'LogPreferencesProvider',
-);
+final logPreferencesProvider =
+    NotifierProvider<LogPreferencesNotifier, LogPrefs>(
+      LogPreferencesNotifier.new,
+      name: 'LogPreferencesProvider',
+    );
 
-class LogPreferencesNotifier extends Notifier<LogPrefs> with PreferencesStorage<LogPrefs> {
+class LogPreferencesNotifier extends Notifier<LogPrefs>
+    with PreferencesStorage<LogPrefs> {
   @override
   @protected
   PrefCategory get prefCategory => PrefCategory.log;

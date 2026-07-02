@@ -28,23 +28,34 @@ class BroadcastTeamStandingsScreen extends ConsumerWidget {
   final BroadcastTournamentId tournamentId;
 
   static Route<dynamic> buildRoute(BroadcastTournamentId tournamentId) {
-    return buildScreenRoute(screen: BroadcastTeamStandingsScreen(tournamentId: tournamentId));
+    return buildScreenRoute(
+      screen: BroadcastTeamStandingsScreen(tournamentId: tournamentId),
+    );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final standingsAsync = ref.watch(broadcastTeamStandingsProvider(tournamentId));
-    final tournamentAsync = ref.watch(broadcastTournamentProvider(tournamentId));
+    final standingsAsync = ref.watch(
+      broadcastTeamStandingsProvider(tournamentId),
+    );
+    final tournamentAsync = ref.watch(
+      broadcastTournamentProvider(tournamentId),
+    );
 
     return PlatformScaffold(
-      appBar: PlatformAppBar(title: AppBarTitleText(context.l10n.broadcastTeamResults)),
+      appBar: PlatformAppBar(
+        title: AppBarTitleText(context.l10n.broadcastTeamResults),
+      ),
       body: switch ((standingsAsync, tournamentAsync)) {
         (AsyncData(value: final teams), AsyncData()) =>
           teams.isNotEmpty
-              ? BroadcastTeamStandingsList(teams: teams, tournamentId: tournamentId)
+              ? BroadcastTeamStandingsList(
+                  teams: teams,
+                  tournamentId: tournamentId,
+                )
               : Center(child: Text(context.l10n.nothingToSeeHere)),
-        (AsyncError(:final error), _) ||
-        (_, AsyncError(:final error)) => Center(child: Text('Cannot load data: $error')),
+        (AsyncError(:final error), _) || (_, AsyncError(:final error)) =>
+          Center(child: Text('Cannot load data: $error')),
         _ => const Center(child: CircularProgressIndicator.adaptive()),
       },
     );
@@ -52,16 +63,21 @@ class BroadcastTeamStandingsScreen extends ConsumerWidget {
 }
 
 class BroadcastTeamStandingsList extends ConsumerStatefulWidget {
-  const BroadcastTeamStandingsList({required this.teams, required this.tournamentId});
+  const BroadcastTeamStandingsList({
+    required this.teams,
+    required this.tournamentId,
+  });
 
   final IList<BroadcastTeamStanding> teams;
   final BroadcastTournamentId tournamentId;
 
   @override
-  ConsumerState<BroadcastTeamStandingsList> createState() => _BroadcastTeamStandingsListState();
+  ConsumerState<BroadcastTeamStandingsList> createState() =>
+      _BroadcastTeamStandingsListState();
 }
 
-class _BroadcastTeamStandingsListState extends ConsumerState<BroadcastTeamStandingsList> {
+class _BroadcastTeamStandingsListState
+    extends ConsumerState<BroadcastTeamStandingsList> {
   late IList<BroadcastTeamStanding> teams;
   late _SortingTypes currentSort;
   bool reverse = false;
@@ -102,10 +118,10 @@ class _BroadcastTeamStandingsListState extends ConsumerState<BroadcastTeamStandi
   /// Sort items first by values from the [picker1] and solve ties by values from the [picker2].
   ///
   /// Null values are smaller than any other value.
-  Comparator<BroadcastTeamStanding> bothCompare<T extends Comparable<T>, U extends Comparable<U>>(
-    _TeamPicker<T> picker1,
-    _TeamPicker<U> picker2,
-  ) => (team1, team2) {
+  Comparator<BroadcastTeamStanding> bothCompare<
+    T extends Comparable<T>,
+    U extends Comparable<U>
+  >(_TeamPicker<T> picker1, _TeamPicker<U> picker2) => (team1, team2) {
     final value = nullableCompare(picker1)(team1, team2);
     if (value == 0) {
       return nullableCompare(picker2)(team1, team2);
@@ -125,14 +141,12 @@ class _BroadcastTeamStandingsListState extends ConsumerState<BroadcastTeamStandi
 
   void sort() {
     final compare = switch (currentSort) {
-      _SortingTypes.elo => (BroadcastTeamStanding t1, BroadcastTeamStanding t2) => bothCompare(
-        (t) => t.averageRating,
-        (t) => t.mp,
-      )(t2, t1),
-      _SortingTypes.score => (BroadcastTeamStanding t1, BroadcastTeamStanding t2) => bothCompare(
-        (t) => t.mp,
-        (t) => t.gp,
-      )(t2, t1),
+      _SortingTypes.elo =>
+        (BroadcastTeamStanding t1, BroadcastTeamStanding t2) =>
+            bothCompare((t) => t.averageRating, (t) => t.mp)(t2, t1),
+      _SortingTypes.score =>
+        (BroadcastTeamStanding t1, BroadcastTeamStanding t2) =>
+            bothCompare((t) => t.mp, (t) => t.gp)(t2, t1),
     };
 
     setState(() {
@@ -143,7 +157,9 @@ class _BroadcastTeamStandingsListState extends ConsumerState<BroadcastTeamStandi
   @override
   Widget build(BuildContext context) {
     final scoreWidth = max(MediaQuery.sizeOf(context).width * 0.15, 90.0);
-    final sortIcon = reverse ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down;
+    final sortIcon = reverse
+        ? Icons.keyboard_arrow_up
+        : Icons.keyboard_arrow_down;
     final mediaQueryPadding = MediaQuery.paddingOf(context);
     final scoreFormat = NumberFormat('#.#');
 
@@ -165,7 +181,10 @@ class _BroadcastTeamStandingsListState extends ConsumerState<BroadcastTeamStandi
                         child: Text(
                           context.l10n.broadcastStandingsDisclaimer,
                           maxLines: 3,
-                          style: const TextStyle(fontSize: 13, overflow: .ellipsis),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            overflow: .ellipsis,
+                          ),
                         ),
                       ),
                     ],
@@ -190,7 +209,10 @@ class _BroadcastTeamStandingsListState extends ConsumerState<BroadcastTeamStandi
                       Expanded(
                         child: Padding(
                           padding: _kTableRowPadding,
-                          child: Text(context.l10n.broadcastTeams, style: _kHeaderTextStyle),
+                          child: Text(
+                            context.l10n.broadcastTeams,
+                            style: _kHeaderTextStyle,
+                          ),
                         ),
                       ),
                     SizedBox(
@@ -312,12 +334,17 @@ class _BroadcastTeamStandingRow extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsetsDirectional.only(start: 16.0, end: 8.0),
       visualDensity: .compact,
-      tileColor: index.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
+      tileColor: index.isEven
+          ? context.lichessTheme.rowEven
+          : context.lichessTheme.rowOdd,
       title: Text(team.name, maxLines: 2, overflow: .ellipsis),
       subtitle: team.averageRating != null
           ? Text(
               '${team.averageRating}',
-              style: TextStyle(fontSize: 13, color: textShade(context, Styles.subtitleOpacity)),
+              style: TextStyle(
+                fontSize: 13,
+                color: textShade(context, Styles.subtitleOpacity),
+              ),
             )
           : null,
       trailing: SizedBox(
@@ -355,7 +382,9 @@ class _BroadcastTeamStandingRow extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Navigator.of(context).push(BroadcastTeamScreen.buildRoute(tournamentId, team.name));
+        Navigator.of(
+          context,
+        ).push(BroadcastTeamScreen.buildRoute(tournamentId, team.name));
       },
     );
   }

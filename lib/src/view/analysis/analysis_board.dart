@@ -63,7 +63,9 @@ abstract class AnalysisBoardState<
   /// Called in [initState] to drive controller position updates.
   /// Implement as: `ref.listenManual(yourControllerProvider(...).select((v) => v.value), listener)`
   /// The subscription is managed by Riverpod and cancelled automatically on dispose.
-  void listenToStateChanges(void Function(AnalysisState? prev, AnalysisState? next) listener);
+  void listenToStateChanges(
+    void Function(AnalysisState? prev, AnalysisState? next) listener,
+  );
 
   /// Computes the board FEN string from [state].
   ///
@@ -97,10 +99,16 @@ abstract class AnalysisBoardState<
     super.initState();
     final initialState = readCurrentState();
     if (initialState != null) {
-      _controller = _createController(initialState, ref.read(boardPreferencesProvider));
+      _controller = _createController(
+        initialState,
+        ref.read(boardPreferencesProvider),
+      );
     }
     listenToStateChanges(_onAnalysisStateChanged);
-    ref.listenManual<BoardPrefs>(boardPreferencesProvider, _onBoardPrefsChanged);
+    ref.listenManual<BoardPrefs>(
+      boardPreferencesProvider,
+      _onBoardPrefsChanged,
+    );
   }
 
   @override
@@ -128,7 +136,10 @@ abstract class AnalysisBoardState<
     );
   }
 
-  ChessboardController? _createController(AnalysisState state, BoardPrefs boardPrefs) {
+  ChessboardController? _createController(
+    AnalysisState state,
+    BoardPrefs boardPrefs,
+  ) {
     final gameData = _buildGameData(state, boardPrefs);
     if (gameData == null) return null;
     return ChessboardController(game: gameData);
@@ -147,7 +158,8 @@ abstract class AnalysisBoardState<
     final gameData = _buildGameData(next, boardPrefs);
     final prevFen = prev != null ? computeFen(prev) : null;
     if (prevFen != newFen) {
-      if (gameData != null) controller.updatePosition(gameData, resetPremove: true);
+      if (gameData != null)
+        controller.updatePosition(gameData, resetPremove: true);
       final explosionSquares = next.explosionSquares;
       if (explosionSquares != null) {
         controller.triggerExplosion(explosionSquares.toSet());
@@ -180,12 +192,17 @@ abstract class AnalysisBoardState<
     }
 
     final localEval = ref.watch(
-      engineEvaluationProvider(engineEvaluationFilters).select((value) => value.eval),
+      engineEvaluationProvider(
+        engineEvaluationFilters,
+      ).select((value) => value.eval),
     );
 
     final eval = localEval?.threatMode == true
         ? analysisState.currentNode.eval
-        : pickBestClientEval(localEval: localEval, savedEval: analysisState.currentNode.eval);
+        : pickBestClientEval(
+            localEval: localEval,
+            savedEval: analysisState.currentNode.eval,
+          );
 
     if (eval == null) {
       return {};
@@ -216,7 +233,10 @@ abstract class AnalysisBoardState<
         bestMoveColor: LichessColors.red.withValues(alpha: 0.6),
         nextBestMovesColor: LichessColors.red.withValues(alpha: 0.4),
       );
-      return {...threatMoveShapes, if (bestMoveShapes.isNotEmpty) bestMoveShapes.first};
+      return {
+        ...threatMoveShapes,
+        if (bestMoveShapes.isNotEmpty) bestMoveShapes.first,
+      };
     }
 
     return bestMoveShapes.toSet();
@@ -227,10 +247,15 @@ abstract class AnalysisBoardState<
     final boardPrefs = ref.watch(boardPreferencesProvider);
 
     final currentNode = analysisState.currentNode;
-    final annotation = showAnnotations ? makeAnnotation(currentNode.nags) : null;
+    final annotation = showAnnotations
+        ? makeAnnotation(currentNode.nags)
+        : null;
     final sanMove = currentNode.sanMove;
 
-    final externalShapes = {..._bestMoveShapes(boardPrefs.pieceSet.assets), ...extraShapes.unlock};
+    final externalShapes = {
+      ..._bestMoveShapes(boardPrefs.pieceSet.assets),
+      ...extraShapes.unlock,
+    };
     final boardAnnotations = sanMove != null && annotation != null
         ? (sanMove.isCastles && altCastles.containsKey(sanMove.move.uci)
               ? {Move.parse(altCastles[sanMove.move.uci]!)!.to: annotation}
@@ -252,7 +277,9 @@ abstract class AnalysisBoardState<
               .toBoardSettings(analysisState.variant)
               .copyWith(
                 borderRadius: widget.boardRadius,
-                boxShadow: widget.boardRadius != null ? boardShadows : const <BoxShadow>[],
+                boxShadow: widget.boardRadius != null
+                    ? boardShadows
+                    : const <BoxShadow>[],
               ),
         ),
       );
@@ -268,7 +295,9 @@ abstract class AnalysisBoardState<
           .toBoardSettings(analysisState.variant)
           .copyWith(
             borderRadius: widget.boardRadius,
-            boxShadow: widget.boardRadius != null ? boardShadows : const <BoxShadow>[],
+            boxShadow: widget.boardRadius != null
+                ? boardShadows
+                : const <BoxShadow>[],
             drawShape: DrawShapeOptions(
               enable: boardPrefs.enableShapeDrawings,
               newShapeColor: boardPrefs.shapeColor.color,

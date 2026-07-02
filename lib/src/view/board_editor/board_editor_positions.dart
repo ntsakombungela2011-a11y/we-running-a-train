@@ -7,13 +7,20 @@ import 'package:lichess_mobile/src/utils/l10n_context.dart';
 import 'package:lichess_mobile/src/utils/navigation.dart';
 
 class BoardEditorPositionsScreen extends StatelessWidget {
-  const BoardEditorPositionsScreen({required this.onPositionSelected, super.key});
+  const BoardEditorPositionsScreen({
+    required this.onPositionSelected,
+    super.key,
+  });
 
   final void Function(Position position) onPositionSelected;
 
-  static Route<dynamic> buildRoute({required void Function(Position position) onPositionSelected}) {
+  static Route<dynamic> buildRoute({
+    required void Function(Position position) onPositionSelected,
+  }) {
     return buildScreenRoute(
-      screen: BoardEditorPositionsScreen(onPositionSelected: onPositionSelected),
+      screen: BoardEditorPositionsScreen(
+        onPositionSelected: onPositionSelected,
+      ),
     );
   }
 
@@ -58,9 +65,11 @@ class _OpeningsTabState extends State<_OpeningsTab> {
   void initState() {
     _openings = rootBundle.loadString('assets/positions.json').then((s) {
       final List<Position> result = [];
-      for (final opening in (jsonDecode(s) as List<dynamic>).cast<Map<String, dynamic>>()) {
+      for (final opening
+          in (jsonDecode(s) as List<dynamic>).cast<Map<String, dynamic>>()) {
         for (final position
-            in (opening['positions'] as List<dynamic>).cast<Map<String, dynamic>>()) {
+            in (opening['positions'] as List<dynamic>)
+                .cast<Map<String, dynamic>>()) {
           result.add(Position.fromJson(position));
         }
       }
@@ -108,7 +117,8 @@ class _EndGamesTabState extends State<_EndGamesTab> {
   void initState() {
     _endGames = rootBundle.loadString('assets/endgames.json').then((s) {
       final List<Position> result = [];
-      for (final position in (jsonDecode(s) as List<dynamic>).cast<Map<String, dynamic>>()) {
+      for (final position
+          in (jsonDecode(s) as List<dynamic>).cast<Map<String, dynamic>>()) {
         result.add(Position.fromJson(position));
       }
       return result;

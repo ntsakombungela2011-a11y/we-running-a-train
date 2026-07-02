@@ -50,10 +50,15 @@ void main() {
   }
 
   group('TvScreen (readonly GameLayout board)', () {
-    testWidgets('loads the game and displays a non-interactive board', (tester) async {
+    testWidgets('loads the game and displays a non-interactive board', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
-        home: const TvScreen(channel: TvChannel.best, initialGame: (gameId, Side.white)),
+        home: const TvScreen(
+          channel: TvChannel.best,
+          initialGame: (gameId, Side.white),
+        ),
       );
       await tester.pumpWidget(app);
 
@@ -69,13 +74,21 @@ void main() {
       expect(find.text('Steven'), findsOneWidget);
 
       // The TV board is a spectator board: it must not be interactive.
-      expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isFalse);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isFalse,
+      );
     });
 
-    testWidgets('updates the board when a move event is received', (tester) async {
+    testWidgets('updates the board when a move event is received', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
-        home: const TvScreen(channel: TvChannel.best, initialGame: (gameId, Side.white)),
+        home: const TvScreen(
+          channel: TvChannel.best,
+          initialGame: (gameId, Side.white),
+        ),
       );
       await tester.pumpWidget(app);
       await loadGame(tester);
@@ -91,14 +104,25 @@ void main() {
       // The board advances to the new position and stays non-interactive.
       expect(boardHasPiece(tester, Square.e4, Piece.whitePawn), isTrue);
       expect(getBoardPieces(tester).containsKey(Square.e2), isFalse);
-      expect(getBoardLastMove(tester), const NormalMove(from: Square.e2, to: Square.e4));
-      expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isFalse);
+      expect(
+        getBoardLastMove(tester),
+        const NormalMove(from: Square.e2, to: Square.e4),
+      );
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isFalse,
+      );
     });
 
-    testWidgets('navigates to the previous move with the bottom bar', (tester) async {
+    testWidgets('navigates to the previous move with the bottom bar', (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
-        home: const TvScreen(channel: TvChannel.best, initialGame: (gameId, Side.white)),
+        home: const TvScreen(
+          channel: TvChannel.best,
+          initialGame: (gameId, Side.white),
+        ),
       );
       await tester.pumpWidget(app);
       await loadGame(tester);
@@ -116,11 +140,19 @@ void main() {
       // The board shows the position before the move again.
       expect(boardHasPiece(tester, Square.e2, Piece.whitePawn), isTrue);
       expect(getBoardPieces(tester).containsKey(Square.e4), isFalse);
-      expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isFalse);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isFalse,
+      );
     });
 
-    testWidgets('user TV advances when the watched player starts a new game', (tester) async {
-      final user = LightUser(id: UserId.fromUserName('nfchess13'), name: 'NFChess13');
+    testWidgets('user TV advances when the watched player starts a new game', (
+      tester,
+    ) async {
+      final user = LightUser(
+        id: UserId.fromUserName('nfchess13'),
+        name: 'NFChess13',
+      );
       final games = generateExportedGames(count: 2, username: 'nfchess13');
       Uri? userTvWatch;
 
@@ -138,24 +170,30 @@ void main() {
                 ),
               ),
             ),
-            webSocketChannelFactoryProvider: webSocketChannelFactoryProvider.overrideWith(
-              (_) => FakeWebSocketChannelFactory((uri) {
-                if (uri.queryParameters.containsKey('userTv')) {
-                  userTvWatch = Uri(path: uri.path);
-                }
-                return createDefaultFakeWebSocketChannel(uri);
-              }),
-            ),
+            webSocketChannelFactoryProvider: webSocketChannelFactoryProvider
+                .overrideWith(
+                  (_) => FakeWebSocketChannelFactory((uri) {
+                    if (uri.queryParameters.containsKey('userTv')) {
+                      userTvWatch = Uri(path: uri.path);
+                    }
+                    return createDefaultFakeWebSocketChannel(uri);
+                  }),
+                ),
           },
         ),
       );
       // load first game, opponent is called "Black"
-      await loadGame(tester, socketUri: watchSocketUri(games[0].id, Side.white), game: games[0]);
+      await loadGame(
+        tester,
+        socketUri: watchSocketUri(games[0].id, Side.white),
+        game: games[0],
+      );
       expect(find.text('Black'), findsOneWidget);
       expect(
         userTvWatch,
         isNotNull,
-        reason: 'The user TV socket should have been opened when loading the first game.',
+        reason:
+            'The user TV socket should have been opened when loading the first game.',
       );
       // server sends a resync event, which should trigger a request to the current-game endpoint and load the new game
       sendServerSocketMessages(userTvWatch!, ['{"t": "resync"}']);

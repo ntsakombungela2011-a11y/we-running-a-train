@@ -32,7 +32,8 @@ Future<Widget> makeTestApp(
   WidgetTester tester, {
   required String moves,
   Iterable<ExternalEval>? evals,
-  IMap<String, OpeningExplorerEntry> openingExplorerEntries = const IMap.empty(),
+  IMap<String, OpeningExplorerEntry> openingExplorerEntries =
+      const IMap.empty(),
   bool alreadyHasServerAnalysis = true,
   Map<ProviderOrFamily, Override> overrides = const {},
 }) async {
@@ -88,7 +89,8 @@ Future<Widget> makeTestApp(
 }
         ''', 200);
     }
-    if (request.url.host == kLichessOpeningExplorerHost && request.url.path == '/masters') {
+    if (request.url.host == kLichessOpeningExplorerHost &&
+        request.url.path == '/masters') {
       final fen = request.url.queryParameters['fen']!;
       final entry = openingExplorerEntries.entryOrNull(fen)?.value;
       if (entry != null) {
@@ -162,13 +164,19 @@ void main() {
       // Wait for retro to load
       await tester.pump();
 
-      expect(find.text('No significant mistakes found for White'), findsOneWidget);
+      expect(
+        find.text('No significant mistakes found for White'),
+        findsOneWidget,
+      );
       expect(find.text("Review black's mistakes"), findsOneWidget);
 
       await tester.tap(find.text("Review black's mistakes"));
       await tester.pump(); // Wait for side to flip
 
-      expect(find.text('No significant mistakes found for Black'), findsOneWidget);
+      expect(
+        find.text('No significant mistakes found for Black'),
+        findsOneWidget,
+      );
       expect(find.text("Review white's mistakes"), findsOneWidget);
     });
 
@@ -213,7 +221,11 @@ void main() {
 
       // Pretend d4 isn't a good move either
       sendServerSocketMessages(AnalysisController.socketUri, [
-        makeEvalHitEvent(uciMoves: ['e2e4', 'e7e5', 'd2d4'], bestMove: 'd7d5', cp: -2000),
+        makeEvalHitEvent(
+          uciMoves: ['e2e4', 'e7e5', 'd2d4'],
+          bestMove: 'd7d5',
+          cp: -2000,
+        ),
       ]);
 
       await tester.pump(); // Wait for eval to be processed
@@ -271,15 +283,28 @@ void main() {
             const ExternalEval(cp: -2000, mate: null, variation: 'f4'),
           ],
           openingExplorerEntries: {
-            'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2': OpeningExplorerEntry(
-              white: 1,
-              draws: 1,
-              black: 1,
-              moves: [
-                const OpeningMove(uci: 'a2a3', san: 'a3', white: 1, draws: 0, black: 0),
-                const OpeningMove(uci: 'd2d4', san: 'd4', white: 1, draws: 0, black: 1),
-              ].lock,
-            ),
+            'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2':
+                OpeningExplorerEntry(
+                  white: 1,
+                  draws: 1,
+                  black: 1,
+                  moves: [
+                    const OpeningMove(
+                      uci: 'a2a3',
+                      san: 'a3',
+                      white: 1,
+                      draws: 0,
+                      black: 0,
+                    ),
+                    const OpeningMove(
+                      uci: 'd2d4',
+                      san: 'd4',
+                      white: 1,
+                      draws: 0,
+                      black: 1,
+                    ),
+                  ].lock,
+                ),
           }.lock,
         ),
       );
@@ -296,7 +321,11 @@ void main() {
       await playMove(tester, 'a2', 'a3');
 
       sendServerSocketMessages(AnalysisController.socketUri, [
-        makeEvalHitEvent(uciMoves: ['e2e4', 'e7e5', 'a2a3'], bestMove: 'a7a6', cp: -2000),
+        makeEvalHitEvent(
+          uciMoves: ['e2e4', 'e7e5', 'a2a3'],
+          bestMove: 'a7a6',
+          cp: -2000,
+        ),
       ]);
 
       // Wait for failure message to appear and move to be taken back
@@ -309,14 +338,21 @@ void main() {
       expect(find.text('Next'), findsOneWidget);
     });
 
-    testWidgets('Requests server analysis if not already running', (WidgetTester tester) async {
+    testWidgets('Requests server analysis if not already running', (
+      WidgetTester tester,
+    ) async {
       final mockAnalysisService = MockServerAnalysisService();
       final currentAnalysis = ValueNotifier<ServerAnalysisSource?>(null);
-      final evalEvents = ValueNotifier<(ServerAnalysisSource, ServerEvalEvent)?>(null);
-      when(() => mockAnalysisService.currentAnalysis).thenReturn(currentAnalysis);
+      final evalEvents =
+          ValueNotifier<(ServerAnalysisSource, ServerEvalEvent)?>(null);
+      when(
+        () => mockAnalysisService.currentAnalysis,
+      ).thenReturn(currentAnalysis);
       when(() => mockAnalysisService.lastAnalysisEvent).thenReturn(evalEvents);
       when(
-        () => mockAnalysisService.requestAnalysis(const ServerAnalysisSource.game(gameId: testId)),
+        () => mockAnalysisService.requestAnalysis(
+          const ServerAnalysisSource.game(gameId: testId),
+        ),
       ).thenAnswer((_) async {
         currentAnalysis.value = const ServerAnalysisSource.game(gameId: testId);
       });
@@ -327,9 +363,8 @@ void main() {
           moves: 'e4 e5',
           alreadyHasServerAnalysis: false,
           overrides: {
-            serverAnalysisServiceProvider: serverAnalysisServiceProvider.overrideWithValue(
-              mockAnalysisService,
-            ),
+            serverAnalysisServiceProvider: serverAnalysisServiceProvider
+                .overrideWithValue(mockAnalysisService),
           },
         ),
       );
@@ -339,24 +374,39 @@ void main() {
 
       expect(find.text('Calculating moves...'), findsOneWidget);
 
-      expect(currentAnalysis.value, const ServerAnalysisSource.game(gameId: testId));
+      expect(
+        currentAnalysis.value,
+        const ServerAnalysisSource.game(gameId: testId),
+      );
 
       // Finish analysis
       evalEvents.value = (
         const ServerAnalysisSource.game(gameId: testId),
-        ServerEvalEvent(evals: <ExternalEval>[].lock, tree: {}, isAnalysisComplete: true),
+        ServerEvalEvent(
+          evals: <ExternalEval>[].lock,
+          tree: {},
+          isAnalysisComplete: true,
+        ),
       );
       await tester.pump(); // Wait for eval event to be processed
-      expect(find.text('No significant mistakes found for White'), findsOneWidget);
+      expect(
+        find.text('No significant mistakes found for White'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('Does not request analysis if already running', (WidgetTester tester) async {
+    testWidgets('Does not request analysis if already running', (
+      WidgetTester tester,
+    ) async {
       final mockAnalysisService = MockServerAnalysisService();
       final currentAnalysis = ValueNotifier<ServerAnalysisSource?>(
         const ServerAnalysisSource.game(gameId: testId),
       );
-      final evalEvents = ValueNotifier<(ServerAnalysisSource, ServerEvalEvent)?>(null);
-      when(() => mockAnalysisService.currentAnalysis).thenReturn(currentAnalysis);
+      final evalEvents =
+          ValueNotifier<(ServerAnalysisSource, ServerEvalEvent)?>(null);
+      when(
+        () => mockAnalysisService.currentAnalysis,
+      ).thenReturn(currentAnalysis);
       when(() => mockAnalysisService.lastAnalysisEvent).thenReturn(evalEvents);
 
       await tester.pumpWidget(
@@ -365,9 +415,8 @@ void main() {
           moves: 'e4 e5',
           alreadyHasServerAnalysis: false,
           overrides: {
-            serverAnalysisServiceProvider: serverAnalysisServiceProvider.overrideWithValue(
-              mockAnalysisService,
-            ),
+            serverAnalysisServiceProvider: serverAnalysisServiceProvider
+                .overrideWithValue(mockAnalysisService),
           },
         ),
       );
@@ -380,13 +429,22 @@ void main() {
       // Finish analysis
       evalEvents.value = (
         const ServerAnalysisSource.game(gameId: testId),
-        ServerEvalEvent(evals: <ExternalEval>[].lock, tree: {}, isAnalysisComplete: true),
+        ServerEvalEvent(
+          evals: <ExternalEval>[].lock,
+          tree: {},
+          isAnalysisComplete: true,
+        ),
       );
       await tester.pump(); // Wait for eval event to be processed
-      expect(find.text('No significant mistakes found for White'), findsOneWidget);
+      expect(
+        find.text('No significant mistakes found for White'),
+        findsOneWidget,
+      );
 
       verifyNever(
-        () => mockAnalysisService.requestAnalysis(const ServerAnalysisSource.game(gameId: testId)),
+        () => mockAnalysisService.requestAnalysis(
+          const ServerAnalysisSource.game(gameId: testId),
+        ),
       );
     });
   });

@@ -12,22 +12,30 @@ const kSliderTheme = SliderThemeData(
   year2023: false,
 );
 
-ThemeData makeAppTheme(BuildContext context, GeneralPrefs generalPrefs, BoardPrefs boardPrefs) {
+ThemeData makeAppTheme(
+  BuildContext context,
+  GeneralPrefs generalPrefs,
+  BoardPrefs boardPrefs,
+) {
   final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
   final brightness = generalPrefs.isForcedDarkMode
       ? Brightness.dark
       : switch (generalPrefs.themeMode) {
           BackgroundThemeMode.light => Brightness.light,
           BackgroundThemeMode.dark => Brightness.dark,
-          BackgroundThemeMode.system => MediaQuery.platformBrightnessOf(context),
+          BackgroundThemeMode.system => MediaQuery.platformBrightnessOf(
+            context,
+          ),
         };
 
-  if (generalPrefs.backgroundColor == null && generalPrefs.backgroundImage == null) {
+  if (generalPrefs.backgroundColor == null &&
+      generalPrefs.backgroundImage == null) {
     return _makeDefaultTheme(brightness, generalPrefs, boardPrefs, isIOS);
   } else {
     return _makeBackgroundImageTheme(
       baseTheme:
-          generalPrefs.backgroundImage?.baseTheme ?? generalPrefs.backgroundColor!.$1.baseTheme,
+          generalPrefs.backgroundImage?.baseTheme ??
+          generalPrefs.backgroundColor!.$1.baseTheme,
       seedColor:
           generalPrefs.backgroundImage?.seedColor ??
           (generalPrefs.backgroundColor!.$2
@@ -60,8 +68,12 @@ ThemeData _makeDefaultTheme(
   } else {
     scheme = ColorScheme.fromSeed(
       seedColor: selectedPalette.colors.first,
-      secondary: selectedPalette.colors.length > 1 ? selectedPalette.colors[1] : null,
-      tertiary: selectedPalette.colors.length > 2 ? selectedPalette.colors[2] : null,
+      secondary: selectedPalette.colors.length > 1
+          ? selectedPalette.colors[1]
+          : null,
+      tertiary: selectedPalette.colors.length > 2
+          ? selectedPalette.colors[2]
+          : null,
       brightness: brightness,
     );
   }
@@ -81,7 +93,9 @@ ThemeData _makeDefaultTheme(
     scaffoldBackgroundColor: scheme.surface,
     cupertinoOverrideTheme: _makeCupertinoThemeData(scheme, brightness),
     listTileTheme: _makeListTileTheme(scheme, isIOS),
-    cardTheme: _kCupertinoCardTheme.copyWith(color: scheme.surfaceContainerHigh),
+    cardTheme: _kCupertinoCardTheme.copyWith(
+      color: scheme.surfaceContainerHigh,
+    ),
     sliderTheme: kSliderTheme,
   );
 }
@@ -100,7 +114,9 @@ ThemeData _makeBackgroundImageTheme({
       surface: scheme.surface.withValues(alpha: baseSurfaceAlpha),
     ),
     appBarTheme: _appBarTheme.copyWith(
-      backgroundColor: isBackgroundImage ? null : seedColor.withValues(alpha: kCupertinoBarOpacity),
+      backgroundColor: isBackgroundImage
+          ? null
+          : seedColor.withValues(alpha: kCupertinoBarOpacity),
     ),
     scaffoldBackgroundColor: seedColor.withValues(alpha: 0),
     sliderTheme: kSliderTheme,
@@ -111,7 +127,11 @@ ListTileThemeData _makeListTileTheme(ColorScheme colorScheme, bool isIOS) {
   return ListTileThemeData(
     iconColor: colorScheme.onSurface.withValues(alpha: 0.7),
     titleTextStyle: isIOS
-        ? TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.w500, fontSize: 16)
+        ? TextStyle(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          )
         : null,
     subtitleTextStyle: TextStyle(
       color: colorScheme.onSurface.withValues(alpha: Styles.subtitleOpacity),
@@ -127,7 +147,10 @@ const _kCupertinoCardTheme = CardThemeData(
   shape: RoundedRectangleBorder(borderRadius: Styles.cardBorderRadius),
 );
 
-CupertinoThemeData _makeCupertinoThemeData(ColorScheme colorScheme, Brightness brightness) {
+CupertinoThemeData _makeCupertinoThemeData(
+  ColorScheme colorScheme,
+  Brightness brightness,
+) {
   return CupertinoThemeData(
     applyThemeToAll: true,
     primaryColor: colorScheme.primary,

@@ -101,11 +101,15 @@ sealed class AppLogEntry with _$AppLogEntry {
     stackTrace: record.stackTrace?.toString(),
   );
 
-  factory AppLogEntry.fromJson(Map<String, dynamic> json) => _$AppLogEntryFromJson(json);
+  factory AppLogEntry.fromJson(Map<String, dynamic> json) =>
+      _$AppLogEntryFromJson(json);
 }
 
 /// A paginated collection of app log entries.
 @freezed
 sealed class AppLogPage with _$AppLogPage {
-  const factory AppLogPage({required IList<AppLogEntry> items, required int? next}) = _AppLogPage;
+  const factory AppLogPage({
+    required IList<AppLogEntry> items,
+    required int? next,
+  }) = _AppLogPage;
 }

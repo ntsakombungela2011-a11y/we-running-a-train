@@ -6,12 +6,14 @@ import 'package:lichess_mobile/src/model/settings/preferences_storage.dart';
 part 'analysis_preferences.freezed.dart';
 part 'analysis_preferences.g.dart';
 
-final analysisPreferencesProvider = NotifierProvider<AnalysisPreferences, AnalysisPrefs>(
-  AnalysisPreferences.new,
-  name: 'AnalysisPreferencesProvider',
-);
+final analysisPreferencesProvider =
+    NotifierProvider<AnalysisPreferences, AnalysisPrefs>(
+      AnalysisPreferences.new,
+      name: 'AnalysisPreferencesProvider',
+    );
 
-class AnalysisPreferences extends Notifier<AnalysisPrefs> with PreferencesStorage<AnalysisPrefs> {
+class AnalysisPreferences extends Notifier<AnalysisPrefs>
+    with PreferencesStorage<AnalysisPrefs> {
   @override
   @protected
   final prefCategory = PrefCategory.analysis;
@@ -21,7 +23,8 @@ class AnalysisPreferences extends Notifier<AnalysisPrefs> with PreferencesStorag
   AnalysisPrefs get defaults => AnalysisPrefs.defaults;
 
   @override
-  AnalysisPrefs fromJson(Map<String, dynamic> json) => AnalysisPrefs.fromJson(json);
+  AnalysisPrefs fromJson(Map<String, dynamic> json) =>
+      AnalysisPrefs.fromJson(json);
 
   @override
   AnalysisPrefs build() {
@@ -29,11 +32,15 @@ class AnalysisPreferences extends Notifier<AnalysisPrefs> with PreferencesStorag
   }
 
   Future<void> toggleServerAnalysis() {
-    return save(state.copyWith(enableServerAnalysis: !state.enableServerAnalysis));
+    return save(
+      state.copyWith(enableServerAnalysis: !state.enableServerAnalysis),
+    );
   }
 
   Future<void> toggleShowEvaluationGauge() {
-    return save(state.copyWith(showEvaluationGauge: !state.showEvaluationGauge));
+    return save(
+      state.copyWith(showEvaluationGauge: !state.showEvaluationGauge),
+    );
   }
 
   Future<void> toggleShowEngineLines() {
@@ -62,7 +69,9 @@ class AnalysisPreferences extends Notifier<AnalysisPrefs> with PreferencesStorag
 }
 
 @Freezed(fromJson: true, toJson: true)
-sealed class AnalysisPrefs with _$AnalysisPrefs implements Serializable, CommonAnalysisPrefs {
+sealed class AnalysisPrefs
+    with _$AnalysisPrefs
+    implements Serializable, CommonAnalysisPrefs {
   const AnalysisPrefs._();
 
   const factory AnalysisPrefs({

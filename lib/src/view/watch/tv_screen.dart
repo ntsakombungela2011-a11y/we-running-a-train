@@ -31,7 +31,10 @@ import 'package:lichess_mobile/src/widgets/user.dart';
 
 class TvScreen extends ConsumerStatefulWidget {
   const TvScreen({this.channel, this.initialGame, this.user, super.key})
-    : assert(channel != null || user != null, 'Either channel or user must be provided');
+    : assert(
+        channel != null || user != null,
+        'Either channel or user must be provided',
+      );
 
   final TvChannel? channel;
   final (GameId id, Side orientation)? initialGame;
@@ -46,7 +49,9 @@ class TvScreen extends ConsumerStatefulWidget {
     return buildScreenRoute(
       screen: TvScreen(
         channel: channel,
-        initialGame: gameId != null ? (gameId, orientation ?? Side.white) : null,
+        initialGame: gameId != null
+            ? (gameId, orientation ?? Side.white)
+            : null,
         user: user,
       ),
     );
@@ -57,8 +62,11 @@ class TvScreen extends ConsumerStatefulWidget {
 }
 
 class _TvScreenState extends ConsumerState<TvScreen> {
-  TvControllerParams get _tvControllerParams =>
-      (channel: widget.channel, initialGame: widget.initialGame, userId: widget.user?.id);
+  TvControllerParams get _tvControllerParams => (
+    channel: widget.channel,
+    initialGame: widget.initialGame,
+    userId: widget.user?.id,
+  );
 
   AsyncNotifierProvider<TvController, TvGameControllerParams> get _tvCtrl =>
       tvControllerProvider(_tvControllerParams);
@@ -75,12 +83,16 @@ class _TvScreenState extends ConsumerState<TvScreen> {
       onFocusRegained: () {
         ref.read(_tvCtrl.notifier).resolveCurrentGame();
         if (gameParams != null) {
-          ref.read(tvGameControllerProvider(gameParams).notifier).onFocusRegained();
+          ref
+              .read(tvGameControllerProvider(gameParams).notifier)
+              .onFocusRegained();
         }
       },
       onForegroundLost: () {
         if (context.mounted && gameParams != null) {
-          ref.read(tvGameControllerProvider(gameParams).notifier).onForegroundLost();
+          ref
+              .read(tvGameControllerProvider(gameParams).notifier)
+              .onForegroundLost();
         }
       },
       child: WakelockWidget(
@@ -114,7 +126,9 @@ class _TvScreenState extends ConsumerState<TvScreen> {
                     ),
                     loading: () => const _TvLoadingBoard(),
                     error: (err, stackTrace) {
-                      debugPrint('SEVERE: [TvScreen] could not load stream; $err\n$stackTrace');
+                      debugPrint(
+                        'SEVERE: [TvScreen] could not load stream; $err\n$stackTrace',
+                      );
                       return const _TvErrorBoard();
                     },
                   ),
@@ -153,14 +167,22 @@ class _TvGameBody extends ConsumerWidget {
         final game = gameState.game;
         final position = gameState.game.positionAt(gameState.stepCursor);
         final clockTenths = ref.watch(
-          accountPreferencesProvider.select((prefs) => prefs.value?.clockTenths),
+          accountPreferencesProvider.select(
+            (prefs) => prefs.value?.clockTenths,
+          ),
         );
 
         final kidModeAsync = ref.watch(kidModeProvider);
-        final canShowChat = channel == null && gameState.chatEnabled && kidModeAsync.value == false;
+        final canShowChat =
+            channel == null &&
+            gameState.chatEnabled &&
+            kidModeAsync.value == false;
 
         final authUser = ref.watch(authControllerProvider);
-        final chatOptions = TvChatOptions(gameParams, writeable: authUser != null);
+        final chatOptions = TvChatOptions(
+          gameParams,
+          writeable: authUser != null,
+        );
 
         // If Stockfish is playing, user is null
         final crosstable = game.white.user != null && game.black.user != null
@@ -183,7 +205,9 @@ class _TvGameBody extends ConsumerWidget {
               ? CountdownClockBuilder(
                   key: blackClockKey,
                   timeLeft: gameState.game.clock!.black,
-                  delay: gameState.game.clock!.lag ?? const Duration(milliseconds: 10),
+                  delay:
+                      gameState.game.clock!.lag ??
+                      const Duration(milliseconds: 10),
                   clockUpdatedAt: gameState.game.clock!.at,
                   active: gameState.activeClockSide == Side.black,
                   builder: (context, timeLeft) {
@@ -206,7 +230,9 @@ class _TvGameBody extends ConsumerWidget {
                   key: whiteClockKey,
                   timeLeft: gameState.game.clock!.white,
                   clockUpdatedAt: gameState.game.clock!.at,
-                  delay: gameState.game.clock!.lag ?? const Duration(milliseconds: 10),
+                  delay:
+                      gameState.game.clock!.lag ??
+                      const Duration(milliseconds: 10),
                   active: gameState.activeClockSide == Side.white,
                   builder: (context, timeLeft) {
                     return Clock(
@@ -231,10 +257,19 @@ class _TvGameBody extends ConsumerWidget {
             position: position,
             lastMove: game.moveAt(gameState.stepCursor),
           ),
-          boardSettingsOverrides: const BoardSettingsOverrides(animationDuration: Duration.zero),
-          topTable: gameState.orientation == Side.white ? blackPlayerWidget : whitePlayerWidget,
-          bottomTable: gameState.orientation == Side.white ? whitePlayerWidget : blackPlayerWidget,
-          moves: game.steps.skip(1).map((e) => e.sanMove!.san).toList(growable: false),
+          boardSettingsOverrides: const BoardSettingsOverrides(
+            animationDuration: Duration.zero,
+          ),
+          topTable: gameState.orientation == Side.white
+              ? blackPlayerWidget
+              : whitePlayerWidget,
+          bottomTable: gameState.orientation == Side.white
+              ? whitePlayerWidget
+              : blackPlayerWidget,
+          moves: game.steps
+              .skip(1)
+              .map((e) => e.sanMove!.san)
+              .toList(growable: false),
           currentMoveIndex: gameState.stepCursor,
           onSelectMove: (index) {
             ref.read(gameCtrl.notifier).goToMove(index);
@@ -287,7 +322,9 @@ class _TvGameBody extends ConsumerWidget {
       },
       loading: () => const _TvLoadingBoard(),
       error: (err, stackTrace) {
-        debugPrint('SEVERE: [TvScreen] could not load stream; $err\n$stackTrace');
+        debugPrint(
+          'SEVERE: [TvScreen] could not load stream; $err\n$stackTrace',
+        );
         return const _TvErrorBoard();
       },
     );
@@ -334,7 +371,9 @@ class _WatcherButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nb = ref.watch(
-      tvGameControllerProvider(gameParams).select((s) => s.value?.nbWatchers ?? 0),
+      tvGameControllerProvider(
+        gameParams,
+      ).select((s) => s.value?.nbWatchers ?? 0),
     );
     if (nb <= 0) return const SizedBox.shrink();
     return Padding(

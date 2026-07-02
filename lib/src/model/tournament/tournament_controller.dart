@@ -22,7 +22,8 @@ final tournamentControllerProvider = AsyncNotifierProvider.autoDispose
       name: 'TournamentControllerProvider',
     );
 
-class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin<TournamentState> {
+class TournamentController extends AsyncNotifier<TournamentState>
+    with ChatMixin<TournamentState> {
   TournamentController(this.id);
 
   final TournamentId id;
@@ -38,7 +39,8 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
 
   Timer? _reloadTimer;
 
-  static Uri socketUri(TournamentId id) => Uri(path: '/tournament/$id/socket/v6');
+  static Uri socketUri(TournamentId id) =>
+      Uri(path: '/tournament/$id/socket/v6');
 
   SocketPool get _socketPool => ref.read(socketPoolProvider);
 
@@ -62,9 +64,14 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
       _reloadTimer?.cancel();
     });
 
-    final tournament = await ref.read(tournamentRepositoryProvider).getTournament(id);
+    final tournament = await ref
+        .read(tournamentRepositoryProvider)
+        .getTournament(id);
 
-    _socketClient = _socketPool.open(socketUri(id), version: tournament.socketVersion);
+    _socketClient = _socketPool.open(
+      socketUri(id),
+      version: tournament.socketVersion,
+    );
     _socketSubscription?.cancel();
     _socketSubscription = _socketClient!.stream.listen(handleSocketEvent);
 
@@ -83,9 +90,15 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
       });
     }
 
-    _watchFeaturedGameIfChanged(previous: null, current: tournament.featuredGame?.id);
+    _watchFeaturedGameIfChanged(
+      previous: null,
+      current: tournament.featuredGame?.id,
+    );
 
-    return TournamentState(tournament: tournament, chatState: await initChat(tournament.chat));
+    return TournamentState(
+      tournament: tournament,
+      chatState: await initChat(tournament.chat),
+    );
   }
 
   @override
@@ -96,7 +109,10 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
     }
   }
 
-  void _watchFeaturedGameIfChanged({required GameId? previous, required GameId? current}) {
+  void _watchFeaturedGameIfChanged({
+    required GameId? previous,
+    required GameId? current,
+  }) {
     if (current != null && previous != current) {
       _socketClient?.send('startWatching', current.value);
     }
@@ -141,7 +157,9 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
         .read(tournamentRepositoryProvider)
         .loadPage(state.requireValue.tournament, page);
 
-    state = AsyncValue.data(state.requireValue.copyWith(tournament: tournament));
+    state = AsyncValue.data(
+      state.requireValue.copyWith(tournament: tournament),
+    );
   }
 
   Future<void> _reload() async {
@@ -167,7 +185,9 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
       current: tournament.featuredGame?.id,
     );
 
-    state = AsyncValue.data(state.requireValue.copyWith(tournament: tournament));
+    state = AsyncValue.data(
+      state.requireValue.copyWith(tournament: tournament),
+    );
   }
 
   @protected
@@ -204,7 +224,10 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
                 featuredGame: oldState.featuredGame!.copyWith(
                   fen: fenEvent.fen,
                   lastMove: fenEvent.lastMove,
-                  clocks: (white: fenEvent.whiteClock, black: fenEvent.blackClock),
+                  clocks: (
+                    white: fenEvent.whiteClock,
+                    black: fenEvent.blackClock,
+                  ),
                 ),
               ),
             ),
@@ -251,8 +274,10 @@ class TournamentController extends AsyncNotifier<TournamentState> with ChatMixin
 sealed class TournamentState with _$TournamentState, ChatMixinState {
   const TournamentState._();
 
-  const factory TournamentState({required Tournament tournament, ChatState? chatState}) =
-      _TournamentState;
+  const factory TournamentState({
+    required Tournament tournament,
+    ChatState? chatState,
+  }) = _TournamentState;
 
   String get name => tournament.meta.fullName;
   TournamentId get id => tournament.id;
@@ -270,7 +295,8 @@ sealed class TournamentState with _$TournamentState, ChatMixinState {
 
   int get firstRankOfPage => (standingsPage - 1) * kStandingsPageSize + 1;
   bool get hasPreviousPage => standingsPage > 1;
-  bool get hasNextPage => tournament.nbPlayers > standingsPage * kStandingsPageSize;
+  bool get hasNextPage =>
+      tournament.nbPlayers > standingsPage * kStandingsPageSize;
 
   /// True if the user has joined the tournament.
   bool get hasJoined => tournament.me != null;
@@ -279,10 +305,15 @@ sealed class TournamentState with _$TournamentState, ChatMixinState {
   bool get joined => tournament.me != null && tournament.me!.withdraw != true;
 
   bool get isSpectator =>
-      tournament.isFinished == true || tournament.me == null || tournament.me!.withdraw == true;
+      tournament.isFinished == true ||
+      tournament.me == null ||
+      tournament.me!.withdraw == true;
 
   ChatOptions? get chatOptions => tournament.chat != null
-      ? TournamentChatOptions(id: tournament.id, writeable: tournament.chat!.writeable)
+      ? TournamentChatOptions(
+          id: tournament.id,
+          writeable: tournament.chat!.writeable,
+        )
       : null;
 
   @override

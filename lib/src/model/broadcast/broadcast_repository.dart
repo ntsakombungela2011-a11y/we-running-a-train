@@ -26,12 +26,18 @@ class BroadcastRepository {
 
   Future<BroadcastList> getBroadcasts({int page = 1}) {
     return aggregator.readJson(
-      Uri(path: '/api/broadcast/top', queryParameters: {'page': page.toString()}),
+      Uri(
+        path: '/api/broadcast/top',
+        queryParameters: {'page': page.toString()},
+      ),
       atomicMapper: broadcastListFromServerJson,
     );
   }
 
-  Future<BroadcastSearchList> searchBroadcasts({required String searchTerm, int page = 1}) {
+  Future<BroadcastSearchList> searchBroadcasts({
+    required String searchTerm,
+    int page = 1,
+  }) {
     return client.readJson(
       Uri(
         path: '/api/broadcast/search',
@@ -41,7 +47,9 @@ class BroadcastRepository {
     );
   }
 
-  Future<BroadcastTournament> getTournament(BroadcastTournamentId broadcastTournamentId) {
+  Future<BroadcastTournament> getTournament(
+    BroadcastTournamentId broadcastTournamentId,
+  ) {
     return client.readJson(
       Uri(path: 'api/broadcast/$broadcastTournamentId'),
       mapper: _makeTournamentFromJson,
@@ -67,10 +75,15 @@ class BroadcastRepository {
     final response = await client.readResponse(
       Uri(path: 'api/study/$roundId/$gameId.pgn', queryParameters: queryParams),
     );
-    return (pgn: response.body, analysisSummary: readAnalysisSummaryFromHeader(response));
+    return (
+      pgn: response.body,
+      analysisSummary: readAnalysisSummaryFromHeader(response),
+    );
   }
 
-  Future<IList<BroadcastPlayerWithOverallResult>> getPlayers(BroadcastTournamentId tournamentId) {
+  Future<IList<BroadcastPlayerWithOverallResult>> getPlayers(
+    BroadcastTournamentId tournamentId,
+  ) {
     return client.readJsonList(
       Uri(path: '/broadcast/$tournamentId/players'),
       mapper: _makePlayerWithOverallResultFromJson,
@@ -90,12 +103,16 @@ class BroadcastRepository {
   Future<IList<BroadcastTeamMatch>> getTeamMatches(BroadcastRoundId roundId) {
     return client.readJson(
       Uri(path: 'broadcast/$roundId/teams'),
-      mapper: (json) =>
-          pick(json, 'table').asListOrThrow<BroadcastTeamMatch>(_teamMatchFromPick).toIList(),
+      mapper: (json) => pick(
+        json,
+        'table',
+      ).asListOrThrow<BroadcastTeamMatch>(_teamMatchFromPick).toIList(),
     );
   }
 
-  Future<IList<BroadcastTeamStanding>> getTeamStandings(BroadcastTournamentId tournamentId) {
+  Future<IList<BroadcastTeamStanding>> getTeamStandings(
+    BroadcastTournamentId tournamentId,
+  ) {
     return client.readJsonList(
       Uri(path: 'broadcast/$tournamentId/teams/standings'),
       mapper: (json) => _teamStandingFromPick(pick(json).required()),
@@ -106,14 +123,23 @@ class BroadcastRepository {
 BroadcastList broadcastListFromServerJson(Map<String, dynamic> json) {
   return (
     active: pick(json, 'active').asListOrThrow(_broadcastFromPick).toIList(),
-    past: pick(json, 'past', 'currentPageResults').asListOrThrow(_broadcastFromPick).toIList(),
+    past: pick(
+      json,
+      'past',
+      'currentPageResults',
+    ).asListOrThrow(_broadcastFromPick).toIList(),
     nextPage: pick(json, 'past', 'nextPage').asIntOrNull(),
   );
 }
 
-BroadcastSearchList _makeBroadcastSearchResponseFromJson(Map<String, dynamic> json) {
+BroadcastSearchList _makeBroadcastSearchResponseFromJson(
+  Map<String, dynamic> json,
+) {
   return (
-    broadcasts: pick(json, 'currentPageResults').asListOrThrow(_broadcastFromPick).toIList(),
+    broadcasts: pick(
+      json,
+      'currentPageResults',
+    ).asListOrThrow(_broadcastFromPick).toIList(),
     nextPage: pick(json, 'nextPage').asIntOrNull(),
   );
 }
@@ -125,41 +151,53 @@ Broadcast _broadcastFromPick(RequiredPick pick) {
     tour: _tournamentDataFromPick(pick('tour').required()),
     round: _roundFromPick(pick('round').required()),
     group: pick('group').asStringOrNull(),
-    roundToLinkId: pick('roundToLink', 'id').asBroadcastRoundIdOrNull() ?? roundId,
+    roundToLinkId:
+        pick('roundToLink', 'id').asBroadcastRoundIdOrNull() ?? roundId,
   );
 }
 
-BroadcastTournamentData _tournamentDataFromPick(RequiredPick pick) => BroadcastTournamentData(
-  id: pick('id').asBroadcastTournamentIdOrThrow(),
-  name: pick('name').asStringOrThrow(),
-  slug: pick('slug').asStringOrThrow(),
-  tier: pick('tier').asIntOrNull(),
-  imageUrl: pick('image').asStringOrNull(),
-  description: pick('description').asStringOrNull(),
-  teamTable: pick('teamTable').asBoolOrFalse(),
-  showTeamScores: pick('showTeamScores').asBoolOrFalse(),
-  information: (
-    format: pick('info', 'format').asStringOrNull(),
-    timeControl: pick('info', 'tc').asStringOrNull(),
-    players: pick('info', 'players').asStringOrNull(),
-    location: pick('info', 'location').asStringOrNull(),
-    dates: pick('dates').letOrNull(
-      (pick) => (
-        startsAt: pick(0).asDateTimeFromMillisecondsOrThrow(),
-        endsAt: pick(1).asDateTimeFromMillisecondsOrNull(),
+BroadcastTournamentData _tournamentDataFromPick(RequiredPick pick) =>
+    BroadcastTournamentData(
+      id: pick('id').asBroadcastTournamentIdOrThrow(),
+      name: pick('name').asStringOrThrow(),
+      slug: pick('slug').asStringOrThrow(),
+      tier: pick('tier').asIntOrNull(),
+      imageUrl: pick('image').asStringOrNull(),
+      description: pick('description').asStringOrNull(),
+      teamTable: pick('teamTable').asBoolOrFalse(),
+      showTeamScores: pick('showTeamScores').asBoolOrFalse(),
+      information: (
+        format: pick('info', 'format').asStringOrNull(),
+        timeControl: pick('info', 'tc').asStringOrNull(),
+        players: pick('info', 'players').asStringOrNull(),
+        location: pick('info', 'location').asStringOrNull(),
+        dates: pick('dates').letOrNull(
+          (pick) => (
+            startsAt: pick(0).asDateTimeFromMillisecondsOrThrow(),
+            endsAt: pick(1).asDateTimeFromMillisecondsOrNull(),
+          ),
+        ),
+        website: pick(
+          'info',
+          'website',
+        ).letOrNull((p) => Uri.tryParse(p.asStringOrThrow())),
+        standings: pick(
+          'info',
+          'standings',
+        ).letOrNull((p) => Uri.tryParse(p.asStringOrThrow())),
       ),
-    ),
-    website: pick('info', 'website').letOrNull((p) => Uri.tryParse(p.asStringOrThrow())),
-    standings: pick('info', 'standings').letOrNull((p) => Uri.tryParse(p.asStringOrThrow())),
-  ),
-);
+    );
 
 BroadcastTournament _makeTournamentFromJson(Map<String, dynamic> json) {
   return BroadcastTournament(
     data: _tournamentDataFromPick(pick(json, 'tour').required()),
     rounds: pick(json, 'rounds').asListOrThrow(_roundFromPick).toIList(),
     defaultRoundId: pick(json, 'defaultRoundId').asBroadcastRoundIdOrThrow(),
-    group: pick(json, 'group', 'tours').asListOrNull(_tournamentGroupFromPick)?.toIList(),
+    group: pick(
+      json,
+      'group',
+      'tours',
+    ).asListOrNull(_tournamentGroupFromPick)?.toIList(),
     photos: _photosFromJson(json),
   );
 }
@@ -173,8 +211,9 @@ BroadcastTournamentGroup _tournamentGroupFromPick(RequiredPick pick) {
   return (id: id, name: name, active: active, live: live);
 }
 
-BroadcastCustomPointsPerColor _customPointsPerColorFromPick(RequiredPick pick) =>
-    (win: pick('win').asDoubleOrThrow(), draw: pick('draw').asDoubleOrThrow());
+BroadcastCustomPointsPerColor _customPointsPerColorFromPick(
+  RequiredPick pick,
+) => (win: pick('win').asDoubleOrThrow(), draw: pick('draw').asDoubleOrThrow());
 
 BroadcastCustomScoring _customScoringFromPick(RequiredPick pick) => {
   Side.white: _customPointsPerColorFromPick(pick('white').required()),
@@ -203,21 +242,29 @@ BroadcastRound _roundFromPick(RequiredPick pick) {
 }
 
 BroadcastPhotos? _photosFromJson(Map<String, dynamic> json) {
-  final rawPhotos = pick(json, 'photos').asMapOrNull<String, Map<String, dynamic>>();
+  final rawPhotos = pick(
+    json,
+    'photos',
+  ).asMapOrNull<String, Map<String, dynamic>>();
   return rawPhotos
       ?.map(
-        (key, value) => MapEntry<FideId, BroadcastPhoto>(FideId(int.parse(key)), (
-          smallUrl: value['small']!,
-          mediumUrl: value['medium']!,
-          // credit: value['credit']!,
-        )),
+        (key, value) =>
+            MapEntry<FideId, BroadcastPhoto>(FideId(int.parse(key)), (
+              smallUrl: value['small']!,
+              mediumUrl: value['medium']!,
+              // credit: value['credit']!,
+            )),
       )
       .lock;
 }
 
 BroadcastRoundResponse _makeRoundWithGamesFromJson(Map<String, dynamic> json) {
   final groupName = pick(json, 'group', 'name').asStringOrNull();
-  final group = pick(json, 'group', 'tours').asListOrNull(_tournamentGroupFromPick)?.toIList();
+  final group = pick(
+    json,
+    'group',
+    'tours',
+  ).asListOrNull(_tournamentGroupFromPick)?.toIList();
   final tournament = pick(json, 'tour').required();
   final round = pick(json, 'round').required();
   final games = pick(json, 'games').required();
@@ -242,7 +289,8 @@ MapEntry<BroadcastGameId, BroadcastGame> gameFromPick(RequiredPick pick) {
 
   /// The amount of time that the player whose turn it is has been thinking since his last move
   final thinkTime = pick('thinkTime').asDurationFromSecondsOrNull();
-  final fen = pick('fen').asStringOrNull() ?? Variant.standard.initialPosition.fen;
+  final fen =
+      pick('fen').asStringOrNull() ?? Variant.standard.initialPosition.fen;
   final playingSide = Setup.parseFen(fen).turn;
 
   return MapEntry(
@@ -287,7 +335,9 @@ BroadcastPlayerWithClock _playerWithClockFromPick(
 }) {
   final player = _playerFromPick(pick);
   final clock = pick('clock').asDurationFromCentiSecondsOrNull();
-  final updatedClock = clock != null && isPlaying ? clock - (thinkTime ?? Duration.zero) : clock;
+  final updatedClock = clock != null && isPlaying
+      ? clock - (thinkTime ?? Duration.zero)
+      : clock;
 
   return BroadcastPlayerWithClock(
     player: player,
@@ -295,11 +345,15 @@ BroadcastPlayerWithClock _playerWithClockFromPick(
   );
 }
 
-BroadcastPlayerWithOverallResult _makePlayerWithOverallResultFromJson(Map<String, dynamic> json) {
+BroadcastPlayerWithOverallResult _makePlayerWithOverallResultFromJson(
+  Map<String, dynamic> json,
+) {
   return _playerWithOverallResultFromPick(pick(json).required());
 }
 
-BroadcastPlayerWithOverallResult _playerWithOverallResultFromPick(RequiredPick pick) {
+BroadcastPlayerWithOverallResult _playerWithOverallResultFromPick(
+  RequiredPick pick,
+) {
   final player = _playerFromPick(pick);
 
   return BroadcastPlayerWithOverallResult(
@@ -310,7 +364,9 @@ BroadcastPlayerWithOverallResult _playerWithOverallResultFromPick(RequiredPick p
     ratingsMap: pick('ratingsMap').letOrNull(pickStats),
     ratingDiffs: pick('ratingDiffs').letOrNull(pickStats),
     performances: pick('performances').letOrNull(pickStats),
-    tieBreaks: pick('tiebreaks').asListOrNull(_tieBreakDetailFromPick)?.toIList(),
+    tieBreaks: pick(
+      'tiebreaks',
+    ).asListOrNull(_tieBreakDetailFromPick)?.toIList(),
     team: pick('team').asStringOrNull(),
   );
 }
@@ -323,11 +379,18 @@ BroadcastTieBreakDetail _tieBreakDetailFromPick(RequiredPick pick) {
   );
 }
 
-BroadcastPlayerWithGameResults _makePlayerWithGameResultsFromJson(Map<String, dynamic> json) {
+BroadcastPlayerWithGameResults _makePlayerWithGameResultsFromJson(
+  Map<String, dynamic> json,
+) {
   return (
-    playerWithOverallResult: _playerWithOverallResultFromPick(pick(json).required()),
+    playerWithOverallResult: _playerWithOverallResultFromPick(
+      pick(json).required(),
+    ),
     fideData: _fideDataFromPick(pick(json, 'fide')),
-    games: pick(json, 'games').asListOrThrow(_playerGameResultFromPick).toIList(),
+    games: pick(
+      json,
+      'games',
+    ).asListOrThrow(_playerGameResultFromPick).toIList(),
   );
 }
 
@@ -390,7 +453,9 @@ BroadcastPlayerGameResult _playerGameResultFromPick(RequiredPick pick) {
 BroadcastTeamMatch _teamMatchFromPick(RequiredPick pick) {
   final teams = pick('teams').asListOrThrow(_teamFromPick).toIList();
   if (teams.length != 2) {
-    throw FormatException('Expected exactly 2 teams in a match, got ${teams.length}');
+    throw FormatException(
+      'Expected exactly 2 teams in a match, got ${teams.length}',
+    );
   }
   return BroadcastTeamMatch(
     team1: teams[0],
@@ -418,8 +483,12 @@ BroadcastTeamStanding _teamStandingFromPick(RequiredPick pick) {
     name: pick('name').asStringOrThrow(),
     mp: pick('mp').asDoubleOrThrow(),
     gp: pick('gp').asDoubleOrThrow(),
-    matches: pick('matches').asListOrEmpty(_teamStandingMatchFromPick).toIList(),
-    players: pick('players').asListOrEmpty(_playerWithOverallResultFromPick).toIList(),
+    matches: pick(
+      'matches',
+    ).asListOrEmpty(_teamStandingMatchFromPick).toIList(),
+    players: pick(
+      'players',
+    ).asListOrEmpty(_playerWithOverallResultFromPick).toIList(),
     averageRating: pick('averageRating').asIntOrNull(),
   );
 }

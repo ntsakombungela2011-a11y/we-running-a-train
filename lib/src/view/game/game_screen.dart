@@ -44,7 +44,12 @@ import 'package:lichess_mobile/src/widgets/shimmer.dart';
 ///
 /// The screen will show a loading board while the game is being created.
 class GameScreen extends ConsumerStatefulWidget {
-  const GameScreen({required this.source, this.loadingPosition, this.lastMoveAt, super.key});
+  const GameScreen({
+    required this.source,
+    this.loadingPosition,
+    this.lastMoveAt,
+    super.key,
+  });
 
   final GameScreenSource source;
 
@@ -59,7 +64,11 @@ class GameScreen extends ConsumerStatefulWidget {
     DateTime? lastMoveAt,
   }) {
     return buildScreenRoute(
-      screen: GameScreen(source: source, loadingPosition: loadingPosition, lastMoveAt: lastMoveAt),
+      screen: GameScreen(
+        source: source,
+        loadingPosition: loadingPosition,
+        lastMoveAt: lastMoveAt,
+      ),
     );
   }
 
@@ -67,13 +76,12 @@ class GameScreen extends ConsumerStatefulWidget {
   ConsumerState<GameScreen> createState() => _GameScreenState();
 }
 
-final _isRealTimePlayableGameProvider = FutureProvider.autoDispose.family<bool, GameFullId>((
-  Ref ref,
-  GameFullId gameId,
-) async {
-  final state = await ref.watch(gameControllerProvider(gameId).future);
-  return state.game.meta.speed != Speed.correspondence && state.game.playable;
-}, name: 'IsRealTimePlayableGameProvider');
+final _isRealTimePlayableGameProvider = FutureProvider.autoDispose
+    .family<bool, GameFullId>((Ref ref, GameFullId gameId) async {
+      final state = await ref.watch(gameControllerProvider(gameId).future);
+      return state.game.meta.speed != Speed.correspondence &&
+          state.game.playable;
+    }, name: 'IsRealTimePlayableGameProvider');
 
 class _GameScreenState extends ConsumerState<GameScreen> {
   final _whiteClockKey = GlobalKey(debugLabel: 'whiteClockOnGameScreen');
@@ -126,28 +134,41 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               _ => null,
             },
           ),
-          body: const LoadGameError('The game search was cancelled.', showBottomBar: false),
+          body: const LoadGameError(
+            'The game search was cancelled.',
+            showBottomBar: false,
+          ),
         );
       case AsyncData(value: ChallengeCancelledState()):
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: _GameTitle(
-              _ChallengeTitleVariant((widget.source as UserChallengeSource).challengeRequest),
+              _ChallengeTitleVariant(
+                (widget.source as UserChallengeSource).challengeRequest,
+              ),
             ),
           ),
-          body: const LoadGameError('The challenge was cancelled.', showBottomBar: false),
+          body: const LoadGameError(
+            'The challenge was cancelled.',
+            showBottomBar: false,
+          ),
         );
       case AsyncData(
         value: ChallengeDeclinedState(
-          response: ChallengeResponseDeclined(:final challenge, :final declineReason),
+          response: ChallengeResponseDeclined(
+            :final challenge,
+            :final declineReason,
+          ),
         ),
       ):
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: _GameTitle(
-              _ChallengeTitleVariant((widget.source as UserChallengeSource).challengeRequest),
+              _ChallengeTitleVariant(
+                (widget.source as UserChallengeSource).challengeRequest,
+              ),
             ),
           ),
           body: ChallengeDeclinedBoard(
@@ -159,7 +180,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         );
       case AsyncData(value: GameCreatedState(:final createdGameId)):
         final isRealTimePlayingGame = ref.watch(
-          _isRealTimePlayableGameProvider(createdGameId).select((s) => s.value ?? false),
+          _isRealTimePlayableGameProvider(
+            createdGameId,
+          ).select((s) => s.value ?? false),
         );
 
         final socketUri = GameController.socketUri(createdGameId);
@@ -175,7 +198,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               // Only show the initial loading position if this is still the game that the GameScreen
               // was created for. This will not be the case when searching for a new opponent after the game.
               loadingPosition: switch (widget.source) {
-                ExistingGameSource(:final id) when id == createdGameId => widget.loadingPosition,
+                ExistingGameSource(:final id) when id == createdGameId =>
+                  widget.loadingPosition,
                 _ => null,
               },
               whiteClockKey: _whiteClockKey,
@@ -183,19 +207,25 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               boardKey: _boardKey,
               onLoadGameCallback: (id) {
                 if (mounted) {
-                  ref.read(gameScreenLoaderProvider(widget.source).notifier).loadGame(id);
+                  ref
+                      .read(gameScreenLoaderProvider(widget.source).notifier)
+                      .loadGame(id);
                 }
               },
               onNewOpponentCallback: (game) {
                 if (!mounted) return;
 
                 if (widget.source is LobbySource) {
-                  ref.read(gameScreenLoaderProvider(widget.source).notifier).newOpponent();
+                  ref
+                      .read(gameScreenLoaderProvider(widget.source).notifier)
+                      .newOpponent();
                 } else {
                   final savedSetup = ref.read(gameSetupPreferencesProvider);
                   Navigator.of(context, rootNavigator: true).pushReplacement(
                     GameScreen.buildRoute(
-                      source: LobbySource(GameSeek.newOpponentFromGame(game, savedSetup)),
+                      source: LobbySource(
+                        GameSeek.newOpponentFromGame(game, savedSetup),
+                      ),
                     ),
                   );
                 }
@@ -207,9 +237,14 @@ class _GameScreenState extends ConsumerState<GameScreen> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            leading: isRealTimePlayingGame ? SocketPingRatingIcon(socketUri: socketUri) : null,
+            leading: isRealTimePlayingGame
+                ? SocketPingRatingIcon(socketUri: socketUri)
+                : null,
             title: _GameTitle(
-              _StandaloneTitleVariant(id: createdGameId, lastMoveAt: widget.lastMoveAt),
+              _StandaloneTitleVariant(
+                id: createdGameId,
+                lastMoveAt: widget.lastMoveAt,
+              ),
               monitorSocket: isRealTimePlayingGame,
               socketUri: socketUri,
             ),
@@ -222,7 +257,8 @@ class _GameScreenState extends ConsumerState<GameScreen> {
               ? AndroidGesturesExclusionWidget(
                   boardKey: _boardKey,
                   shouldExcludeGesturesOnFocusGained: isRealTimePlayingGame,
-                  shouldSetImmersiveMode: boardPreferences.immersiveModeWhilePlaying ?? false,
+                  shouldSetImmersiveMode:
+                      boardPreferences.immersiveModeWhilePlaying ?? false,
                   child: body,
                 )
               : body,
@@ -233,7 +269,9 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           appBar: AppBar(
             leading: const SocketPingRatingIcon(),
             title: _GameTitle(
-              _ChallengeTitleVariant((widget.source as UserChallengeSource).challengeRequest),
+              _ChallengeTitleVariant(
+                (widget.source as UserChallengeSource).challengeRequest,
+              ),
               monitorSocket: true,
             ),
           ),
@@ -241,8 +279,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             canPop: false,
             child: OpenChallengeLoadingContent(
               id: challenge.id,
-              challengeRequest: (widget.source as UserChallengeSource).challengeRequest,
-              cancelChallenge: ref.read(createGameServiceProvider).cancelChallenge,
+              challengeRequest:
+                  (widget.source as UserChallengeSource).challengeRequest,
+              cancelChallenge: ref
+                  .read(createGameServiceProvider)
+                  .cancelChallenge,
             ),
           ),
         );
@@ -251,15 +292,22 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
         // lichess sends a 400 response if user has not allowed challenges
         final message = e is ServerException && e.statusCode == 400
-            ? LoadGameError('Could not create the game: ${e.jsonError?['error']}')
-            : const LoadGameError('Sorry, we could not create the game. Please try again later.');
+            ? LoadGameError(
+                'Could not create the game: ${e.jsonError?['error']}',
+              )
+            : const LoadGameError(
+                'Sorry, we could not create the game. Please try again later.',
+              );
 
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             leading: const SocketPingRatingIcon(),
             title: switch (widget.source) {
-              LobbySource(:final seek) => _GameTitle(_LobbyTitleVariant(seek), monitorSocket: true),
+              LobbySource(:final seek) => _GameTitle(
+                _LobbyTitleVariant(seek),
+                monitorSocket: true,
+              ),
               UserChallengeSource(:final challengeRequest) => _GameTitle(
                 _ChallengeTitleVariant(challengeRequest),
                 monitorSocket: true,
@@ -275,10 +323,11 @@ class _GameScreenState extends ConsumerState<GameScreen> {
             seek,
             () => ref.read(createGameServiceProvider).cancelSeek(),
           ),
-          UserChallengeSource(:final challengeRequest) => UserChallengeLoadingContent(
-            challengeRequest,
-            () => ref.read(createGameServiceProvider).cancelChallenge(),
-          ),
+          UserChallengeSource(:final challengeRequest) =>
+            UserChallengeLoadingContent(
+              challengeRequest,
+              () => ref.read(createGameServiceProvider).cancelChallenge(),
+            ),
           ExistingGameSource() => StandaloneGameLoadingContent(
             loadingParam: widget.loadingPosition,
             userActionsBar: const BottomBar.empty(),
@@ -290,13 +339,23 @@ class _GameScreenState extends ConsumerState<GameScreen> {
           appBar: AppBar(
             leading: const SocketPingRatingIcon(),
             title: switch (widget.source) {
-              LobbySource(:final seek) => _GameTitle(_LobbyTitleVariant(seek), monitorSocket: true),
-              UserChallengeSource(:final challengeRequest) when challengeRequest.destUser != null =>
-                _GameTitle(_ChallengeTitleVariant(challengeRequest), monitorSocket: true),
+              LobbySource(:final seek) => _GameTitle(
+                _LobbyTitleVariant(seek),
+                monitorSocket: true,
+              ),
+              UserChallengeSource(:final challengeRequest)
+                  when challengeRequest.destUser != null =>
+                _GameTitle(
+                  _ChallengeTitleVariant(challengeRequest),
+                  monitorSocket: true,
+                ),
               _ => null,
             },
           ),
-          body: PopScope(canPop: false, child: WakelockWidget(child: loadingBoard)),
+          body: PopScope(
+            canPop: false,
+            child: WakelockWidget(child: loadingBoard),
+          ),
         );
     }
   }
@@ -326,14 +385,19 @@ class _GameMenu extends ConsumerWidget {
           ),
         ),
         ToggleSoundContextMenuAction(
-          isEnabled: ref.watch(generalPreferencesProvider.select((prefs) => prefs.isSoundEnabled)),
-          onPressed: () => ref.read(generalPreferencesProvider.notifier).toggleSoundEnabled(),
+          isEnabled: ref.watch(
+            generalPreferencesProvider.select((prefs) => prefs.isSoundEnabled),
+          ),
+          onPressed: () => ref
+              .read(generalPreferencesProvider.notifier)
+              .toggleSoundEnabled(),
         ),
         GameBookmarkContextMenuAction(
           id: gameId.gameId,
           bookmarked: isBookmarkedAsync.value ?? false,
-          onToggleBookmark: () =>
-              ref.read(gameControllerProvider(gameId).notifier).toggleBookmark(),
+          onToggleBookmark: () => ref
+              .read(gameControllerProvider(gameId).notifier)
+              .toggleBookmark(),
         ),
         ...(switch (ref.watch(gameShareDataProvider(gameId))) {
           AsyncData(:final value) =>
@@ -392,16 +456,19 @@ class _GameTitle extends ConsumerWidget {
 
     return switch (variant) {
       _LobbyTitleVariant(:final seek) => _buildLobbyContent(context, seek),
-      _ChallengeTitleVariant(:final challenge) => _buildChallengeContent(context, challenge),
-      _StandaloneTitleVariant(:final id, :final lastMoveAt) => _StandaloneGameTitle(
-        id: id,
-        lastMoveAt: lastMoveAt,
+      _ChallengeTitleVariant(:final challenge) => _buildChallengeContent(
+        context,
+        challenge,
       ),
+      _StandaloneTitleVariant(:final id, :final lastMoveAt) =>
+        _StandaloneGameTitle(id: id, lastMoveAt: lastMoveAt),
     };
   }
 
   static Widget _buildLobbyContent(BuildContext context, GameSeek seek) {
-    final mode = seek.rated ? ' • ${context.l10n.rated}' : ' • ${context.l10n.casual}';
+    final mode = seek.rated
+        ? ' • ${context.l10n.rated}'
+        : ' • ${context.l10n.casual}';
     return Row(
       mainAxisAlignment: .center,
       children: [
@@ -412,12 +479,20 @@ class _GameTitle extends ConsumerWidget {
     );
   }
 
-  static Widget _buildChallengeContent(BuildContext context, ChallengeRequest challenge) {
-    final mode = challenge.rated ? ' • ${context.l10n.rated}' : ' • ${context.l10n.casual}';
+  static Widget _buildChallengeContent(
+    BuildContext context,
+    ChallengeRequest challenge,
+  ) {
+    final mode = challenge.rated
+        ? ' • ${context.l10n.rated}'
+        : ' • ${context.l10n.casual}';
     return Row(
       mainAxisAlignment: .center,
       children: [
-        Icon(challenge.perf.icon, color: DefaultTextStyle.of(context).style.color),
+        Icon(
+          challenge.perf.icon,
+          color: DefaultTextStyle.of(context).style.color,
+        ),
         const SizedBox(width: 4.0),
         if (challenge.timeIncrement != null)
           Text('${challenge.timeIncrement?.display}$mode')
@@ -447,7 +522,9 @@ class _TournamentGameTitle extends ConsumerWidget {
           builder: (BuildContext context, Duration timeLeft) => Center(
             child: Text(
               '${timeLeft.toHoursMinutesSeconds()} ',
-              style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
+              style: const TextStyle(
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
             ),
           ),
         ),
@@ -482,14 +559,21 @@ class _StandaloneGameTitle extends ConsumerWidget {
           return _TournamentGameTitle(meta.tournament!);
         }
 
-        final mode = meta.rated ? ' • ${context.l10n.rated}' : ' • ${context.l10n.casual}';
+        final mode = meta.rated
+            ? ' • ${context.l10n.rated}'
+            : ' • ${context.l10n.casual}';
 
-        final info = lastMoveAt != null ? ' • ${_gameTitledateFormat.format(lastMoveAt!)}' : mode;
+        final info = lastMoveAt != null
+            ? ' • ${_gameTitledateFormat.format(lastMoveAt!)}'
+            : mode;
 
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(meta.perf.icon, color: DefaultTextStyle.of(context).style.color),
+            Icon(
+              meta.perf.icon,
+              color: DefaultTextStyle.of(context).style.color,
+            ),
             const SizedBox(width: 4.0),
             if (meta.clock != null)
               Flexible(
@@ -498,9 +582,15 @@ class _StandaloneGameTitle extends ConsumerWidget {
                 ),
               )
             else if (meta.daysPerTurn != null)
-              Flexible(child: AppBarTitleText('${context.l10n.nbDays(meta.daysPerTurn!)}$info'))
+              Flexible(
+                child: AppBarTitleText(
+                  '${context.l10n.nbDays(meta.daysPerTurn!)}$info',
+                ),
+              )
             else
-              Flexible(child: AppBarTitleText('${meta.perf.label(context.l10n)}$info')),
+              Flexible(
+                child: AppBarTitleText('${meta.perf.label(context.l10n)}$info'),
+              ),
           ],
         );
       },
@@ -544,8 +634,10 @@ class _WatcherButton extends ConsumerWidget {
         if (s == null) return;
         showModalBottomSheet<void>(
           context: context,
-          builder: (_) =>
-              WatcherListBottomSheet(nbWatchers: s.nbWatchers, watcherNames: s.watcherNames),
+          builder: (_) => WatcherListBottomSheet(
+            nbWatchers: s.nbWatchers,
+            watcherNames: s.watcherNames,
+          ),
         );
       },
       icon: Badge(

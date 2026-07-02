@@ -16,7 +16,9 @@ double getEvalGaugeWidth(BuildContext context) {
 }
 
 double getEvalGaugeFontSize(BuildContext context) {
-  return isTabletOrLarger(context) ? _kEvalGaugeFontSize : _kEvalGaugeFontSize - 2.0;
+  return isTabletOrLarger(context)
+      ? _kEvalGaugeFontSize
+      : _kEvalGaugeFontSize - 2.0;
 }
 
 typedef EngineGaugeParams = ({
@@ -48,7 +50,8 @@ class EngineGauge extends ConsumerWidget {
       ? lighten(ColorScheme.of(context).surface, .07)
       : lighten(ColorScheme.of(context).onSurface, .17);
 
-  static Color valueColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark
+  static Color valueColor(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
       ? darken(ColorScheme.of(context).onSurface, .1)
       : darken(ColorScheme.of(context).surface, .01);
 
@@ -67,14 +70,24 @@ class EngineGauge extends ConsumerWidget {
       // if the local engine is not available and there is no server eval, show the gauge as disabled
       // this is typically a case where user is on a node not on main line and the game has the server
       // analysis
-      opacity: !params.isLocalEngineAvailable && params.serverEval == null ? 0.5 : 1.0,
-      child: _EvalGauge(position: params.position, orientation: params.orientation, eval: eval),
+      opacity: !params.isLocalEngineAvailable && params.serverEval == null
+          ? 0.5
+          : 1.0,
+      child: _EvalGauge(
+        position: params.position,
+        orientation: params.orientation,
+        eval: eval,
+      ),
     );
   }
 }
 
 class _EvalGauge extends StatefulWidget {
-  const _EvalGauge({required this.position, required this.orientation, this.eval});
+  const _EvalGauge({
+    required this.position,
+    required this.orientation,
+    this.eval,
+  });
 
   final Position position;
   final Eval? eval;
@@ -147,7 +160,10 @@ class _EvalGaugeState extends State<_EvalGauge> {
           value: evalDisplay ?? context.l10n.loadingEngine,
           child: RepaintBoundary(
             child: Container(
-              constraints: BoxConstraints(minWidth: width, minHeight: double.infinity),
+              constraints: BoxConstraints(
+                minWidth: width,
+                minHeight: double.infinity,
+              ),
               width: width,
               child: CustomPaint(
                 painter: _EvalGaugeVerticalPainter(
@@ -166,7 +182,10 @@ class _EvalGaugeState extends State<_EvalGauge> {
                             ? Alignment.topCenter
                             : Alignment.bottomCenter,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 3.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 1.0,
+                            vertical: 3.0,
+                          ),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: Text(evalDisplay, style: evalStyle),

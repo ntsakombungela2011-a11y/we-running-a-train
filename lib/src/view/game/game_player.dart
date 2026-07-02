@@ -99,7 +99,10 @@ class GamePlayer extends StatelessWidget {
             children: [
               if (matchupScore != null) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4.0,
+                    vertical: 2.0,
+                  ),
                   decoration: BoxDecoration(
                     color: ColorScheme.of(context).primaryContainer,
                     borderRadius: BorderRadius.circular(4.0),
@@ -118,7 +121,10 @@ class GamePlayer extends StatelessWidget {
               if (tournament?.ranks != null)
                 Text(
                   '#${side == Side.white ? tournament?.ranks?.white : tournament?.ranks?.black} ',
-                  style: TextStyle(fontSize: playerFontSize, color: textShade(context, 0.7)),
+                  style: TextStyle(
+                    fontSize: playerFontSize,
+                    color: textShade(context, 0.7),
+                  ),
                 ),
               if (player.user != null) ...[
                 Consumer(
@@ -140,7 +146,10 @@ class GamePlayer extends StatelessWidget {
               ],
               const SizedBox(width: 5),
               if (player.user?.isPatron == true) ...[
-                PatronIcon(size: playerFontSize, color: player.user?.patronColor),
+                PatronIcon(
+                  size: playerFontSize,
+                  color: player.user?.patronColor,
+                ),
                 const SizedBox(width: 5),
               ],
               if (player.user?.title != null) ...[
@@ -148,7 +157,9 @@ class GamePlayer extends StatelessWidget {
                   player.user!.title!,
                   style: TextStyle(
                     fontSize: playerFontSize,
-                    fontWeight: player.user?.title == 'BOT' ? null : FontWeight.bold,
+                    fontWeight: player.user?.title == 'BOT'
+                        ? null
+                        : FontWeight.bold,
                     color: player.user?.title == 'BOT'
                         ? context.lichessColors.fancy
                         : context.lichessColors.brag,
@@ -160,7 +171,10 @@ class GamePlayer extends StatelessWidget {
                 child: Text(
                   player.displayName(context.l10n),
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: playerFontSize, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: playerFontSize,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               if (player.user?.flair != null) ...[
@@ -174,14 +188,17 @@ class GamePlayer extends StatelessWidget {
               ],
               if (player.rating != null)
                 RatingPrefAware(
-                  isActiveGameOfCurrentUser: game.me != null && !game.finished && !game.aborted,
+                  isActiveGameOfCurrentUser:
+                      game.me != null && !game.finished && !game.aborted,
                   child: Text.rich(
                     TextSpan(
-                      text: ' ${player.rating}${player.provisional == true ? '?' : ''}',
+                      text:
+                          ' ${player.rating}${player.provisional == true ? '?' : ''}',
                       children: [
                         if (player.ratingDiff != null)
                           TextSpan(
-                            text: ' ${player.ratingDiff! > 0 ? '+' : ''}${player.ratingDiff}',
+                            text:
+                                ' ${player.ratingDiff! > 0 ? '+' : ''}${player.ratingDiff}',
                             style: TextStyle(
                               color: player.ratingDiff! > 0
                                   ? context.lichessColors.good
@@ -193,7 +210,10 @@ class GamePlayer extends StatelessWidget {
                       ],
                     ),
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 14, color: textShade(context, 0.7)),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: textShade(context, 0.7),
+                    ),
                   ),
                 ),
               if (player.berserk == true) ...[
@@ -235,7 +255,8 @@ class GamePlayer extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (clock != null && clockPosition == ClockPosition.left) Flexible(flex: 3, child: clock!),
+        if (clock != null && clockPosition == ClockPosition.left)
+          Flexible(flex: 3, child: clock!),
         if (mePlaying && confirmMoveCallbacks != null && canGoForward == false)
           Expanded(
             flex: 7,
@@ -261,9 +282,11 @@ class GamePlayer extends StatelessWidget {
                                   if (mePlaying) {
                                     ref.invalidate(accountProvider);
                                   }
-                                  Navigator.of(
-                                    context,
-                                  ).push(UserOrProfileScreen.buildRoute(player.user!));
+                                  Navigator.of(context).push(
+                                    UserOrProfileScreen.buildRoute(
+                                      player.user!,
+                                    ),
+                                  );
                                 }
                               : null,
                           child: playerWidget,
@@ -273,14 +296,19 @@ class GamePlayer extends StatelessWidget {
                   : playerWidget,
             ),
           ),
-        if (clock != null && clockPosition == ClockPosition.right) Flexible(flex: 3, child: clock!),
+        if (clock != null && clockPosition == ClockPosition.right)
+          Flexible(flex: 3, child: clock!),
       ],
     );
   }
 }
 
 class ConfirmMove extends StatelessWidget {
-  const ConfirmMove({required this.onConfirm, required this.onCancel, super.key});
+  const ConfirmMove({
+    required this.onConfirm,
+    required this.onCancel,
+    super.key,
+  });
 
   final VoidCallback onConfirm;
   final VoidCallback onCancel;
@@ -422,7 +450,11 @@ String _scoreDisplay(double score) {
 }
 
 class MoveExpiration extends ConsumerStatefulWidget {
-  const MoveExpiration({required this.timeToMove, required this.mePlaying, super.key});
+  const MoveExpiration({
+    required this.timeToMove,
+    required this.mePlaying,
+    super.key,
+  });
 
   final Duration timeToMove;
   final bool mePlaying;
@@ -484,7 +516,11 @@ class _MoveExpirationState extends ConsumerState<MoveExpiration> {
     return secs <= 20
         ? Text(
             context.l10n.nbSecondsToPlayTheFirstMove(secs),
-            style: TextStyle(color: widget.mePlaying && emerg ? context.lichessColors.error : null),
+            style: TextStyle(
+              color: widget.mePlaying && emerg
+                  ? context.lichessColors.error
+                  : null,
+            ),
           )
         : const Text('');
   }

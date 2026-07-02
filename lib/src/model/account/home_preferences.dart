@@ -14,7 +14,8 @@ final homePreferencesProvider = NotifierProvider<HomePreferences, HomePrefs>(
   name: 'HomePreferencesProvider',
 );
 
-class HomePreferences extends Notifier<HomePrefs> with SessionPreferencesStorage<HomePrefs> {
+class HomePreferences extends Notifier<HomePrefs>
+    with SessionPreferencesStorage<HomePrefs> {
   @override
   @protected
   PrefCategory get prefCategory => PrefCategory.home;
@@ -82,14 +83,19 @@ sealed class HomePrefs with _$HomePrefs implements Serializable {
   }
 }
 
-const _defaultList = IListConst<HomeEditableWidget>([HomeEditableWidget.quickPairing]);
+const _defaultList = IListConst<HomeEditableWidget>([
+  HomeEditableWidget.quickPairing,
+]);
 
-class _TimeIncrementIListConverter implements JsonConverter<IList<TimeIncrement>, List<dynamic>> {
+class _TimeIncrementIListConverter
+    implements JsonConverter<IList<TimeIncrement>, List<dynamic>> {
   const _TimeIncrementIListConverter();
 
   @override
   IList<TimeIncrement> fromJson(List<dynamic> json) {
-    return IList(json.map((e) => TimeIncrement.fromJson(e as Map<String, dynamic>)));
+    return IList(
+      json.map((e) => TimeIncrement.fromJson(e as Map<String, dynamic>)),
+    );
   }
 
   @override

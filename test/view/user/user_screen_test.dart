@@ -33,7 +33,9 @@ final clientCanChallenge = MockClient((request) {
 
 void main() {
   group('UserScreen', () {
-    testWidgets('should see activity and recent games', (WidgetTester tester) async {
+    testWidgets('should see activity and recent games', (
+      WidgetTester tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const UserScreen(user: testUser),
@@ -58,25 +60,26 @@ void main() {
       expect(find.text('Activity'), findsOneWidget);
     }, variant: kPlatformVariant);
 
-    testWidgets('Challenge action is hidden when canChallenge is null (own profile case)', (
-      WidgetTester tester,
-    ) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const UserScreen(user: testUser),
-        authUser: fakeAuthUser,
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(client, ref),
-          ),
-        },
-      );
+    testWidgets(
+      'Challenge action is hidden when canChallenge is null (own profile case)',
+      (WidgetTester tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const UserScreen(user: testUser),
+          authUser: fakeAuthUser,
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(client, ref),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
-      await tester.pump(const Duration(milliseconds: 100));
+        await tester.pumpWidget(app);
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.text('Challenge'), findsNothing);
-    });
+        expect(find.text('Challenge'), findsNothing);
+      },
+    );
 
     testWidgets(
       'Challenge action shown when canChallenge is true, and triggers the challenge flow',

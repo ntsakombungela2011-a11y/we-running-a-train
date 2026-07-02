@@ -39,7 +39,8 @@ class GameRepository {
           },
         ),
         headers: {'Accept': 'application/json'},
-        mapper: (json) => ExportedGame.fromServerJson(json, withBookmarked: withBookmarked),
+        mapper: (json) =>
+            ExportedGame.fromServerJson(json, withBookmarked: withBookmarked),
       );
     } on ServerException {
       rethrow;
@@ -75,7 +76,8 @@ class GameRepository {
             path: '/api/games/user/$userId',
             queryParameters: {
               'max': max.toString(),
-              if (until != null) 'until': until.millisecondsSinceEpoch.toString(),
+              if (until != null)
+                'until': until.millisecondsSinceEpoch.toString(),
               'moves': withMoves ? 'true' : 'false',
               'lastFen': 'true',
               'accuracy': 'true',
@@ -88,7 +90,10 @@ class GameRepository {
             },
           ),
           headers: {'Accept': 'application/x-ndjson'},
-          mapper: (json) => LightExportedGame.fromServerJson(json, withBookmarked: withBookmarked),
+          mapper: (json) => LightExportedGame.fromServerJson(
+            json,
+            withBookmarked: withBookmarked,
+          ),
         )
         .then(
           (value) => value
@@ -114,7 +119,8 @@ class GameRepository {
             path: '/api/games/export/bookmarks',
             queryParameters: {
               'max': max.toString(),
-              if (until != null) 'until': until.millisecondsSinceEpoch.toString(),
+              if (until != null)
+                'until': until.millisecondsSinceEpoch.toString(),
               'moves': 'false',
               'lastFen': 'true',
               'accuracy': 'true',
@@ -122,7 +128,8 @@ class GameRepository {
             },
           ),
           headers: {'Accept': 'application/x-ndjson'},
-          mapper: (json) => LightExportedGame.fromServerJson(json, isBookmarked: true),
+          mapper: (json) =>
+              LightExportedGame.fromServerJson(json, isBookmarked: true),
         )
         .then(
           (value) => value
@@ -130,7 +137,9 @@ class GameRepository {
                 (e) => (
                   game: e,
                   // we know here user is not null for at least one of the players
-                  pov: e.white.user?.id == authUser.user.id ? Side.white : Side.black,
+                  pov: e.white.user?.id == authUser.user.id
+                      ? Side.white
+                      : Side.black,
                 ),
               )
               .toIList(),
@@ -143,14 +152,20 @@ class GameRepository {
       return Future.value(IList<PlayableGame>());
     }
     return client.readJsonList(
-      Uri(path: '/api/mobile/my-games', queryParameters: {'ids': ids.join(',')}),
+      Uri(
+        path: '/api/mobile/my-games',
+        queryParameters: {'ids': ids.join(',')},
+      ),
       mapper: PlayableGame.fromServerJson,
     );
   }
 
   Future<IList<LightExportedGame>> getGamesByIds(ISet<GameId> ids) {
     return client.postReadNdJsonList(
-      Uri(path: '/api/games/export/_ids', queryParameters: {'moves': 'false', 'lastFen': 'true'}),
+      Uri(
+        path: '/api/games/export/_ids',
+        queryParameters: {'moves': 'false', 'lastFen': 'true'},
+      ),
       headers: {'Accept': 'application/x-ndjson'},
       body: ids.join(','),
       mapper: LightExportedGame.fromServerJson,
@@ -163,9 +178,15 @@ class GameRepository {
     Move? moveToPlay,
   }) async {
     final uri = Uri(
-      path: moveToPlay != null ? '$gameId/forecasts/${moveToPlay.uci}' : '$gameId/forecasts',
+      path: moveToPlay != null
+          ? '$gameId/forecasts/${moveToPlay.uci}'
+          : '$gameId/forecasts',
     );
-    await client.postRead(uri, body: forecast, headers: {'Content-type': 'application/json'});
+    await client.postRead(
+      uri,
+      body: forecast,
+      headers: {'Content-type': 'application/json'},
+    );
   }
 
   Future<PlayableGame> getActiveCorrespondenceGame(GameFullId id) {

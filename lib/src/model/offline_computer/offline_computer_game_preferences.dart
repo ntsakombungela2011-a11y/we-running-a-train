@@ -87,7 +87,9 @@ enum SideChoice {
 }
 
 @Freezed(fromJson: true, toJson: true)
-sealed class OfflineComputerGamePrefs with _$OfflineComputerGamePrefs implements Serializable {
+sealed class OfflineComputerGamePrefs
+    with _$OfflineComputerGamePrefs
+    implements Serializable {
   const OfflineComputerGamePrefs._();
 
   const factory OfflineComputerGamePrefs({

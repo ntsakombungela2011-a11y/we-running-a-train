@@ -6,29 +6,41 @@ import 'package:lichess_mobile/src/model/tournament/tournament.dart';
 import 'package:lichess_mobile/src/model/tournament/tournament_repository.dart';
 import 'package:lichess_mobile/src/network/http.dart';
 
-final featuredTournamentsProvider = FutureProvider.autoDispose<IList<LightTournament>>((Ref ref) {
-  // logged in users get personalized featured tournaments
-  ref.watch(authControllerProvider);
-  return ref.read(tournamentRepositoryProvider).featured();
-}, name: 'FeaturedTournamentsProvider');
+final featuredTournamentsProvider =
+    FutureProvider.autoDispose<IList<LightTournament>>((Ref ref) {
+      // logged in users get personalized featured tournaments
+      ref.watch(authControllerProvider);
+      return ref.read(tournamentRepositoryProvider).featured();
+    }, name: 'FeaturedTournamentsProvider');
 
-final tournamentsProvider = FutureProvider.autoDispose<TournamentLists>((Ref ref) {
+final tournamentsProvider = FutureProvider.autoDispose<TournamentLists>((
+  Ref ref,
+) {
   return ref.read(tournamentRepositoryProvider).getTournaments();
 }, name: 'TournamentsProvider');
 
 final tournamentPlayerProvider = FutureProvider.autoDispose
-    .family<TournamentPlayer, (TournamentId, UserId)>((Ref ref, (TournamentId, UserId) params) {
+    .family<TournamentPlayer, (TournamentId, UserId)>((
+      Ref ref,
+      (TournamentId, UserId) params,
+    ) {
       return ref.withClientCacheFor(
-        (client) =>
-            ref.read(tournamentRepositoryProvider).getTournamentPlayer(params.$1, params.$2),
+        (client) => ref
+            .read(tournamentRepositoryProvider)
+            .getTournamentPlayer(params.$1, params.$2),
         const Duration(seconds: 10),
       );
     }, name: 'TournamentPlayerProvider');
 
 final tournamentTeamProvider = FutureProvider.autoDispose
-    .family<TournamentTeam, (TournamentId, TeamId)>((Ref ref, (TournamentId, TeamId) params) {
+    .family<TournamentTeam, (TournamentId, TeamId)>((
+      Ref ref,
+      (TournamentId, TeamId) params,
+    ) {
       return ref.withClientCacheFor(
-        (client) => ref.read(tournamentRepositoryProvider).getTournamentTeam(params.$1, params.$2),
+        (client) => ref
+            .read(tournamentRepositoryProvider)
+            .getTournamentTeam(params.$1, params.$2),
         const Duration(seconds: 10),
       );
     }, name: 'TournamentTeamProvider');

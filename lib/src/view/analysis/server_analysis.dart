@@ -56,7 +56,9 @@ class ServerAnalysisSummary extends ConsumerWidget {
               if (serverAnalysisAllowed)
                 FilledButton.tonal(
                   onPressed: () {
-                    ref.read(analysisPreferencesProvider.notifier).toggleServerAnalysis();
+                    ref
+                        .read(analysisPreferencesProvider.notifier)
+                        .toggleServerAnalysis();
                   },
                   child: Text(context.l10n.enable),
                 ),
@@ -110,31 +112,38 @@ class ServerAnalysisSummary extends ConsumerWidget {
                               future: pendingRequest,
                               builder: (context, snapshot) {
                                 return FilledButton.tonal(
-                                  onPressed: ref.watch(authControllerProvider) == null
+                                  onPressed:
+                                      ref.watch(authControllerProvider) == null
                                       ? () {
                                           showSnackBar(
                                             context,
-                                            context.l10n.youNeedAnAccountToDoThat,
+                                            context
+                                                .l10n
+                                                .youNeedAnAccountToDoThat,
                                           );
                                         }
-                                      : snapshot.connectionState == ConnectionState.waiting
+                                      : snapshot.connectionState ==
+                                            ConnectionState.waiting
                                       ? null
                                       : () {
                                           setState(() {
-                                            pendingRequest = onRequestServerAnalysis().catchError((
-                                              Object e,
-                                            ) {
-                                              if (context.mounted) {
-                                                showSnackBar(
-                                                  context,
-                                                  e.toString(),
-                                                  type: SnackBarType.error,
-                                                );
-                                              }
-                                            });
+                                            pendingRequest =
+                                                onRequestServerAnalysis()
+                                                    .catchError((Object e) {
+                                                      if (context.mounted) {
+                                                        showSnackBar(
+                                                          context,
+                                                          e.toString(),
+                                                          type: SnackBarType
+                                                              .error,
+                                                        );
+                                                      }
+                                                    });
                                           });
                                         },
-                                  child: Text(context.l10n.requestAComputerAnalysis),
+                                  child: Text(
+                                    context.l10n.requestAComputerAnalysis,
+                                  ),
                                 );
                               },
                             );

@@ -63,7 +63,9 @@ enum TvChannel {
     }
   }
 
-  static final IMap<String, TvChannel> nameMap = IMap(TvChannel.values.asNameMap());
+  static final IMap<String, TvChannel> nameMap = IMap(
+    TvChannel.values.asNameMap(),
+  );
 }
 
 extension TvChannelExtension on Pick {
@@ -77,7 +79,9 @@ extension TvChannelExtension on Pick {
         return TvChannel.nameMap[value]!;
       }
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to TvChannel");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to TvChannel",
+    );
   }
 
   TvChannel? asTvChannelOrNull() {

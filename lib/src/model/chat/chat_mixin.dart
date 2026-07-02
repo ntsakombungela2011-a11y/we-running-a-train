@@ -62,15 +62,22 @@ final chatProvider = FutureProvider.autoDispose.family<ChatState?, ChatOptions>(
 );
 
 /// A provider that gets the [ChatMixin] notifier for the given chat.
-final chatNotifierProvider = Provider.autoDispose.family<ChatMixin, ChatOptions>(
-  (ref, options) => ref.read(switch (options) {
-    GameChatOptions(:final id) => gameControllerProvider(id).notifier,
-    TournamentChatOptions(:final id) => tournamentControllerProvider(id).notifier,
-    StudyChatOptions(:final options) => studyControllerProvider(options).notifier,
-    TvChatOptions(:final params) => tvGameControllerProvider(params).notifier,
-  }),
-  name: 'ChatNotifierProvider',
-);
+final chatNotifierProvider = Provider.autoDispose
+    .family<ChatMixin, ChatOptions>(
+      (ref, options) => ref.read(switch (options) {
+        GameChatOptions(:final id) => gameControllerProvider(id).notifier,
+        TournamentChatOptions(:final id) => tournamentControllerProvider(
+          id,
+        ).notifier,
+        StudyChatOptions(:final options) => studyControllerProvider(
+          options,
+        ).notifier,
+        TvChatOptions(:final params) => tvGameControllerProvider(
+          params,
+        ).notifier,
+      }),
+      name: 'ChatNotifierProvider',
+    );
 
 /// A provider that gets the chat unread messages
 final chatUnreadProvider = FutureProvider.autoDispose.family<int, ChatOptions>((
@@ -157,7 +164,11 @@ mixin ChatMixin<T extends ChatMixinState> on AnyNotifier<AsyncValue<T>, T> {
         .postRead(
           uri,
           headers: {'Accept': 'application/json'},
-          body: {'username': username, 'resource': chatReportResource, 'text': message.message},
+          body: {
+            'username': username,
+            'resource': chatReportResource,
+            'text': message.message,
+          },
         );
   }
 
@@ -174,7 +185,9 @@ mixin ChatMixin<T extends ChatMixinState> on AnyNotifier<AsyncValue<T>, T> {
     return all
         .where(
           (m) =>
-              !m.deleted && (!m.troll || m.username?.toLowerCase() == _me?.id.value) && !m.isSpam,
+              !m.deleted &&
+              (!m.troll || m.username?.toLowerCase() == _me?.id.value) &&
+              !m.isSpam,
         )
         .toIList();
   }

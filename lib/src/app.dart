@@ -56,7 +56,9 @@ class AppInitializationScreen extends ConsumerWidget {
       case AsyncData():
         return const Application();
       case AsyncError(:final error, :final stackTrace):
-        debugPrint('SEVERE: [App] could not initialize app; $error\n$stackTrace');
+        debugPrint(
+          'SEVERE: [App] could not initialize app; $error\n$stackTrace',
+        );
         return const SizedBox.shrink();
       case _:
         // loading screen is handled by the native splash screen
@@ -96,9 +98,11 @@ class _AppState extends ConsumerState<Application> {
       WidgetsBinding.instance.platformDispatcher.views.first,
     );
     final isTablet = mediaQueryData.size.shortestSide > FormFactor.tablet;
-    final isSmallScreen = estimateHeightMinusBoard(mediaQueryData) < kSmallHeightMinusBoard;
+    final isSmallScreen =
+        estimateHeightMinusBoard(mediaQueryData) < kSmallHeightMinusBoard;
     final showEngineLines =
-        isTablet || estimateHeightMinusBoard(mediaQueryData) > kSmallHeightMinusBoard - 30;
+        isTablet ||
+        estimateHeightMinusBoard(mediaQueryData) > kSmallHeightMinusBoard - 30;
 
     // For tablets in portrait mode using the full board size makes the bottom analysis tabs tiny,
     // see https://github.com/lichess-org/mobile/issues/3150,
@@ -110,21 +114,30 @@ class _AppState extends ConsumerState<Application> {
         .save(
           ref
               .read(analysisPreferencesProvider)
-              .copyWith(smallBoard: smallBoard, showEngineLines: showEngineLines),
+              .copyWith(
+                smallBoard: smallBoard,
+                showEngineLines: showEngineLines,
+              ),
         );
     await ref
         .read(studyPreferencesProvider.notifier)
         .save(
           ref
               .read(studyPreferencesProvider)
-              .copyWith(smallBoard: smallBoard, showEngineLines: showEngineLines),
+              .copyWith(
+                smallBoard: smallBoard,
+                showEngineLines: showEngineLines,
+              ),
         );
     await ref
         .read(broadcastPreferencesProvider.notifier)
         .save(
           ref
               .read(broadcastPreferencesProvider)
-              .copyWith(smallBoard: smallBoard, showEngineLines: showEngineLines),
+              .copyWith(
+                smallBoard: smallBoard,
+                showEngineLines: showEngineLines,
+              ),
         );
 
     await prefs.setBool(kDoneScreenSizeInitKey, true);
@@ -153,7 +166,8 @@ class _AppState extends ConsumerState<Application> {
         if (state.hasValue && prev?.value != state.value) {
           HomeWidget.saveWidgetData<bool>('isKidMode', state.value).then((_) {
             Future.wait([
-              for (final kind in _kIosBlogWidgetKinds) HomeWidget.updateWidget(iOSName: kind),
+              for (final kind in _kIosBlogWidgetKinds)
+                HomeWidget.updateWidget(iOSName: kind),
             ]);
           });
         }
@@ -163,7 +177,10 @@ class _AppState extends ConsumerState<Application> {
             prev.boardTheme != state.boardTheme ||
             prev.pieceSet != state.pieceSet) {
           Future.wait([
-            HomeWidget.saveWidgetData<String>('boardTheme', state.boardTheme.name),
+            HomeWidget.saveWidgetData<String>(
+              'boardTheme',
+              state.boardTheme.name,
+            ),
             HomeWidget.saveWidgetData<String>('pieceSet', state.pieceSet.name),
           ]).then((_) {
             HomeWidget.updateWidget(iOSName: 'DailyPuzzleLargeWidget');
@@ -179,7 +196,9 @@ class _AppState extends ConsumerState<Application> {
 
       // Play registered moves whenever the app comes back online.
       if (prevWasOffline && currentIsOnline) {
-        final nbMovesPlayed = await ref.read(correspondenceServiceProvider).playRegisteredMoves();
+        final nbMovesPlayed = await ref
+            .read(correspondenceServiceProvider)
+            .playRegisteredMoves();
         if (nbMovesPlayed > 0) {
           ref.invalidate(ongoingGamesProvider);
         }

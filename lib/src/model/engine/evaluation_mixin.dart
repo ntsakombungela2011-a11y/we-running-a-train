@@ -89,19 +89,23 @@ mixin EvaluationMixinState<State extends EvaluationMixinState<State>> {
 ///
 /// The parent can implement:
 /// - [onCurrentPathEvalChanged] to refresh the current node after an evaluation.
-mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<AsyncValue<T>, T> {
+mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>>
+    on AnyNotifier<AsyncValue<T>, T> {
   late EvaluationService _evaluationService;
 
   SocketClient? get socketClient;
   Node get positionTree;
 
-  EngineEvaluationPrefState get evaluationPrefs => ref.read(engineEvaluationPreferencesProvider);
+  EngineEvaluationPrefState get evaluationPrefs =>
+      ref.read(engineEvaluationPreferencesProvider);
 
   EngineEvaluationPreferences get _evaluationPreferencesNotifier =>
       ref.read(engineEvaluationPreferencesProvider.notifier);
 
   final _evalRequestDebounce = Debouncer(kRequestEvalDebounceDelay);
-  final _localEngineAfterDelayDebounce = Debouncer(kLocalEngineAfterCloudEvalDelay);
+  final _localEngineAfterDelayDebounce = Debouncer(
+    kLocalEngineAfterCloudEvalDelay,
+  );
 
   StreamSubscription<SocketEvent>? _socketSubscription;
 
@@ -146,7 +150,9 @@ mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<As
       if (!curState.engineInThreatMode && !curState.canShowThreat) {
         return;
       }
-      state = AsyncData(state.requireValue.withThreatMode(!curState.engineInThreatMode));
+      state = AsyncData(
+        state.requireValue.withThreatMode(!curState.engineInThreatMode),
+      );
       requestEval();
     }
   }
@@ -239,7 +245,12 @@ mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<As
 
     bool isSameEvalString = true;
     positionTree.updateAt(path, (node) {
-      final eval = CloudEval(depth: depth, nodes: nodes, pvs: pvs, position: node.position);
+      final eval = CloudEval(
+        depth: depth,
+        nodes: nodes,
+        pvs: pvs,
+        position: node.position,
+      );
       final nodeDepth = node.eval?.depth;
       if (nodeDepth != null && nodeDepth >= depth) {
         // don't override the local eval if it's deeper than the cloud eval
@@ -261,16 +272,21 @@ mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<As
         !state.requireValue.alwaysRequestCloudEval) {
       return false;
     }
-    if (positionTree.nodeAt(state.requireValue.currentPath).eval is CloudEval) return false;
+    if (positionTree.nodeAt(state.requireValue.currentPath).eval is CloudEval)
+      return false;
 
     // cloud eval does not support threefold repetition
     final Set<String> fens = <String>{};
-    final nodeList = positionTree.branchesOn(state.requireValue.currentPath).toList();
+    final nodeList = positionTree
+        .branchesOn(state.requireValue.currentPath)
+        .toList();
     for (var i = nodeList.length - 1; i >= 0; i--) {
       final node = nodeList[i];
       final epd = fenToEpd(node.position.fen);
       if (fens.contains(epd)) return false;
-      if (node.sanMove.isIrreversible(state.requireValue.evaluationContext.variant)) {
+      if (node.sanMove.isIrreversible(
+        state.requireValue.evaluationContext.variant,
+      )) {
         return true;
       }
       fens.add(epd);
@@ -291,7 +307,8 @@ mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<As
       'fen': curPosition.fen,
       'path': state.requireValue.currentPath.value,
       'mpv': numEvalLines,
-      if (curPosition.rule != Rule.chess) 'variant': Variant.fromRule(curPosition.rule).name,
+      if (curPosition.rule != Rule.chess)
+        'variant': Variant.fromRule(curPosition.rule).name,
       'up': true,
     });
   }
@@ -300,7 +317,9 @@ mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<As
     final curState = state.requireValue;
     if (!curState.isEngineAvailable(evaluationPrefs)) return;
 
-    final searchTime = goDeeper ? kMaxEngineSearchTime : evaluationPrefs.engineSearchTime;
+    final searchTime = goDeeper
+        ? kMaxEngineSearchTime
+        : evaluationPrefs.engineSearchTime;
 
     final work = EvalWork(
       id: curState.evaluationContext.id,
@@ -314,7 +333,10 @@ mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<As
       threatMode: curState.engineInThreatMode,
       isDeeper: goDeeper ? true : null,
       initialPosition: curState.evaluationContext.initialPosition,
-      steps: positionTree.branchesOn(curState.currentPath).map(Step.fromNode).toIList(),
+      steps: positionTree
+          .branchesOn(curState.currentPath)
+          .map(Step.fromNode)
+          .toIList(),
     );
 
     _evaluationService.evaluate(work, goDeeper: goDeeper)?.forEach((event) {
@@ -335,7 +357,9 @@ mixin EngineEvaluationMixin<T extends EvaluationMixinState<T>> on AnyNotifier<As
             final targetTime = evalWork.searchTime;
             final evalSearchTime = eval.searchTime;
             final likelyNodes =
-                ((targetTime.inMilliseconds * eval.nodes) / evalSearchTime.inMilliseconds).round();
+                ((targetTime.inMilliseconds * eval.nodes) /
+                        evalSearchTime.inMilliseconds)
+                    .round();
             // if the cloud eval is likely better, stop the local engine
             // nps varies with positional complexity so this is rough, but save planet earth
             if (likelyNodes < nodeEval.nodes) {

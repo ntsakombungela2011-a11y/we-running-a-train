@@ -49,7 +49,10 @@ sealed class GameSeek with _$GameSeek {
   /// Construct a fast pairing game seek from a predefined time control.
   factory GameSeek.fastPairing(TimeIncrement setup, AuthUser? authUser) {
     return GameSeek(
-      clock: (Duration(seconds: setup.time), Duration(seconds: setup.increment)),
+      clock: (
+        Duration(seconds: setup.time),
+        Duration(seconds: setup.increment),
+      ),
       rated: authUser != null,
     );
   }
@@ -71,22 +74,32 @@ sealed class GameSeek with _$GameSeek {
   factory GameSeek.correspondence(GameSetupPrefs setup, User? account) {
     return GameSeek(
       days: setup.customDaysPerTurn,
-      rated: account != null && setup.customVariant == Variant.standard && setup.customRated,
+      rated:
+          account != null &&
+          setup.customVariant == Variant.standard &&
+          setup.customRated,
       variant: setup.customVariant,
-      ratingRange: account != null ? setup.correspondenceRatingRange(account) : null,
+      ratingRange: account != null
+          ? setup.correspondenceRatingRange(account)
+          : null,
     );
   }
 
   /// Construct a game seek from a playable game to find a new opponent, using
   /// the same time control, variant and rated status.
-  factory GameSeek.newOpponentFromGame(PlayableGame game, GameSetupPrefs setup) {
+  factory GameSeek.newOpponentFromGame(
+    PlayableGame game,
+    GameSetupPrefs setup,
+  ) {
     return GameSeek(
       clock: game.meta.clock != null
           ? (game.meta.clock!.initial, game.meta.clock!.increment)
           : null,
       rated: game.meta.rated,
       variant: game.meta.variant,
-      ratingDelta: game.source == GameSource.lobby ? setup.customRatingDelta : null,
+      ratingDelta: game.source == GameSource.lobby
+          ? setup.customRatingDelta
+          : null,
     );
   }
 
@@ -103,12 +116,15 @@ sealed class GameSeek with _$GameSeek {
     return copyWith(ratingRange: range, ratingDelta: null);
   }
 
-  TimeIncrement? get timeIncrement =>
-      clock != null ? TimeIncrement(clock!.$1.inSeconds, clock!.$2.inSeconds) : null;
+  TimeIncrement? get timeIncrement => clock != null
+      ? TimeIncrement(clock!.$1.inSeconds, clock!.$2.inSeconds)
+      : null;
 
   Perf get perf => Perf.fromVariantAndSpeed(
     variant ?? Variant.standard,
-    timeIncrement != null ? Speed.fromTimeIncrement(timeIncrement!) : Speed.correspondence,
+    timeIncrement != null
+        ? Speed.fromTimeIncrement(timeIncrement!)
+        : Speed.correspondence,
   );
 
   Map<String, String> get requestBody => {
@@ -117,10 +133,12 @@ sealed class GameSeek with _$GameSeek {
     if (days != null) 'days': days.toString(),
     'rated': rated.toString(),
     if (variant != null) 'variant': variant!.name,
-    if (ratingRange != null) 'ratingRange': '${ratingRange!.$1}-${ratingRange!.$2}',
+    if (ratingRange != null)
+      'ratingRange': '${ratingRange!.$1}-${ratingRange!.$2}',
   };
 
-  factory GameSeek.fromJson(Map<String, dynamic> json) => _$GameSeekFromJson(json);
+  factory GameSeek.fromJson(Map<String, dynamic> json) =>
+      _$GameSeekFromJson(json);
 }
 
 /// The response to a game seek request.
@@ -130,21 +148,29 @@ sealed class GameSeekResponse {}
 
 /// A game has been created from the seek.
 @freezed
-sealed class GameSeekCreated with _$GameSeekCreated implements GameSeekResponse {
-  const factory GameSeekCreated({required GameFullId fullId}) = _GameSeekCreated;
+sealed class GameSeekCreated
+    with _$GameSeekCreated
+    implements GameSeekResponse {
+  const factory GameSeekCreated({required GameFullId fullId}) =
+      _GameSeekCreated;
 }
 
 /// A game seek has been cancelled.
 @freezed
-sealed class GameSeekCancelled with _$GameSeekCancelled implements GameSeekResponse {
+sealed class GameSeekCancelled
+    with _$GameSeekCancelled
+    implements GameSeekResponse {
   const factory GameSeekCancelled() = _GameSeekCancelled;
 }
 
 @Freezed(fromJson: true, toJson: true)
-sealed class RecentGameSeekPrefs with _$RecentGameSeekPrefs implements Serializable {
+sealed class RecentGameSeekPrefs
+    with _$RecentGameSeekPrefs
+    implements Serializable {
   const RecentGameSeekPrefs._();
 
-  const factory RecentGameSeekPrefs({required IList<GameSeek> seeks}) = _RecentGameSeekPrefs;
+  const factory RecentGameSeekPrefs({required IList<GameSeek> seeks}) =
+      _RecentGameSeekPrefs;
 
   factory RecentGameSeekPrefs.fromJson(Map<String, dynamic> json) =>
       _$RecentGameSeekPrefsFromJson(json);
@@ -158,10 +184,11 @@ sealed class RecentGameSeekPrefs with _$RecentGameSeekPrefs implements Serializa
 }
 
 /// A provider that manages recent game seeks preferences.
-final recentGameSeekProvider = NotifierProvider<RecentGameSeek, RecentGameSeekPrefs>(
-  RecentGameSeek.new,
-  name: 'RecentGameSeekProvider',
-);
+final recentGameSeekProvider =
+    NotifierProvider<RecentGameSeek, RecentGameSeekPrefs>(
+      RecentGameSeek.new,
+      name: 'RecentGameSeekProvider',
+    );
 
 class RecentGameSeek extends Notifier<RecentGameSeekPrefs>
     with PreferencesStorage<RecentGameSeekPrefs> {
@@ -189,7 +216,9 @@ class RecentGameSeek extends Notifier<RecentGameSeekPrefs>
   }
 
   Future<void> clearRequests() async {
-    await LichessBinding.instance.sharedPreferences.remove(prefCategory.storageKey);
+    await LichessBinding.instance.sharedPreferences.remove(
+      prefCategory.storageKey,
+    );
     if (!ref.mounted) return;
     state = RecentGameSeekPrefs.empty;
   }

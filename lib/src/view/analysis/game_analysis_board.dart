@@ -25,16 +25,19 @@ class GameAnalysisBoard extends AnalysisBoard {
 }
 
 class _GameAnalysisBoardState
-    extends AnalysisBoardState<GameAnalysisBoard, AnalysisState, AnalysisPrefs> {
+    extends
+        AnalysisBoardState<GameAnalysisBoard, AnalysisState, AnalysisPrefs> {
   @override
-  AnalysisState? readCurrentState() => ref.read(analysisControllerProvider(widget.options)).value;
+  AnalysisState? readCurrentState() =>
+      ref.read(analysisControllerProvider(widget.options)).value;
 
   @override
-  void listenToStateChanges(void Function(AnalysisState? prev, AnalysisState? next) listener) =>
-      ref.listenManual<AnalysisState?>(
-        analysisControllerProvider(widget.options).select((v) => v.value),
-        listener,
-      );
+  void listenToStateChanges(
+    void Function(AnalysisState? prev, AnalysisState? next) listener,
+  ) => ref.listenManual<AnalysisState?>(
+    analysisControllerProvider(widget.options).select((v) => v.value),
+    listener,
+  );
 
   @override
   AnalysisState get analysisState =>
@@ -63,8 +66,12 @@ class _GameAnalysisBoardState
 
   @override
   ISet<Shape> get extraShapes {
-    final analysisState = ref.watch(analysisControllerProvider(widget.options)).requireValue;
-    final pgnShapes = ISet(analysisState.pgnShapes.map((shape) => shape.chessground));
+    final analysisState = ref
+        .watch(analysisControllerProvider(widget.options))
+        .requireValue;
+    final pgnShapes = ISet(
+      analysisState.pgnShapes.map((shape) => shape.chessground),
+    );
     return pgnShapes;
   }
 }

@@ -86,18 +86,27 @@ void main() {
 
       test('DTM=null falls back to ±10', () {
         expect(
-          tablebaseEntryToCloudEval(_makeEntry(category: TablebaseCategory.win), whiteToMove)!.mate,
+          tablebaseEntryToCloudEval(
+            _makeEntry(category: TablebaseCategory.win),
+            whiteToMove,
+          )!.mate,
           10,
         );
         expect(
-          tablebaseEntryToCloudEval(_makeEntry(category: TablebaseCategory.win), blackToMove)!.mate,
+          tablebaseEntryToCloudEval(
+            _makeEntry(category: TablebaseCategory.win),
+            blackToMove,
+          )!.mate,
           -10,
         );
       });
 
       test('syzygyWin behaves the same as win', () {
         final entry = _makeEntry(category: TablebaseCategory.syzygyWin, dtm: 7);
-        expect(tablebaseEntryToCloudEval(entry, whiteToMove)!.mate, 4); // (7+1)~/2 = 4
+        expect(
+          tablebaseEntryToCloudEval(entry, whiteToMove)!.mate,
+          4,
+        ); // (7+1)~/2 = 4
         expect(tablebaseEntryToCloudEval(entry, blackToMove)!.mate, -4);
       });
     });
@@ -138,8 +147,14 @@ void main() {
       });
 
       test('syzygyLoss behaves the same as loss', () {
-        final entry = _makeEntry(category: TablebaseCategory.syzygyLoss, dtm: 6);
-        expect(tablebaseEntryToCloudEval(entry, whiteToMove)!.mate, -3); // (6+1)~/2 = 3
+        final entry = _makeEntry(
+          category: TablebaseCategory.syzygyLoss,
+          dtm: 6,
+        );
+        expect(
+          tablebaseEntryToCloudEval(entry, whiteToMove)!.mate,
+          -3,
+        ); // (6+1)~/2 = 3
         expect(tablebaseEntryToCloudEval(entry, blackToMove)!.mate, 3);
       });
     });
@@ -151,7 +166,10 @@ void main() {
         TablebaseCategory.blessedLoss,
       ]) {
         test('$category: cp=0, no mate', () {
-          final eval = tablebaseEntryToCloudEval(_makeEntry(category: category), whiteToMove)!;
+          final eval = tablebaseEntryToCloudEval(
+            _makeEntry(category: category),
+            whiteToMove,
+          )!;
           expect(eval.cp, 0);
           expect(eval.mate, isNull);
         });
@@ -165,7 +183,13 @@ void main() {
         TablebaseCategory.maybeLoss,
       ]) {
         test('$category returns null', () {
-          expect(tablebaseEntryToCloudEval(_makeEntry(category: category), whiteToMove), isNull);
+          expect(
+            tablebaseEntryToCloudEval(
+              _makeEntry(category: category),
+              whiteToMove,
+            ),
+            isNull,
+          );
         });
       }
     });
@@ -176,7 +200,11 @@ void main() {
           _makeMove('c2c1', TablebaseCategory.loss),
           _makeMove('c2h2', TablebaseCategory.loss),
         ]);
-        final entry = _makeEntry(category: TablebaseCategory.win, dtm: 3, moves: moves);
+        final entry = _makeEntry(
+          category: TablebaseCategory.win,
+          dtm: 3,
+          moves: moves,
+        );
         final eval = tablebaseEntryToCloudEval(entry, whiteToMove)!;
         expect(eval.pvs[0].moves, IList(const ['c2c1']));
       });

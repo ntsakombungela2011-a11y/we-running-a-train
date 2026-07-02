@@ -26,7 +26,8 @@ class StudyTreeView extends ConsumerWidget {
 
     final studyPrefs = ref.watch(studyPreferencesProvider);
 
-    final currentNode = root.branchesOn(studyState.currentPath).lastOrNull ?? root;
+    final currentNode =
+        root.branchesOn(studyState.currentPath).lastOrNull ?? root;
 
     return Column(
       crossAxisAlignment: .stretch,
@@ -44,10 +45,14 @@ class StudyTreeView extends ConsumerWidget {
                         root: root,
                         currentPath: studyState.currentPath,
                         pgnRootComments: studyState.pgnRootComments,
-                        notifier: ref.read(studyControllerProvider(options).notifier),
+                        notifier: ref.read(
+                          studyControllerProvider(options).notifier,
+                        ),
                         showTopDivider: showTopDivider,
                         shouldShowAnnotations: studyPrefs.showAnnotations,
-                        displayMode: studyPrefs.inlineNotation ? .inlineNotation : .twoColumn,
+                        displayMode: studyPrefs.inlineNotation
+                            ? .inlineNotation
+                            : .twoColumn,
                       ),
                     ),
                   ],
@@ -60,7 +65,9 @@ class StudyTreeView extends ConsumerWidget {
           currentNode: currentNode,
           currentPath: studyState.currentPath,
           showAnnotations: studyPrefs.showAnnotations,
-          onJump: (path) => ref.read(studyControllerProvider(options).notifier).userJump(path),
+          onJump: (path) => ref
+              .read(studyControllerProvider(options).notifier)
+              .userJump(path),
         ),
       ],
     );

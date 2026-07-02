@@ -14,13 +14,17 @@ final _logger = Logger('Connectivity');
 const kConnectivityThrottleDelay = Duration(seconds: 5);
 
 /// A provider that exposes a [Connectivity] instance.
-final connectivityPluginProvider = Provider<Connectivity>((Ref _) => Connectivity());
+final connectivityPluginProvider = Provider<Connectivity>(
+  (Ref _) => Connectivity(),
+);
 
 /// A provider that listens to connectivity changes and exposes a boolean indicating whether the device is online or not.
 ///
 /// This provider is derived from [connectivityChangesProvider] and only exposes the `isOnline` field of the connectivity status.
 final onlineStatusProvider = FutureProvider.autoDispose<bool>((ref) {
-  return ref.watch(connectivityChangesProvider.selectAsync((status) => status.isOnline));
+  return ref.watch(
+    connectivityChangesProvider.selectAsync((status) => status.isOnline),
+  );
 }, name: 'OnlineStatusProvider');
 
 /// This provider is used to check the device's connectivity status, reacting to
@@ -55,15 +59,21 @@ class ConnectivityChangesNotifier extends AsyncNotifier<ConnectivityStatus> {
     });
 
     _connectivitySubscription?.cancel();
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((result) {
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((
+      result,
+    ) {
       _connectivityChangesThrottler(() => _onConnectivityChange(result));
     });
 
     final AppLifecycleState? appState = WidgetsBinding.instance.lifecycleState;
 
-    _appLifecycleListener = AppLifecycleListener(onStateChange: _onAppLifecycleChange);
+    _appLifecycleListener = AppLifecycleListener(
+      onStateChange: _onAppLifecycleChange,
+    );
 
-    return _connectivity.checkConnectivity().then((r) => _getConnectivityStatus(r, appState));
+    return _connectivity.checkConnectivity().then(
+      (r) => _getConnectivityStatus(r, appState),
+    );
   }
 
   Future<void> _onAppLifecycleChange(AppLifecycleState appState) async {
@@ -96,7 +106,10 @@ class ConnectivityChangesNotifier extends AsyncNotifier<ConnectivityStatus> {
 
     if (newIsOnline != wasOnline) {
       _logger.info('Connectivity status: $result, isOnline: $newIsOnline');
-      state = AsyncValue.data((isOnline: newIsOnline, appState: state.value?.appState));
+      state = AsyncValue.data((
+        isOnline: newIsOnline,
+        appState: state.value?.appState,
+      ));
     }
   }
 
@@ -104,7 +117,10 @@ class ConnectivityChangesNotifier extends AsyncNotifier<ConnectivityStatus> {
     List<ConnectivityResult> result,
     AppLifecycleState? appState,
   ) async {
-    final status = (isOnline: await isOnline(_defaultClient), appState: appState);
+    final status = (
+      isOnline: await isOnline(_defaultClient),
+      appState: appState,
+    );
     _logger.info('Connectivity status: $result, isOnline: ${status.isOnline}');
     return status;
   }
@@ -118,12 +134,18 @@ final _internetCheckUris = [
 ];
 
 /// Checks if the device is online by making a HEAD request to a list of URIs.
-Future<bool> isOnline(Client client, {Duration timeout = const Duration(seconds: 10)}) {
+Future<bool> isOnline(
+  Client client, {
+  Duration timeout = const Duration(seconds: 10),
+}) {
   final completer = Completer<bool>();
   try {
     int remaining = _internetCheckUris.length;
     final futures = _internetCheckUris.map(
-      (uri) => client.head(uri).timeout(timeout).then((response) => true, onError: (_) => false),
+      (uri) => client
+          .head(uri)
+          .timeout(timeout)
+          .then((response) => true, onError: (_) => false),
     );
     for (final future in futures) {
       future.then((value) {

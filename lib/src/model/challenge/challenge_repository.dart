@@ -13,7 +13,10 @@ import 'package:lichess_mobile/src/network/http.dart';
 
 /// A provider for [ChallengeRepository].
 final challengeRepositoryProvider = Provider<ChallengeRepository>((Ref ref) {
-  return ChallengeRepository(ref.watch(lichessClientProvider), ref.watch(aggregatorProvider));
+  return ChallengeRepository(
+    ref.watch(lichessClientProvider),
+    ref.watch(aggregatorProvider),
+  );
 }, name: 'ChallengeRepositoryProvider');
 
 typedef ChallengesList = ({IList<Challenge> inward, IList<Challenge> outward});
@@ -44,7 +47,9 @@ class ChallengeRepository {
   }
 
   Future<Challenge> create(ChallengeRequest challengeReq) async {
-    final uri = Uri(path: '/api/challenge/${challengeReq.destUser?.id ?? 'open'}');
+    final uri = Uri(
+      path: '/api/challenge/${challengeReq.destUser?.id ?? 'open'}',
+    );
     final challenge = await client.postReadJson(
       uri,
       body: challengeReq.toRequestBody,
@@ -75,7 +80,10 @@ class ChallengeRepository {
 
   Future<void> decline(ChallengeId id, {ChallengeDeclineReason? reason}) async {
     final uri = Uri(path: '/api/challenge/$id/decline');
-    await client.postRead(uri, body: reason != null ? {'reason': reason.name} : null);
+    await client.postRead(
+      uri,
+      body: reason != null ? {'reason': reason.name} : null,
+    );
   }
 
   Future<void> cancel(ChallengeId id) async {

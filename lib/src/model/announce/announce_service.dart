@@ -23,7 +23,9 @@ class AnnounceService {
 
   void start() {
     _socketSubscription = socketGlobalStream.listen(_handleSocketEvent);
-    _responseSubscription = NotificationService.responseStream.listen(_handleNotificationResponse);
+    _responseSubscription = NotificationService.responseStream.listen(
+      _handleNotificationResponse,
+    );
   }
 
   void _dispose() {
@@ -70,12 +72,16 @@ class AnnounceService {
       _dismissTimer = Timer(remaining, _cancelAnnounce);
     }
 
-    _ref.read(notificationServiceProvider).show(AnnounceNotification(msg, date: date));
+    _ref
+        .read(notificationServiceProvider)
+        .show(AnnounceNotification(msg, date: date));
   }
 
   void _cancelAnnounce() {
     _dismissTimer?.cancel();
     _dismissTimer = null;
-    _ref.read(notificationServiceProvider).cancel(AnnounceNotification.notificationId);
+    _ref
+        .read(notificationServiceProvider)
+        .cancel(AnnounceNotification.notificationId);
   }
 }

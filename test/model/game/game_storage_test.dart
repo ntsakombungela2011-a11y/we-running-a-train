@@ -41,7 +41,11 @@ void main() {
       expect(page1.length, 10);
       expect(page1.last.game.id, const GameId('game0090'));
 
-      final page2 = await storage.page(userId: userId, max: 10, until: page1.last.lastModified);
+      final page2 = await storage.page(
+        userId: userId,
+        max: 10,
+        until: page1.last.lastModified,
+      );
       expect(page2.length, 10);
       expect(page2.last.game.id, const GameId('game0080'));
     });
@@ -93,9 +97,14 @@ final game = ExportedGame(
       user: LightUser(id: UserId('blackId'), name: 'Black'),
       rating: 1500,
     ),
-    clock: (initial: const Duration(minutes: 2), increment: const Duration(seconds: 3)),
+    clock: (
+      initial: const Duration(minutes: 2),
+      increment: const Duration(seconds: 3),
+    ),
   ),
-  steps: _makeSteps('e4 Nc6 Bc4 e6 a3 g6 Nf3 Bg7 c3 Nge7 d3 O-O Be3 Na5 Ba2 b6 Qd2'),
+  steps: _makeSteps(
+    'e4 Nc6 Bc4 e6 a3 g6 Nf3 Bg7 c3 Nge7 d3 O-O Be3 Na5 Ba2 b6 Qd2',
+  ),
   status: GameStatus.started,
   white: const Player(
     user: LightUser(id: UserId('whiteId'), name: 'White'),
@@ -137,9 +146,14 @@ final games = List.generate(100, (index) {
         user: LightUser(id: UserId('blackId'), name: 'Black'),
         rating: 1500,
       ),
-      clock: (initial: const Duration(minutes: 2), increment: const Duration(seconds: 3)),
+      clock: (
+        initial: const Duration(minutes: 2),
+        increment: const Duration(seconds: 3),
+      ),
     ),
-    steps: _makeSteps('e4 Nc6 Bc4 e6 a3 g6 Nf3 Bg7 c3 Nge7 d3 O-O Be3 Na5 Ba2 b6 Qd2'),
+    steps: _makeSteps(
+      'e4 Nc6 Bc4 e6 a3 g6 Nf3 Bg7 c3 Nge7 d3 O-O Be3 Na5 Ba2 b6 Qd2',
+    ),
     status: GameStatus.started,
     white: const Player(
       user: LightUser(id: UserId('whiteId'), name: 'White'),

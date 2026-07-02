@@ -12,7 +12,10 @@ part 'coordinate_training_controller.freezed.dart';
 enum Guess { correct, incorrect }
 
 final coordinateTrainingControllerProvider =
-    NotifierProvider.autoDispose<CoordinateTrainingController, CoordinateTrainingState>(
+    NotifierProvider.autoDispose<
+      CoordinateTrainingController,
+      CoordinateTrainingState
+    >(
       CoordinateTrainingController.new,
       name: 'CoordinateTrainingControllerProvider',
     );
@@ -60,7 +63,9 @@ class CoordinateTrainingController extends Notifier<CoordinateTrainingState> {
 
   void _finishTraining() {
     // TODO save score in local storage here (and display high score and/or average score in UI)
-    final orientation = _getOrientation(ref.read(coordinateTrainingPreferencesProvider).sideChoice);
+    final orientation = _getOrientation(
+      ref.read(coordinateTrainingPreferencesProvider).sideChoice,
+    );
     _updateTimer?.cancel();
     state = CoordinateTrainingState(
       lastGuess: state.lastGuess,
@@ -70,7 +75,9 @@ class CoordinateTrainingController extends Notifier<CoordinateTrainingState> {
   }
 
   void abortTraining() {
-    final orientation = _getOrientation(ref.read(coordinateTrainingPreferencesProvider).sideChoice);
+    final orientation = _getOrientation(
+      ref.read(coordinateTrainingPreferencesProvider).sideChoice,
+    );
     _updateTimer?.cancel();
     state = CoordinateTrainingState(orientation: orientation);
   }
@@ -105,7 +112,9 @@ class CoordinateTrainingController extends Notifier<CoordinateTrainingState> {
       );
     }
 
-    state = state.copyWith(lastGuess: correctGuess ? Guess.correct : Guess.incorrect);
+    state = state.copyWith(
+      lastGuess: correctGuess ? Guess.correct : Guess.incorrect,
+    );
   }
 }
 

@@ -180,11 +180,17 @@ class UCIProtocol {
     // However non-primary pvs may only have an upperbound.
     if (evalType != null && multiPv == 1) return;
 
-    final pvData = PvData(moves: IList(moves), cp: isMate ? null : ev, mate: isMate ? ev : null);
+    final pvData = PvData(
+      moves: IList(moves),
+      cp: isMate ? null : ev,
+      mate: isMate ? ev : null,
+    );
 
     if (multiPv == 1) {
       _currentEval = LocalEval(
-        position: work.threatMode ? threatModePosition(work.position) : work.position,
+        position: work.threatMode
+            ? threatModePosition(work.position)
+            : work.position,
         searchTime: Duration(milliseconds: elapsedMs),
         depth: depth,
         nodes: nodes,

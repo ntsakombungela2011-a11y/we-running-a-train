@@ -16,14 +16,20 @@ class VariantLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = DefaultTextStyle.of(context).style;
-    final alignment = Platform.isAndroid ? CrossAxisAlignment.start : CrossAxisAlignment.center;
+    final alignment = Platform.isAndroid
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.center;
     final descriptionStyle = Platform.isAndroid
         ? TextStyle(
             height: 1.2,
             fontSize: 12.0,
-            color: DefaultTextStyle.of(context).style.color?.withValues(alpha: 0.6),
+            color: DefaultTextStyle.of(
+              context,
+            ).style.color?.withValues(alpha: 0.6),
           )
-        : Styles.subtitle.copyWith(color: textShade(context, Styles.subtitleOpacity));
+        : Styles.subtitle.copyWith(
+            color: textShade(context, Styles.subtitleOpacity),
+          );
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: alignment,
@@ -33,7 +39,11 @@ class VariantLabel extends StatelessWidget {
             children: [
               WidgetSpan(
                 alignment: PlaceholderAlignment.middle,
-                child: Icon(variant.icon, size: style.fontSize, color: style.color),
+                child: Icon(
+                  variant.icon,
+                  size: style.fontSize,
+                  color: style.color,
+                ),
               ),
               const WidgetSpan(child: SizedBox(width: 8)),
               TextSpan(text: variant.label(context.l10n)),
@@ -48,7 +58,11 @@ class VariantLabel extends StatelessWidget {
 
 /// A widget that displays a [AppBarTitleText] preceded by an icon based on the variant type.
 class VariantAppBarTitle extends StatelessWidget {
-  const VariantAppBarTitle({super.key, required this.variant, required this.title});
+  const VariantAppBarTitle({
+    super.key,
+    required this.variant,
+    required this.title,
+  });
 
   final Variant variant;
   final String title;
@@ -60,7 +74,10 @@ class VariantAppBarTitle extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (!excludedIcons.contains(variant)) ...[Icon(variant.icon), const SizedBox(width: 5.0)],
+        if (!excludedIcons.contains(variant)) ...[
+          Icon(variant.icon),
+          const SizedBox(width: 5.0),
+        ],
         Flexible(child: AppBarTitleText(title)),
       ],
     );

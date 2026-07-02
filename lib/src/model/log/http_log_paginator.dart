@@ -31,7 +31,9 @@ class HttpLogPaginator extends AsyncNotifier<HttpLogState> {
     final storage = await ref.read(httpLogStorageProvider.future);
     return HttpLogState(
       data: IList.new([
-        await AsyncValue.guard(() => storage.page(limit: _pageSize, searchQuery: _searchQuery)),
+        await AsyncValue.guard(
+          () => storage.page(limit: _pageSize, searchQuery: _searchQuery),
+        ),
       ]),
     );
   }
@@ -51,7 +53,9 @@ class HttpLogPaginator extends AsyncNotifier<HttpLogState> {
         ),
       );
       state = AsyncValue.data(
-        state.requireValue.copyWith(data: state.requireValue.data.add(asyncPage)),
+        state.requireValue.copyWith(
+          data: state.requireValue.data.add(asyncPage),
+        ),
       );
     }
   }
@@ -81,10 +85,12 @@ class HttpLogPaginator extends AsyncNotifier<HttpLogState> {
 sealed class HttpLogState with _$HttpLogState {
   const HttpLogState._();
 
-  const factory HttpLogState({required IList<AsyncValue<HttpLog>> data}) = _HttpLogState;
+  const factory HttpLogState({required IList<AsyncValue<HttpLog>> data}) =
+      _HttpLogState;
 
   bool get initialized => data.isNotEmpty;
-  List<HttpLogEntry> get logs => data.expand((e) => e.value?.items ?? <HttpLogEntry>[]).toList();
+  List<HttpLogEntry> get logs =>
+      data.expand((e) => e.value?.items ?? <HttpLogEntry>[]).toList();
   int? get nextPage => data.lastOrNull?.value?.next;
   bool get hasMore => initialized && nextPage != null;
   bool get isLoading => data.lastOrNull?.isLoading == true;

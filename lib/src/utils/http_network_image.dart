@@ -9,8 +9,12 @@ import 'package:http/http.dart' as http;
 /// Like [NetworkImage], but uses the provided [http.Client] to fetch the image.
 class HttpNetworkImage extends ImageProvider<HttpNetworkImage> {
   /// Creates an object that fetches the image at the given URL.
-  const HttpNetworkImage(this.url, http.Client client, {this.scale = 1.0, this.headers})
-    : _client = client;
+  const HttpNetworkImage(
+    this.url,
+    http.Client client, {
+    this.scale = 1.0,
+    this.headers,
+  }) : _client = client;
 
   final http.Client _client;
 
@@ -26,7 +30,10 @@ class HttpNetworkImage extends ImageProvider<HttpNetworkImage> {
   }
 
   @override
-  ImageStreamCompleter loadImage(HttpNetworkImage key, ImageDecoderCallback decode) {
+  ImageStreamCompleter loadImage(
+    HttpNetworkImage key,
+    ImageDecoderCallback decode,
+  ) {
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key, decode: decode),
       scale: key.scale,
@@ -38,7 +45,10 @@ class HttpNetworkImage extends ImageProvider<HttpNetworkImage> {
     );
   }
 
-  Future<ui.Codec> _loadAsync(HttpNetworkImage key, {required ImageDecoderCallback decode}) async {
+  Future<ui.Codec> _loadAsync(
+    HttpNetworkImage key, {
+    required ImageDecoderCallback decode,
+  }) async {
     try {
       assert(key == this);
 
@@ -51,11 +61,17 @@ class HttpNetworkImage extends ImageProvider<HttpNetworkImage> {
         // added on the server later. Avoid having future calls to resolve
         // fail to check the network again.
         // await response.drain<List<int>>(<int>[]);
-        throw NetworkImageLoadException(statusCode: response.statusCode, uri: resolved);
+        throw NetworkImageLoadException(
+          statusCode: response.statusCode,
+          uri: resolved,
+        );
       }
 
       if (response.bodyBytes.isEmpty) {
-        throw NetworkImageLoadException(statusCode: response.statusCode, uri: resolved);
+        throw NetworkImageLoadException(
+          statusCode: response.statusCode,
+          uri: resolved,
+        );
       }
 
       return decode(await ui.ImmutableBuffer.fromUint8List(response.bodyBytes));
@@ -75,7 +91,9 @@ class HttpNetworkImage extends ImageProvider<HttpNetworkImage> {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is HttpNetworkImage && other.url == url && other.scale == scale;
+    return other is HttpNetworkImage &&
+        other.url == url &&
+        other.scale == scale;
   }
 
   @override

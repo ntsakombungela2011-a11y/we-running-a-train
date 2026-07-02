@@ -41,7 +41,10 @@ class OpeningExplorerScreen extends ConsumerWidget {
     final body = switch (ref.watch(ctrlProvider)) {
       AsyncData(value: final state) => _Body(options: options, state: state),
       AsyncError(:final error) => Center(
-        child: Padding(padding: const EdgeInsets.all(16.0), child: Text(error.toString())),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(error.toString()),
+        ),
       ),
       _ => const CenterLoadingIndicator(),
     };
@@ -70,14 +73,21 @@ class OpeningExplorerScreen extends ConsumerWidget {
         BottomSheetAction(
           makeLabel: (context) => Text(context.l10n.mobileShareGamePGN),
           onPressed: () {
-            Navigator.of(context).push(AnalysisShareScreen.buildRoute(options: options));
+            Navigator.of(
+              context,
+            ).push(AnalysisShareScreen.buildRoute(options: options));
           },
         ),
         BottomSheetAction(
           makeLabel: (context) => Text(context.l10n.mobileSharePositionAsFEN),
           onPressed: () {
-            final analysisState = ref.read(analysisControllerProvider(options)).requireValue;
-            launchShareDialog(context, ShareParams(text: analysisState.currentPosition.fen));
+            final analysisState = ref
+                .read(analysisControllerProvider(options))
+                .requireValue;
+            launchShareDialog(
+              context,
+              ShareParams(text: analysisState.currentPosition.fen),
+            );
           },
         ),
       ],
@@ -107,9 +117,11 @@ class _Body extends ConsumerWidget {
                     : Orientation.portrait;
                 if (orientation == Orientation.landscape) {
                   final sideWidth =
-                      constraints.biggest.longestSide - constraints.biggest.shortestSide;
+                      constraints.biggest.longestSide -
+                      constraints.biggest.shortestSide;
                   final defaultBoardSize =
-                      constraints.biggest.shortestSide - (kTabletBoardTableSidePadding * 2);
+                      constraints.biggest.shortestSide -
+                      (kTabletBoardTableSidePadding * 2);
                   final boardSize = sideWidth >= 250
                       ? defaultBoardSize
                       : constraints.biggest.longestSide / kGoldenRatio -
@@ -126,7 +138,9 @@ class _Body extends ConsumerWidget {
                         child: GameAnalysisBoard(
                           options: options,
                           boardSize: boardSize,
-                          boardRadius: isTablet ? Styles.boardBorderRadius : null,
+                          boardRadius: isTablet
+                              ? Styles.boardBorderRadius
+                              : null,
                           shouldReplaceChildOnUserMove: true,
                         ),
                       ),
@@ -138,17 +152,27 @@ class _Body extends ConsumerWidget {
                             Expanded(
                               child: Card(
                                 clipBehavior: Clip.hardEdge,
-                                margin: const EdgeInsets.all(kTabletBoardTableSidePadding),
+                                margin: const EdgeInsets.all(
+                                  kTabletBoardTableSidePadding,
+                                ),
                                 semanticContainer: false,
                                 child: OpeningExplorerView(
                                   pov: options.orientation,
                                   position: state.currentPosition,
                                   opening: state.currentNode.isRoot
-                                      ? LightOpening(eco: '', name: context.l10n.startPosition)
-                                      : state.currentNode.opening ?? state.currentBranchOpening,
+                                      ? LightOpening(
+                                          eco: '',
+                                          name: context.l10n.startPosition,
+                                        )
+                                      : state.currentNode.opening ??
+                                            state.currentBranchOpening,
                                   onMoveSelected: (move) {
                                     ref
-                                        .read(analysisControllerProvider(options).notifier)
+                                        .read(
+                                          analysisControllerProvider(
+                                            options,
+                                          ).notifier,
+                                        )
                                         .onUserMove(move);
                                   },
                                 ),
@@ -161,15 +185,19 @@ class _Body extends ConsumerWidget {
                   );
                 } else {
                   final defaultBoardSize = constraints.biggest.shortestSide;
-                  final remainingHeight = constraints.maxHeight - defaultBoardSize;
-                  final isSmallScreen = remainingHeight < kSmallHeightMinusBoard;
+                  final remainingHeight =
+                      constraints.maxHeight - defaultBoardSize;
+                  final isSmallScreen =
+                      remainingHeight < kSmallHeightMinusBoard;
                   final boardSize = isTablet || isSmallScreen
                       ? defaultBoardSize - kTabletBoardTableSidePadding * 2
                       : defaultBoardSize;
 
                   return ListView(
                     padding: isTablet
-                        ? const EdgeInsets.symmetric(horizontal: kTabletBoardTableSidePadding)
+                        ? const EdgeInsets.symmetric(
+                            horizontal: kTabletBoardTableSidePadding,
+                          )
                         : EdgeInsets.zero,
                     children: [
                       Center(
@@ -189,10 +217,18 @@ class _Body extends ConsumerWidget {
                           pov: options.orientation,
                           position: state.currentPosition,
                           opening: state.currentNode.isRoot
-                              ? LightOpening(eco: '', name: context.l10n.startPosition)
-                              : state.currentNode.opening ?? state.currentBranchOpening,
+                              ? LightOpening(
+                                  eco: '',
+                                  name: context.l10n.startPosition,
+                                )
+                              : state.currentNode.opening ??
+                                    state.currentBranchOpening,
                           onMoveSelected: (move) {
-                            ref.read(analysisControllerProvider(options).notifier).onUserMove(move);
+                            ref
+                                .read(
+                                  analysisControllerProvider(options).notifier,
+                                )
+                                .onUserMove(move);
                           },
                           scrollable: false,
                         ),
@@ -253,10 +289,16 @@ class _BottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(openingExplorerPreferencesProvider.select((value) => value.db));
+    final db = ref.watch(
+      openingExplorerPreferencesProvider.select((value) => value.db),
+    );
     final ctrlProvider = analysisControllerProvider(options);
-    final canGoBack = ref.watch(ctrlProvider.select((value) => value.requireValue.canGoBack));
-    final canGoNext = ref.watch(ctrlProvider.select((value) => value.requireValue.canGoNext));
+    final canGoBack = ref.watch(
+      ctrlProvider.select((value) => value.requireValue.canGoBack),
+    );
+    final canGoNext = ref.watch(
+      ctrlProvider.select((value) => value.requireValue.canGoNext),
+    );
 
     final dbLabel = switch (db) {
       OpeningDatabase.master => 'Masters',

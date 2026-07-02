@@ -72,7 +72,10 @@ class _Body extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(game.channel.label(context.l10n), style: Styles.boardPreviewTitle),
+                  Text(
+                    game.channel.label(context.l10n),
+                    style: Styles.boardPreviewTitle,
+                  ),
                   Icon(game.channel.icon, size: 32),
                   UserFullNameWidget.player(
                     user: game.player.asPlayer.user,

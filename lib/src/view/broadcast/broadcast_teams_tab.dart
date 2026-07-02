@@ -56,7 +56,9 @@ class BroadcastTeamsTab extends ConsumerWidget {
         tournamentSlug,
         showTeamScores,
       ),
-      AsyncError(:final error) => Center(child: Text('Cannot load teams data: $error')),
+      AsyncError(:final error) => Center(
+        child: Text('Cannot load teams data: $error'),
+      ),
       _ => const Center(child: CircularProgressIndicator.adaptive()),
     };
   }
@@ -81,7 +83,9 @@ class BroadcastTeamsList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final round = ref.watch(broadcastRoundControllerProvider(roundId));
     final showEvaluationGauges = ref.watch(
-      broadcastPreferencesProvider.select((value) => value.showRoundEvaluationGauges),
+      broadcastPreferencesProvider.select(
+        (value) => value.showRoundEvaluationGauges,
+      ),
     );
 
     return switch (round) {
@@ -90,7 +94,9 @@ class BroadcastTeamsList extends ConsumerWidget {
           if (showTeamScores)
             SliverSafeArea(
               bottom: false,
-              sliver: SliverToBoxAdapter(child: _TeamStandingsButton(tournamentId: tournamentId)),
+              sliver: SliverToBoxAdapter(
+                child: _TeamStandingsButton(tournamentId: tournamentId),
+              ),
             ),
           SliverSafeArea(
             top: !showTeamScores,
@@ -114,7 +120,9 @@ class BroadcastTeamsList extends ConsumerWidget {
           ),
         ],
       ),
-      AsyncError(:final error) => Center(child: Text('Cannot load games data: $error')),
+      AsyncError(:final error) => Center(
+        child: Text('Cannot load games data: $error'),
+      ),
       _ => const Center(child: CircularProgressIndicator.adaptive()),
     };
   }
@@ -138,7 +146,9 @@ class _TeamStandingsButton extends StatelessWidget {
           side: BorderSide(color: colorScheme.primary, width: 0.8),
         ),
         onPressed: () {
-          Navigator.of(context).push(BroadcastTeamStandingsScreen.buildRoute(tournamentId));
+          Navigator.of(
+            context,
+          ).push(BroadcastTeamStandingsScreen.buildRoute(tournamentId));
         },
         child: Row(
           mainAxisAlignment: .spaceBetween,
@@ -149,7 +159,11 @@ class _TeamStandingsButton extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   context.l10n.broadcastTeamResults,
-                  style: TextStyle(fontWeight: .bold, color: colorScheme.secondary, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: .bold,
+                    color: colorScheme.secondary,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -207,16 +221,22 @@ class _TeamMatchCard extends StatelessWidget {
           ColoredBox(
             color: ColorScheme.of(context).surfaceDim,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(
+                vertical: 12.0,
+                horizontal: 16.0,
+              ),
               child: Row(
                 children: [
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
                         if (showTeamScores) {
-                          Navigator.of(
-                            context,
-                          ).push(BroadcastTeamScreen.buildRoute(tournamentId, match.team1.name));
+                          Navigator.of(context).push(
+                            BroadcastTeamScreen.buildRoute(
+                              tournamentId,
+                              match.team1.name,
+                            ),
+                          );
                         }
                       },
                       child: Text(
@@ -255,9 +275,12 @@ class _TeamMatchCard extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         if (showTeamScores) {
-                          Navigator.of(
-                            context,
-                          ).push(BroadcastTeamScreen.buildRoute(tournamentId, match.team2.name));
+                          Navigator.of(context).push(
+                            BroadcastTeamScreen.buildRoute(
+                              tournamentId,
+                              match.team2.name,
+                            ),
+                          );
                         }
                       },
                       child: Text(
@@ -339,14 +362,26 @@ class _GameRowState extends ConsumerState<_GameRow> {
       return const SizedBox.shrink();
     }
 
-    final team1Player = widget.teamGame.pov == Side.white ? whitePlayer : blackPlayer;
-    final team2Player = widget.teamGame.pov == Side.white ? blackPlayer : whitePlayer;
+    final team1Player = widget.teamGame.pov == Side.white
+        ? whitePlayer
+        : blackPlayer;
+    final team2Player = widget.teamGame.pov == Side.white
+        ? blackPlayer
+        : whitePlayer;
 
-    final result = _getGameResultTexts(widget.game, widget.teamGame.pov, widget.customScoring);
+    final result = _getGameResultTexts(
+      widget.game,
+      widget.teamGame.pov,
+      widget.customScoring,
+    );
 
     final whiteWinningChances =
-        widget.game.isOngoing && (widget.game.cp != null || widget.game.mate != null)
-        ? ExternalEval(cp: widget.game.cp, mate: widget.game.mate).winningChances(Side.white)
+        widget.game.isOngoing &&
+            (widget.game.cp != null || widget.game.mate != null)
+        ? ExternalEval(
+            cp: widget.game.cp,
+            mate: widget.game.mate,
+          ).winningChances(Side.white)
         : null;
 
     return VisibilityDetector(
@@ -386,13 +421,18 @@ class _GameRowState extends ConsumerState<_GameRow> {
           );
         },
         child: ColoredBox(
-          color: widget.index.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
+          color: widget.index.isEven
+              ? context.lichessTheme.rowEven
+              : context.lichessTheme.rowOdd,
           child: Padding(
             padding: _kGameRowPadding,
             child: Row(
               children: [
                 Expanded(
-                  child: BroadcastPlayerWidget(player: team1Player.player, showRating: isTablet),
+                  child: BroadcastPlayerWidget(
+                    player: team1Player.player,
+                    showRating: isTablet,
+                  ),
                 ),
                 SizedBox(width: isTablet ? _kTabletSpacing : _kPhoneSpacing),
                 SizedBox(
@@ -407,18 +447,26 @@ class _GameRowState extends ConsumerState<_GameRow> {
                                 height: _kEvalBarHeight,
                                 width: _kEvalBarWidth,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(_kEvalBarHeight / 2),
+                                  borderRadius: BorderRadius.circular(
+                                    _kEvalBarHeight / 2,
+                                  ),
                                   color: Colors.grey.withValues(alpha: 0.6),
                                 ),
                               )
                       : Container(
                           alignment: Alignment.center,
-                          child: Row(mainAxisAlignment: .center, children: result),
+                          child: Row(
+                            mainAxisAlignment: .center,
+                            children: result,
+                          ),
                         ),
                 ),
                 SizedBox(width: isTablet ? _kTabletSpacing : _kPhoneSpacing),
                 Expanded(
-                  child: BroadcastPlayerWidget(player: team2Player.player, showRating: isTablet),
+                  child: BroadcastPlayerWidget(
+                    player: team2Player.player,
+                    showRating: isTablet,
+                  ),
                 ),
               ],
             ),
@@ -436,7 +484,11 @@ class _GameRowState extends ConsumerState<_GameRow> {
     if (!game.isOver) {
       return [const Text('*')];
     }
-    Text povResult(BroadcastGame game, Side pov, BroadcastCustomScoring? customScoring) {
+    Text povResult(
+      BroadcastGame game,
+      Side pov,
+      BroadcastCustomScoring? customScoring,
+    ) {
       return Text(
         resultString(customScoring, pov, game.status),
         style: TextStyle(color: game.status.colorFor(pov, context)),
@@ -467,14 +519,18 @@ class _MiniEvalBar extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: pov == Side.white ? whiteBarWidth : _kEvalBarWidth - whiteBarWidth,
+                width: pov == Side.white
+                    ? whiteBarWidth
+                    : _kEvalBarWidth - whiteBarWidth,
                 height: _kEvalBarHeight,
                 color: pov == Side.white
                     ? EngineGauge.valueColor(context)
                     : EngineGauge.backgroundColor(context),
               ),
               Container(
-                width: pov == Side.white ? _kEvalBarWidth - whiteBarWidth : whiteBarWidth,
+                width: pov == Side.white
+                    ? _kEvalBarWidth - whiteBarWidth
+                    : whiteBarWidth,
                 height: _kEvalBarHeight,
                 color: pov == Side.white
                     ? EngineGauge.backgroundColor(context)
@@ -484,7 +540,11 @@ class _MiniEvalBar extends StatelessWidget {
           ),
         ),
 
-        Container(width: _kEvalBarDividerWidth, height: _kEvalBarHeight, color: darken(Colors.red)),
+        Container(
+          width: _kEvalBarDividerWidth,
+          height: _kEvalBarHeight,
+          color: darken(Colors.red),
+        ),
       ],
     );
   }

@@ -30,7 +30,8 @@ class MaterialScreenRoute<T extends Object?> extends MaterialPageRoute<T>
   final Duration? overrideTransitionDuration;
 
   @override
-  Duration get transitionDuration => overrideTransitionDuration ?? super.transitionDuration;
+  Duration get transitionDuration =>
+      overrideTransitionDuration ?? super.transitionDuration;
 }
 
 /// Builds a new route for the [screen].

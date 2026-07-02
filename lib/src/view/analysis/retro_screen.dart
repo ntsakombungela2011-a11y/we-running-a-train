@@ -50,7 +50,9 @@ class RetroScreen extends ConsumerWidget {
       case AsyncError(:final error):
         debugPrint('Error loading retro controller for ${options.id}: $error');
         return Scaffold(
-          appBar: AppBar(title: AppBarTitleText(context.l10n.learnFromYourMistakes)),
+          appBar: AppBar(
+            title: AppBarTitleText(context.l10n.learnFromYourMistakes),
+          ),
           body: FullScreenRetryRequest(
             onRetry: () {
               ref.invalidate(retroControllerProvider(options));
@@ -59,7 +61,9 @@ class RetroScreen extends ConsumerWidget {
         );
       case AsyncData(:final value):
         if (value.serverAnalysisAvailable == false) {
-          return _LoadingScreen(serverAnalysisProgress: value.serverAnalysisProgress);
+          return _LoadingScreen(
+            serverAnalysisProgress: value.serverAnalysisProgress,
+          );
         }
 
         return Scaffold(
@@ -71,7 +75,10 @@ class RetroScreen extends ConsumerWidget {
             actions: [
               if (value.isEngineAvailable(enginePrefs) == true)
                 EngineButton(
-                  filters: (id: value.evaluationContext.id, path: value.currentPath),
+                  filters: (
+                    id: value.evaluationContext.id,
+                    path: value.currentPath,
+                  ),
                   savedEval: value.currentNode.eval,
                   goDeeper: () => ref
                       .read(retroControllerProvider(options).notifier)
@@ -96,7 +103,9 @@ class _LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: AppBarTitleText(context.l10n.learnFromYourMistakes)),
+      appBar: AppBar(
+        title: AppBarTitleText(context.l10n.learnFromYourMistakes),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -126,8 +135,11 @@ class _RetroScreen extends ConsumerWidget {
     return AnalysisLayout(
       pov: state.pov,
       sideToMove: state.currentPosition.turn,
-      boardBuilder: (context, boardSize, borderRadius) =>
-          RetroAnalysisBoard(options, boardSize: boardSize, boardRadius: borderRadius),
+      boardBuilder: (context, boardSize, borderRadius) => RetroAnalysisBoard(
+        options,
+        boardSize: boardSize,
+        boardRadius: borderRadius,
+      ),
       engineGaugeBuilder: (context) {
         return EngineGauge(params: state.engineGaugeParams);
       },
@@ -140,7 +152,9 @@ class _RetroScreen extends ConsumerWidget {
               _FeedbackWidget(options),
               if (state.feedback == RetroFeedback.done)
                 FilledButton(
-                  onPressed: ref.read(retroControllerProvider(options).notifier).flipSide,
+                  onPressed: ref
+                      .read(retroControllerProvider(options).notifier)
+                      .flipSide,
                   child: Text(
                     state.pov == Side.white
                         ? context.l10n.reviewBlackMistakes
@@ -156,7 +170,11 @@ class _RetroScreen extends ConsumerWidget {
 }
 
 class RetroAnalysisBoard extends AnalysisBoard {
-  const RetroAnalysisBoard(this.options, {required super.boardSize, super.boardRadius});
+  const RetroAnalysisBoard(
+    this.options, {
+    required super.boardSize,
+    super.boardRadius,
+  });
 
   final RetroOptions options;
 
@@ -167,17 +185,20 @@ class RetroAnalysisBoard extends AnalysisBoard {
 class _RetroAnalysisBoardState
     extends AnalysisBoardState<RetroAnalysisBoard, RetroState, AnalysisPrefs> {
   @override
-  RetroState? readCurrentState() => ref.read(retroControllerProvider(widget.options)).value;
+  RetroState? readCurrentState() =>
+      ref.read(retroControllerProvider(widget.options)).value;
 
   @override
-  void listenToStateChanges(void Function(RetroState? prev, RetroState? next) listener) =>
-      ref.listenManual<RetroState?>(
-        retroControllerProvider(widget.options).select((v) => v.value),
-        listener,
-      );
+  void listenToStateChanges(
+    void Function(RetroState? prev, RetroState? next) listener,
+  ) => ref.listenManual<RetroState?>(
+    retroControllerProvider(widget.options).select((v) => v.value),
+    listener,
+  );
 
   @override
-  RetroState get analysisState => ref.watch(retroControllerProvider(widget.options)).requireValue;
+  RetroState get analysisState =>
+      ref.watch(retroControllerProvider(widget.options)).requireValue;
 
   @override
   AnalysisPrefs get analysisPrefs => ref.watch(analysisPreferencesProvider);
@@ -189,7 +210,8 @@ class _RetroAnalysisBoardState
   bool get hideBestMoveArrow => true;
 
   @override
-  bool computeInteractive(RetroState state) => state.feedback != RetroFeedback.evalMove;
+  bool computeInteractive(RetroState state) =>
+      state.feedback != RetroFeedback.evalMove;
 
   @override
   void onUserMove(Move move) {
@@ -205,7 +227,9 @@ class _RetroAnalysisBoardState
 
   @override
   ISet<Shape> get extraShapes {
-    final state = ref.watch(retroControllerProvider(widget.options)).requireValue;
+    final state = ref
+        .watch(retroControllerProvider(widget.options))
+        .requireValue;
     if (state.isSolving && state.currentMistake != null) {
       final boardPrefs = ref.watch(boardPreferencesProvider);
       final mistake = state.currentMistake!.userMove;
@@ -243,13 +267,17 @@ class _BottomBar extends ConsumerWidget {
             icon: Icons.flag_outlined,
             label: context.l10n.viewTheSolution,
             showLabel: true,
-            onTap: ref.read(retroControllerProvider(options).notifier).viewSolution,
+            onTap: ref
+                .read(retroControllerProvider(options).notifier)
+                .viewSolution,
           ),
           BottomBarButton(
             icon: Icons.skip_next,
             label: context.l10n.skipThisMove,
             showLabel: true,
-            onTap: ref.read(retroControllerProvider(options).notifier).nextMistake,
+            onTap: ref
+                .read(retroControllerProvider(options).notifier)
+                .nextMistake,
           ),
         ] else ...[
           if (state.feedback == RetroFeedback.done && state.hasMistakes)
@@ -257,7 +285,9 @@ class _BottomBar extends ConsumerWidget {
               icon: Icons.skip_previous,
               label: context.l10n.doItAgain,
               showLabel: true,
-              onTap: ref.read(retroControllerProvider(options).notifier).restart,
+              onTap: ref
+                  .read(retroControllerProvider(options).notifier)
+                  .restart,
             ),
           RepeatButton(
             onLongPress: onGoBack,
@@ -287,7 +317,9 @@ class _BottomBar extends ConsumerWidget {
               // TODO: translate
               label: 'Next mistake',
               showLabel: true,
-              onTap: ref.read(retroControllerProvider(options).notifier).nextMistake,
+              onTap: ref
+                  .read(retroControllerProvider(options).notifier)
+                  .nextMistake,
             ),
         ],
       ],
@@ -309,7 +341,9 @@ class _FeedbackWidget extends ConsumerWidget {
             RetroFeedback.findMove => FeedbackTile(
               leading: SideToPlayPiece(side: state.pov),
               title: Text(
-                context.l10n.xWasPlayed(_branchMoveToString(state.currentMistake!.userBranch)),
+                context.l10n.xWasPlayed(
+                  _branchMoveToString(state.currentMistake!.userBranch),
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
@@ -321,11 +355,19 @@ class _FeedbackWidget extends ConsumerWidget {
               ),
             ),
             RetroFeedback.correct => FeedbackTile(
-              leading: Icon(Icons.check, size: 36, color: context.lichessColors.good),
+              leading: Icon(
+                Icons.check,
+                size: 36,
+                color: context.lichessColors.good,
+              ),
               title: Text(context.l10n.puzzleGoodMove),
             ),
             RetroFeedback.incorrect => FeedbackTile(
-              leading: Icon(Icons.close, size: 36, color: context.lichessColors.error),
+              leading: Icon(
+                Icons.close,
+                size: 36,
+                color: context.lichessColors.error,
+              ),
               title: Text(context.l10n.youCanDoBetter),
               subtitle: state.pov == Side.white
                   ? Text(context.l10n.tryAnotherMoveForWhite)
@@ -335,7 +377,9 @@ class _FeedbackWidget extends ConsumerWidget {
               leading: const Icon(Icons.check, size: 36),
               title: Text(context.l10n.solution),
               subtitle: Text(
-                context.l10n.bestWasX(_branchMoveToString(state.currentMistake!.serverBranch)),
+                context.l10n.bestWasX(
+                  _branchMoveToString(state.currentMistake!.serverBranch),
+                ),
               ),
             ),
             RetroFeedback.evalMove => FeedbackTile(
@@ -388,12 +432,17 @@ class _RetroMenu extends ConsumerWidget {
         ContextMenuAction(
           icon: Icons.settings,
           label: context.l10n.settingsSettings,
-          onPressed: () =>
-              Navigator.of(context).push(RetroSettingsScreen.buildRoute(options: options)),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(RetroSettingsScreen.buildRoute(options: options)),
         ),
         ToggleSoundContextMenuAction(
-          isEnabled: ref.watch(generalPreferencesProvider.select((prefs) => prefs.isSoundEnabled)),
-          onPressed: () => ref.read(generalPreferencesProvider.notifier).toggleSoundEnabled(),
+          isEnabled: ref.watch(
+            generalPreferencesProvider.select((prefs) => prefs.isSoundEnabled),
+          ),
+          onPressed: () => ref
+              .read(generalPreferencesProvider.notifier)
+              .toggleSoundEnabled(),
         ),
       ],
     );

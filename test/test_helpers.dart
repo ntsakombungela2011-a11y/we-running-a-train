@@ -35,7 +35,10 @@ const kTestSurfaces = [
 /// iPhone 14 screen size.
 const kTestSurfaceSize = Size(_kTestScreenWidth, _kTestScreenHeight);
 
-const kPlatformVariant = TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS});
+const kPlatformVariant = TargetPlatformVariant({
+  TargetPlatform.android,
+  TargetPlatform.iOS,
+});
 
 /// Mocks a surface with a given size.
 class TestSurface extends StatelessWidget {
@@ -69,14 +72,17 @@ Future<void> meetsTapTargetGuideline(WidgetTester tester) async {
 }
 
 /// Finds either an interactive [Chessboard] or a [StaticChessboard].
-Finder _anyBoard() => find.byWidgetPredicate((w) => w is Chessboard || w is StaticChessboard);
+Finder _anyBoard() =>
+    find.byWidgetPredicate((w) => w is Chessboard || w is StaticChessboard);
 
 /// Returns the pieces of the first [Chessboard] or [StaticChessboard] found in the widget tree.
 ///
 /// Throws a [StateError] if no [PiecesPainter] is found.
 Map<Square, Piece> getBoardPieces(WidgetTester tester) {
   for (final element
-      in find.descendant(of: _anyBoard(), matching: find.byType(CustomPaint)).evaluate()) {
+      in find
+          .descendant(of: _anyBoard(), matching: find.byType(CustomPaint))
+          .evaluate()) {
     final widget = element.widget as CustomPaint;
     if (widget.painter is PiecesPainter) {
       return (widget.painter! as PiecesPainter).pieces;
@@ -90,7 +96,9 @@ Map<Square, Piece> getBoardPieces(WidgetTester tester) {
 /// Throws a [StateError] if no [HighlightsPainter] is found.
 HighlightsPainter findBoardHighlightPainter(WidgetTester tester) {
   for (final element
-      in find.descendant(of: _anyBoard(), matching: find.byType(CustomPaint)).evaluate()) {
+      in find
+          .descendant(of: _anyBoard(), matching: find.byType(CustomPaint))
+          .evaluate()) {
     final widget = element.widget as CustomPaint;
     if (widget.painter is HighlightsPainter) {
       return widget.painter! as HighlightsPainter;
@@ -127,13 +135,24 @@ bool boardHasPremove(WidgetTester tester, Move move) {
 }
 
 /// Returns the offset of a square on a board defined by [Rect].
-Offset squareOffset(Square square, Rect boardRect, {Side orientation = Side.white}) {
+Offset squareOffset(
+  Square square,
+  Rect boardRect, {
+  Side orientation = Side.white,
+}) {
   final squareSize = boardRect.width / 8;
 
-  final dx = (orientation == Side.white ? square.file.value : 7 - square.file.value) * squareSize;
-  final dy = (orientation == Side.white ? 7 - square.rank.value : square.rank.value) * squareSize;
+  final dx =
+      (orientation == Side.white ? square.file.value : 7 - square.file.value) *
+      squareSize;
+  final dy =
+      (orientation == Side.white ? 7 - square.rank.value : square.rank.value) *
+      squareSize;
 
-  return Offset(dx + boardRect.left + squareSize / 2, dy + boardRect.top + squareSize / 2);
+  return Offset(
+    dx + boardRect.left + squareSize / 2,
+    dy + boardRect.top + squareSize / 2,
+  );
 }
 
 /// Plays a move on the board.
@@ -145,9 +164,13 @@ Future<void> playMove(
   Side orientation = Side.white,
 }) async {
   final rect = boardRect ?? tester.getRect(find.byType(Chessboard));
-  await tester.tapAt(squareOffset(Square.fromName(from), rect, orientation: orientation));
+  await tester.tapAt(
+    squareOffset(Square.fromName(from), rect, orientation: orientation),
+  );
   await tester.pump();
-  await tester.tapAt(squareOffset(Square.fromName(to), rect, orientation: orientation));
+  await tester.tapAt(
+    squareOffset(Square.fromName(to), rect, orientation: orientation),
+  );
   await tester.pump();
 }
 
@@ -161,8 +184,14 @@ Future<void> playDropMove(
   Side orientation = Side.white,
 }) async {
   final rect = boardRect ?? tester.getRect(find.byType(Chessboard));
-  final targetOffset = squareOffset(Square.fromName(to), rect, orientation: orientation);
-  final fromOffset = tester.getCenter(find.byKey(ValueKey('pocket-${side.name}${role.name}')));
+  final targetOffset = squareOffset(
+    Square.fromName(to),
+    rect,
+    orientation: orientation,
+  );
+  final fromOffset = tester.getCenter(
+    find.byKey(ValueKey('pocket-${side.name}${role.name}')),
+  );
   await tester.dragFrom(fromOffset, targetOffset - fromOffset);
   await tester.pumpAndSettle();
 }

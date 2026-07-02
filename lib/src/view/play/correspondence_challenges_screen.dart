@@ -29,10 +29,12 @@ class CorrespondenceChallengesScreen extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<CorrespondenceChallengesScreen> createState() => _ChallengesBodyState();
+  ConsumerState<CorrespondenceChallengesScreen> createState() =>
+      _ChallengesBodyState();
 }
 
-class _ChallengesBodyState extends ConsumerState<CorrespondenceChallengesScreen> {
+class _ChallengesBodyState
+    extends ConsumerState<CorrespondenceChallengesScreen> {
   StreamSubscription<SocketEvent>? _socketSubscription;
 
   final _refreshKey = GlobalKey<RefreshIndicatorState>();
@@ -42,7 +44,9 @@ class _ChallengesBodyState extends ConsumerState<CorrespondenceChallengesScreen>
   void initState() {
     super.initState();
 
-    socketClient = ref.read(socketPoolProvider).open(Uri(path: '/lobby/socket/v5'));
+    socketClient = ref
+        .read(socketPoolProvider)
+        .open(Uri(path: '/lobby/socket/v5'));
 
     _socketSubscription = socketClient.stream.listen((event) {
       switch (event.topic) {
@@ -51,10 +55,9 @@ class _ChallengesBodyState extends ConsumerState<CorrespondenceChallengesScreen>
           final data = event.data as Map<String, dynamic>;
           final gameFullId = pick(data['id']).asGameFullIdOrThrow();
           if (mounted) {
-            Navigator.of(
-              context,
-              rootNavigator: true,
-            ).push(GameScreen.buildRoute(source: ExistingGameSource(gameFullId)));
+            Navigator.of(context, rootNavigator: true).push(
+              GameScreen.buildRoute(source: ExistingGameSource(gameFullId)),
+            );
           }
 
         case 'reload_seeks':
@@ -78,9 +81,13 @@ class _ChallengesBodyState extends ConsumerState<CorrespondenceChallengesScreen>
 
     switch (challengesAsync) {
       case AsyncError():
-        return const Scaffold(body: Center(child: Text('Could not load correspondence seeks')));
+        return const Scaffold(
+          body: Center(child: Text('Could not load correspondence seeks')),
+        );
       case AsyncData(value: final seeks):
-        final supportedSeeks = seeks.where((seek) => seek.variant.isPlaySupported).toList();
+        final supportedSeeks = seeks
+            .where((seek) => seek.variant.isPlaySupported)
+            .toList();
         return PlatformScaffold(
           appBar: PlatformAppBar(title: Text(context.l10n.correspondence)),
           floatingActionButton: FloatingActionButton.extended(
@@ -107,12 +114,14 @@ class _ChallengesBodyState extends ConsumerState<CorrespondenceChallengesScreen>
             onRefresh: () => ref.refresh(correspondenceSeeksProvider.future),
             child: ListView.separated(
               itemCount: supportedSeeks.length,
-              separatorBuilder: (context, index) => Theme.of(context).platform == TargetPlatform.iOS
+              separatorBuilder: (context, index) =>
+                  Theme.of(context).platform == TargetPlatform.iOS
                   ? const PlatformDivider(height: 1, cupertinoHasLeading: true)
                   : const SizedBox.shrink(),
               itemBuilder: (context, index) {
                 final seek = supportedSeeks[index];
-                final isMySeek = UserId.fromUserName(seek.username) == authUser?.user.id;
+                final isMySeek =
+                    UserId.fromUserName(seek.username) == authUser?.user.id;
 
                 return CorrespondenceChallengeListItem(
                   seek: seek,
@@ -125,7 +134,10 @@ class _ChallengesBodyState extends ConsumerState<CorrespondenceChallengesScreen>
                       ? null
                       : authUser == null
                       ? () {
-                          showSnackBar(context, context.l10n.youNeedAnAccountToDoThat);
+                          showSnackBar(
+                            context,
+                            context.l10n.youNeedAnAccountToDoThat,
+                          );
                         }
                       : () {
                           showConfirmDialog<void>(
@@ -148,7 +160,9 @@ class _ChallengesBodyState extends ConsumerState<CorrespondenceChallengesScreen>
           ),
         );
       case _:
-        return const Scaffold(body: Center(child: CircularProgressIndicator.adaptive()));
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator.adaptive()),
+        );
     }
   }
 }

@@ -114,10 +114,17 @@ sealed class MoveWork extends Work with _$MoveWork {
 sealed class Step with _$Step {
   const Step._();
 
-  const factory Step({required Position position, required SanMove sanMove, ClientEval? eval}) =
-      _Step;
+  const factory Step({
+    required Position position,
+    required SanMove sanMove,
+    ClientEval? eval,
+  }) = _Step;
 
   factory Step.fromNode(Branch node) {
-    return Step(position: node.position, sanMove: node.sanMove, eval: node.eval);
+    return Step(
+      position: node.position,
+      sanMove: node.sanMove,
+      eval: node.eval,
+    );
   }
 }

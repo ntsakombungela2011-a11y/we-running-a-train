@@ -89,7 +89,10 @@ class _ClockToolSettingsModalState extends State<ClockToolSettingsModal> {
                   text: '${context.l10n.minutesPerSide}: ',
                   children: [
                     TextSpan(
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                       text: clockLabelInMinutes(_timeIncrement.time),
                     ),
                   ],
@@ -109,7 +112,10 @@ class _ClockToolSettingsModalState extends State<ClockToolSettingsModal> {
                   text: '${_clockType.valueInSecondsLabel(context.l10n)}: ',
                   children: [
                     TextSpan(
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                       text: _timeIncrement.increment.toString(),
                     ),
                   ],

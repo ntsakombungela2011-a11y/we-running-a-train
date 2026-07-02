@@ -93,7 +93,9 @@ class FakeStockfish implements Stockfish {
             _position = Position.setupPosition(
               _variant != null ? ruleFromUciVariant(_variant!) : Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -236,7 +238,8 @@ class DelayedFakeStockfish implements Stockfish {
   /// Tracks UCI options that have been set.
   final Map<String, String> options = {};
 
-  int get stopCallCount => stdinCommands.where((cmd) => cmd.startsWith('stop')).length;
+  int get stopCallCount =>
+      stdinCommands.where((cmd) => cmd.startsWith('stop')).length;
 
   void _emit(String line) {
     if (!_stdoutController.isClosed) {
@@ -302,7 +305,9 @@ class DelayedFakeStockfish implements Stockfish {
             _position = Position.setupPosition(
               Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -351,7 +356,10 @@ class DelayedFakeStockfish implements Stockfish {
 /// A fake Stockfish that emits multiple eval events with controllable timing.
 /// Used for testing throttle behavior.
 class ThrottleTestStockfish implements Stockfish {
-  ThrottleTestStockfish({this.evalEventCount = 5, this.evalEventInterval = Duration.zero});
+  ThrottleTestStockfish({
+    this.evalEventCount = 5,
+    this.evalEventInterval = Duration.zero,
+  });
 
   /// Number of eval events to emit per `go` command.
   final int evalEventCount;
@@ -437,7 +445,9 @@ class ThrottleTestStockfish implements Stockfish {
             _position = Position.setupPosition(
               Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -579,7 +589,9 @@ class AnalysisTestStockfish implements Stockfish {
             _position = Position.setupPosition(
               Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -603,14 +615,16 @@ class AnalysisTestStockfish implements Stockfish {
       case 'stop':
         // Emit bestmove (first available move) to signal evaluation is complete
         if (_position != null) {
-          final bestMove = makeLegalMoves(
-            _position!,
-          ).entries.map((e) => NormalMove(from: e.key, to: e.value.first)).first;
+          final bestMove = makeLegalMoves(_position!).entries
+              .map((e) => NormalMove(from: e.key, to: e.value.first))
+              .first;
           final afterBestMove = _position!.play(bestMove);
-          final ponderMove = makeLegalMoves(
-            afterBestMove,
-          ).entries.map((e) => NormalMove(from: e.key, to: e.value.first)).firstOrNull;
-          final ponderPart = ponderMove != null ? ' ponder ${ponderMove.uci}' : '';
+          final ponderMove = makeLegalMoves(afterBestMove).entries
+              .map((e) => NormalMove(from: e.key, to: e.value.first))
+              .firstOrNull;
+          final ponderPart = ponderMove != null
+              ? ' ponder ${ponderMove.uci}'
+              : '';
           _emit('bestmove ${bestMove.uci}$ponderPart\n');
         }
     }
@@ -634,7 +648,9 @@ class AnalysisTestStockfish implements Stockfish {
 /// ever issued two operations without waiting for the previous one,
 /// [maxConcurrentOps] would observe a value greater than 1.
 class ConcurrencyTrackingStockfish implements Stockfish {
-  ConcurrencyTrackingStockfish({this.opDelay = const Duration(milliseconds: 15)});
+  ConcurrencyTrackingStockfish({
+    this.opDelay = const Duration(milliseconds: 15),
+  });
 
   /// Duration each native start/quit operation takes.
   final Duration opDelay;
@@ -722,7 +738,9 @@ class ConcurrencyTrackingStockfish implements Stockfish {
             _position = Position.setupPosition(
               Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -812,7 +830,9 @@ class LegalMoveFakeStockfish implements Stockfish {
             _position = Position.setupPosition(
               _variant != null ? ruleFromUciVariant(_variant!) : Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -927,7 +947,9 @@ class MultiPvFakeStockfish implements Stockfish {
             _position = Position.setupPosition(
               Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -956,7 +978,9 @@ class MultiPvFakeStockfish implements Stockfish {
             // Each pv gets 5 cp less than the previous
             final baseCP = _position!.turn == Side.white ? 30 : -30;
             for (var i = 0; i < moves.length; i++) {
-              final cp = _position!.turn == Side.white ? baseCP - (i * 5) : baseCP + (i * 5);
+              final cp = _position!.turn == Side.white
+                  ? baseCP - (i * 5)
+                  : baseCP + (i * 5);
               _emit(
                 'info depth 15 seldepth 8 multipv ${i + 1} score cp $cp nodes 5000 nps 359000 hashfull 0 tbhits 0 time 1500 pv ${moves[i].uci}\n',
               );
@@ -1166,7 +1190,9 @@ class PracticeModeStockfish implements Stockfish {
             _position = Position.setupPosition(
               Rule.chess,
               Setup.parseFen(
-                parts.sublist(2, movesPartIndex != -1 ? movesPartIndex : null).join(' '),
+                parts
+                    .sublist(2, movesPartIndex != -1 ? movesPartIndex : null)
+                    .join(' '),
               ),
             );
           }
@@ -1195,13 +1221,17 @@ class PracticeModeStockfish implements Stockfish {
             // Determine the base cp value
             // First go call is for hints (before move), subsequent calls are for after move eval
             final isAfterMoveEval = _goCount > 1;
-            final baseCp = isAfterMoveEval ? initialEvalCp + evalShiftCp : initialEvalCp;
+            final baseCp = isAfterMoveEval
+                ? initialEvalCp + evalShiftCp
+                : initialEvalCp;
 
             // Emit multiPv info lines at high depth (16+) for practice mode
             for (var depth = 16; depth <= 18; depth++) {
               for (var i = 0; i < moves.length; i++) {
                 // Each subsequent PV is slightly worse
-                final cp = _position!.turn == Side.white ? baseCp - (i * 5) : -(baseCp - (i * 5));
+                final cp = _position!.turn == Side.white
+                    ? baseCp - (i * 5)
+                    : -(baseCp - (i * 5));
                 _emit(
                   'info depth $depth seldepth ${depth + 2} multipv ${i + 1} score cp $cp nodes 50000 nps 500000 hashfull 100 tbhits 0 time ${depth * 100} pv ${moves[i].uci}\n',
                 );

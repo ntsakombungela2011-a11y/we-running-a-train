@@ -29,7 +29,9 @@ void main() {
         tester,
         home: const FriendScreen(),
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
           onlineFriendsProvider: onlineFriendsProvider.overrideWith(
@@ -48,53 +50,57 @@ void main() {
       expect(find.byType(CenterLoadingIndicator), findsOneWidget);
     });
 
-    testWidgets('shows _Online and _Following tabs after request completes with empty list', (
-      WidgetTester tester,
-    ) async {
-      final mockClient = MockClient((request) {
-        if (request.url.path == '/api/rel/following') {
-          return mockResponse('', 200);
-        }
-        return mockResponse('', 404);
-      });
+    testWidgets(
+      'shows _Online and _Following tabs after request completes with empty list',
+      (WidgetTester tester) async {
+        final mockClient = MockClient((request) {
+          if (request.url.path == '/api/rel/following') {
+            return mockResponse('', 200);
+          }
+          return mockResponse('', 404);
+        });
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const FriendScreen(),
-        overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
-            return FakeHttpClientFactory(() => mockClient);
-          }),
-          onlineFriendsProvider: onlineFriendsProvider.overrideWith(
-            () => _MockOnlineFriends(const IList.empty()),
-          ),
-        },
-      );
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const FriendScreen(),
+          overrides: {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
+              return FakeHttpClientFactory(() => mockClient);
+            }),
+            onlineFriendsProvider: onlineFriendsProvider.overrideWith(
+              () => _MockOnlineFriends(const IList.empty()),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      // We pump and settle because followingStatusesProvider has to make the following request
-      await tester.pumpAndSettle();
+        // We pump and settle because followingStatusesProvider has to make the following request
+        await tester.pumpAndSettle();
 
-      expect(find.byType(CenterLoadingIndicator), findsNothing);
+        expect(find.byType(CenterLoadingIndicator), findsNothing);
 
-      expect(find.byType(Tab), findsNWidgets(2));
-      expect(find.text('0 friends online'), findsNWidgets(2));
-      expect(find.text('0 following'), findsOneWidget);
-    });
+        expect(find.byType(Tab), findsNWidgets(2));
+        expect(find.text('0 friends online'), findsNWidgets(2));
+        expect(find.text('0 following'), findsOneWidget);
+      },
+    );
 
-    testWidgets('shows _Online and _Following tabs after request completes with data', (
-      WidgetTester tester,
-    ) async {
-      final mockClient = MockClient((request) {
-        if (request.url.path == '/api/rel/following') {
-          return mockResponse(
-            '{"id":"testuser","username":"TestUser","createdAt":1290415680000,"seenAt":1290415680000,"perfs":{}}',
-            200,
-          );
-        }
-        if (request.url.path == '/api/users/status' && request.url.query.contains('ids=testuser')) {
-          return mockResponse('''
+    testWidgets(
+      'shows _Online and _Following tabs after request completes with data',
+      (WidgetTester tester) async {
+        final mockClient = MockClient((request) {
+          if (request.url.path == '/api/rel/following') {
+            return mockResponse(
+              '{"id":"testuser","username":"TestUser","createdAt":1290415680000,"seenAt":1290415680000,"perfs":{}}',
+              200,
+            );
+          }
+          if (request.url.path == '/api/users/status' &&
+              request.url.query.contains('ids=testuser')) {
+            return mockResponse('''
 [
   {
     "id": "testuser",
@@ -103,38 +109,44 @@ void main() {
   }
 ]
 ''', 200);
-        }
-        return mockResponse('', 404);
-      });
+          }
+          return mockResponse('', 404);
+        });
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const FriendScreen(),
-        overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
-            return FakeHttpClientFactory(() => mockClient);
-          }),
-          onlineFriendsProvider: onlineFriendsProvider.overrideWith(
-            () => _MockOnlineFriends(
-              IList(const [
-                (user: LightUser(id: UserId('testuser'), name: 'TestUser'), playing: false),
-              ]),
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const FriendScreen(),
+          overrides: {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
+              return FakeHttpClientFactory(() => mockClient);
+            }),
+            onlineFriendsProvider: onlineFriendsProvider.overrideWith(
+              () => _MockOnlineFriends(
+                IList(const [
+                  (
+                    user: LightUser(id: UserId('testuser'), name: 'TestUser'),
+                    playing: false,
+                  ),
+                ]),
+              ),
             ),
-          ),
-        },
-      );
+          },
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      // We pump and settle because followingStatusesProvider has to make the following request
-      await tester.pumpAndSettle();
+        // We pump and settle because followingStatusesProvider has to make the following request
+        await tester.pumpAndSettle();
 
-      expect(find.byType(CenterLoadingIndicator), findsNothing);
+        expect(find.byType(CenterLoadingIndicator), findsNothing);
 
-      expect(find.byType(Tab), findsNWidgets(2));
-      expect(find.text('1 friend online'), findsOneWidget);
-      expect(find.text('1 following'), findsOneWidget);
-    });
+        expect(find.byType(Tab), findsNWidgets(2));
+        expect(find.text('1 friend online'), findsOneWidget);
+        expect(find.text('1 following'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'CenterLoadingIndicator is hidden and empty state is shown in _Following when no users',
@@ -150,7 +162,9 @@ void main() {
           tester,
           home: const FriendScreen(),
           overrides: {
-            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
               return FakeHttpClientFactory(() => mockClient);
             }),
             onlineFriendsProvider: onlineFriendsProvider.overrideWith(

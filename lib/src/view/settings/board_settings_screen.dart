@@ -72,18 +72,26 @@ class _Body extends ConsumerWidget {
               title: Text(context.l10n.mobilePrefMagnifyDraggedPiece),
               value: boardPrefs.magnifyDraggedPiece,
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).toggleMagnifyDraggedPiece();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .toggleMagnifyDraggedPiece();
               },
             ),
             SettingsListTile(
-              settingsLabel: Text(context.l10n.mobileSettingsDraggedPieceTarget),
-              settingsValue: dragTargetKindLabel(context.l10n, boardPrefs.dragTargetKind),
+              settingsLabel: Text(
+                context.l10n.mobileSettingsDraggedPieceTarget,
+              ),
+              settingsValue: dragTargetKindLabel(
+                context.l10n,
+                boardPrefs.dragTargetKind,
+              ),
               onTap: () {
                 showChoicePicker(
                   context,
                   choices: DragTargetKind.values,
                   selectedItem: boardPrefs.dragTargetKind,
-                  labelBuilder: (t) => Text(dragTargetKindLabel(context.l10n, t)),
+                  labelBuilder: (t) =>
+                      Text(dragTargetKindLabel(context.l10n, t)),
                   onSelectedItemChanged: (DragTargetKind? value) {
                     ref
                         .read(boardPreferencesProvider.notifier)
@@ -96,10 +104,13 @@ class _Body extends ConsumerWidget {
               title: Text(context.l10n.preferencesPieceAnimation),
               value: boardPrefs.pieceAnimation,
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).togglePieceAnimation();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .togglePieceAnimation();
               },
             ),
-            if (Theme.of(context).platform == TargetPlatform.android && !isTabletOrLarger(context))
+            if (Theme.of(context).platform == TargetPlatform.android &&
+                !isTabletOrLarger(context))
               androidVersionAsync.maybeWhen(
                 data: (version) => version != null && version.sdkInt >= 29
                     ? SwitchSettingTile(
@@ -122,14 +133,18 @@ class _Body extends ConsumerWidget {
               title: Text(context.l10n.preferencesPieceDestinations),
               value: boardPrefs.showLegalMoves,
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).toggleShowLegalMoves();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .toggleShowLegalMoves();
               },
             ),
             SwitchSettingTile(
               title: Text(context.l10n.preferencesBoardHighlights),
               value: boardPrefs.boardHighlights,
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).toggleBoardHighlights();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .toggleBoardHighlights();
               },
             ),
             if (!isShortVerticalScreen(context))
@@ -137,23 +152,29 @@ class _Body extends ConsumerWidget {
                 title: Text(context.l10n.preferencesMoveListWhilePlaying),
                 value: boardPrefs.moveListDisplay,
                 onChanged: (value) {
-                  ref.read(boardPreferencesProvider.notifier).toggleMoveListDisplay();
+                  ref
+                      .read(boardPreferencesProvider.notifier)
+                      .toggleMoveListDisplay();
                 },
               ),
             SettingsListTile(
               settingsLabel: Text(context.l10n.preferencesMaterialDifference),
-              settingsValue: boardPrefs.materialDifferenceFormat.l10n(AppLocalizations.of(context)),
+              settingsValue: boardPrefs.materialDifferenceFormat.l10n(
+                AppLocalizations.of(context),
+              ),
               onTap: () {
                 showChoicePicker(
                   context,
                   choices: MaterialDifferenceFormat.values,
                   selectedItem: boardPrefs.materialDifferenceFormat,
                   labelBuilder: (t) => Text(t.l10n(context.l10n)),
-                  onSelectedItemChanged: (MaterialDifferenceFormat? value) => ref
-                      .read(boardPreferencesProvider.notifier)
-                      .setMaterialDifferenceFormat(
-                        value ?? MaterialDifferenceFormat.materialDifference,
-                      ),
+                  onSelectedItemChanged: (MaterialDifferenceFormat? value) =>
+                      ref
+                          .read(boardPreferencesProvider.notifier)
+                          .setMaterialDifferenceFormat(
+                            value ??
+                                MaterialDifferenceFormat.materialDifference,
+                          ),
                 );
               },
             ),
@@ -174,17 +195,24 @@ class _Body extends ConsumerWidget {
             ),
             if (isTabletOrLarger(context))
               SettingsListTile(
-                settingsLabel: const Text('Board position in landscape mode'), // TODO l10n
-                settingsValue: boardPrefs.landscapeBoardPosition.label(context.l10n),
+                settingsLabel: const Text(
+                  'Board position in landscape mode',
+                ), // TODO l10n
+                settingsValue: boardPrefs.landscapeBoardPosition.label(
+                  context.l10n,
+                ),
                 onTap: () {
                   showChoicePicker(
                     context,
                     choices: LandscapeBoardPosition.values,
                     selectedItem: boardPrefs.landscapeBoardPosition,
                     labelBuilder: (t) => Text(t.label(context.l10n)),
-                    onSelectedItemChanged: (LandscapeBoardPosition? value) => ref
-                        .read(boardPreferencesProvider.notifier)
-                        .setLandscapeBoardPosition(value ?? LandscapeBoardPosition.left),
+                    onSelectedItemChanged: (LandscapeBoardPosition? value) =>
+                        ref
+                            .read(boardPreferencesProvider.notifier)
+                            .setLandscapeBoardPosition(
+                              value ?? LandscapeBoardPosition.left,
+                            ),
                   );
                 },
               ),
@@ -195,30 +223,44 @@ class _Body extends ConsumerWidget {
           hasLeading: false,
           children: [
             SwitchSettingTile(
-              title: Text(context.l10n.preferencesPremovesPlayingDuringOpponentTurn),
+              title: Text(
+                context.l10n.preferencesPremovesPlayingDuringOpponentTurn,
+              ),
               value: boardPrefs.premoves,
               onChanged: (value) {
                 ref.read(boardPreferencesProvider.notifier).togglePremoves();
               },
             ),
             SwitchSettingTile(
-              title: Text(context.l10n.preferencesConfirmResignationAndDrawOffers),
+              title: Text(
+                context.l10n.preferencesConfirmResignationAndDrawOffers,
+              ),
               value: boardPrefs.confirmResignAndDraw,
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).toggleConfirmResignAndDraw();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .toggleConfirmResignAndDraw();
               },
             ),
             SwitchSettingTile(
               title: Text(context.l10n.mobileSettingsTouchFeedback),
               value: boardPrefs.hapticFeedback,
-              subtitle: Text(context.l10n.mobileSettingsTouchFeedbackSubtitle, maxLines: 5),
+              subtitle: Text(
+                context.l10n.mobileSettingsTouchFeedbackSubtitle,
+                maxLines: 5,
+              ),
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).toggleHapticFeedback();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .toggleHapticFeedback();
               },
             ),
             SettingsListTile(
               settingsLabel: Text(context.l10n.preferencesHowDoYouMovePieces),
-              settingsValue: pieceShiftMethodl10n(context, boardPrefs.pieceShiftMethod),
+              settingsValue: pieceShiftMethodl10n(
+                context,
+                boardPrefs.pieceShiftMethod,
+              ),
               onTap: () {
                 showChoicePicker(
                   context,
@@ -243,12 +285,16 @@ class _Body extends ConsumerWidget {
               ),
               value: boardPrefs.moveOnRelease,
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).toggleMoveOnRelease();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .toggleMoveOnRelease();
               },
             ),
             SettingsListTile(
               settingsLabel: Text(
-                context.l10n.preferencesCastleByMovingTheKingTwoSquaresOrOntoTheRook,
+                context
+                    .l10n
+                    .preferencesCastleByMovingTheKingTwoSquaresOrOntoTheRook,
               ),
               settingsValue: boardPrefs.castlingMethod.l10n(context.l10n),
               onTap: () {
@@ -260,17 +306,24 @@ class _Body extends ConsumerWidget {
                   onSelectedItemChanged: (CastlingMethod? value) {
                     ref
                         .read(boardPreferencesProvider.notifier)
-                        .setCastlingMethod(value ?? CastlingMethod.kingOverRook);
+                        .setCastlingMethod(
+                          value ?? CastlingMethod.kingOverRook,
+                        );
                   },
                 );
               },
             ),
             SwitchSettingTile(
               title: Text(context.l10n.mobileSettingsShapeDrawing),
-              subtitle: Text(context.l10n.mobileSettingsShapeDrawingSubtitle, maxLines: 5),
+              subtitle: Text(
+                context.l10n.mobileSettingsShapeDrawingSubtitle,
+                maxLines: 5,
+              ),
               value: boardPrefs.enableShapeDrawings,
               onChanged: (value) {
-                ref.read(boardPreferencesProvider.notifier).toggleEnableShapeDrawings();
+                ref
+                    .read(boardPreferencesProvider.notifier)
+                    .toggleEnableShapeDrawings();
               },
             ),
           ],
@@ -280,9 +333,12 @@ class _Body extends ConsumerWidget {
   }
 }
 
-String pieceShiftMethodl10n(BuildContext context, PieceShiftMethod pieceShiftMethod) =>
-    switch (pieceShiftMethod) {
-      PieceShiftMethod.either => context.l10n.mobileSettingsPieceShiftMethodEither,
-      PieceShiftMethod.drag => context.l10n.preferencesDragPiece,
-      PieceShiftMethod.tapTwoSquares => context.l10n.mobileSettingsPieceShiftMethodTapTwoSquares,
-    };
+String pieceShiftMethodl10n(
+  BuildContext context,
+  PieceShiftMethod pieceShiftMethod,
+) => switch (pieceShiftMethod) {
+  PieceShiftMethod.either => context.l10n.mobileSettingsPieceShiftMethodEither,
+  PieceShiftMethod.drag => context.l10n.preferencesDragPiece,
+  PieceShiftMethod.tapTwoSquares =>
+    context.l10n.mobileSettingsPieceShiftMethodTapTwoSquares,
+};

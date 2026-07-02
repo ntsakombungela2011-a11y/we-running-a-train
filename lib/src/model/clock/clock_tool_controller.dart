@@ -13,7 +13,8 @@ enum ClockSide {
   top,
   bottom;
 
-  ClockSide get opposite => this == ClockSide.top ? ClockSide.bottom : ClockSide.top;
+  ClockSide get opposite =>
+      this == ClockSide.top ? ClockSide.bottom : ClockSide.top;
 
   Side get chessClockSide => this == ClockSide.top ? Side.black : Side.white;
 }
@@ -21,10 +22,11 @@ enum ClockSide {
 enum ClockTimeControlType { increment, simpleDelay, bronsteinDelay }
 
 /// A provider for [ClockToolController].
-final clockToolControllerProvider = NotifierProvider.autoDispose<ClockToolController, ClockState>(
-  ClockToolController.new,
-  name: 'ClockToolControllerProvider',
-);
+final clockToolControllerProvider =
+    NotifierProvider.autoDispose<ClockToolController, ClockState>(
+      ClockToolController.new,
+      name: 'ClockToolControllerProvider',
+    );
 
 class ClockToolController extends Notifier<ClockState> {
   late ChessClock _clock;
@@ -93,7 +95,9 @@ class ClockToolController extends Notifier<ClockState> {
   void _onFlagged() {
     _clock.stop();
     state = state.copyWith(
-      flagged: _clock.activeSide == Side.white ? ClockSide.bottom : ClockSide.top,
+      flagged: _clock.activeSide == Side.white
+          ? ClockSide.bottom
+          : ClockSide.top,
     );
   }
 
@@ -103,13 +107,19 @@ class ClockToolController extends Notifier<ClockState> {
     final thinkTime = wasRunning ? _clock.stop() : null;
     state = state.copyWith(
       activeSide: playerType.opposite,
-      topMoves: playerType == ClockSide.top && started ? state.topMoves + 1 : state.topMoves,
+      topMoves: playerType == ClockSide.top && started
+          ? state.topMoves + 1
+          : state.topMoves,
       bottomMoves: playerType == ClockSide.bottom && started
           ? state.bottomMoves + 1
           : state.bottomMoves,
     );
     ref.read(soundServiceProvider).play(Sound.clock);
-    _applyMoveBonus(playerType, wasRunning ? thinkTime : null, _activeTurnStartedWithTime);
+    _applyMoveBonus(
+      playerType,
+      wasRunning ? thinkTime : null,
+      _activeTurnStartedWithTime,
+    );
     _startActiveSide(playerType.opposite);
   }
 
@@ -119,14 +129,23 @@ class ClockToolController extends Notifier<ClockState> {
     }
 
     _clock.setTimes(
-      whiteTime: playerType == ClockSide.bottom ? duration + state.options.topIncrement : null,
-      blackTime: playerType == ClockSide.top ? duration + state.options.bottomIncrement : null,
+      whiteTime: playerType == ClockSide.bottom
+          ? duration + state.options.topIncrement
+          : null,
+      blackTime: playerType == ClockSide.top
+          ? duration + state.options.bottomIncrement
+          : null,
     );
   }
 
   void updateOptions(TimeIncrement timeIncrement) {
-    final options = ClockOptions.fromTimeIncrement(timeIncrement, type: state.options.type);
-    _emergencyThreshold = _calculateEmergencyThreshold(Duration(seconds: timeIncrement.time));
+    final options = ClockOptions.fromTimeIncrement(
+      timeIncrement,
+      type: state.options.type,
+    );
+    _emergencyThreshold = _calculateEmergencyThreshold(
+      Duration(seconds: timeIncrement.time),
+    );
     _hasPlayedLowTimeSound[ClockSide.top] = false;
     _hasPlayedLowTimeSound[ClockSide.bottom] = false;
     _clock.setTimes(blackTime: options.topTime, whiteTime: options.bottomTime);
@@ -140,7 +159,9 @@ class ClockToolController extends Notifier<ClockState> {
   void updateOptionsCustom(TimeIncrement clock, ClockSide player) {
     final options = ClockOptions(
       type: state.options.type,
-      topTime: player == ClockSide.top ? Duration(seconds: clock.time) : state.options.topTime,
+      topTime: player == ClockSide.top
+          ? Duration(seconds: clock.time)
+          : state.options.topTime,
       bottomTime: player == ClockSide.bottom
           ? Duration(seconds: clock.time)
           : state.options.bottomTime,
@@ -177,7 +198,10 @@ class ClockToolController extends Notifier<ClockState> {
       bottomMoves: 0,
     );
     _clock.stop();
-    _clock.setTimes(blackTime: state.options.topTime, whiteTime: state.options.bottomTime);
+    _clock.setTimes(
+      blackTime: state.options.topTime,
+      whiteTime: state.options.bottomTime,
+    );
     _activeTurnStartedWithTime = null;
     // Reset low time sound flags for both players
     _hasPlayedLowTimeSound[ClockSide.top] = false;
@@ -206,7 +230,8 @@ class ClockToolController extends Notifier<ClockState> {
         ? state.topMoves > 0
         : state.bottomMoves > 0;
 
-    if (active != null && (initialOfActive.inMilliseconds != 0 || hasActiveMoved)) {
+    if (active != null &&
+        (initialOfActive.inMilliseconds != 0 || hasActiveMoved)) {
       final delay = _pausedDelayRemaining;
       _markDelay(delay);
       _clock.start(delay: delay);
@@ -248,7 +273,11 @@ class ClockToolController extends Notifier<ClockState> {
         : null;
   }
 
-  void _applyMoveBonus(ClockSide playerType, Duration? thinkTime, Duration? turnStartedWithTime) {
+  void _applyMoveBonus(
+    ClockSide playerType,
+    Duration? thinkTime,
+    Duration? turnStartedWithTime,
+  ) {
     final increment = state.options.getIncrementDuration(playerType);
     final bonus = switch (state.options.type) {
       ClockTimeControlType.increment => increment,
@@ -324,7 +353,9 @@ sealed class ClockOptions with _$ClockOptions {
   );
 
   int getIncrement(ClockSide playerType) {
-    return playerType == ClockSide.top ? topIncrement.inSeconds : bottomIncrement.inSeconds;
+    return playerType == ClockSide.top
+        ? topIncrement.inSeconds
+        : bottomIncrement.inSeconds;
   }
 
   Duration getIncrementDuration(ClockSide playerType) {
@@ -357,13 +388,17 @@ sealed class ClockState with _$ClockState {
   ValueListenable<Duration> getDuration(ClockSide playerType) =>
       playerType == ClockSide.top ? topTime : bottomTime;
 
-  int getMovesCount(ClockSide playerType) => playerType == ClockSide.top ? topMoves : bottomMoves;
+  int getMovesCount(ClockSide playerType) =>
+      playerType == ClockSide.top ? topMoves : bottomMoves;
 
-  bool isPlayersTurn(ClockSide playerType) => activeSide == playerType && flagged == null;
+  bool isPlayersTurn(ClockSide playerType) =>
+      activeSide == playerType && flagged == null;
 
-  bool isPlayersMoveAllowed(ClockSide playerType) => isPlayersTurn(playerType) && !paused;
+  bool isPlayersMoveAllowed(ClockSide playerType) =>
+      isPlayersTurn(playerType) && !paused;
 
-  bool isActivePlayer(ClockSide playerType) => isPlayersTurn(playerType) && !paused;
+  bool isActivePlayer(ClockSide playerType) =>
+      isPlayersTurn(playerType) && !paused;
 
   bool isFlagged(ClockSide playerType) => flagged == playerType;
 }

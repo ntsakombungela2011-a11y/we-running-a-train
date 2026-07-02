@@ -14,7 +14,8 @@ import 'fake_websocket_channel.dart';
 final defaultSocketUri = Uri(path: kDefaultSocketRoute);
 
 SocketClient makeTestSocketClient({
-  FakeWebSocketChannelFactory fakeChannelFactory = defaultFakeWebSocketChannelFactory,
+  FakeWebSocketChannelFactory fakeChannelFactory =
+      defaultFakeWebSocketChannelFactory,
   int? version,
   VoidCallback? onEventGapFailure,
 }) {
@@ -90,7 +91,9 @@ void main() {
         return FakeWebSocketChannel(defaultSocketUri);
       });
 
-      final socketClient = makeTestSocketClient(fakeChannelFactory: fakeChannelFactory);
+      final socketClient = makeTestSocketClient(
+        fakeChannelFactory: fakeChannelFactory,
+      );
       socketClient.connect();
 
       // The first connection attempt will fail, but the second one will succeed
@@ -126,7 +129,9 @@ void main() {
         return channel;
       });
 
-      final socketClient = makeTestSocketClient(fakeChannelFactory: fakeChannelFactory);
+      final socketClient = makeTestSocketClient(
+        fakeChannelFactory: fakeChannelFactory,
+      );
       socketClient.connect();
 
       await socketClient.firstConnection;
@@ -169,13 +174,19 @@ void main() {
       await expectLater(fakeChannel.stream, emits('0'));
 
       // after the ping/pong exchange the average lag is computed
-      expect(socketClient.averageLag.value.inMilliseconds, greaterThanOrEqualTo(10));
+      expect(
+        socketClient.averageLag.value.inMilliseconds,
+        greaterThanOrEqualTo(10),
+      );
 
       // wait for more ping/pong exchanges
       await expectLater(fakeChannel.stream, emitsInOrder(['0', '0', '0', '0']));
 
       // average lag is still the same
-      expect(socketClient.averageLag.value.inMilliseconds, greaterThanOrEqualTo(10));
+      expect(
+        socketClient.averageLag.value.inMilliseconds,
+        greaterThanOrEqualTo(10),
+      );
 
       // increase the lag of the connection
       fakeChannel.connectionLag = const Duration(milliseconds: 100);
@@ -184,7 +195,10 @@ void main() {
       await expectLater(fakeChannel.stream, emitsInOrder(['0', '0', '0', '0']));
 
       // average lag should be higher
-      expect(socketClient.averageLag.value.inMilliseconds, greaterThanOrEqualTo(40));
+      expect(
+        socketClient.averageLag.value.inMilliseconds,
+        greaterThanOrEqualTo(40),
+      );
 
       await socketClient.close();
 
@@ -250,87 +264,101 @@ void main() {
       },
     );
 
-    test('queues a message sent while the socket is connecting and sends it once open', () async {
-      final fakeChannel = FakeWebSocketChannel(defaultSocketUri);
-
-      final socketClient = makeTestSocketClient(
-        fakeChannelFactory: FakeWebSocketChannelFactory((_) => fakeChannel),
-      );
-
-      // Start connecting but don't await: the connection is in progress (the
-      // attempt is counted but not yet successful).
-      final connectFuture = socketClient.connect();
-      expect(socketClient.nbConnectionAttempts, 1);
-      expect(socketClient.nbConnectionSuccess, 0);
-
-      // Sent while connecting: must be queued, not dropped.
-      socketClient.send('test', null);
-
-      // Subscribe before the connection opens, since the flush is immediate and
-      // [sentMessages] is a broadcast stream.
-      final expectation = expectLater(
-        fakeChannel.sentMessagesExceptPing,
-        emitsThrough('{"t":"test"}'),
-      );
-
-      await connectFuture;
-      expect(socketClient.nbConnectionSuccess, 1);
-      await expectation;
-
-      socketClient.close();
-    });
-
-    test('queues an ackable message sent while not connected and sends it on connect', () async {
-      final fakeChannel = FakeWebSocketChannel(defaultSocketUri);
-
-      final socketClient = makeTestSocketClient(
-        fakeChannelFactory: FakeWebSocketChannelFactory((_) => fakeChannel),
-      );
-
-      // An ackable message (e.g. a move) sent before the connection is open must
-      // be sent as soon as it opens, not only after the ack-resend delay.
-      socketClient.send('move', {'u': 'e2e4'}, ackable: true);
-
-      final expectation = expectLater(
-        fakeChannel.sentMessagesExceptPing,
-        emitsThrough('{"t":"move","d":{"u":"e2e4","a":1}}'),
-      );
-
-      await socketClient.connect();
-      await expectation;
-
-      socketClient.close();
-    });
-
-    test('does not double-send a queued ackable message whose ack is past the resend cutoff', () {
-      fakeAsync((async) {
+    test(
+      'queues a message sent while the socket is connecting and sends it once open',
+      () async {
         final fakeChannel = FakeWebSocketChannel(defaultSocketUri);
 
         final socketClient = makeTestSocketClient(
           fakeChannelFactory: FakeWebSocketChannelFactory((_) => fakeChannel),
         );
 
-        final sent = <dynamic>[];
-        fakeChannel.sentMessagesExceptPing.listen(sent.add);
+        // Start connecting but don't await: the connection is in progress (the
+        // attempt is counted but not yet successful).
+        final connectFuture = socketClient.connect();
+        expect(socketClient.nbConnectionAttempts, 1);
+        expect(socketClient.nbConnectionSuccess, 0);
 
-        // Sent while disconnected: queued and also tracked in _acks.
-        socketClient.send('move', {'u': 'e2e4'}, ackable: true);
+        // Sent while connecting: must be queued, not dropped.
+        socketClient.send('test', null);
 
-        // Let enough time pass that the ack is older than the resend cutoff
-        // (2500ms), so _resendAcks() would otherwise resend it on connect.
-        async.elapse(const Duration(seconds: 3));
+        // Subscribe before the connection opens, since the flush is immediate and
+        // [sentMessages] is a broadcast stream.
+        final expectation = expectLater(
+          fakeChannel.sentMessagesExceptPing,
+          emitsThrough('{"t":"test"}'),
+        );
 
-        socketClient.connect();
-        async.elapse(kFakeWebSocketConnectionLag);
-        async.flushMicrotasks();
-
-        // It is sent exactly once on reconnect (by the flush), not twice (flush
-        // + _resendAcks).
-        expect(sent.where((m) => m == '{"t":"move","d":{"u":"e2e4","a":1}}').length, 1);
+        await connectFuture;
+        expect(socketClient.nbConnectionSuccess, 1);
+        await expectation;
 
         socketClient.close();
-      });
-    });
+      },
+    );
+
+    test(
+      'queues an ackable message sent while not connected and sends it on connect',
+      () async {
+        final fakeChannel = FakeWebSocketChannel(defaultSocketUri);
+
+        final socketClient = makeTestSocketClient(
+          fakeChannelFactory: FakeWebSocketChannelFactory((_) => fakeChannel),
+        );
+
+        // An ackable message (e.g. a move) sent before the connection is open must
+        // be sent as soon as it opens, not only after the ack-resend delay.
+        socketClient.send('move', {'u': 'e2e4'}, ackable: true);
+
+        final expectation = expectLater(
+          fakeChannel.sentMessagesExceptPing,
+          emitsThrough('{"t":"move","d":{"u":"e2e4","a":1}}'),
+        );
+
+        await socketClient.connect();
+        await expectation;
+
+        socketClient.close();
+      },
+    );
+
+    test(
+      'does not double-send a queued ackable message whose ack is past the resend cutoff',
+      () {
+        fakeAsync((async) {
+          final fakeChannel = FakeWebSocketChannel(defaultSocketUri);
+
+          final socketClient = makeTestSocketClient(
+            fakeChannelFactory: FakeWebSocketChannelFactory((_) => fakeChannel),
+          );
+
+          final sent = <dynamic>[];
+          fakeChannel.sentMessagesExceptPing.listen(sent.add);
+
+          // Sent while disconnected: queued and also tracked in _acks.
+          socketClient.send('move', {'u': 'e2e4'}, ackable: true);
+
+          // Let enough time pass that the ack is older than the resend cutoff
+          // (2500ms), so _resendAcks() would otherwise resend it on connect.
+          async.elapse(const Duration(seconds: 3));
+
+          socketClient.connect();
+          async.elapse(kFakeWebSocketConnectionLag);
+          async.flushMicrotasks();
+
+          // It is sent exactly once on reconnect (by the flush), not twice (flush
+          // + _resendAcks).
+          expect(
+            sent
+                .where((m) => m == '{"t":"move","d":{"u":"e2e4","a":1}}')
+                .length,
+            1,
+          );
+
+          socketClient.close();
+        });
+      },
+    );
 
     test('handles batch message', () async {
       final fakeChannel = FakeWebSocketChannel(defaultSocketUri);
@@ -352,13 +380,30 @@ void main() {
       ''';
 
       const eventsToMatch = [
-        SocketEvent(topic: 'test1', data: 'data', json: {'t': 'test1', 'd': 'data'}),
-        SocketEvent(topic: 'test2', data: 'data', json: {'t': 'test2', 'd': 'data'}),
-        SocketEvent(topic: 'test3', data: 'data', json: {'t': 'test3', 'd': 'data'}),
+        SocketEvent(
+          topic: 'test1',
+          data: 'data',
+          json: {'t': 'test1', 'd': 'data'},
+        ),
+        SocketEvent(
+          topic: 'test2',
+          data: 'data',
+          json: {'t': 'test2', 'd': 'data'},
+        ),
+        SocketEvent(
+          topic: 'test3',
+          data: 'data',
+          json: {'t': 'test3', 'd': 'data'},
+        ),
       ];
 
       // check that the messages in the batch were distributed
-      await testEventEmitted(socketClient, fakeChannel, serverMessage, eventsToMatch);
+      await testEventEmitted(
+        socketClient,
+        fakeChannel,
+        serverMessage,
+        eventsToMatch,
+      );
 
       await socketClient.close();
     });
@@ -377,7 +422,10 @@ void main() {
 
     // should emit if n
     const pongMessage = '{"t":"n","d":10,"r":3}';
-    const pongEvent = SocketEvent(topic: 'n', data: {'nbPlayers': 10, 'nbGames': 3});
+    const pongEvent = SocketEvent(
+      topic: 'n',
+      data: {'nbPlayers': 10, 'nbGames': 3},
+    );
     await testEventEmitted(socketClient, fakeChannel, pongMessage, [pongEvent]);
 
     // should not emit if ack
@@ -390,8 +438,14 @@ void main() {
 
     // should emit if random topic
     const randomMessage = '{"t":"test","d":"data"}';
-    const randomEvent = SocketEvent(topic: 'test', data: 'data', json: {'t': 'test', 'd': 'data'});
-    await testEventEmitted(socketClient, fakeChannel, randomMessage, [randomEvent]);
+    const randomEvent = SocketEvent(
+      topic: 'test',
+      data: 'data',
+      json: {'t': 'test', 'd': 'data'},
+    );
+    await testEventEmitted(socketClient, fakeChannel, randomMessage, [
+      randomEvent,
+    ]);
 
     await socketClient.close();
   });
@@ -457,7 +511,9 @@ void main() {
 
       async.elapse(const Duration(milliseconds: 200));
 
-      sendServerSocketMessages(defaultSocketUri, ['{"t":"test","v":3, "d":"data"}']);
+      sendServerSocketMessages(defaultSocketUri, [
+        '{"t":"test","v":3, "d":"data"}',
+      ]);
 
       async.elapse(const Duration(milliseconds: 2000));
 
@@ -535,7 +591,10 @@ Future<void> testEventEmitted(
   Iterable<SocketEvent> eventsToMatch,
 ) async {
   // start listening to the stream
-  final futureExpect = expectLater(socketClient.stream, emitsInOrder(eventsToMatch));
+  final futureExpect = expectLater(
+    socketClient.stream,
+    emitsInOrder(eventsToMatch),
+  );
 
   // server sends the message
   sendServerSocketMessages(defaultSocketUri, [serverMessage]);

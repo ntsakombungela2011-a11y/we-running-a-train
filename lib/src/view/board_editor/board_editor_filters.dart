@@ -30,7 +30,11 @@ class BoardEditorFilters extends ConsumerWidget {
             spacing: 8.0,
             children: Side.values.map((side) {
               return ChoiceChip(
-                label: Text(side == Side.white ? context.l10n.whitePlays : context.l10n.blackPlays),
+                label: Text(
+                  side == Side.white
+                      ? context.l10n.whitePlays
+                      : context.l10n.blackPlays,
+                ),
                 selected: editorState.sideToPlay == side,
                 onSelected: (selected) {
                   if (selected) {
@@ -46,37 +50,49 @@ class BoardEditorFilters extends ConsumerWidget {
             padding: Styles.bodySectionPadding,
             child: Text(context.l10n.castling, style: Styles.title),
           ),
-          ...Side.values.where((side) => editorState.variant.sideCanCastle(side)).map((side) {
-            return Padding(
-              padding: Styles.horizontalBodyPadding,
-              child: Row(
-                spacing: 8.0,
-                children: [
-                  SizedBox(
-                    width: 100.0,
-                    child: Text(
-                      side == Side.white ? context.l10n.white : context.l10n.black,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+          ...Side.values
+              .where((side) => editorState.variant.sideCanCastle(side))
+              .map((side) {
+                return Padding(
+                  padding: Styles.horizontalBodyPadding,
+                  child: Row(
+                    spacing: 8.0,
+                    children: [
+                      SizedBox(
+                        width: 100.0,
+                        child: Text(
+                          side == Side.white
+                              ? context.l10n.white
+                              : context.l10n.black,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      ...[CastlingSide.king, CastlingSide.queen].map((
+                        castlingSide,
+                      ) {
+                        return ChoiceChip(
+                          label: Text(
+                            castlingSide == CastlingSide.king ? 'O-O' : 'O-O-O',
+                          ),
+                          selected: editorState.isCastlingAllowed(
+                            side,
+                            castlingSide,
+                          ),
+                          onSelected: (selected) {
+                            ref
+                                .read(editorController.notifier)
+                                .setCastling(side, castlingSide, selected);
+                          },
+                        );
+                      }),
+                    ],
                   ),
-                  ...[CastlingSide.king, CastlingSide.queen].map((castlingSide) {
-                    return ChoiceChip(
-                      label: Text(castlingSide == CastlingSide.king ? 'O-O' : 'O-O-O'),
-                      selected: editorState.isCastlingAllowed(side, castlingSide),
-                      onSelected: (selected) {
-                        ref
-                            .read(editorController.notifier)
-                            .setCastling(side, castlingSide, selected);
-                      },
-                    );
-                  }),
-                ],
-              ),
-            );
-          }),
+                );
+              }),
         ],
-        if (editorState.variant.hasEnPassant && editorState.enPassantOptions.isNotEmpty) ...[
+        if (editorState.variant.hasEnPassant &&
+            editorState.enPassantOptions.isNotEmpty) ...[
           const Padding(
             padding: Styles.bodySectionPadding,
             child: Text('En passant', style: Styles.subtitle),
@@ -90,7 +106,9 @@ class BoardEditorFilters extends ConsumerWidget {
                   label: Text(square.name),
                   selected: editorState.enPassantSquare == square,
                   onSelected: (selected) {
-                    ref.read(editorController.notifier).toggleEnPassantSquare(square);
+                    ref
+                        .read(editorController.notifier)
+                        .toggleEnPassantSquare(square);
                   },
                 );
               }).toList(),

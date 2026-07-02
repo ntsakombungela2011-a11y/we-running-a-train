@@ -7,10 +7,11 @@ import 'package:lichess_mobile/src/model/settings/preferences_storage.dart';
 part 'broadcast_preferences.freezed.dart';
 part 'broadcast_preferences.g.dart';
 
-final broadcastPreferencesProvider = NotifierProvider<BroadcastPreferences, BroadcastPrefs>(
-  BroadcastPreferences.new,
-  name: 'BroadcastPreferencesProvider',
-);
+final broadcastPreferencesProvider =
+    NotifierProvider<BroadcastPreferences, BroadcastPrefs>(
+      BroadcastPreferences.new,
+      name: 'BroadcastPreferencesProvider',
+    );
 
 class BroadcastPreferences extends Notifier<BroadcastPrefs>
     with PreferencesStorage<BroadcastPrefs> {
@@ -23,7 +24,8 @@ class BroadcastPreferences extends Notifier<BroadcastPrefs>
   BroadcastPrefs get defaults => BroadcastPrefs.defaults;
 
   @override
-  BroadcastPrefs fromJson(Map<String, dynamic> json) => BroadcastPrefs.fromJson(json);
+  BroadcastPrefs fromJson(Map<String, dynamic> json) =>
+      BroadcastPrefs.fromJson(json);
 
   @override
   BroadcastPrefs build() {
@@ -31,15 +33,23 @@ class BroadcastPreferences extends Notifier<BroadcastPrefs>
   }
 
   Future<void> toggleEvaluationBar() {
-    return save(state.copyWith(showRoundEvaluationGauges: !state.showRoundEvaluationGauges));
+    return save(
+      state.copyWith(
+        showRoundEvaluationGauges: !state.showRoundEvaluationGauges,
+      ),
+    );
   }
 
   Future<void> toggleServerAnalysis() {
-    return save(state.copyWith(enableServerAnalysis: !state.enableServerAnalysis));
+    return save(
+      state.copyWith(enableServerAnalysis: !state.enableServerAnalysis),
+    );
   }
 
   Future<void> toggleShowEvaluationGauge() {
-    return save(state.copyWith(showEvaluationGauge: !state.showEvaluationGauge));
+    return save(
+      state.copyWith(showEvaluationGauge: !state.showEvaluationGauge),
+    );
   }
 
   Future<void> toggleShowEngineLines() {
@@ -68,7 +78,9 @@ class BroadcastPreferences extends Notifier<BroadcastPrefs>
 }
 
 @Freezed(fromJson: true, toJson: true)
-sealed class BroadcastPrefs with _$BroadcastPrefs implements Serializable, CommonAnalysisPrefs {
+sealed class BroadcastPrefs
+    with _$BroadcastPrefs
+    implements Serializable, CommonAnalysisPrefs {
   const factory BroadcastPrefs({
     @JsonKey(defaultValue: true) required bool showRoundEvaluationGauges,
     @JsonKey(defaultValue: true) required bool enableServerAnalysis,
@@ -93,5 +105,6 @@ sealed class BroadcastPrefs with _$BroadcastPrefs implements Serializable, Commo
     smallBoard: false,
   );
 
-  factory BroadcastPrefs.fromJson(Map<String, dynamic> json) => _$BroadcastPrefsFromJson(json);
+  factory BroadcastPrefs.fromJson(Map<String, dynamic> json) =>
+      _$BroadcastPrefsFromJson(json);
 }

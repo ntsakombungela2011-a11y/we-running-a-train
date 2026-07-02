@@ -35,11 +35,15 @@ class AppLogService {
     if (kDebugMode) {
       Logger.root.level = Level.ALL;
     } else {
-      ref.listen(logPreferencesProvider.select((prefs) => prefs.level), (prev, next) {
-        if (next != prev) {
-          Logger.root.level = next;
-        }
-      }, fireImmediately: true);
+      ref.listen(
+        logPreferencesProvider.select((prefs) => prefs.level),
+        (prev, next) {
+          if (next != prev) {
+            Logger.root.level = next;
+          }
+        },
+        fireImmediately: true,
+      );
     }
 
     Logger.root.onRecord.listen((record) {
@@ -76,7 +80,10 @@ class AppLogService {
         try {
           ref
               .read(appLogStorageProvider.future)
-              .then((storage) => storage.save(AppLogEntry.fromLogRecord(record)), onError: (_) {});
+              .then(
+                (storage) => storage.save(AppLogEntry.fromLogRecord(record)),
+                onError: (_) {},
+              );
         } catch (_) {}
       });
     });
@@ -92,16 +99,25 @@ final class ProviderLogger extends ProviderObserver {
 
   @override
   void didAddProvider(ProviderObserverContext context, Object? value) {
-    _logger.fine('${context.provider.name ?? context.provider.runtimeType} initialized', value);
+    _logger.fine(
+      '${context.provider.name ?? context.provider.runtimeType} initialized',
+      value,
+    );
   }
 
   @override
   void didDisposeProvider(ProviderObserverContext context) {
-    _logger.fine('${context.provider.name ?? context.provider.runtimeType} disposed');
+    _logger.fine(
+      '${context.provider.name ?? context.provider.runtimeType} disposed',
+    );
   }
 
   @override
-  void providerDidFail(ProviderObserverContext context, Object error, StackTrace stackTrace) {
+  void providerDidFail(
+    ProviderObserverContext context,
+    Object error,
+    StackTrace stackTrace,
+  ) {
     _logger.severe(
       '${context.provider.name ?? context.provider.runtimeType} error',
       error,

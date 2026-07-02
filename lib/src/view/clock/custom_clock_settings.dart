@@ -63,7 +63,10 @@ class _CustomClockSettingsState extends State<CustomClockSettings> {
                   text: '${context.l10n.minutesPerSide}: ',
                   children: [
                     TextSpan(
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                       text: clockLabelInMinutes(_clock.time),
                     ),
                   ],
@@ -80,10 +83,14 @@ class _CustomClockSettingsState extends State<CustomClockSettings> {
             ListTile(
               title: Text.rich(
                 TextSpan(
-                  text: '${widget.clockType.valueInSecondsLabel(context.l10n)}: ',
+                  text:
+                      '${widget.clockType.valueInSecondsLabel(context.l10n)}: ',
                   children: [
                     TextSpan(
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                       text: _clock.increment.toString(),
                     ),
                   ],

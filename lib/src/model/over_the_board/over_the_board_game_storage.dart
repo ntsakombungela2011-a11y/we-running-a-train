@@ -25,11 +25,14 @@ sealed class SavedOtbGame with _$SavedOtbGame {
     Duration? blackTimeLeft,
   }) = _SavedOtbGame;
 
-  factory SavedOtbGame.fromJson(Map<String, dynamic> json) => _$SavedOtbGameFromJson(json);
+  factory SavedOtbGame.fromJson(Map<String, dynamic> json) =>
+      _$SavedOtbGameFromJson(json);
 }
 
 /// A provider for [OverTheBoardGameStorage].
-final overTheBoardGameStorageProvider = Provider<OverTheBoardGameStorage>((Ref ref) {
+final overTheBoardGameStorageProvider = Provider<OverTheBoardGameStorage>((
+  Ref ref,
+) {
   return OverTheBoardGameStorage(ref);
 }, name: 'OverTheBoardGameStorageProvider');
 
@@ -56,7 +59,9 @@ class OverTheBoardGameStorage {
       final json = jsonDecode(contents);
 
       if (json is! Map<String, dynamic>) {
-        throw const FormatException('[OtbGameStorage] cannot fetch game: expected an object');
+        throw const FormatException(
+          '[OtbGameStorage] cannot fetch game: expected an object',
+        );
       }
 
       return SavedOtbGame.fromJson(json);

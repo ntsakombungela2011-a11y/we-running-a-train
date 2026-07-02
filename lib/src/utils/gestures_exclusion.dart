@@ -43,10 +43,12 @@ class AndroidGesturesExclusionWidget extends StatefulWidget {
   final bool shouldSetImmersiveMode;
 
   @override
-  State<AndroidGesturesExclusionWidget> createState() => _AndroidGesturesExclusionWidgetState();
+  State<AndroidGesturesExclusionWidget> createState() =>
+      _AndroidGesturesExclusionWidgetState();
 }
 
-class _AndroidGesturesExclusionWidgetState extends State<AndroidGesturesExclusionWidget> {
+class _AndroidGesturesExclusionWidgetState
+    extends State<AndroidGesturesExclusionWidget> {
   EdgeInsets? initialViewPadding;
 
   @override
@@ -140,7 +142,9 @@ Future<void> clearAndroidBoardGesturesExclusion() async {
 }
 
 class GesturesExclusion {
-  static const _channel = MethodChannel('mobile.lichess.org/gestures_exclusion');
+  static const _channel = MethodChannel(
+    'mobile.lichess.org/gestures_exclusion',
+  );
 
   const GesturesExclusion._();
 
@@ -164,7 +168,10 @@ class GesturesExclusion {
         .toList();
 
     try {
-      await _channel.invokeMethod<void>('setSystemGestureExclusionRects', rectsAsMaps);
+      await _channel.invokeMethod<void>(
+        'setSystemGestureExclusionRects',
+        rectsAsMaps,
+      );
     } on PlatformException catch (e) {
       debugPrint('Failed to set rects: ${e.message}');
     }
@@ -176,7 +183,10 @@ class GesturesExclusion {
     }
 
     try {
-      await _channel.invokeMethod<void>('setSystemGestureExclusionRects', <Map<String, int>>[]);
+      await _channel.invokeMethod<void>(
+        'setSystemGestureExclusionRects',
+        <Map<String, int>>[],
+      );
     } on PlatformException catch (e) {
       debugPrint('Failed to clear rects: ${e.message}');
     }

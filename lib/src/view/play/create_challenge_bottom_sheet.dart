@@ -33,10 +33,12 @@ class CreateChallengeBottomSheet extends ConsumerStatefulWidget {
   final String? positionFen;
 
   @override
-  ConsumerState<CreateChallengeBottomSheet> createState() => _CreateChallengeBottomSheetState();
+  ConsumerState<CreateChallengeBottomSheet> createState() =>
+      _CreateChallengeBottomSheetState();
 }
 
-class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBottomSheet> {
+class _CreateChallengeBottomSheetState
+    extends ConsumerState<CreateChallengeBottomSheet> {
   Future<ChallengeDeclineReason?>? _pendingCorrespondenceChallenge;
   final _controller = TextEditingController();
 
@@ -48,7 +50,9 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
     if (widget.positionFen != null) {
       fromPositionFenInput = widget.positionFen;
       _controller.text = widget.positionFen!;
-      ref.read(challengePreferencesProvider.notifier).setVariant(Variant.fromPosition);
+      ref
+          .read(challengePreferencesProvider.notifier)
+          .setVariant(Variant.fromPosition);
     } else {
       fromPositionFenInput = null;
     }
@@ -103,7 +107,9 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                     labelBuilder: (ChallengeTimeControlType timeControl) =>
                         Text(timeControl.label(context.l10n)),
                     onSelectedItemChanged: (ChallengeTimeControlType value) {
-                      ref.read(challengePreferencesProvider.notifier).setTimeControl(value);
+                      ref
+                          .read(challengePreferencesProvider.notifier)
+                          .setTimeControl(value);
                     },
                   );
                 },
@@ -122,7 +128,10 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                             text: '${context.l10n.minutesPerSide}: ',
                             children: [
                               TextSpan(
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                                 text: clockLabelInMinutes(seconds),
                               ),
                             ],
@@ -165,7 +174,10 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                             text: '${context.l10n.incrementInSeconds}: ',
                             children: [
                               TextSpan(
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                                 text: incrementSeconds.toString(),
                               ),
                             ],
@@ -185,7 +197,10 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                             });
                             ref
                                 .read(challengePreferencesProvider.notifier)
-                                .setClock(preferences.clock.time, Duration(seconds: value.toInt()));
+                                .setClock(
+                                  preferences.clock.time,
+                                  Duration(seconds: value.toInt()),
+                                );
                           },
                         ),
                       );
@@ -193,7 +208,8 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                   );
                 },
               ),
-            ] else if (timeControl == ChallengeTimeControlType.correspondence) ...[
+            ] else if (timeControl ==
+                ChallengeTimeControlType.correspondence) ...[
               Builder(
                 builder: (context) {
                   int daysPerTurn = preferences.days;
@@ -205,7 +221,10 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                             text: '${context.l10n.daysPerTurn}: ',
                             children: [
                               TextSpan(
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                                 text: _daysLabel(daysPerTurn),
                               ),
                             ],
@@ -224,7 +243,9 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                             setState(() {
                               daysPerTurn = value.toInt();
                             });
-                            ref.read(challengePreferencesProvider.notifier).setDays(value.toInt());
+                            ref
+                                .read(challengePreferencesProvider.notifier)
+                                .setDays(value.toInt());
                           },
                         ),
                       );
@@ -243,7 +264,9 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                     selectedItem: preferences.variant,
                     labelBuilder: (variant) => VariantLabel(variant),
                     onSelectedItemChanged: (Variant variant) {
-                      ref.read(challengePreferencesProvider.notifier).setVariant(variant);
+                      ref
+                          .read(challengePreferencesProvider.notifier)
+                          .setVariant(variant);
                     },
                   );
                 },
@@ -253,7 +276,9 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
             ExpandedSection(
               expand: preferences.variant == Variant.fromPosition,
               child: SmallBoardPreview(
-                orientation: preferences.sideChoice == SideChoice.black ? Side.black : Side.white,
+                orientation: preferences.sideChoice == SideChoice.black
+                    ? Side.black
+                    : Side.white,
                 fen: fromPositionFenInput ?? kEmptyFEN,
                 description: TextField(
                   maxLines: 5,
@@ -275,9 +300,12 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                     context,
                     choices: SideChoice.values,
                     selectedItem: preferences.sideChoice,
-                    labelBuilder: (SideChoice side) => Text(side.label(context.l10n)),
+                    labelBuilder: (SideChoice side) =>
+                        Text(side.label(context.l10n)),
                     onSelectedItemChanged: (SideChoice side) {
-                      ref.read(challengePreferencesProvider.notifier).setSideChoice(side);
+                      ref
+                          .read(challengePreferencesProvider.notifier)
+                          .setSideChoice(side);
                     },
                   );
                 },
@@ -291,7 +319,9 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                   value: preferences.isRatedAllowed && preferences.rated,
                   onChanged: preferences.isRatedAllowed
                       ? (bool value) {
-                          ref.read(challengePreferencesProvider.notifier).setRated(value);
+                          ref
+                              .read(challengePreferencesProvider.notifier)
+                              .setRated(value);
                         }
                       : null,
                 ),
@@ -303,14 +333,17 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: FilledButton(
-                    onPressed: timeControl == ChallengeTimeControlType.clock || widget.user == null
+                    onPressed:
+                        timeControl == ChallengeTimeControlType.clock ||
+                            widget.user == null
                         ? isValidTimeControl && isValidPosition
                               ? () {
                                   final source = UserChallengeSource(
                                     preferences.makeRequest(
                                       account,
                                       widget.user,
-                                      preferences.variant != Variant.fromPosition
+                                      preferences.variant !=
+                                              Variant.fromPosition
                                           ? null
                                           : fromPositionFenInput,
                                     ),
@@ -319,27 +352,35 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                                   // with the same source (same opponent + settings), so the
                                   // new GameScreen always runs build() and creates a fresh
                                   // challenge instead of showing the old GameCreatedState.
-                                  ref.invalidate(gameScreenLoaderProvider(source));
-                                  Navigator.of(
-                                    context,
-                                  ).popUntil((route) => route is! ModalBottomSheetRoute);
+                                  ref.invalidate(
+                                    gameScreenLoaderProvider(source),
+                                  );
+                                  Navigator.of(context).popUntil(
+                                    (route) => route is! ModalBottomSheetRoute,
+                                  );
                                   // Use pushAndRemoveUntil to clear any old GameScreen from
                                   // the navigation stack without removing unrelated routes.
-                                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                                  Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).pushAndRemoveUntil(
                                     GameScreen.buildRoute(source: source),
-                                    (route) => route is! ScreenRoute || route.screen is! GameScreen,
+                                    (route) =>
+                                        route is! ScreenRoute ||
+                                        route.screen is! GameScreen,
                                   );
                                 }
                               : null
                         : snapshot.connectionState != ConnectionState.waiting
                         ? () async {
                             setState(() {
-                              _pendingCorrespondenceChallenge = createGameService
-                                  .newCorrespondenceChallenge(
+                              _pendingCorrespondenceChallenge =
+                                  createGameService.newCorrespondenceChallenge(
                                     preferences.makeRequest(
                                       account,
                                       widget.user,
-                                      preferences.variant != Variant.fromPosition
+                                      preferences.variant !=
+                                              Variant.fromPosition
                                           ? null
                                           : fromPositionFenInput,
                                     ),
@@ -347,36 +388,53 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                             });
 
                             try {
-                              final maybeDeclined = await _pendingCorrespondenceChallenge;
+                              final maybeDeclined =
+                                  await _pendingCorrespondenceChallenge;
 
                               if (!context.mounted) return;
 
-                              Navigator.of(
-                                context,
-                              ).popUntil((route) => route is! ModalBottomSheetRoute);
+                              Navigator.of(context).popUntil(
+                                (route) => route is! ModalBottomSheetRoute,
+                              );
 
                               if (maybeDeclined != null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        Text(context.l10n.challengeChallengeDeclined),
+                                        Text(
+                                          context
+                                              .l10n
+                                              .challengeChallengeDeclined,
+                                        ),
                                         const SizedBox(height: 8.0),
-                                        const Divider(height: 26.0, thickness: 0.0),
+                                        const Divider(
+                                          height: 26.0,
+                                          thickness: 0.0,
+                                        ),
                                         Text(
                                           maybeDeclined.label(context.l10n),
-                                          style: const TextStyle(fontStyle: FontStyle.italic),
+                                          style: const TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                          ),
                                         ),
-                                        const Divider(height: 26.0, thickness: 0.0),
+                                        const Divider(
+                                          height: 26.0,
+                                          thickness: 0.0,
+                                        ),
                                         Align(
                                           alignment: Alignment.centerRight,
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               const Text(' — '),
-                                              UserFullNameWidget(user: widget.user),
+                                              UserFullNameWidget(
+                                                user: widget.user,
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -387,7 +445,11 @@ class _CreateChallengeBottomSheetState extends ConsumerState<CreateChallengeBott
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(context.l10n.mobileChallengeCreated)),
+                                  SnackBar(
+                                    content: Text(
+                                      context.l10n.mobileChallengeCreated,
+                                    ),
+                                  ),
                                 );
                               }
                             } catch (e) {

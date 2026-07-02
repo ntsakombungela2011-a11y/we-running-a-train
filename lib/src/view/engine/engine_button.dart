@@ -13,7 +13,12 @@ import 'package:popover/popover.dart';
 
 /// A button to toggle engine evaluation and show engine depth.
 class EngineButton extends ConsumerStatefulWidget {
-  const EngineButton({required this.filters, this.onTap, this.savedEval, this.goDeeper});
+  const EngineButton({
+    required this.filters,
+    this.onTap,
+    this.savedEval,
+    this.goDeeper,
+  });
 
   final EngineEvaluationFilters filters;
 
@@ -34,25 +39,39 @@ class _EngineButtonState extends ConsumerState<EngineButton> {
   @override
   Widget build(BuildContext context) {
     final prefs = ref.watch(engineEvaluationPreferencesProvider);
-    final (engineName: engineName, eval: localEval, state: engineState, currentWork: work) = ref
-        .watch(engineEvaluationProvider(widget.filters));
-    final eval = pickBestClientEval(localEval: localEval, savedEval: widget.savedEval);
+    final (
+      engineName: engineName,
+      eval: localEval,
+      state: engineState,
+      currentWork: work,
+    ) = ref.watch(
+      engineEvaluationProvider(widget.filters),
+    );
+    final eval = pickBestClientEval(
+      localEval: localEval,
+      savedEval: widget.savedEval,
+    );
 
     final newChipColor = prefs.isEnabled
         ? switch (engineState) {
             EngineState.computing => ColorScheme.of(context).primary,
             _ => ColorScheme.of(context).primary.withValues(alpha: 0.65),
           }
-        : IconTheme.of(context).color ?? TextTheme.of(context).bodyMedium!.color!;
+        : IconTheme.of(context).color ??
+              TextTheme.of(context).bodyMedium!.color!;
 
     fromChipColor = toChipColor ?? newChipColor;
     toChipColor = newChipColor;
 
     final textColor = prefs.isEnabled
         ? ColorScheme.of(context).primary
-        : IconTheme.of(context).color ?? TextTheme.of(context).bodyMedium!.color!;
+        : IconTheme.of(context).color ??
+              TextTheme.of(context).bodyMedium!.color!;
 
-    final loadingIndicator = SpinKitFadingFour(color: textColor.withValues(alpha: 0.7), size: 10);
+    final loadingIndicator = SpinKitFadingFour(
+      color: textColor.withValues(alpha: 0.7),
+      size: 10,
+    );
 
     const microChipSize = 28.0;
     final iconTextStyle = TextStyle(
@@ -73,7 +92,10 @@ class _EngineButtonState extends ConsumerState<EngineButton> {
             showPopover(
               context: context,
               bodyBuilder: (_) {
-                return _EnginePopup(goDeeper: widget.goDeeper, filters: widget.filters);
+                return _EnginePopup(
+                  goDeeper: widget.goDeeper,
+                  filters: widget.filters,
+                );
               },
               direction: PopoverDirection.top,
               width: 250,
@@ -88,7 +110,9 @@ class _EngineButtonState extends ConsumerState<EngineButton> {
             offset: const Offset(4, -7),
             backgroundColor: ColorScheme.of(context).tertiaryContainer,
             textColor: ColorScheme.of(context).onTertiaryContainer,
-            label: prefs.isEnabled && eval is CloudEval ? const Text('CLOUD') : null,
+            label: prefs.isEnabled && eval is CloudEval
+                ? const Text('CLOUD')
+                : null,
             textStyle: const TextStyle(fontSize: 8),
             isLabelVisible: prefs.isEnabled && eval is CloudEval,
             child: Stack(
@@ -112,7 +136,10 @@ class _EngineButtonState extends ConsumerState<EngineButton> {
                     child: Center(
                       child: prefs.isEnabled
                           ? eval is CloudEval
-                                ? Text('${math.min(99, eval.depth)}', style: iconTextStyle)
+                                ? Text(
+                                    '${math.min(99, eval.depth)}',
+                                    style: iconTextStyle,
+                                  )
                                 : switch (engineState) {
                                     EngineState.computing || EngineState.idle =>
                                       eval?.depth != null
@@ -122,8 +149,14 @@ class _EngineButtonState extends ConsumerState<EngineButton> {
                                             )
                                           : loadingIndicator,
                                     EngineState.loading => loadingIndicator,
-                                    EngineState.initial => Text('-', style: iconTextStyle),
-                                    EngineState.error => Text('!', style: iconTextStyle),
+                                    EngineState.initial => Text(
+                                      '-',
+                                      style: iconTextStyle,
+                                    ),
+                                    EngineState.error => Text(
+                                      '!',
+                                      style: iconTextStyle,
+                                    ),
                                   }
                           : const SizedBox.shrink(),
                     ),
@@ -175,7 +208,8 @@ class MicroChipPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = innerRimWidth;
 
-    final innerSquareSize = size.width - pinLength - innerRimWidth - outerRimWidth;
+    final innerSquareSize =
+        size.width - pinLength - innerRimWidth - outerRimWidth;
 
     final innerSquarePath = Path()
       ..addRRect(
@@ -271,7 +305,8 @@ class MicroChipPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant MicroChipPainter oldDelegate) => color != oldDelegate.color;
+  bool shouldRepaint(covariant MicroChipPainter oldDelegate) =>
+      color != oldDelegate.color;
 }
 
 class _EnginePopup extends ConsumerWidget {
@@ -283,8 +318,12 @@ class _EnginePopup extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final evalState = ref.watch(engineEvaluationProvider(filters));
-    final (state: engineState, currentWork: work, engineName: engineName, eval: evalStateEval) =
-        evalState;
+    final (
+      state: engineState,
+      currentWork: work,
+      engineName: engineName,
+      eval: evalStateEval,
+    ) = evalState;
     final bool canGoDeeper =
         goDeeper != null &&
         engineState != EngineState.computing &&
@@ -310,18 +349,27 @@ class _EnginePopup extends ConsumerWidget {
       );
     }
 
-    final knps = engineState == EngineState.computing ? ', ${evalStateEval?.knps.round()}kn/s' : '';
+    final knps = engineState == EngineState.computing
+        ? ', ${evalStateEval?.knps.round()}kn/s'
+        : '';
 
     // remove Fairy-Stockfish version from engine name
-    final fixedEngineName = engineName != null && engineName.startsWith('Fairy-Stockfish')
+    final fixedEngineName =
+        engineName != null && engineName.startsWith('Fairy-Stockfish')
         ? 'Fairy-Stockfish'
         : engineName ?? 'Stockfish';
 
     return ListTile(
       contentPadding: const EdgeInsets.only(left: 16.0),
-      leading: Image.asset('assets/images/stockfish/icon.webp', width: 44, height: 44),
+      leading: Image.asset(
+        'assets/images/stockfish/icon.webp',
+        width: 44,
+        height: 44,
+      ),
       title: Text(fixedEngineName),
-      subtitle: currentEval != null ? Text(context.l10n.depthX('${currentEval.depth}$knps')) : null,
+      subtitle: currentEval != null
+          ? Text(context.l10n.depthX('${currentEval.depth}$knps'))
+          : null,
       trailing: canGoDeeper
           ? IconButton(
               icon: const Icon(Icons.add_circle_outlined),

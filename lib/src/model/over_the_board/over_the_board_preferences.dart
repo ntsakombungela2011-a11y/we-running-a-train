@@ -39,7 +39,9 @@ class OverTheBoardPreferencesNotifier extends Notifier<OverTheBoardPrefs>
   }
 
   Future<void> toggleFlipPiecesAfterMove() {
-    return save(state.copyWith(flipPiecesAfterMove: !state.flipPiecesAfterMove));
+    return save(
+      state.copyWith(flipPiecesAfterMove: !state.flipPiecesAfterMove),
+    );
   }
 
   Future<void> toggleSymmetricPieces() {
@@ -70,7 +72,9 @@ enum TimeControlType {
 }
 
 @Freezed(fromJson: true, toJson: true)
-sealed class OverTheBoardPrefs with _$OverTheBoardPrefs implements Serializable {
+sealed class OverTheBoardPrefs
+    with _$OverTheBoardPrefs
+    implements Serializable {
   const OverTheBoardPrefs._();
 
   static const _defaultTimeIncrement = TimeIncrement(300, 3);
@@ -79,7 +83,8 @@ sealed class OverTheBoardPrefs with _$OverTheBoardPrefs implements Serializable 
     required bool flipPiecesAfterMove,
     required bool symmetricPieces,
     @Default(TimeControlType.clock) TimeControlType timeControlType,
-    @Default(OverTheBoardPrefs._defaultTimeIncrement) TimeIncrement timeIncrement,
+    @Default(OverTheBoardPrefs._defaultTimeIncrement)
+    TimeIncrement timeIncrement,
   }) = _OverTheBoardPrefs;
 
   static const defaults = OverTheBoardPrefs(

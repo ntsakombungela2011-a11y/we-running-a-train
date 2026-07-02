@@ -16,21 +16,24 @@ void main() {
       expect(called, true);
     });
 
-    test('should not execute callback more than once if called multiple times', () async {
-      final debouncer = Debouncer(const Duration(milliseconds: 100));
-      var called = 0;
-      debouncer(() {
-        called++;
-      });
-      debouncer(() {
-        called++;
-      });
-      debouncer(() {
-        called++;
-      });
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-      expect(called, 1);
-    });
+    test(
+      'should not execute callback more than once if called multiple times',
+      () async {
+        final debouncer = Debouncer(const Duration(milliseconds: 100));
+        var called = 0;
+        debouncer(() {
+          called++;
+        });
+        debouncer(() {
+          called++;
+        });
+        debouncer(() {
+          called++;
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 150));
+        expect(called, 1);
+      },
+    );
 
     test('should cancel the previous callback', () async {
       final debouncer = Debouncer(const Duration(milliseconds: 100));
@@ -84,25 +87,28 @@ void main() {
       expect(called, 1);
     });
 
-    test('should call the callback multiple times if delay is passed', () async {
-      final throttler = Throttler(const Duration(milliseconds: 100));
-      var called = 0;
-      throttler(() {
-        called++;
-      });
-      throttler(() {
-        called++;
-      });
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-      throttler(() {
-        called++;
-      });
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-      throttler(() {
-        called++;
-      });
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-      expect(called, 3);
-    });
+    test(
+      'should call the callback multiple times if delay is passed',
+      () async {
+        final throttler = Throttler(const Duration(milliseconds: 100));
+        var called = 0;
+        throttler(() {
+          called++;
+        });
+        throttler(() {
+          called++;
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 150));
+        throttler(() {
+          called++;
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 150));
+        throttler(() {
+          called++;
+        });
+        await Future<void>.delayed(const Duration(milliseconds: 150));
+        expect(called, 3);
+      },
+    );
   });
 }

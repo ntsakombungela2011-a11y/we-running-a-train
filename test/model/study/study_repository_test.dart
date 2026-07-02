@@ -406,7 +406,11 @@ void main() {
               role: 'w',
             ),
             UserId('jessieu726'): StudyMember(
-              user: LightUser(name: 'jessieu726', flair: 'nature.duck', id: UserId('jessieu726')),
+              user: LightUser(
+                name: 'jessieu726',
+                flair: 'nature.duck',
+                id: UserId('jessieu726'),
+              ),
               role: 'w',
             ),
             UserId('kyle11878'): StudyMember(
@@ -424,21 +428,28 @@ void main() {
           features: (cloneable: false, chat: true, sticky: false),
           topics: const IList.empty(),
           chapters: IList(const [
-            StudyChapterMeta(id: StudyChapterId('EgqyeQIp'), name: 'Introduction', fen: null),
+            StudyChapterMeta(
+              id: StudyChapterId('EgqyeQIp'),
+              name: 'Introduction',
+              fen: null,
+            ),
             StudyChapterMeta(
               id: StudyChapterId('z6tGV47W'),
               name: 'Practice Your Thought Process',
-              fen: '2k4r/p1p2p2/1p2b2p/1Pqn2r1/2B5/B1PP4/P4PPP/RN2Q1K1 b - - 6 20',
+              fen:
+                  '2k4r/p1p2p2/1p2b2p/1Pqn2r1/2B5/B1PP4/P4PPP/RN2Q1K1 b - - 6 20',
             ),
             StudyChapterMeta(
               id: StudyChapterId('dTfxbccx'),
               name: 'Practice Strategic Thinking',
-              fen: 'r3r1k1/1b2b2p/pq4pB/1p3pN1/2p5/2P5/PPn1QPPP/3RR1K1 w - - 0 23',
+              fen:
+                  'r3r1k1/1b2b2p/pq4pB/1p3pN1/2p5/2P5/PPn1QPPP/3RR1K1 w - - 0 23',
             ),
             StudyChapterMeta(
               id: StudyChapterId('B1U4pFdG'),
               name: 'Calculate Fully',
-              fen: '3r3r/1Rpk1p2/2p2q1p/Q2pp3/P2PP1n1/2P1B1Pp/5P2/1N3RK1 b - - 2 26',
+              fen:
+                  '3r3r/1Rpk1p2/2p2q1p/Q2pp3/P2PP1n1/2P1B1Pp/5P2/1N3RK1 b - - 2 26',
             ),
             StudyChapterMeta(
               id: StudyChapterId('NJLW7jil'),
@@ -453,17 +464,20 @@ void main() {
             StudyChapterMeta(
               id: StudyChapterId('Rgk6UlTP'),
               name: 'Understand Your Mistakes',
-              fen: 'r4rk1/1R3pb1/pR2N1p1/2q5/4p3/2P1P1Pp/Q2P1P1P/6K1 b - - 1 26',
+              fen:
+                  'r4rk1/1R3pb1/pR2N1p1/2q5/4p3/2P1P1Pp/Q2P1P1P/6K1 b - - 1 26',
             ),
             StudyChapterMeta(
               id: StudyChapterId('VsdxmjCf'),
               name: 'Adjusting Difficulty',
-              fen: '3r4/k1pq1p1r/pp1p2p1/8/3P4/P1P2BP1/1P1N1Pp1/R3R1K1 b - - 0 1',
+              fen:
+                  '3r4/k1pq1p1r/pp1p2p1/8/3P4/P1P2BP1/1P1N1Pp1/R3R1K1 b - - 0 1',
             ),
             StudyChapterMeta(
               id: StudyChapterId('FHU6xhYs'),
               name: 'Using Themes',
-              fen: 'r2k3N/pbpp1Bpp/1p6/2b1p3/3n3q/P7/1PPP1RPP/RNB2QK1 b - - 3 12',
+              fen:
+                  'r2k3N/pbpp1Bpp/1p6/2b1p3/3n3q/P7/1PPP1RPP/RNB2QK1 b - - 3 12',
             ),
             StudyChapterMeta(
               id: StudyChapterId('8FhO455h'),
@@ -473,7 +487,8 @@ void main() {
             StudyChapterMeta(
               id: StudyChapterId('jWUEWsEf'),
               name: 'Final Thoughts',
-              fen: '8/1PP2PP1/PppPPppP/Pp1pp1pP/Pp4pP/1Pp2pP1/2PppP2/3PP3 w - - 0 1',
+              fen:
+                  '8/1PP2PP1/PppPPppP/Pp1pp1pP/Pp4pP/1Pp2pP1/2PppP2/3PP3 w - - 0 1',
             ),
           ]),
           chapter: const StudyChapter(

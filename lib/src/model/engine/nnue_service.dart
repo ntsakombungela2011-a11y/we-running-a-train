@@ -4,7 +4,8 @@ import 'dart:isolate';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show AlertDialog, Navigator, Text, showAdaptiveDialog;
+import 'package:flutter/material.dart'
+    show AlertDialog, Navigator, Text, showAdaptiveDialog;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lichess_mobile/src/model/common/preloaded_data.dart';
 import 'package:lichess_mobile/src/model/engine/engine.dart';
@@ -49,13 +50,20 @@ class NnueService {
   ///
   /// Throws an exception if the app support directory is not available.
   NNUEFiles get nnueFiles {
-    final appSupportDirectory = _ref.read(preloadedDataProvider).requireValue.appSupportDirectory;
+    final appSupportDirectory = _ref
+        .read(preloadedDataProvider)
+        .requireValue
+        .appSupportDirectory;
     if (appSupportDirectory == null) {
       throw Exception('App support directory is null.');
     }
 
-    final bigNetFile = File('${appSupportDirectory.path}/${Stockfish.latestBigNNUE}');
-    final smallNetFile = File('${appSupportDirectory.path}/${Stockfish.latestSmallNNUE}');
+    final bigNetFile = File(
+      '${appSupportDirectory.path}/${Stockfish.latestBigNNUE}',
+    );
+    final smallNetFile = File(
+      '${appSupportDirectory.path}/${Stockfish.latestSmallNNUE}',
+    );
 
     return (bigNet: bigNetFile, smallNet: smallNetFile);
   }
@@ -65,7 +73,10 @@ class NnueService {
       return false;
     }
 
-    final appSupportDirectory = _ref.read(preloadedDataProvider).requireValue.appSupportDirectory;
+    final appSupportDirectory = _ref
+        .read(preloadedDataProvider)
+        .requireValue
+        .appSupportDirectory;
     if (appSupportDirectory == null) {
       return false;
     }
@@ -152,7 +163,9 @@ class NnueService {
         );
       }
 
-      final connectivityResult = await _ref.read(connectivityPluginProvider).checkConnectivity();
+      final connectivityResult = await _ref
+          .read(connectivityPluginProvider)
+          .checkConnectivity();
       final onWifi = connectivityResult.contains(ConnectivityResult.wifi);
       if (onWifi == false) {
         if (inBackground) {
@@ -202,7 +215,10 @@ class NnueService {
   }
 
   Future<void> deleteNNUEFiles() async {
-    final appSupportDirectory = _ref.read(preloadedDataProvider).requireValue.appSupportDirectory;
+    final appSupportDirectory = _ref
+        .read(preloadedDataProvider)
+        .requireValue
+        .appSupportDirectory;
     if (appSupportDirectory == null) {
       throw Exception('App support directory is null.');
     }

@@ -17,9 +17,13 @@ final openingExplorerProvider = AsyncNotifierProvider.autoDispose
       OpeningExplorer,
       ({OpeningExplorerEntry entry, bool isIndexing})?,
       ({String fen, Variant variant})
-    >((request) => OpeningExplorer(request.fen, request.variant), name: 'OpeningExplorerProvider');
+    >(
+      (request) => OpeningExplorer(request.fen, request.variant),
+      name: 'OpeningExplorerProvider',
+    );
 
-class OpeningExplorer extends AsyncNotifier<({OpeningExplorerEntry entry, bool isIndexing})?> {
+class OpeningExplorer
+    extends AsyncNotifier<({OpeningExplorerEntry entry, bool isIndexing})?> {
   OpeningExplorer(this.fen, this.variant);
 
   final String fen;
@@ -67,9 +71,15 @@ class OpeningExplorer extends AsyncNotifier<({OpeningExplorerEntry entry, bool i
         );
 
         _openingExplorerSubscription = openingExplorerStream.listen(
-          (openingExplorer) => state = AsyncValue.data((entry: openingExplorer, isIndexing: true)),
+          (openingExplorer) => state = AsyncValue.data((
+            entry: openingExplorer,
+            isIndexing: true,
+          )),
           onDone: () => state.value != null
-              ? state = AsyncValue.data((entry: state.value!.entry, isIndexing: false))
+              ? state = AsyncValue.data((
+                  entry: state.value!.entry,
+                  isIndexing: false,
+                ))
               : state = AsyncValue.error(
                   'No opening explorer data returned for player ${prefs.playerDb.username}',
                   StackTrace.current,
@@ -81,7 +91,9 @@ class OpeningExplorer extends AsyncNotifier<({OpeningExplorerEntry entry, bool i
 }
 
 /// A provider for [OpeningExplorerRepository].
-final openingExplorerRepositoryProvider = Provider<OpeningExplorerRepository>((Ref ref) {
+final openingExplorerRepositoryProvider = Provider<OpeningExplorerRepository>((
+  Ref ref,
+) {
   return OpeningExplorerRepository(ref.watch(lichessClientProvider));
 }, name: 'OpeningExplorerRepositoryProvider');
 
@@ -120,7 +132,8 @@ class OpeningExplorerRepository {
         'source': 'mobile',
         'variant': _openingExplorerVariantKey(variant),
         'fen': fen,
-        if (speeds.isNotEmpty) 'speeds': speeds.map((speed) => speed.name).join(','),
+        if (speeds.isNotEmpty)
+          'speeds': speeds.map((speed) => speed.name).join(','),
         if (ratings.isNotEmpty) 'ratings': ratings.join(','),
         if (since != null) 'since': '${since.year}-${since.month}',
       }),
@@ -144,8 +157,10 @@ class OpeningExplorerRepository {
         'fen': fen,
         'player': usernameOrId,
         'color': color.name,
-        if (speeds.isNotEmpty) 'speeds': speeds.map((speed) => speed.name).join(','),
-        if (gameModes.isNotEmpty) 'modes': gameModes.map((gameMode) => gameMode.name).join(','),
+        if (speeds.isNotEmpty)
+          'speeds': speeds.map((speed) => speed.name).join(','),
+        if (gameModes.isNotEmpty)
+          'modes': gameModes.map((gameMode) => gameMode.name).join(','),
         if (since != null) 'since': '${since.year}-${since.month}',
       }),
       mapper: OpeningExplorerEntry.fromJson,
@@ -158,7 +173,10 @@ class OpeningExplorerRepository {
 String _openingExplorerVariantKey(Variant variant) =>
     variant == Variant.fromPosition ? Variant.standard.name : variant.name;
 
-OpeningDatabase _openingExplorerDatabaseFor(OpeningDatabase db, Variant variant) {
+OpeningDatabase _openingExplorerDatabaseFor(
+  OpeningDatabase db,
+  Variant variant,
+) {
   // The masters endpoint has no variant parameter. For variants, fall back to
   // Lichess DB instead of asking users to change their persisted setting.
   if (db == OpeningDatabase.master &&

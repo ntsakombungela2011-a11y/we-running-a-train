@@ -69,7 +69,9 @@ class _DailyPuzzleLinkTestWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
       onPressed: () async {
-        await ref.read(appLinksServiceProvider).handleDailyPuzzleLink(context, puzzleId);
+        await ref
+            .read(appLinksServiceProvider)
+            .handleDailyPuzzleLink(context, puzzleId);
       },
       child: const Text('test daily link'),
     );
@@ -171,63 +173,88 @@ void main() {
       expect(
         tester.widget(find.byType(PuzzleScreen)),
         isA<PuzzleScreen>()
-            .having((s) => s.puzzle?.puzzle.id, 'puzzle id', const PuzzleId('0XqV2'))
+            .having(
+              (s) => s.puzzle?.puzzle.id,
+              'puzzle id',
+              const PuzzleId('0XqV2'),
+            )
             .having((s) => s.puzzle?.isDailyPuzzle, 'is daily', true),
       );
     });
 
-    testWidgets('puzzle id matches daily: opens daily puzzle without extra fetch', (tester) async {
-      // PuzzleRepository.fetch() does not set isDailyPuzzle, so if puzzleProvider
-      // were called (wrongly) the assertion on isDailyPuzzle: true would fail.
-      await triggerDailyPuzzleLink(
-        tester,
-        '0XqV2', // same id as the daily puzzle
-        overrides: {httpClientFactoryProvider: puzzleHttpOverride()},
-      );
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget(find.byType(PuzzleScreen)),
-        isA<PuzzleScreen>()
-            .having((s) => s.puzzle?.puzzle.id, 'puzzle id', const PuzzleId('0XqV2'))
-            .having((s) => s.puzzle?.isDailyPuzzle, 'is daily', true),
-      );
-    });
+    testWidgets(
+      'puzzle id matches daily: opens daily puzzle without extra fetch',
+      (tester) async {
+        // PuzzleRepository.fetch() does not set isDailyPuzzle, so if puzzleProvider
+        // were called (wrongly) the assertion on isDailyPuzzle: true would fail.
+        await triggerDailyPuzzleLink(
+          tester,
+          '0XqV2', // same id as the daily puzzle
+          overrides: {httpClientFactoryProvider: puzzleHttpOverride()},
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget(find.byType(PuzzleScreen)),
+          isA<PuzzleScreen>()
+              .having(
+                (s) => s.puzzle?.puzzle.id,
+                'puzzle id',
+                const PuzzleId('0XqV2'),
+              )
+              .having((s) => s.puzzle?.isDailyPuzzle, 'is daily', true),
+        );
+      },
+    );
 
-    testWidgets('puzzle id differs from daily: opens specific puzzle not flagged as daily', (
+    testWidgets(
+      'puzzle id differs from daily: opens specific puzzle not flagged as daily',
+      (tester) async {
+        await triggerDailyPuzzleLink(
+          tester,
+          'stale1',
+          overrides: {httpClientFactoryProvider: puzzleHttpOverride()},
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget(find.byType(PuzzleScreen)),
+          isA<PuzzleScreen>()
+              .having(
+                (s) => s.puzzle?.puzzle.id,
+                'puzzle id',
+                const PuzzleId('stale1'),
+              )
+              .having((s) => s.puzzle?.isDailyPuzzle, 'is daily', isNot(true)),
+        );
+      },
+    );
+
+    testWidgets(
+      'puzzle id differs from daily and fetch fails: falls back to daily puzzle',
+      (tester) async {
+        await triggerDailyPuzzleLink(
+          tester,
+          'stale1',
+          overrides: {
+            httpClientFactoryProvider: puzzleHttpOverride(failStaleFetch: true),
+          },
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget(find.byType(PuzzleScreen)),
+          isA<PuzzleScreen>()
+              .having(
+                (s) => s.puzzle?.puzzle.id,
+                'puzzle id',
+                const PuzzleId('0XqV2'),
+              )
+              .having((s) => s.puzzle?.isDailyPuzzle, 'is daily', true),
+        );
+      },
+    );
+
+    testWidgets('replaces existing PuzzleScreen instead of stacking a duplicate', (
       tester,
     ) async {
-      await triggerDailyPuzzleLink(
-        tester,
-        'stale1',
-        overrides: {httpClientFactoryProvider: puzzleHttpOverride()},
-      );
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget(find.byType(PuzzleScreen)),
-        isA<PuzzleScreen>()
-            .having((s) => s.puzzle?.puzzle.id, 'puzzle id', const PuzzleId('stale1'))
-            .having((s) => s.puzzle?.isDailyPuzzle, 'is daily', isNot(true)),
-      );
-    });
-
-    testWidgets('puzzle id differs from daily and fetch fails: falls back to daily puzzle', (
-      tester,
-    ) async {
-      await triggerDailyPuzzleLink(
-        tester,
-        'stale1',
-        overrides: {httpClientFactoryProvider: puzzleHttpOverride(failStaleFetch: true)},
-      );
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget(find.byType(PuzzleScreen)),
-        isA<PuzzleScreen>()
-            .having((s) => s.puzzle?.puzzle.id, 'puzzle id', const PuzzleId('0XqV2'))
-            .having((s) => s.puzzle?.isDailyPuzzle, 'is daily', true),
-      );
-    });
-
-    testWidgets('replaces existing PuzzleScreen instead of stacking a duplicate', (tester) async {
       AppLinksService? capturedService;
       BuildContext? capturedContext;
 
@@ -240,7 +267,9 @@ void main() {
             capturedContext = context;
             return ElevatedButton(
               onPressed: () async {
-                await ref.read(appLinksServiceProvider).handleDailyPuzzleLink(context, null);
+                await ref
+                    .read(appLinksServiceProvider)
+                    .handleDailyPuzzleLink(context, null);
               },
               child: const Text('go to puzzle'),
             );
@@ -270,14 +299,21 @@ void main() {
   });
 
   group('resolveAppLinkUri', () {
-    testWidgets('Nothing happens for an empty path', (WidgetTester tester) async {
+    testWidgets('Nothing happens for an empty path', (
+      WidgetTester tester,
+    ) async {
       final uri = Uri.parse('https://lichess.org/');
       await triggerAppLink(tester, uri);
       await tester.pumpAndSettle(); // Wait for any navigation to complete
-      expect(find.text('test link'), findsOneWidget); // Still on the same screen
+      expect(
+        find.text('test link'),
+        findsOneWidget,
+      ); // Still on the same screen
     });
 
-    testWidgets('resolves /study/{id} to StudyScreen route', (WidgetTester tester) async {
+    testWidgets('resolves /study/{id} to StudyScreen route', (
+      WidgetTester tester,
+    ) async {
       final uri = Uri.parse('https://lichess.org/study/p9uY0321');
       await triggerAppLink(tester, uri);
       await tester.pumpAndSettle(); // Wait study screen to load
@@ -289,21 +325,28 @@ void main() {
       );
     });
 
-    testWidgets('resolves /study/{id}/{chapter} to StudyScreen route with initial chapter', (
+    testWidgets(
+      'resolves /study/{id}/{chapter} to StudyScreen route with initial chapter',
+      (WidgetTester tester) async {
+        final uri = Uri.parse('https://lichess.org/study/p9uY0321/abcd1234');
+        await triggerAppLink(tester, uri);
+        await tester.pumpAndSettle(); // Wait study screen to load
+        expect(
+          tester.widget(find.byType(StudyScreen)),
+          isA<StudyScreen>()
+              .having((s) => s.options.id, 'id', 'p9uY0321')
+              .having(
+                (s) => s.options.initialChapter,
+                'initialChapter',
+                'abcd1234',
+              ),
+        );
+      },
+    );
+
+    testWidgets('resolves /training/{id} to PuzzleScreen route', (
       WidgetTester tester,
     ) async {
-      final uri = Uri.parse('https://lichess.org/study/p9uY0321/abcd1234');
-      await triggerAppLink(tester, uri);
-      await tester.pumpAndSettle(); // Wait study screen to load
-      expect(
-        tester.widget(find.byType(StudyScreen)),
-        isA<StudyScreen>()
-            .having((s) => s.options.id, 'id', 'p9uY0321')
-            .having((s) => s.options.initialChapter, 'initialChapter', 'abcd1234'),
-      );
-    });
-
-    testWidgets('resolves /training/{id} to PuzzleScreen route', (WidgetTester tester) async {
       final uri = Uri.parse('https://lichess.org/training/61044');
       await triggerAppLink(tester, uri);
       await tester.pumpAndSettle(); // Wait puzzle screen to load
@@ -313,57 +356,72 @@ void main() {
       );
     });
 
-    testWidgets('resolves bare /editor to BoardEditorScreen with default position', (
-      WidgetTester tester,
-    ) async {
-      final uri = Uri.parse('https://lichess.org/editor');
-      await triggerAppLink(tester, uri);
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget(find.byType(BoardEditorScreen)),
-        isA<BoardEditorScreen>()
-            .having((s) => s.params?.initialFen, 'initialFen', isNull)
-            .having((s) => s.params?.initialOrientation, 'orientation', Side.white),
-      );
-    });
+    testWidgets(
+      'resolves bare /editor to BoardEditorScreen with default position',
+      (WidgetTester tester) async {
+        final uri = Uri.parse('https://lichess.org/editor');
+        await triggerAppLink(tester, uri);
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget(find.byType(BoardEditorScreen)),
+          isA<BoardEditorScreen>()
+              .having((s) => s.params?.initialFen, 'initialFen', isNull)
+              .having(
+                (s) => s.params?.initialOrientation,
+                'orientation',
+                Side.white,
+              ),
+        );
+      },
+    );
 
-    testWidgets('resolves trailing-slash /editor/ to BoardEditorScreen with default position', (
-      WidgetTester tester,
-    ) async {
-      // /editor/ parses to an empty trailing path segment, so the reconstructed FEN is
-      // empty: it must fall back to the default position rather than fail validation.
-      final uri = Uri.parse('https://lichess.org/editor/?color=black');
-      await triggerAppLink(tester, uri);
-      await tester.pumpAndSettle();
-      expect(find.textContaining('Invalid FEN'), findsNothing);
-      expect(
-        tester.widget(find.byType(BoardEditorScreen)),
-        isA<BoardEditorScreen>()
-            .having((s) => s.params?.initialFen, 'initialFen', isNull)
-            .having((s) => s.params?.initialOrientation, 'orientation', Side.black),
-      );
-    });
+    testWidgets(
+      'resolves trailing-slash /editor/ to BoardEditorScreen with default position',
+      (WidgetTester tester) async {
+        // /editor/ parses to an empty trailing path segment, so the reconstructed FEN is
+        // empty: it must fall back to the default position rather than fail validation.
+        final uri = Uri.parse('https://lichess.org/editor/?color=black');
+        await triggerAppLink(tester, uri);
+        await tester.pumpAndSettle();
+        expect(find.textContaining('Invalid FEN'), findsNothing);
+        expect(
+          tester.widget(find.byType(BoardEditorScreen)),
+          isA<BoardEditorScreen>()
+              .having((s) => s.params?.initialFen, 'initialFen', isNull)
+              .having(
+                (s) => s.params?.initialOrientation,
+                'orientation',
+                Side.black,
+              ),
+        );
+      },
+    );
 
-    testWidgets('resolves /editor/{fen} reconstructing the FEN from path segments', (
-      WidgetTester tester,
-    ) async {
-      // Ranks are split by '/' and metadata spaces are encoded as '_'.
-      final uri = Uri.parse(
-        'https://lichess.org/editor/rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR_w_KQkq_-_0_1',
-      );
-      await triggerAppLink(tester, uri);
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget(find.byType(BoardEditorScreen)),
-        isA<BoardEditorScreen>()
-            .having(
-              (s) => s.params?.initialFen,
-              'initialFen',
-              'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1',
-            )
-            .having((s) => s.params?.initialOrientation, 'orientation', Side.white),
-      );
-    });
+    testWidgets(
+      'resolves /editor/{fen} reconstructing the FEN from path segments',
+      (WidgetTester tester) async {
+        // Ranks are split by '/' and metadata spaces are encoded as '_'.
+        final uri = Uri.parse(
+          'https://lichess.org/editor/rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR_w_KQkq_-_0_1',
+        );
+        await triggerAppLink(tester, uri);
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget(find.byType(BoardEditorScreen)),
+          isA<BoardEditorScreen>()
+              .having(
+                (s) => s.params?.initialFen,
+                'initialFen',
+                'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1',
+              )
+              .having(
+                (s) => s.params?.initialOrientation,
+                'orientation',
+                Side.white,
+              ),
+        );
+      },
+    );
 
     testWidgets('resolves /editor/{fen}?color=black with black orientation', (
       WidgetTester tester,
@@ -392,12 +450,18 @@ void main() {
         expect(find.textContaining('Invalid FEN'), findsOneWidget);
         expect(
           tester.widget(find.byType(BoardEditorScreen)),
-          isA<BoardEditorScreen>().having((s) => s.params?.initialFen, 'initialFen', isNull),
+          isA<BoardEditorScreen>().having(
+            (s) => s.params?.initialFen,
+            'initialFen',
+            isNull,
+          ),
         );
       },
     );
 
-    testWidgets('resolves /tournament/{id} to TournamentScreen route', (WidgetTester tester) async {
+    testWidgets('resolves /tournament/{id} to TournamentScreen route', (
+      WidgetTester tester,
+    ) async {
       final uri = Uri.parse('https://lichess.org/tournament/61044');
       await triggerAppLink(tester, uri);
       await tester.pumpAndSettle(); // Wait tournament screen to load
@@ -412,14 +476,20 @@ void main() {
     testWidgets(
       'resolves /tournament/{id}?player={name} to TournamentScreen with initialPlayerId',
       (WidgetTester tester) async {
-        final uri = Uri.parse('https://lichess.org/tournament/spring26?player=realcyberbird');
+        final uri = Uri.parse(
+          'https://lichess.org/tournament/spring26?player=realcyberbird',
+        );
         await triggerAppLink(tester, uri);
         await tester.pumpAndSettle();
         expect(
           tester.widget(find.byType(TournamentScreen)),
           isA<TournamentScreen>()
               .having((s) => s.id, 'id', 'spring26')
-              .having((s) => s.initialPlayerId, 'initialPlayerId', const UserId('realcyberbird')),
+              .having(
+                (s) => s.initialPlayerId,
+                'initialPlayerId',
+                const UserId('realcyberbird'),
+              ),
         );
       },
     );
@@ -437,38 +507,47 @@ void main() {
         tester.widget(find.byType(BroadcastRoundScreenLoading)),
         isA<BroadcastRoundScreenLoading>()
             .having((s) => s.roundId, 'id', 'ioIYmuar')
-            .having((s) => s.initialTab, 'initialTab', BroadcastRoundTab.players),
+            .having(
+              (s) => s.initialTab,
+              'initialTab',
+              BroadcastRoundTab.players,
+            ),
       );
     });
 
-    testWidgets('resolves /broadcast/.../{roundId}#players/{playerId} to player results screen', (
-      WidgetTester tester,
-    ) async {
-      final uri = Uri.parse(
-        'https://lichess.org/broadcast/grenke-chess-festival-2026--freestyle-open-a/round-3/ioIYmuar#players/250511',
-      );
-      await triggerAppLink(tester, uri);
-      await tester.pumpAndSettle();
+    testWidgets(
+      'resolves /broadcast/.../{roundId}#players/{playerId} to player results screen',
+      (WidgetTester tester) async {
+        final uri = Uri.parse(
+          'https://lichess.org/broadcast/grenke-chess-festival-2026--freestyle-open-a/round-3/ioIYmuar#players/250511',
+        );
+        await triggerAppLink(tester, uri);
+        await tester.pumpAndSettle();
 
-      // Top of stack: player results screen
-      expect(
-        tester.widget(find.byType(BroadcastPlayerResultsScreenLoading)),
-        isA<BroadcastPlayerResultsScreenLoading>()
-            .having((s) => s.roundId, 'id', 'ioIYmuar')
-            .having((s) => s.playerId, 'id', '250511'),
-      );
+        // Top of stack: player results screen
+        expect(
+          tester.widget(find.byType(BroadcastPlayerResultsScreenLoading)),
+          isA<BroadcastPlayerResultsScreenLoading>()
+              .having((s) => s.roundId, 'id', 'ioIYmuar')
+              .having((s) => s.playerId, 'id', '250511'),
+        );
 
-      // Back navigates to the round screen on the players tab
-      await tester.pageBack();
-      await tester.pumpAndSettle();
+        // Back navigates to the round screen on the players tab
+        await tester.pageBack();
+        await tester.pumpAndSettle();
 
-      expect(
-        tester.widget(find.byType(BroadcastRoundScreenLoading)),
-        isA<BroadcastRoundScreenLoading>()
-            .having((s) => s.roundId, 'id', 'ioIYmuar')
-            .having((s) => s.initialTab, 'initialTab', BroadcastRoundTab.players),
-      );
-    });
+        expect(
+          tester.widget(find.byType(BroadcastRoundScreenLoading)),
+          isA<BroadcastRoundScreenLoading>()
+              .having((s) => s.roundId, 'id', 'ioIYmuar')
+              .having(
+                (s) => s.initialTab,
+                'initialTab',
+                BroadcastRoundTab.players,
+              ),
+        );
+      },
+    );
 
     testWidgets(
       'resolves /broadcast/.../{roundId}#players/{playerId} with percent-encoded non-FIDE playerId',
@@ -484,7 +563,11 @@ void main() {
           tester.widget(find.byType(BroadcastPlayerResultsScreenLoading)),
           isA<BroadcastPlayerResultsScreenLoading>()
               .having((s) => s.roundId, 'id', 'RSIGxDYD')
-              .having((s) => s.playerId, 'id', 'Stockfish dev-20260318-d173a065'),
+              .having(
+                (s) => s.playerId,
+                'id',
+                'Stockfish dev-20260318-d173a065',
+              ),
         );
 
         await tester.pageBack();
@@ -494,48 +577,66 @@ void main() {
           tester.widget(find.byType(BroadcastRoundScreenLoading)),
           isA<BroadcastRoundScreenLoading>()
               .having((s) => s.roundId, 'id', 'RSIGxDYD')
-              .having((s) => s.initialTab, 'initialTab', BroadcastRoundTab.players),
+              .having(
+                (s) => s.initialTab,
+                'initialTab',
+                BroadcastRoundTab.players,
+              ),
         );
       },
     );
 
-    testWidgets('resolves /broadcast/.../{roundId}/{gameId} to two routes (stacking)', (
+    testWidgets(
+      'resolves /broadcast/.../{roundId}/{gameId} to two routes (stacking)',
+      (WidgetTester tester) async {
+        // Broadcast URLs have many segments: /broadcast/slug/name/roundId/gameId
+        final uri = Uri.parse(
+          'https://lichess.org/broadcast/candidates-2024/round-1/abcde123/zxcvb456',
+        );
+        await triggerAppLink(tester, uri);
+        await tester.pumpAndSettle(); // Wait for navigation to complete
+
+        expect(
+          tester.widget(find.byType(BroadcastGameScreen)),
+          isA<BroadcastGameScreen>().having((s) => s.gameId, 'id', 'zxcvb456'),
+        );
+
+        await tester
+            .pageBack(); // Should have pushed round screen first, game screen on top of it
+        await tester.pumpAndSettle(); // Wait for navigation to complete
+
+        expect(
+          tester.widget(find.byType(BroadcastRoundScreenLoading)),
+          isA<BroadcastRoundScreenLoading>().having(
+            (s) => s.roundId,
+            'id',
+            'abcde123',
+          ),
+        );
+      },
+    );
+
+    final finishedGame = generateExportedGames(
+      count: 1,
+    ).first.copyWith(status: GameStatus.draw);
+
+    testWidgets('resolves /gameid link for finished game', (
       WidgetTester tester,
     ) async {
-      // Broadcast URLs have many segments: /broadcast/slug/name/roundId/gameId
-      final uri = Uri.parse(
-        'https://lichess.org/broadcast/candidates-2024/round-1/abcde123/zxcvb456',
-      );
-      await triggerAppLink(tester, uri);
-      await tester.pumpAndSettle(); // Wait for navigation to complete
-
-      expect(
-        tester.widget(find.byType(BroadcastGameScreen)),
-        isA<BroadcastGameScreen>().having((s) => s.gameId, 'id', 'zxcvb456'),
-      );
-
-      await tester.pageBack(); // Should have pushed round screen first, game screen on top of it
-      await tester.pumpAndSettle(); // Wait for navigation to complete
-
-      expect(
-        tester.widget(find.byType(BroadcastRoundScreenLoading)),
-        isA<BroadcastRoundScreenLoading>().having((s) => s.roundId, 'id', 'abcde123'),
-      );
-    });
-
-    final finishedGame = generateExportedGames(count: 1).first.copyWith(status: GameStatus.draw);
-
-    testWidgets('resolves /gameid link for finished game', (WidgetTester tester) async {
       // lichess.org/gameid -> Opens analysis at the first move
       final uri = Uri.parse('https://lichess.org/${finishedGame.id.value}');
       final mockGameRepository = MockGameRepository();
-      when(() => mockGameRepository.getGame(finishedGame.id)).thenAnswer((_) async => finishedGame);
+      when(
+        () => mockGameRepository.getGame(finishedGame.id),
+      ).thenAnswer((_) async => finishedGame);
 
       await triggerAppLink(
         tester,
         uri,
         overrides: {
-          gameRepositoryProvider: gameRepositoryProvider.overrideWith((_) => mockGameRepository),
+          gameRepositoryProvider: gameRepositoryProvider.overrideWith(
+            (_) => mockGameRepository,
+          ),
         },
       );
       await tester.pumpAndSettle(); // Wait analysis screen to load
@@ -554,13 +655,17 @@ void main() {
       // lichess.org/gameid#20 -> Opens analysis at move 20
       final uri = Uri.parse('https://lichess.org/${finishedGame.id.value}#20');
       final mockGameRepository = MockGameRepository();
-      when(() => mockGameRepository.getGame(finishedGame.id)).thenAnswer((_) async => finishedGame);
+      when(
+        () => mockGameRepository.getGame(finishedGame.id),
+      ).thenAnswer((_) async => finishedGame);
 
       await triggerAppLink(
         tester,
         uri,
         overrides: {
-          gameRepositoryProvider: gameRepositoryProvider.overrideWith((_) => mockGameRepository),
+          gameRepositoryProvider: gameRepositoryProvider.overrideWith(
+            (_) => mockGameRepository,
+          ),
         },
       );
       await tester.pumpAndSettle(); // Wait for analysis screen to load
@@ -573,16 +678,24 @@ void main() {
       );
     });
 
-    testWidgets('resolves /gameid/black finished game link', (WidgetTester tester) async {
-      final uri = Uri.parse('https://lichess.org/${finishedGame.id.value}/black');
+    testWidgets('resolves /gameid/black finished game link', (
+      WidgetTester tester,
+    ) async {
+      final uri = Uri.parse(
+        'https://lichess.org/${finishedGame.id.value}/black',
+      );
       final mockGameRepository = MockGameRepository();
-      when(() => mockGameRepository.getGame(finishedGame.id)).thenAnswer((_) async => finishedGame);
+      when(
+        () => mockGameRepository.getGame(finishedGame.id),
+      ).thenAnswer((_) async => finishedGame);
 
       await triggerAppLink(
         tester,
         uri,
         overrides: {
-          gameRepositoryProvider: gameRepositoryProvider.overrideWith((_) => mockGameRepository),
+          gameRepositoryProvider: gameRepositoryProvider.overrideWith(
+            (_) => mockGameRepository,
+          ),
         },
       );
       await tester.pumpAndSettle(); // Wait for analysis screen to load
@@ -595,7 +708,9 @@ void main() {
       );
     });
 
-    testWidgets('resolves /gameid link for imported game to analysis', (WidgetTester tester) async {
+    testWidgets('resolves /gameid link for imported game to analysis', (
+      WidgetTester tester,
+    ) async {
       final mockGameRepository = MockGameRepository();
       final importedGame = generateExportedGames(count: 1).first.copyWith(
         status: GameStatus.started,
@@ -603,7 +718,9 @@ void main() {
         black: const Player(),
         white: const Player(),
       );
-      when(() => mockGameRepository.getGame(importedGame.id)).thenAnswer((_) async => importedGame);
+      when(
+        () => mockGameRepository.getGame(importedGame.id),
+      ).thenAnswer((_) async => importedGame);
 
       final uri = Uri.parse('https://lichess.org/${importedGame.id.value}');
 
@@ -611,19 +728,27 @@ void main() {
         tester,
         uri,
         overrides: {
-          gameRepositoryProvider: gameRepositoryProvider.overrideWith((_) => mockGameRepository),
+          gameRepositoryProvider: gameRepositoryProvider.overrideWith(
+            (_) => mockGameRepository,
+          ),
         },
       );
       await tester.pumpAndSettle();
 
       expect(
         tester.widget(find.byType(AnalysisScreen)),
-        isA<AnalysisScreen>().having((s) => s.options.gameId, 'id', importedGame.id.value),
+        isA<AnalysisScreen>().having(
+          (s) => s.options.gameId,
+          'id',
+          importedGame.id.value,
+        ),
       );
       expect(find.byType(TvScreen), findsNothing);
     });
 
-    testWidgets('resolves /gameid link for ongoing game', (WidgetTester tester) async {
+    testWidgets('resolves /gameid link for ongoing game', (
+      WidgetTester tester,
+    ) async {
       final mockGameRepository = MockGameRepository();
       final ongoingGame = generateExportedGames(count: 1).first.copyWith(
         status: GameStatus.started,
@@ -634,7 +759,9 @@ void main() {
           user: LightUser(id: UserId('whiteId'), name: 'White'),
         ),
       );
-      when(() => mockGameRepository.getGame(ongoingGame.id)).thenAnswer((_) async => ongoingGame);
+      when(
+        () => mockGameRepository.getGame(ongoingGame.id),
+      ).thenAnswer((_) async => ongoingGame);
 
       final uri = Uri.parse('https://lichess.org/${ongoingGame.id.value}');
 
@@ -642,7 +769,9 @@ void main() {
         tester,
         uri,
         overrides: {
-          gameRepositoryProvider: gameRepositoryProvider.overrideWith((_) => mockGameRepository),
+          gameRepositoryProvider: gameRepositoryProvider.overrideWith(
+            (_) => mockGameRepository,
+          ),
         },
       );
 
@@ -651,14 +780,17 @@ void main() {
       await tester.pump();
       await tester.pump(kFakeWebSocketConnectionLag);
 
-      sendServerSocketMessages(Uri(path: '/watch/${ongoingGame.id.value}/white/v6'), [
-        makeFullEvent(
-          ongoingGame.id,
-          '',
-          whiteUserName: ongoingGame.white.user!.name,
-          blackUserName: ongoingGame.black.user!.name,
-        ),
-      ]);
+      sendServerSocketMessages(
+        Uri(path: '/watch/${ongoingGame.id.value}/white/v6'),
+        [
+          makeFullEvent(
+            ongoingGame.id,
+            '',
+            whiteUserName: ongoingGame.white.user!.name,
+            blackUserName: ongoingGame.black.user!.name,
+          ),
+        ],
+      );
       await tester.pump(); // Process socket message
 
       await tester.pumpAndSettle(); // Wait for TV screen to load
@@ -669,7 +801,9 @@ void main() {
       );
     });
 
-    testWidgets('replaces existing screen instead of stacking a duplicate', (tester) async {
+    testWidgets('replaces existing screen instead of stacking a duplicate', (
+      tester,
+    ) async {
       AppLinksService? capturedService;
       BuildContext? capturedContext;
 
@@ -683,7 +817,9 @@ void main() {
             capturedContext = context;
             return ElevatedButton(
               onPressed: () async {
-                await ref.read(appLinksServiceProvider).handleAppLink(context, uri);
+                await ref
+                    .read(appLinksServiceProvider)
+                    .handleAppLink(context, uri);
               },
               child: const Text('go to puzzle'),
             );
@@ -711,7 +847,9 @@ void main() {
       expect(find.byType(PuzzleScreen), findsNothing);
     });
 
-    testWidgets('resolves /challengeId link for open challenge', (WidgetTester tester) async {
+    testWidgets('resolves /challengeId link for open challenge', (
+      WidgetTester tester,
+    ) async {
       const challenge = Challenge(
         id: ChallengeId('abcdefgh'),
         challenger: (
@@ -730,7 +868,9 @@ void main() {
       );
       final uri = Uri.parse('https://lichess.org/${challenge.id.value}');
       final mockChallengeRepository = MockChallengeRepository();
-      when(() => mockChallengeRepository.show(challenge.id)).thenAnswer((_) async => challenge);
+      when(
+        () => mockChallengeRepository.show(challenge.id),
+      ).thenAnswer((_) async => challenge);
 
       await triggerAppLink(
         tester,
@@ -743,7 +883,10 @@ void main() {
       );
       await tester.pumpAndSettle(); // Wait for challenge screen to load
 
-      expect(find.text('Thibault challenges you: ♚ Black • Rated • 5+0'), findsOneWidget);
+      expect(
+        find.text('Thibault challenges you: ♚ Black • Rated • 5+0'),
+        findsOneWidget,
+      );
       expect(find.text('Accept'), findsOneWidget);
       // challenges from link cannot be declined
       expect(find.text('Cancel'), findsOneWidget);
@@ -752,30 +895,48 @@ void main() {
     testWidgets('resolves /@/user link', (WidgetTester tester) async {
       final uri = Uri.parse('https://lichess.org/@/thibault');
       final mockUserRepository = MockUserRepository();
-      when(() => mockUserRepository.getUser(const UserId('thibault'))).thenAnswer(
-        (_) async => const User(id: UserId('thibault'), username: 'Thibault', perfs: IMap.empty()),
+      when(
+        () => mockUserRepository.getUser(const UserId('thibault')),
+      ).thenAnswer(
+        (_) async => const User(
+          id: UserId('thibault'),
+          username: 'Thibault',
+          perfs: IMap.empty(),
+        ),
       );
 
       await triggerAppLink(
         tester,
         uri,
         overrides: {
-          userRepositoryProvider: userRepositoryProvider.overrideWith((_) => mockUserRepository),
+          userRepositoryProvider: userRepositoryProvider.overrideWith(
+            (_) => mockUserRepository,
+          ),
         },
       );
       await tester.pumpAndSettle(); // Wait for user screen to load
 
       expect(
         tester.widget(find.byType(UserScreen)),
-        isA<UserScreen>().having((s) => s.user.id, 'user id', const UserId('thibault')),
+        isA<UserScreen>().having(
+          (s) => s.user.id,
+          'user id',
+          const UserId('thibault'),
+        ),
       );
     });
 
     testWidgets('resolves /@/user/tv link', (WidgetTester tester) async {
       final uri = Uri.parse('https://lichess.org/@/thibault/tv');
       final mockUserRepository = MockUserRepository();
-      when(() => mockUserRepository.getUser(const UserId('thibault'))).thenAnswer(
-        (_) async => const User(id: UserId('thibault'), username: 'Thibault', perfs: IMap.empty()),
+      when(
+        () => mockUserRepository.getUser(const UserId('thibault')),
+      ).thenAnswer(
+        (_) async => const User(
+          id: UserId('thibault'),
+          username: 'Thibault',
+          perfs: IMap.empty(),
+        ),
       );
       final testGame = generateExportedGames(count: 1).first;
       when(
@@ -786,7 +947,9 @@ void main() {
         tester,
         uri,
         overrides: {
-          userRepositoryProvider: userRepositoryProvider.overrideWith((_) => mockUserRepository),
+          userRepositoryProvider: userRepositoryProvider.overrideWith(
+            (_) => mockUserRepository,
+          ),
         },
       );
 
@@ -795,25 +958,34 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      sendServerSocketMessages(Uri(path: '/watch/${testGame.id.value}/white/v6'), [
-        makeFullEvent(
-          testGame.id,
-          '',
-          whiteUserName: testGame.white.user?.name ?? 'White',
-          blackUserName: testGame.black.user?.name ?? 'Black',
-        ),
-      ]);
+      sendServerSocketMessages(
+        Uri(path: '/watch/${testGame.id.value}/white/v6'),
+        [
+          makeFullEvent(
+            testGame.id,
+            '',
+            whiteUserName: testGame.white.user?.name ?? 'White',
+            blackUserName: testGame.black.user?.name ?? 'Black',
+          ),
+        ],
+      );
       await tester.pump(); // Process socket message
 
       await tester.pumpAndSettle(); // Wait for tv screen to load
 
       expect(
         tester.widget(find.byType(TvScreen)),
-        isA<TvScreen>().having((s) => s.user?.id, 'user id', const UserId('thibault')),
+        isA<TvScreen>().having(
+          (s) => s.user?.id,
+          'user id',
+          const UserId('thibault'),
+        ),
       );
     });
 
-    testWidgets('Shows error snackbar for invalid user', (WidgetTester tester) async {
+    testWidgets('Shows error snackbar for invalid user', (
+      WidgetTester tester,
+    ) async {
       final uri = Uri.parse('https://lichess.org/@/hikaru');
       final mockUserRepository = MockUserRepository();
       when(
@@ -824,7 +996,9 @@ void main() {
         tester,
         uri,
         overrides: {
-          userRepositoryProvider: userRepositoryProvider.overrideWith((_) => mockUserRepository),
+          userRepositoryProvider: userRepositoryProvider.overrideWith(
+            (_) => mockUserRepository,
+          ),
         },
       );
       await tester.pumpAndSettle(); // Wait for snackbar to show
@@ -834,13 +1008,17 @@ void main() {
       expect(find.text('Cannot find user hikaru'), findsOneWidget);
     });
 
-    testWidgets('Shows tv screen for /tv/<channel> link', (WidgetTester tester) async {
+    testWidgets('Shows tv screen for /tv/<channel> link', (
+      WidgetTester tester,
+    ) async {
       final uri = Uri.parse('https://lichess.org/tv/blitz');
       await triggerAppLink(
         tester,
         uri,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(
               () => MockClient((request) async {
                 if (request.url.path == '/api/tv/channels') {
@@ -848,7 +1026,11 @@ void main() {
                   {
                     "blitz": {"color": "white", "gameId": "v3pIFdTz", "rating": 2615, "user": {"id": "whitePlayer", "name": "whitePlayer"}}
                   }''';
-                  return http.Response(body, 200, headers: {'content-type': 'application/json'});
+                  return http.Response(
+                    body,
+                    200,
+                    headers: {'content-type': 'application/json'},
+                  );
                 }
                 return http.Response('', 404);
               }),
@@ -879,7 +1061,9 @@ void main() {
       );
     });
 
-    testWidgets('does not resolve /tv link without a channel', (WidgetTester tester) async {
+    testWidgets('does not resolve /tv link without a channel', (
+      WidgetTester tester,
+    ) async {
       final uri = Uri.parse('https://lichess.org/tv');
       await triggerAppLink(tester, uri);
       await tester.pumpAndSettle();
@@ -887,13 +1071,18 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('does not resolve /tv/<invalid> link', (WidgetTester tester) async {
+    testWidgets('does not resolve /tv/<invalid> link', (
+      WidgetTester tester,
+    ) async {
       final uri = Uri.parse('https://lichess.org/tv/not-a-real-channel');
       await triggerAppLink(tester, uri);
       await tester.pumpAndSettle();
 
       expect(find.byType(TvScreen), findsNothing);
-      expect(find.text('Invalid TV channel: not-a-real-channel'), findsOneWidget);
+      expect(
+        find.text('Invalid TV channel: not-a-real-channel'),
+        findsOneWidget,
+      );
     });
   });
 
@@ -901,19 +1090,26 @@ void main() {
     testWidgets('a cold-start link is handled exactly once', (tester) async {
       // An invalid-FEN editor link shows a snackbar, and snackbars queue rather
       // than dedup, so a double-handled link surfaces as a duplicate.
-      final coldStartUri = Uri.parse('https://lichess.org/editor/not-a-valid-fen');
+      final coldStartUri = Uri.parse(
+        'https://lichess.org/editor/not-a-valid-fen',
+      );
       final navigatorKey = GlobalKey<NavigatorState>();
 
       final mockAppLinks = MockAppLinks();
       // The stream emits the cold-start link as its first (and only) event.
-      when(() => mockAppLinks.uriLinkStream).thenAnswer((_) => Stream.value(coldStartUri));
+      when(
+        () => mockAppLinks.uriLinkStream,
+      ).thenAnswer((_) => Stream.value(coldStartUri));
       // getInitialLink() also returns it, so handling it too would duplicate.
-      when(() => mockAppLinks.getInitialLink()).thenAnswer((_) async => coldStartUri);
+      when(
+        () => mockAppLinks.getInitialLink(),
+      ).thenAnswer((_) async => coldStartUri);
 
       final app = await makeTestProviderScope(
         tester,
         overrides: {
-          currentNavigatorKeyProvider: currentNavigatorKeyProvider.overrideWithValue(navigatorKey),
+          currentNavigatorKeyProvider: currentNavigatorKeyProvider
+              .overrideWithValue(navigatorKey),
           appLinksServiceProvider: appLinksServiceProvider.overrideWith((ref) {
             final service = AppLinksService(ref, appLinks: mockAppLinks);
             ref.onDispose(service.dispose);

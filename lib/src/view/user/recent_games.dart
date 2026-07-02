@@ -45,16 +45,21 @@ class RecentGamesWidget extends ConsumerWidget {
           hasLeading: true,
           onHeaderTap: nbOfGames > list.length
               ? () {
-                  Navigator.of(
-                    context,
-                  ).push(GameHistoryScreen.buildRoute(user: user, isOnline: isOnline));
+                  Navigator.of(context).push(
+                    GameHistoryScreen.buildRoute(
+                      user: user,
+                      isOnline: isOnline,
+                    ),
+                  );
                 }
               : null,
           children: [for (final item in list) GameListTile(item: item)],
         );
       },
       error: (error, stackTrace) {
-        debugPrint('SEVERE: [RecentGames] could not load recent games: $error\n$stackTrace');
+        debugPrint(
+          'SEVERE: [RecentGames] could not load recent games: $error\n$stackTrace',
+        );
         return const Padding(
           padding: Styles.bodySectionPadding,
           child: Text('Could not load recent games.'),
@@ -63,7 +68,11 @@ class RecentGamesWidget extends ConsumerWidget {
       loading: () => Shimmer(
         child: ShimmerLoading(
           isLoading: true,
-          child: ListSection.loading(itemsNumber: 10, header: true, hasLeading: true),
+          child: ListSection.loading(
+            itemsNumber: 10,
+            header: true,
+            hasLeading: true,
+          ),
         ),
       ),
     );

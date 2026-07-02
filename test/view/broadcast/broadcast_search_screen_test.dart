@@ -25,7 +25,9 @@ final client = MockClient((request) {
 
 void main() {
   group('BroadcastSearchScreen', () {
-    testWidgets('should see search results', variant: kPlatformVariant, (tester) async {
+    testWidgets('should see search results', variant: kPlatformVariant, (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const BroadcastSearchScreen(),
@@ -51,33 +53,35 @@ void main() {
       expect(find.byType(BroadcastListTile), findsAtLeast(1));
     });
 
-    testWidgets('should see "no result" when search finds nothing', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const BroadcastSearchScreen(),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(client, ref),
-          ),
-        },
-      );
+    testWidgets(
+      'should see "no result" when search finds nothing',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const BroadcastSearchScreen(),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(client, ref),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      final textFieldFinder = find.byType(SearchBar);
+        final textFieldFinder = find.byType(SearchBar);
 
-      await tester.enterText(textFieldFinder, 'azerty');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+        await tester.enterText(textFieldFinder, 'azerty');
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pump();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-      await tester.pump();
+        await tester.pump();
 
-      expect(find.text('No results'), findsOneWidget);
-    });
+        expect(find.text('No results'), findsOneWidget);
+      },
+    );
   });
 }
 

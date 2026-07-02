@@ -60,11 +60,15 @@ class UserProfileWidget extends ConsumerWidget {
                 ),
               ),
             if (userFullName != null)
-              Padding(padding: const EdgeInsets.only(bottom: 5), child: userFullName),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5),
+                child: userFullName,
+              ),
             if (user.profile?.bio != null)
               Linkify(
-                onOpen: (link) async =>
-                    await ref.read(appLinksServiceProvider).onLinkifyOpen(context, link),
+                onOpen: (link) async => await ref
+                    .read(appLinksServiceProvider)
+                    .onLinkifyOpen(context, link),
                 linkifiers: AppLinksService.kLichessLinkifiers,
                 text: user.profile!.bio!,
                 maxLines: bioMaxLines,
@@ -75,32 +79,44 @@ class UserProfileWidget extends ConsumerWidget {
             if (user.profile?.fideRating != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 5),
-                child: Text('${context.l10n.xRating('FIDE')}: ${user.profile!.fideRating}'),
+                child: Text(
+                  '${context.l10n.xRating('FIDE')}: ${user.profile!.fideRating}',
+                ),
               ),
             if (user.profile?.uscfRating != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 5),
-                child: Text('${context.l10n.xRating('USCF')}: ${user.profile!.uscfRating}'),
+                child: Text(
+                  '${context.l10n.xRating('USCF')}: ${user.profile!.uscfRating}',
+                ),
               ),
             if (user.profile?.ecfRating != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 5),
-                child: Text('${context.l10n.xRating('ECF')}: ${user.profile!.ecfRating}'),
+                child: Text(
+                  '${context.l10n.xRating('ECF')}: ${user.profile!.ecfRating}',
+                ),
               ),
             if (user.profile?.rcfRating != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 5),
-                child: Text('${context.l10n.xRating('RCF')}: ${user.profile!.rcfRating}'),
+                child: Text(
+                  '${context.l10n.xRating('RCF')}: ${user.profile!.rcfRating}',
+                ),
               ),
             if (user.profile?.cfcRating != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 5),
-                child: Text('${context.l10n.xRating('CFC')}: ${user.profile!.cfcRating}'),
+                child: Text(
+                  '${context.l10n.xRating('CFC')}: ${user.profile!.cfcRating}',
+                ),
               ),
             if (user.profile?.dsbRating != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 5),
-                child: Text('${context.l10n.xRating('DSB')}: ${user.profile!.dsbRating}'),
+                child: Text(
+                  '${context.l10n.xRating('DSB')}: ${user.profile!.dsbRating}',
+                ),
               ),
             if (user.profile != null)
               Padding(
@@ -108,7 +124,9 @@ class UserProfileWidget extends ConsumerWidget {
                 child: Location(profile: user.profile!),
               ),
             if (user.createdAt != null)
-              Text('${context.l10n.memberSince} ${DateFormat.yMMMMd().format(user.createdAt!)}'),
+              Text(
+                '${context.l10n.memberSince} ${DateFormat.yMMMMd().format(user.createdAt!)}',
+              ),
             if (user.count != null) ...[
               const SizedBox(height: 5),
               Text(context.l10n.nbGames(user.count!.all).localizeNumbers()),
@@ -117,7 +135,9 @@ class UserProfileWidget extends ConsumerWidget {
               const SizedBox(height: 5),
               Text(
                 context.l10n.tpTimeSpentPlaying(
-                  user.playTime!.total.toDaysHoursMinutes(AppLocalizations.of(context)),
+                  user.playTime!.total.toDaysHoursMinutes(
+                    AppLocalizations.of(context),
+                  ),
                 ),
               ),
             ],
@@ -160,7 +180,10 @@ class Location extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        if (profile.location != null) ...[Text(profile.location!), const SizedBox(width: 5)],
+        if (profile.location != null) ...[
+          Text(profile.location!),
+          const SizedBox(width: 5),
+        ],
         if (profile.country != null) ...[
           HttpNetworkImageWidget(
             lichessFlagSrc(profile.country!),
@@ -168,7 +191,8 @@ class Location extends StatelessWidget {
           ),
           const SizedBox(width: 5),
         ],
-        if (countries[profile.country] != null) Text(countries[profile.country]!),
+        if (countries[profile.country] != null)
+          Text(countries[profile.country]!),
       ],
     );
   }

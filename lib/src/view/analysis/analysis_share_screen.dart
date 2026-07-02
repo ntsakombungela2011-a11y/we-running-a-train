@@ -33,7 +33,12 @@ class AnalysisShareScreen extends StatelessWidget {
   }
 }
 
-const Set<String> _ratingHeaders = {'WhiteElo', 'BlackElo', 'WhiteRatingDiff', 'BlackRatingDiff'};
+const Set<String> _ratingHeaders = {
+  'WhiteElo',
+  'BlackElo',
+  'WhiteRatingDiff',
+  'BlackRatingDiff',
+};
 
 class _EditPgnTagsForm extends ConsumerStatefulWidget {
   const _EditPgnTagsForm(this.options);
@@ -59,7 +64,9 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
       _focusNodes[entry.key] = FocusNode();
       _focusNodes[entry.key]!.addListener(() {
         if (!_focusNodes[entry.key]!.hasFocus) {
-          ref.read(ctrlProvider.notifier).updatePgnHeader(entry.key, _controllers[entry.key]!.text);
+          ref
+              .read(ctrlProvider.notifier)
+              .updatePgnHeader(entry.key, _controllers[entry.key]!.text);
         }
       });
     }
@@ -79,7 +86,9 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
   @override
   Widget build(BuildContext context) {
     final ctrlProvider = analysisControllerProvider(widget.options);
-    final pgnHeaders = ref.watch(ctrlProvider.select((c) => c.requireValue.pgnHeaders));
+    final pgnHeaders = ref.watch(
+      ctrlProvider.select((c) => c.requireValue.pgnHeaders),
+    );
     final showRatingAsync = ref.watch(showRatingsPrefProvider);
 
     void focusAndSelectNextField(int index, IMap<String, String> pgnHeaders) {
@@ -119,7 +128,11 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
             children: [
               Column(
                 children: pgnHeaders.entries
-                    .where((e) => value != ShowRatings.no || !_ratingHeaders.contains(e.key))
+                    .where(
+                      (e) =>
+                          value != ShowRatings.no ||
+                          !_ratingHeaders.contains(e.key),
+                    )
                     .mapIndexed((index, e) {
                       return _EditablePgnField(
                         entry: e,
@@ -149,7 +162,9 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
                           }
                         },
                         onSubmitted: (value) {
-                          ref.read(ctrlProvider.notifier).updatePgnHeader(e.key, value);
+                          ref
+                              .read(ctrlProvider.notifier)
+                              .updatePgnHeader(e.key, value);
                           focusAndSelectNextField(index, pgnHeaders);
                         },
                       );
@@ -178,7 +193,11 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
                           context,
                           ShareParams(
                             text: ref
-                                .read(analysisControllerProvider(widget.options).notifier)
+                                .read(
+                                  analysisControllerProvider(
+                                    widget.options,
+                                  ).notifier,
+                                )
                                 .makeExportPgn(),
                           ),
                         );
@@ -208,7 +227,9 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
         builder: (BuildContext context) => Container(
           height: 216,
           padding: const EdgeInsets.only(top: 6.0),
-          margin: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(context).bottom,
+          ),
           color: CupertinoColors.systemBackground.resolveFrom(context),
           child: SafeArea(
             top: false,
@@ -219,7 +240,9 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
                   : DateTime.now(),
               onDateTimeChanged: (DateTime newDateTime) {
                 final newDate = _dateFormatter.format(newDateTime);
-                ref.read(ctrlProvider.notifier).updatePgnHeader(entry.key, newDate);
+                ref
+                    .read(ctrlProvider.notifier)
+                    .updatePgnHeader(entry.key, newDate);
                 _controllers[entry.key]!.text = newDate;
               },
             ),
@@ -240,7 +263,9 @@ class _EditPgnTagsFormState extends ConsumerState<_EditPgnTagsForm> {
           .then((date) {
             if (date != null) {
               final formatted = _dateFormatter.format(date);
-              ref.read(ctrlProvider.notifier).updatePgnHeader(entry.key, formatted);
+              ref
+                  .read(ctrlProvider.notifier)
+                  .updatePgnHeader(entry.key, formatted);
               _controllers[entry.key]!.text = formatted;
             }
           })
@@ -290,14 +315,19 @@ class _EditablePgnField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: Styles.horizontalBodyPadding.add(const EdgeInsets.only(bottom: 8.0)),
+      padding: Styles.horizontalBodyPadding.add(
+        const EdgeInsets.only(bottom: 8.0),
+      ),
       child: Row(
         children: [
           SizedBox(
             width: 110,
             child: Text(
               entry.key,
-              style: const TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
           const SizedBox(width: 8),

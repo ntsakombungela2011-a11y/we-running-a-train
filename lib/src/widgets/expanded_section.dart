@@ -10,7 +10,8 @@ class ExpandedSection extends StatefulWidget {
   _ExpandedSectionState createState() => _ExpandedSectionState();
 }
 
-class _ExpandedSectionState extends State<ExpandedSection> with SingleTickerProviderStateMixin {
+class _ExpandedSectionState extends State<ExpandedSection>
+    with SingleTickerProviderStateMixin {
   late AnimationController expandController;
   late Animation<double> animation;
 
@@ -22,7 +23,10 @@ class _ExpandedSectionState extends State<ExpandedSection> with SingleTickerProv
       value: widget.expand ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 300),
     );
-    animation = CurvedAnimation(parent: expandController, curve: Curves.fastOutSlowIn);
+    animation = CurvedAnimation(
+      parent: expandController,
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   void _runExpandCheck() {

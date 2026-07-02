@@ -20,10 +20,16 @@ import 'package:lichess_mobile/src/widgets/user.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const kDefaultBlogImage = AssetImage('assets/images/broadcast_image.webp');
-const kBlogCardItemContentPadding = EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
+const kBlogCardItemContentPadding = EdgeInsets.symmetric(
+  horizontal: 12.0,
+  vertical: 8.0,
+);
 const kDefaultCardOpacity = 0.9;
 
-const kBlogCarouselItemPadding = EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0);
+const kBlogCarouselItemPadding = EdgeInsets.symmetric(
+  horizontal: 8.0,
+  vertical: 4.0,
+);
 const kHandsetCarouselFlexWeights = [6, 2];
 const kTabletCarouselFlexWeights = [4, 4, 1];
 const kDesktopCarouselFlexWeights = [3, 3, 3, 1];
@@ -31,9 +37,12 @@ const kDesktopCarouselFlexWeights = [3, 3, 3, 1];
 const _emptyPosts = IListConst<BlogPost>([]);
 
 class BlogCarousel extends StatefulWidget {
-  const BlogCarousel({required this.posts, required this.worker, super.key}) : _isLoading = false;
+  const BlogCarousel({required this.posts, required this.worker, super.key})
+    : _isLoading = false;
 
-  const BlogCarousel.loading({required this.worker}) : _isLoading = true, posts = _emptyPosts;
+  const BlogCarousel.loading({required this.worker})
+    : _isLoading = true,
+      posts = _emptyPosts;
 
   final IList<BlogPost> posts;
   final ImageColorWorker worker;
@@ -85,7 +94,8 @@ class _BlogCarouselState extends State<BlogCarousel> {
       builder: (context, constraints) {
         final flexWeights = BlogCarousel.flexWeights(constraints.maxWidth);
         final widgetWidth = constraints.maxWidth;
-        final elementWidth = widgetWidth * flexWeights[0] / flexWeights.reduce((a, b) => a + b);
+        final elementWidth =
+            widgetWidth * flexWeights[0] / flexWeights.reduce((a, b) => a + b);
         final pictureHeight = elementWidth / 2;
         const elementHeightFactor = 0.65;
         final infoHeight = math.max(120, pictureHeight * elementHeightFactor);
@@ -98,8 +108,12 @@ class _BlogCarouselState extends State<BlogCarousel> {
             ),
             child: CarouselView.weighted(
               controller: _controller,
-              shape: const RoundedRectangleBorder(borderRadius: Styles.cardBorderRadius),
-              elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0 : 1,
+              shape: const RoundedRectangleBorder(
+                borderRadius: Styles.cardBorderRadius,
+              ),
+              elevation: Theme.of(context).platform == TargetPlatform.iOS
+                  ? 0
+                  : 1,
               flexWeights: flexWeights,
               itemSnapping: true,
               padding: kBlogCarouselItemPadding,
@@ -175,7 +189,9 @@ class _BlogCarouselItemState extends ConsumerState<BlogCarouselItem> {
     if (_colorsCache.containsKey(imageUrl)) {
       _cardColors = _colorsCache[imageUrl];
     } else if (imageUrl != null) {
-      _getImageColors(HttpNetworkImage(imageUrl!, ref.read(defaultClientProvider)));
+      _getImageColors(
+        HttpNetworkImage(imageUrl!, ref.read(defaultClientProvider)),
+      );
     }
   }
 
@@ -190,7 +206,11 @@ class _BlogCarouselItemState extends ConsumerState<BlogCarouselItem> {
       await precacheImage(provider, context);
       final ui.Image scaledImage = await imageProviderToScaled(provider);
       final imageBytes = await scaledImage.toByteData();
-      final response = await _computeImageColors(widget.worker, provider.url, imageBytes!);
+      final response = await _computeImageColors(
+        widget.worker,
+        provider.url,
+        imageBytes!,
+      );
       if (response != null) {
         if (mounted) {
           setState(() {
@@ -231,7 +251,9 @@ class _BlogCarouselItemState extends ConsumerState<BlogCarouselItem> {
         duration: const Duration(milliseconds: 500),
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
-          color: backgroundColor.withValues(alpha: _tapDown ? 1.0 : kDefaultCardOpacity),
+          color: backgroundColor.withValues(
+            alpha: _tapDown ? 1.0 : kDefaultCardOpacity,
+          ),
         ),
         child: OverflowBox(
           maxWidth: width * flexWeights[0] / totalFlex - paddingWidth,
@@ -256,10 +278,14 @@ class _BlogCarouselItemState extends ConsumerState<BlogCarouselItem> {
                     child: child,
                   );
                 },
-                errorBuilder: (context, error, stackTrace) => const Image(image: kDefaultBlogImage),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Image(image: kDefaultBlogImage),
               ),
               Expanded(
-                child: _BlogCardContent(post: widget.post, cardColors: _cardColors),
+                child: _BlogCardContent(
+                  post: widget.post,
+                  cardColors: _cardColors,
+                ),
               ),
             ],
           ),
@@ -284,7 +310,8 @@ class _BlogCardContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final titleColor = _cardColors?.onPrimaryContainer;
     final subTitleColor =
-        _cardColors?.onPrimaryContainer.withValues(alpha: 0.8) ?? textShade(context, 0.8);
+        _cardColors?.onPrimaryContainer.withValues(alpha: 0.8) ??
+        textShade(context, 0.8);
     return Padding(
       padding: kBlogCardItemContentPadding,
       child: Column(
@@ -308,7 +335,11 @@ class _BlogCardContent extends StatelessWidget {
                   ),
                   Text(
                     _dateFormat.format(post.createdAt),
-                    style: TextStyle(color: subTitleColor, letterSpacing: -0.2, fontSize: 12.0),
+                    style: TextStyle(
+                      color: subTitleColor,
+                      letterSpacing: -0.2,
+                      fontSize: 12.0,
+                    ),
                     overflow: TextOverflow.clip,
                     softWrap: false,
                     maxLines: 1,
@@ -346,7 +377,9 @@ Future<_CardColors?> _computeImageColors(
   String imageUrl,
   ByteData imageBytes,
 ) async {
-  final response = await worker.getImageColors(imageBytes.buffer.asUint32List());
+  final response = await worker.getImageColors(
+    imageBytes.buffer.asUint32List(),
+  );
   if (response != null) {
     final (:primaryContainer, :onPrimaryContainer) = response;
     final cardColors = (

@@ -8,9 +8,13 @@ void main() {
   group('LagIndicator', () {
     // lagRating=0 requires a size >= 30 to avoid SpinKitThreeBounce overflow
     // (SpinKitThreeBounce internally sizes to Size(bounceSize * 2, bounceSize) = Size(30, 15))
-    testWidgets('shows loading indicator when lagRating is 0', (WidgetTester tester) async {
+    testWidgets('shows loading indicator when lagRating is 0', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        const MaterialApp(home: Scaffold(body: LagIndicator(lagRating: 0, size: 40.0))),
+        const MaterialApp(
+          home: Scaffold(body: LagIndicator(lagRating: 0, size: 40.0)),
+        ),
       );
 
       expect(find.byType(SpinKitThreeBounce), findsOneWidget);
@@ -27,8 +31,16 @@ void main() {
           ),
         );
 
-        expect(find.byType(SpinKitThreeBounce), findsNothing, reason: 'lagRating=$rating');
-        expect(find.byType(SignalStrengthIndicator), findsOneWidget, reason: 'lagRating=$rating');
+        expect(
+          find.byType(SpinKitThreeBounce),
+          findsNothing,
+          reason: 'lagRating=$rating',
+        );
+        expect(
+          find.byType(SignalStrengthIndicator),
+          findsOneWidget,
+          reason: 'lagRating=$rating',
+        );
       }
     });
 
@@ -47,7 +59,9 @@ void main() {
     });
 
     testWidgets('uses default size of 20.0', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: Scaffold(body: LagIndicator(lagRating: 1))));
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: LagIndicator(lagRating: 1))),
+      );
 
       final sizedBox = tester.widget<SizedBox>(find.byType(SizedBox).first);
       expect(sizedBox.width, 20.0);

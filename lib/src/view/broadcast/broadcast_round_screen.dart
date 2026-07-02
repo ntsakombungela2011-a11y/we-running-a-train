@@ -60,11 +60,21 @@ class BroadcastRoundScreenLoading extends ConsumerWidget {
   final BroadcastRoundId roundId;
   final BroadcastRoundTab? initialTab;
 
-  const BroadcastRoundScreenLoading({super.key, required this.roundId, this.initialTab});
+  const BroadcastRoundScreenLoading({
+    super.key,
+    required this.roundId,
+    this.initialTab,
+  });
 
-  static Route<dynamic> buildRoute(BroadcastRoundId roundId, {BroadcastRoundTab? initialTab}) {
+  static Route<dynamic> buildRoute(
+    BroadcastRoundId roundId, {
+    BroadcastRoundTab? initialTab,
+  }) {
     return buildScreenRoute(
-      screen: BroadcastRoundScreenLoading(roundId: roundId, initialTab: initialTab),
+      screen: BroadcastRoundScreenLoading(
+        roundId: roundId,
+        initialTab: initialTab,
+      ),
     );
   }
 
@@ -100,9 +110,15 @@ class BroadcastRoundScreen extends ConsumerStatefulWidget {
 
   const BroadcastRoundScreen({required this.broadcast, this.initialTab});
 
-  static Route<dynamic> buildRoute(Broadcast broadcast, {BroadcastRoundTab? initialTab}) {
+  static Route<dynamic> buildRoute(
+    Broadcast broadcast, {
+    BroadcastRoundTab? initialTab,
+  }) {
     return buildScreenRoute(
-      screen: BroadcastRoundScreen(broadcast: broadcast, initialTab: initialTab),
+      screen: BroadcastRoundScreen(
+        broadcast: broadcast,
+        initialTab: initialTab,
+      ),
     );
   }
 
@@ -148,7 +164,9 @@ class _BroadcastRoundScreenState extends ConsumerState<BroadcastRoundScreen>
     if (_tabController.indexIsChanging) {
       final currentRoundId = _selectedRoundId ?? widget.broadcast.roundToLinkId;
 
-      ref.read(broadcastRoundControllerProvider(currentRoundId).notifier).clearObservedGames();
+      ref
+          .read(broadcastRoundControllerProvider(currentRoundId).notifier)
+          .clearObservedGames();
     }
   }
 
@@ -232,7 +250,10 @@ class _BroadcastRoundScreenState extends ConsumerState<BroadcastRoundScreen>
         body: TabBarView(
           controller: _tabController,
           children: <Widget>[
-            BroadcastOverviewTab(broadcast: widget.broadcast, tournamentId: _selectedTournamentId),
+            BroadcastOverviewTab(
+              broadcast: widget.broadcast,
+              tournamentId: _selectedTournamentId,
+            ),
             switch (asyncTournament) {
               AsyncData(:final value) => BroadcastBoardsTab(
                 tournamentId: _selectedTournamentId,
@@ -268,7 +289,9 @@ class _BroadcastRoundScreenState extends ConsumerState<BroadcastRoundScreen>
       ),
       _ => PlatformScaffold(
         extendBody: Theme.of(context).platform == TargetPlatform.iOS,
-        appBar: PlatformAppBar(title: AppBarTitleText(widget.broadcast.title, maxLines: 2)),
+        appBar: PlatformAppBar(
+          title: AppBarTitleText(widget.broadcast.title, maxLines: 2),
+        ),
         body: const Center(child: CircularProgressIndicator.adaptive()),
       ),
     };
@@ -276,7 +299,9 @@ class _BroadcastRoundScreenState extends ConsumerState<BroadcastRoundScreen>
 
   @override
   Widget build(BuildContext context) {
-    final asyncTour = ref.watch(broadcastTournamentProvider(_selectedTournamentId));
+    final asyncTour = ref.watch(
+      broadcastTournamentProvider(_selectedTournamentId),
+    );
 
     const loadingRound = AsyncValue<BroadcastRoundState>.loading();
 
@@ -285,11 +310,15 @@ class _BroadcastRoundScreenState extends ConsumerState<BroadcastRoundScreen>
         // Eagerly initalize the round controller so it stays alive when switching tabs
         // and to know if the round has games to show
         final roundState = ref.watch(
-          broadcastRoundControllerProvider(_selectedRoundId ?? tournament.defaultRoundId),
+          broadcastRoundControllerProvider(
+            _selectedRoundId ?? tournament.defaultRoundId,
+          ),
         );
 
         ref.listen(
-          broadcastRoundControllerProvider(_selectedRoundId ?? tournament.defaultRoundId),
+          broadcastRoundControllerProvider(
+            _selectedRoundId ?? tournament.defaultRoundId,
+          ),
           (_, round) {
             if (widget.initialTab == null && round.hasValue && !roundLoaded) {
               roundLoaded = true;
@@ -332,7 +361,9 @@ class _BottomBar extends ConsumerWidget {
               showDragHandle: true,
               isScrollControlled: true,
               isDismissible: true,
-              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.9),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.9,
+              ),
               builder: (_) => DraggableScrollableSheet(
                 initialChildSize: 0.4,
                 snap: true,
@@ -348,7 +379,9 @@ class _BottomBar extends ConsumerWidget {
               ),
             ),
             child: Text(
-              tournament.group!.firstWhere((g) => g.id == tournament.data.id).name,
+              tournament.group!
+                  .firstWhere((g) => g.id == tournament.data.id)
+                  .name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -359,7 +392,9 @@ class _BottomBar extends ConsumerWidget {
             showDragHandle: true,
             isScrollControlled: true,
             isDismissible: true,
-            constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.9),
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.9,
+            ),
             builder: (_) => DraggableScrollableSheet(
               initialChildSize: 0.6,
               snap: true,
@@ -379,16 +414,29 @@ class _BottomBar extends ConsumerWidget {
             children: [
               Flexible(
                 child: Text(
-                  tournament.rounds.firstWhere((round) => round.id == roundId).name,
+                  tournament.rounds
+                      .firstWhere((round) => round.id == roundId)
+                      .name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 5.0),
-              switch (tournament.rounds.firstWhere((round) => round.id == roundId).status) {
-                RoundStatus.finished => Icon(Icons.check, color: context.lichessColors.good),
-                RoundStatus.live => Icon(Icons.circle, color: context.lichessColors.error),
-                RoundStatus.upcoming => const Icon(Icons.calendar_month, color: Colors.grey),
+              switch (tournament.rounds
+                  .firstWhere((round) => round.id == roundId)
+                  .status) {
+                RoundStatus.finished => Icon(
+                  Icons.check,
+                  color: context.lichessColors.good,
+                ),
+                RoundStatus.live => Icon(
+                  Icons.circle,
+                  color: context.lichessColors.error,
+                ),
+                RoundStatus.upcoming => const Icon(
+                  Icons.calendar_month,
+                  color: Colors.grey,
+                ),
               },
             ],
           ),
@@ -426,7 +474,10 @@ class _RoundSelectorState extends ConsumerState<_RoundSelectorMenu> {
     // Scroll to the current round
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (currentRoundKey.currentContext != null) {
-        Scrollable.ensureVisible(currentRoundKey.currentContext!, alignment: 0.5);
+        Scrollable.ensureVisible(
+          currentRoundKey.currentContext!,
+          alignment: 0.5,
+        );
       }
     });
 
@@ -437,21 +488,40 @@ class _RoundSelectorState extends ConsumerState<_RoundSelectorMenu> {
           ListTile(
             key: round.id == widget.selectedRoundId ? currentRoundKey : null,
             selected: round.id == widget.selectedRoundId,
-            title: Text(round.name, overflow: TextOverflow.ellipsis, maxLines: 2),
+            title: Text(
+              round.name,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
             subtitle: (round.startsAt != null || round.startsAfterPrevious)
                 ? Text(
                     round.startsAt != null
-                        ? round.startsAt!.difference(DateTime.now()).inDays.abs() < 30
+                        ? round.startsAt!
+                                      .difference(DateTime.now())
+                                      .inDays
+                                      .abs() <
+                                  30
                               ? _dateFormatMonth.format(round.startsAt!)
                               : _dateFormatYearMonth.format(round.startsAt!)
-                        : context.l10n.broadcastStartsAfter(widget.rounds[index - 1].name),
+                        : context.l10n.broadcastStartsAfter(
+                            widget.rounds[index - 1].name,
+                          ),
                     overflow: TextOverflow.ellipsis,
                   )
                 : null,
             trailing: switch (round.status) {
-              RoundStatus.finished => Icon(Icons.check, color: context.lichessColors.good),
-              RoundStatus.live => Icon(Icons.circle, color: context.lichessColors.error),
-              RoundStatus.upcoming => const Icon(Icons.calendar_month, color: Colors.grey),
+              RoundStatus.finished => Icon(
+                Icons.check,
+                color: context.lichessColors.good,
+              ),
+              RoundStatus.live => Icon(
+                Icons.circle,
+                color: context.lichessColors.error,
+              ),
+              RoundStatus.upcoming => const Icon(
+                Icons.calendar_month,
+                color: Colors.grey,
+              ),
             },
             onTap: () {
               widget.setRoundId(round.id);
@@ -477,7 +547,8 @@ class _TournamentSelectorMenu extends ConsumerStatefulWidget {
   final void Function(BroadcastTournamentId) setTournamentId;
 
   @override
-  ConsumerState<_TournamentSelectorMenu> createState() => _TournamentSelectorState();
+  ConsumerState<_TournamentSelectorMenu> createState() =>
+      _TournamentSelectorState();
 }
 
 class _TournamentSelectorState extends ConsumerState<_TournamentSelectorMenu> {
@@ -488,7 +559,10 @@ class _TournamentSelectorState extends ConsumerState<_TournamentSelectorMenu> {
     // Scroll to the current tournament
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (currentTournamentKey.currentContext != null) {
-        Scrollable.ensureVisible(currentTournamentKey.currentContext!, alignment: 0.5);
+        Scrollable.ensureVisible(
+          currentTournamentKey.currentContext!,
+          alignment: 0.5,
+        );
       }
     });
 
@@ -497,7 +571,9 @@ class _TournamentSelectorState extends ConsumerState<_TournamentSelectorMenu> {
       children: [
         for (final tournament in widget.group)
           ListTile(
-            key: tournament.id == widget.tournament.data.id ? currentTournamentKey : null,
+            key: tournament.id == widget.tournament.data.id
+                ? currentTournamentKey
+                : null,
             selected: tournament.id == widget.tournament.data.id,
             title: Text(tournament.name),
             trailing: !tournament.active
@@ -533,7 +609,8 @@ class _BroadcastSettingsBottomSheet extends ConsumerStatefulWidget {
       _BroadcastSettingsBottomSheetState();
 }
 
-class _BroadcastSettingsBottomSheetState extends ConsumerState<_BroadcastSettingsBottomSheet> {
+class _BroadcastSettingsBottomSheetState
+    extends ConsumerState<_BroadcastSettingsBottomSheet> {
   late _BroadcastGameFilter filter;
 
   @override
@@ -589,7 +666,9 @@ class _BroadcastSettingsBottomSheetState extends ConsumerState<_BroadcastSetting
               title: Text(context.l10n.studyShowEvalBar),
               value: broadcastPreferences.showRoundEvaluationGauges,
               onChanged: (value) {
-                ref.read(broadcastPreferencesProvider.notifier).toggleEvaluationBar();
+                ref
+                    .read(broadcastPreferencesProvider.notifier)
+                    .toggleEvaluationBar();
               },
             ),
           ],

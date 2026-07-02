@@ -26,40 +26,42 @@ const _clockChallengeId = 'clockId12345';
 void main() {
   group('CreateChallengeBottomSheet', () {
     group('clock (real-time) challenge', () {
-      testWidgets('tapping challenge button closes the sheet and pushes GameScreen', (
-        tester,
-      ) async {
-        final app = await makeTestProviderScopeApp(
-          tester,
-          home: const _TestBottomSheetOpener(user: _testDestUser),
-          overrides: {
-            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith(
-              (ref) => FakeHttpClientFactory(() => _makeClockMockClient()),
-            ),
-          },
-          authUser: fakeAuthUser,
-        );
+      testWidgets(
+        'tapping challenge button closes the sheet and pushes GameScreen',
+        (tester) async {
+          final app = await makeTestProviderScopeApp(
+            tester,
+            home: const _TestBottomSheetOpener(user: _testDestUser),
+            overrides: {
+              httpClientFactoryProvider: httpClientFactoryProvider.overrideWith(
+                (ref) => FakeHttpClientFactory(() => _makeClockMockClient()),
+              ),
+            },
+            authUser: fakeAuthUser,
+          );
 
-        await tester.pumpWidget(app);
-        // let account provider load
-        await tester.pump(const Duration(milliseconds: 50));
+          await tester.pumpWidget(app);
+          // let account provider load
+          await tester.pump(const Duration(milliseconds: 50));
 
-        // open the bottom sheet
-        await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
+          // open the bottom sheet
+          await tester.tap(find.text('Open'));
+          await tester.pumpAndSettle();
 
-        expect(find.byType(CreateChallengeBottomSheet), findsOneWidget);
+          expect(find.byType(CreateChallengeBottomSheet), findsOneWidget);
 
-        // default time control is clock, so the challenge button should be enabled
-        await tester.tap(find.text('Challenge ${_testDestUser.name}'));
-        await tester.pumpAndSettle();
+          // default time control is clock, so the challenge button should be enabled
+          await tester.tap(find.text('Challenge ${_testDestUser.name}'));
+          await tester.pumpAndSettle();
 
-        // the bottom sheet should be gone
-        expect(find.byType(CreateChallengeBottomSheet), findsNothing);
+          // the bottom sheet should be gone
+          expect(find.byType(CreateChallengeBottomSheet), findsNothing);
 
-        // GameScreen should be pushed (loading state is fine)
-        expect(find.byType(GameScreen), findsOneWidget);
-      }, variant: kPlatformVariant);
+          // GameScreen should be pushed (loading state is fine)
+          expect(find.byType(GameScreen), findsOneWidget);
+        },
+        variant: kPlatformVariant,
+      );
     });
 
     group('correspondence/unlimited challenge', () {
@@ -71,16 +73,22 @@ void main() {
             home: const _TestBottomSheetOpener(user: _testDestUser),
             overrides: {
               httpClientFactoryProvider: httpClientFactoryProvider.overrideWith(
-                (ref) => FakeHttpClientFactory(() => _makeCorrespondenceMockClient()),
+                (ref) => FakeHttpClientFactory(
+                  () => _makeCorrespondenceMockClient(),
+                ),
               ),
             },
             authUser: fakeAuthUser,
             defaultPreferences: {
-              '${PrefCategory.challenge.storageKey}.${fakeAuthUser.user.id}': jsonEncode(
-                ChallengePrefs.defaults
-                    .copyWith(timeControl: ChallengeTimeControlType.correspondence, rated: false)
-                    .toJson(),
-              ),
+              '${PrefCategory.challenge.storageKey}.${fakeAuthUser.user.id}':
+                  jsonEncode(
+                    ChallengePrefs.defaults
+                        .copyWith(
+                          timeControl: ChallengeTimeControlType.correspondence,
+                          rated: false,
+                        )
+                        .toJson(),
+                  ),
             },
           );
 
@@ -116,103 +124,122 @@ void main() {
         variant: kPlatformVariant,
       );
 
-      testWidgets('creating an open correspondence challenge opens the game screen', (
-        tester,
-      ) async {
-        final app = await makeTestProviderScopeApp(
-          tester,
-          home: const _TestBottomSheetOpener(user: null),
-          overrides: {
-            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith(
-              (ref) => FakeHttpClientFactory(() => _makeCorrespondenceMockClient()),
-            ),
-          },
-          authUser: fakeAuthUser,
-          defaultPreferences: {
-            '${PrefCategory.challenge.storageKey}.${fakeAuthUser.user.id}': jsonEncode(
-              ChallengePrefs.defaults
-                  .copyWith(timeControl: ChallengeTimeControlType.correspondence, rated: false)
-                  .toJson(),
-            ),
-          },
-        );
+      testWidgets(
+        'creating an open correspondence challenge opens the game screen',
+        (tester) async {
+          final app = await makeTestProviderScopeApp(
+            tester,
+            home: const _TestBottomSheetOpener(user: null),
+            overrides: {
+              httpClientFactoryProvider: httpClientFactoryProvider.overrideWith(
+                (ref) => FakeHttpClientFactory(
+                  () => _makeCorrespondenceMockClient(),
+                ),
+              ),
+            },
+            authUser: fakeAuthUser,
+            defaultPreferences: {
+              '${PrefCategory.challenge.storageKey}.${fakeAuthUser.user.id}':
+                  jsonEncode(
+                    ChallengePrefs.defaults
+                        .copyWith(
+                          timeControl: ChallengeTimeControlType.correspondence,
+                          rated: false,
+                        )
+                        .toJson(),
+                  ),
+            },
+          );
 
-        await tester.pumpWidget(app);
-        // let account provider load
-        await tester.pump(const Duration(milliseconds: 50));
+          await tester.pumpWidget(app);
+          // let account provider load
+          await tester.pump(const Duration(milliseconds: 50));
 
-        // open the bottom sheet
-        await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
+          // open the bottom sheet
+          await tester.tap(find.text('Open'));
+          await tester.pumpAndSettle();
 
-        expect(find.byType(CreateChallengeBottomSheet), findsOneWidget);
+          expect(find.byType(CreateChallengeBottomSheet), findsOneWidget);
 
-        await tester.tap(find.text('Challenge a friend'));
-        await tester.pumpAndSettle();
+          await tester.tap(find.text('Challenge a friend'));
+          await tester.pumpAndSettle();
 
-        // the bottom sheet should be gone
-        expect(find.byType(CreateChallengeBottomSheet), findsNothing);
+          // the bottom sheet should be gone
+          expect(find.byType(CreateChallengeBottomSheet), findsNothing);
 
-        // GameScreen should be pushed (loading state is fine)
-        expect(find.byType(GameScreen), findsOneWidget);
-      }, variant: kPlatformVariant);
+          // GameScreen should be pushed (loading state is fine)
+          expect(find.byType(GameScreen), findsOneWidget);
+        },
+        variant: kPlatformVariant,
+      );
 
-      testWidgets('shows decline reason when challenge is immediately declined', (tester) async {
-        final app = await makeTestProviderScopeApp(
-          tester,
-          home: const _TestBottomSheetOpener(user: _testDestUser),
-          overrides: {
-            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith(
-              (ref) => FakeHttpClientFactory(() => _makeCorrespondenceDeclinedMockClient()),
-            ),
-          },
-          authUser: fakeAuthUser,
-          defaultPreferences: {
-            '${PrefCategory.challenge.storageKey}.${fakeAuthUser.user.id}': jsonEncode(
-              ChallengePrefs.defaults
-                  .copyWith(timeControl: ChallengeTimeControlType.correspondence, rated: false)
-                  .toJson(),
-            ),
-          },
-        );
+      testWidgets(
+        'shows decline reason when challenge is immediately declined',
+        (tester) async {
+          final app = await makeTestProviderScopeApp(
+            tester,
+            home: const _TestBottomSheetOpener(user: _testDestUser),
+            overrides: {
+              httpClientFactoryProvider: httpClientFactoryProvider.overrideWith(
+                (ref) => FakeHttpClientFactory(
+                  () => _makeCorrespondenceDeclinedMockClient(),
+                ),
+              ),
+            },
+            authUser: fakeAuthUser,
+            defaultPreferences: {
+              '${PrefCategory.challenge.storageKey}.${fakeAuthUser.user.id}':
+                  jsonEncode(
+                    ChallengePrefs.defaults
+                        .copyWith(
+                          timeControl: ChallengeTimeControlType.correspondence,
+                          rated: false,
+                        )
+                        .toJson(),
+                  ),
+            },
+          );
 
-        await tester.pumpWidget(app);
-        await tester.pump(const Duration(milliseconds: 50));
+          await tester.pumpWidget(app);
+          await tester.pump(const Duration(milliseconds: 50));
 
-        // open the bottom sheet
-        await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
+          // open the bottom sheet
+          await tester.tap(find.text('Open'));
+          await tester.pumpAndSettle();
 
-        expect(find.byType(CreateChallengeBottomSheet), findsOneWidget);
+          expect(find.byType(CreateChallengeBottomSheet), findsOneWidget);
 
-        // tap challenge button
-        await tester.tap(find.text('Challenge ${_testDestUser.name}'));
-        await tester.pump();
+          // tap challenge button
+          await tester.tap(find.text('Challenge ${_testDestUser.name}'));
+          await tester.pump();
 
-        // let the HTTP request for challenge creation complete
-        await tester.pump(const Duration(milliseconds: 50));
+          // let the HTTP request for challenge creation complete
+          await tester.pump(const Duration(milliseconds: 50));
 
-        // let the socket connect
-        await tester.pump(kFakeWebSocketConnectionLag);
+          // let the socket connect
+          await tester.pump(kFakeWebSocketConnectionLag);
 
-        // simulate a server reload event indicating the challenge was declined
-        sendServerSocketMessages(Uri(path: '/challenge/$_correspondenceChallengeId/socket/v5'), [
-          '{"t": "reload", "v": 1}',
-        ]);
+          // simulate a server reload event indicating the challenge was declined
+          sendServerSocketMessages(
+            Uri(path: '/challenge/$_correspondenceChallengeId/socket/v5'),
+            ['{"t": "reload", "v": 1}'],
+          );
 
-        // let the reload event be processed and the show request complete
-        await tester.pump(const Duration(milliseconds: 50));
+          // let the reload event be processed and the show request complete
+          await tester.pump(const Duration(milliseconds: 50));
 
-        // let the 1-second delay in newCorrespondenceChallenge expire
-        await tester.pump(const Duration(seconds: 1));
-        await tester.pumpAndSettle();
+          // let the 1-second delay in newCorrespondenceChallenge expire
+          await tester.pump(const Duration(seconds: 1));
+          await tester.pumpAndSettle();
 
-        // the bottom sheet should be closed
-        expect(find.byType(CreateChallengeBottomSheet), findsNothing);
+          // the bottom sheet should be closed
+          expect(find.byType(CreateChallengeBottomSheet), findsNothing);
 
-        // snackbar should show the challenge declined message
-        expect(find.text('Challenge declined.'), findsOneWidget);
-      }, variant: kPlatformVariant);
+          // snackbar should show the challenge declined message
+          expect(find.text('Challenge declined.'), findsOneWidget);
+        },
+        variant: kPlatformVariant,
+      );
     });
   });
 }

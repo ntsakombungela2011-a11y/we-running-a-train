@@ -63,7 +63,11 @@ extension _PracticeCommentDisplay on PracticeComment {
 }
 
 class OfflineComputerGameScreen extends ConsumerWidget {
-  const OfflineComputerGameScreen({this.initialVariant, this.initialFen, super.key});
+  const OfflineComputerGameScreen({
+    this.initialVariant,
+    this.initialFen,
+    super.key,
+  });
 
   /// Optional initial variant to be preselected in the "New Game" dialog.
   ///
@@ -75,7 +79,10 @@ class OfflineComputerGameScreen extends ConsumerWidget {
 
   static Route<void> buildRoute({Variant? initialVariant, String? initialFen}) {
     return buildScreenRoute(
-      screen: OfflineComputerGameScreen(initialVariant: initialVariant, initialFen: initialFen),
+      screen: OfflineComputerGameScreen(
+        initialVariant: initialVariant,
+        initialFen: initialFen,
+      ),
     );
   }
 
@@ -136,9 +143,13 @@ class _BodyState extends ConsumerState<_Body> {
         return;
       }
 
-      final savedGame = await ref.read(offlineComputerGameStorageProvider).fetchGame();
+      final savedGame = await ref
+          .read(offlineComputerGameStorageProvider)
+          .fetchGame();
       if (savedGame != null && savedGame.game.steps.length > 1) {
-        ref.read(offlineComputerGameControllerProvider.notifier).loadGame(savedGame);
+        ref
+            .read(offlineComputerGameControllerProvider.notifier)
+            .loadGame(savedGame);
       } else {
         if (!mounted) return;
         _showNewGameDialog(initialVariant: widget.initialVariant);
@@ -157,7 +168,10 @@ class _BodyState extends ConsumerState<_Body> {
   @override
   Widget build(BuildContext context) {
     final gameState = ref.watch(offlineComputerGameControllerProvider);
-    final boardColorScheme = ref.watch(boardPreferencesProvider).boardTheme.colors;
+    final boardColorScheme = ref
+        .watch(boardPreferencesProvider)
+        .boardTheme
+        .colors;
 
     ref.listen(offlineComputerGameControllerProvider, (previous, newGameState) {
       if (previous?.finished == false && newGameState.finished) {
@@ -169,7 +183,9 @@ class _BodyState extends ConsumerState<_Body> {
                 game: newGameState.game,
                 onNewGame: () {
                   Navigator.pop(context);
-                  _showNewGameDialog(initialVariant: gameState.game.meta.variant);
+                  _showNewGameDialog(
+                    initialVariant: gameState.game.meta.variant,
+                  );
                 },
               ),
               barrierDismissible: true,
@@ -190,7 +206,9 @@ class _BodyState extends ConsumerState<_Body> {
                 content: Text(context.l10n.claimADraw),
                 onYes: () {
                   Navigator.pop(context);
-                  ref.read(offlineComputerGameControllerProvider.notifier).claimThreefoldDraw();
+                  ref
+                      .read(offlineComputerGameControllerProvider.notifier)
+                      .claimThreefoldDraw();
                 },
                 onNo: () => Navigator.pop(context),
               ),
@@ -202,7 +220,8 @@ class _BodyState extends ConsumerState<_Body> {
 
     final isBoardFlipped = ref.watch(_isBoardFlippedProvider);
     final orientation = gameState.game.playerSide;
-    final isPlayerTurn = gameState.turn == orientation && !gameState.isEngineThinking;
+    final isPlayerTurn =
+        gameState.turn == orientation && !gameState.isEngineThinking;
 
     return WakelockWidget(
       child: PopScope(
@@ -244,8 +263,12 @@ class _BodyState extends ConsumerState<_Body> {
                 child: SafeArea(
                   child: GameLayout(
                     key: _boardKey,
-                    topTable: _Player(side: isBoardFlipped ? orientation : orientation.opposite),
-                    bottomTable: _Player(side: isBoardFlipped ? orientation.opposite : orientation),
+                    topTable: _Player(
+                      side: isBoardFlipped ? orientation : orientation.opposite,
+                    ),
+                    bottomTable: _Player(
+                      side: isBoardFlipped ? orientation.opposite : orientation,
+                    ),
                     topTableFlex: 1,
                     bottomTableFlex: gameState.game.practiceMode ? 2 : 1,
                     orientation: variantBoardOrientation(
@@ -255,30 +278,41 @@ class _BodyState extends ConsumerState<_Body> {
                     ),
                     explosionSquares: gameState.stepCursor > 0
                         ? atomicExplosionSquares(
-                            gameState.game.stepAt(gameState.stepCursor - 1).position,
+                            gameState.game
+                                .stepAt(gameState.stepCursor - 1)
+                                .position,
                             gameState.lastMove,
                           )
                         : null,
                     shapes: _buildBoardShapes(gameState, boardColorScheme),
-                    boardSettingsOverrides: const BoardSettingsOverrides(enablePremoves: false),
+                    boardSettingsOverrides: const BoardSettingsOverrides(
+                      enablePremoves: false,
+                    ),
                     boardParams: GameBoardParams.interactive(
                       variant: gameState.game.meta.variant,
                       position: gameState.currentPosition,
                       playerSide: gameState.game.finished
                           ? PlayerSide.none
                           : isPlayerTurn && !gameState.isEvaluatingMove
-                          ? (orientation == Side.white ? PlayerSide.white : PlayerSide.black)
+                          ? (orientation == Side.white
+                                ? PlayerSide.white
+                                : PlayerSide.black)
                           : PlayerSide.none,
                       lastMove: gameState.lastMove,
                       onMove: (move, {viaDragAndDrop}) {
-                        ref.read(offlineComputerGameControllerProvider.notifier).makeMove(move);
+                        ref
+                            .read(
+                              offlineComputerGameControllerProvider.notifier,
+                            )
+                            .makeMove(move);
                       },
                     ),
                     moves: gameState.moves,
                     currentMoveIndex: gameState.stepCursor,
                     userActionsBar: _BottomBar(
-                      onNewGame: () =>
-                          _showNewGameDialog(initialVariant: gameState.game.meta.variant),
+                      onNewGame: () => _showNewGameDialog(
+                        initialVariant: gameState.game.meta.variant,
+                      ),
                     ),
                   ),
                 ),
@@ -295,9 +329,13 @@ class _BodyState extends ConsumerState<_Body> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      constraints: BoxConstraints(maxHeight: screenHeight - (screenHeight / 10)),
-      builder: (context) =>
-          _NewGameSheet(initialVariant: initialVariant, initialFen: widget.initialFen),
+      constraints: BoxConstraints(
+        maxHeight: screenHeight - (screenHeight / 10),
+      ),
+      builder: (context) => _NewGameSheet(
+        initialVariant: initialVariant,
+        initialFen: widget.initialFen,
+      ),
     );
   }
 
@@ -311,7 +349,9 @@ class _BodyState extends ConsumerState<_Body> {
     if (gameState.hintSquare != null) {
       final ds = colorScheme.darkSquare;
       final isGreenBoard = ds.g > ds.r && ds.g > ds.b;
-      final hintColor = isGreenBoard ? const Color(0x990099C8) : const Color(0x994D9E4D);
+      final hintColor = isGreenBoard
+          ? const Color(0x990099C8)
+          : const Color(0x994D9E4D);
       shapes.add(Circle(color: hintColor, orig: gameState.hintSquare!));
     }
 
@@ -350,20 +390,28 @@ class _BottomBar extends ConsumerWidget {
         ),
         BottomBarButton(
           label: context.l10n.resign,
-          onTap: gameState.game.resignable ? () => _showResignDialog(context, ref) : null,
+          onTap: gameState.game.resignable
+              ? () => _showResignDialog(context, ref)
+              : null,
           icon: CupertinoIcons.flag,
         ),
         BottomBarButton(
           label: context.l10n.takeback,
-          onTap: gameState.canTakeback && (gameState.game.casual || gameState.game.practiceMode)
-              ? () => ref.read(offlineComputerGameControllerProvider.notifier).takeback()
+          onTap:
+              gameState.canTakeback &&
+                  (gameState.game.casual || gameState.game.practiceMode)
+              ? () => ref
+                    .read(offlineComputerGameControllerProvider.notifier)
+                    .takeback()
               : null,
           icon: CupertinoIcons.arrow_uturn_left,
         ),
         BottomBarButton(
           label: context.l10n.getAHint,
           onTap: _canGetHint(gameState)
-              ? () => ref.read(offlineComputerGameControllerProvider.notifier).hint()
+              ? () => ref
+                    .read(offlineComputerGameControllerProvider.notifier)
+                    .hint()
               : null,
           icon: CupertinoIcons.lightbulb,
           highlighted: gameState.hintSquare != null,
@@ -383,7 +431,9 @@ class _BottomBar extends ConsumerWidget {
             ref.read(_isBoardFlippedProvider.notifier).toggle();
           },
         ),
-        if (gameState.game.finished || gameState.game.casual || gameState.game.practiceMode)
+        if (gameState.game.finished ||
+            gameState.game.casual ||
+            gameState.game.practiceMode)
           BottomSheetAction(
             makeLabel: (context) => Text(context.l10n.analysis),
             onPressed: () => Navigator.of(context).push(
@@ -436,10 +486,11 @@ class _BottomBar extends ConsumerWidget {
   }
 }
 
-final _isBoardFlippedProvider = NotifierProvider.autoDispose<IsBoardFlippedNotifier, bool>(
-  IsBoardFlippedNotifier.new,
-  name: 'IsBoardFlippedProvider',
-);
+final _isBoardFlippedProvider =
+    NotifierProvider.autoDispose<IsBoardFlippedNotifier, bool>(
+      IsBoardFlippedNotifier.new,
+      name: 'IsBoardFlippedProvider',
+    );
 
 class IsBoardFlippedNotifier extends Notifier<bool> {
   @override
@@ -472,7 +523,11 @@ class _Player extends ConsumerWidget {
     if (isStockfish) {
       return Row(
         children: [
-          Image.asset('assets/images/stockfish/icon.webp', width: 44, height: 44),
+          Image.asset(
+            'assets/images/stockfish/icon.webp',
+            width: 44,
+            height: 44,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -497,7 +552,8 @@ class _Player extends ConsumerWidget {
                 ),
                 MaterialDifferenceDisplay(
                   materialDiff: materialDiff,
-                  materialDifferenceFormat: boardPreferences.materialDifferenceFormat,
+                  materialDifferenceFormat:
+                      boardPreferences.materialDifferenceFormat,
                 ),
               ],
             ),
@@ -545,7 +601,8 @@ class _Player extends ConsumerWidget {
           children: [
             MaterialDifferenceDisplay(
               materialDiff: materialDiff,
-              materialDifferenceFormat: boardPreferences.materialDifferenceFormat,
+              materialDifferenceFormat:
+                  boardPreferences.materialDifferenceFormat,
             ),
           ],
         ),
@@ -560,7 +617,8 @@ class _PracticeCommentCard extends ConsumerStatefulWidget {
   final OfflineComputerGameState gameState;
 
   @override
-  ConsumerState<_PracticeCommentCard> createState() => _PracticeCommentCardState();
+  ConsumerState<_PracticeCommentCard> createState() =>
+      _PracticeCommentCardState();
 }
 
 class _PracticeCommentCardState extends ConsumerState<_PracticeCommentCard> {
@@ -571,7 +629,8 @@ class _PracticeCommentCardState extends ConsumerState<_PracticeCommentCard> {
   @override
   void didUpdateWidget(_PracticeCommentCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.gameState.practiceComment != null && widget.gameState.practiceComment == null) {
+    if (oldWidget.gameState.practiceComment != null &&
+        widget.gameState.practiceComment == null) {
       _previousComment = oldWidget.gameState.practiceComment;
     }
   }
@@ -584,7 +643,8 @@ class _PracticeCommentCardState extends ConsumerState<_PracticeCommentCard> {
     final gameState = widget.gameState;
     final isEvaluatingMove = gameState.isEvaluatingMove;
     final practiceComment =
-        gameState.practiceComment ?? (isEvaluatingMove ? _previousComment : null);
+        gameState.practiceComment ??
+        (isEvaluatingMove ? _previousComment : null);
     final showingSuggestedMove = gameState.showingSuggestedMove;
     final isShortScreen = isShortVerticalScreen(context);
     final evalTextStyle = TextStyle(
@@ -601,7 +661,10 @@ class _PracticeCommentCardState extends ConsumerState<_PracticeCommentCard> {
     IconData? icon;
 
     if (gameState.finished) {
-      content = Text(context.l10n.gameOver, style: const TextStyle(fontStyle: .italic));
+      content = Text(
+        context.l10n.gameOver,
+        style: const TextStyle(fontStyle: .italic),
+      );
     } else if (practiceComment != null) {
       final verdict = practiceComment.verdict;
       final eval = gameState.currentAnalysis?.evalString;
@@ -633,7 +696,9 @@ class _PracticeCommentCardState extends ConsumerState<_PracticeCommentCard> {
           onTap: () {
             final move = suggestedMove.move;
             if (move is NormalMove) {
-              ref.read(offlineComputerGameControllerProvider.notifier).toggleSuggestedMove(move);
+              ref
+                  .read(offlineComputerGameControllerProvider.notifier)
+                  .toggleSuggestedMove(move);
             }
           },
           child: Text.rich(
@@ -668,7 +733,10 @@ class _PracticeCommentCardState extends ConsumerState<_PracticeCommentCard> {
               children: [
                 Text(
                   verdictText,
-                  style: TextStyle(fontWeight: FontWeight.w600, color: iconColor),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: iconColor,
+                  ),
                 ),
                 if (suggestedMoveWidget != null) suggestedMoveWidget,
               ],
@@ -692,14 +760,18 @@ class _PracticeCommentCardState extends ConsumerState<_PracticeCommentCard> {
     }
 
     return AnimatedOpacity(
-      opacity: isEvaluatingMove && gameState.practiceComment == null ? 0.5 : 1.0,
+      opacity: isEvaluatingMove && gameState.practiceComment == null
+          ? 0.5
+          : 1.0,
       duration: const Duration(milliseconds: 300),
       child: Container(
         height: cardHeight,
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerHighest,
+          color:
+              backgroundColor ??
+              Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Align(alignment: Alignment.centerLeft, child: content),
@@ -728,22 +800,26 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
   String? _fromPositionFen;
   final _fenController = TextEditingController();
 
-  String _sideChoiceLabel(BuildContext context, SideChoice choice) => switch (choice) {
-    SideChoice.white => context.l10n.white,
-    SideChoice.random => context.l10n.randomColor,
-    SideChoice.black => context.l10n.black,
-    // TODO: replace with a translated string once the feature is stable
-    SideChoice.nextToPlay => 'Next to play',
-  };
+  String _sideChoiceLabel(BuildContext context, SideChoice choice) =>
+      switch (choice) {
+        SideChoice.white => context.l10n.white,
+        SideChoice.random => context.l10n.randomColor,
+        SideChoice.black => context.l10n.black,
+        // TODO: replace with a translated string once the feature is stable
+        SideChoice.nextToPlay => 'Next to play',
+      };
 
   @override
   void initState() {
     super.initState();
     final prefs = ref.read(offlineComputerGamePreferencesProvider);
     _selectedLevel = prefs.stockfishLevel;
-    _selectedSideChoice = widget.initialFen != null ? SideChoice.nextToPlay : prefs.sideChoice;
+    _selectedSideChoice = widget.initialFen != null
+        ? SideChoice.nextToPlay
+        : prefs.sideChoice;
     final preferredVariant = widget.initialVariant ?? prefs.variant;
-    _selectedVariant = widget.initialFen == null && preferredVariant == Variant.fromPosition
+    _selectedVariant =
+        widget.initialFen == null && preferredVariant == Variant.fromPosition
         ? Variant.standard
         : preferredVariant;
     _casual = prefs.casual;
@@ -777,14 +853,18 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                     child: StaticChessboard(
                       size: 150,
                       fen: widget.initialFen!,
-                      orientation: _selectedSideChoice.toSide(fen: widget.initialFen) ?? Side.white,
+                      orientation:
+                          _selectedSideChoice.toSide(fen: widget.initialFen) ??
+                          Side.white,
                       settings: StaticChessboardSettings(
                         pieceAssets: boardPrefs.pieceSet.assets,
                         colorScheme: boardPrefs.boardTheme.colors,
                         brightness: boardPrefs.brightness,
                         hue: boardPrefs.hue,
                         enableCoordinates: false,
-                        borderRadius: const BorderRadius.all(Radius.circular(4)),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(4),
+                        ),
                       ),
                     ),
                   ),
@@ -793,7 +873,10 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                     Setup.parseFen(widget.initialFen!).turn == Side.white
                         ? context.l10n.whitePlays
                         : context.l10n.blackPlays,
-                    style: TextStyle(fontStyle: FontStyle.italic, color: textShade(context, 0.7)),
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      color: textShade(context, 0.7),
+                    ),
                   ),
                 ],
               ),
@@ -808,7 +891,10 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                   text: '${context.l10n.level}: ',
                   children: [
                     TextSpan(
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                       text: '${_selectedLevel.level}',
                     ),
                   ],
@@ -848,7 +934,9 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                         _practiceMode = false;
                       }
                     });
-                    ref.read(offlineComputerGamePreferencesProvider.notifier).setVariant(variant);
+                    ref
+                        .read(offlineComputerGamePreferencesProvider.notifier)
+                        .setVariant(variant);
                   },
                 );
               },
@@ -860,7 +948,8 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                 child: _selectedVariant == Variant.fromPosition
                     ? SmallBoardPreview(
                         orientation:
-                            _selectedSideChoice.toSide(fen: _fromPositionFen) ?? Side.white,
+                            _selectedSideChoice.toSide(fen: _fromPositionFen) ??
+                            Side.white,
                         fen: _fromPositionFen ?? kEmptyFEN,
                         description: TextField(
                           maxLines: 5,
@@ -870,7 +959,8 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                           ),
                           controller: _fenController,
                           readOnly: true,
-                          onTap: () => pasteFenFromClipboard(context, _fenController),
+                          onTap: () =>
+                              pasteFenFromClipboard(context, _fenController),
                         ),
                       )
                     : const SizedBox.shrink(),
@@ -881,14 +971,21 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
               onTap: () {
                 showChoicePicker(
                   context,
-                  choices: (widget.initialFen != null || _selectedVariant == Variant.fromPosition)
+                  choices:
+                      (widget.initialFen != null ||
+                          _selectedVariant == Variant.fromPosition)
                       ? SideChoice.values
-                      : SideChoice.values.where((c) => c != SideChoice.nextToPlay).toList(),
+                      : SideChoice.values
+                            .where((c) => c != SideChoice.nextToPlay)
+                            .toList(),
                   selectedItem: _selectedSideChoice,
-                  labelBuilder: (SideChoice choice) => Text(_sideChoiceLabel(context, choice)),
+                  labelBuilder: (SideChoice choice) =>
+                      Text(_sideChoiceLabel(context, choice)),
                   onSelectedItemChanged: (SideChoice choice) {
                     setState(() => _selectedSideChoice = choice);
-                    ref.read(offlineComputerGamePreferencesProvider.notifier).setSideChoice(choice);
+                    ref
+                        .read(offlineComputerGamePreferencesProvider.notifier)
+                        .setSideChoice(choice);
                   },
                 );
               },
@@ -914,7 +1011,9 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                   ? null
                   : (value) {
                       setState(() => _casual = value);
-                      ref.read(offlineComputerGamePreferencesProvider.notifier).setCasual(value);
+                      ref
+                          .read(offlineComputerGamePreferencesProvider.notifier)
+                          .setCasual(value);
                     },
             ),
           ],
@@ -926,7 +1025,9 @@ class _NewGameSheetState extends ConsumerState<_NewGameSheet> {
                 ? () {
                     final effectiveFen =
                         widget.initialFen ??
-                        (_selectedVariant == Variant.fromPosition ? _fromPositionFen : null);
+                        (_selectedVariant == Variant.fromPosition
+                            ? _fromPositionFen
+                            : null);
                     final side =
                         _selectedSideChoice.toSide(fen: effectiveFen) ??
                         Side.values[Random().nextInt(2)];
@@ -973,14 +1074,18 @@ class _PracticeSettingsSheet extends ConsumerWidget {
               title: Text(context.l10n.hideBestMove),
               value: prefs.hideBestMove,
               onChanged: (_) {
-                ref.read(offlineComputerGamePreferencesProvider.notifier).toggleHideBestMove();
+                ref
+                    .read(offlineComputerGamePreferencesProvider.notifier)
+                    .toggleHideBestMove();
               },
             ),
             SwitchSettingTile(
               title: const Text('Hide evaluation'),
               value: prefs.hideEvaluation,
               onChanged: (_) {
-                ref.read(offlineComputerGamePreferencesProvider.notifier).toggleHideEvaluation();
+                ref
+                    .read(offlineComputerGamePreferencesProvider.notifier)
+                    .toggleHideEvaluation();
               },
             ),
           ],
@@ -991,7 +1096,11 @@ class _PracticeSettingsSheet extends ConsumerWidget {
 }
 
 class OfflineComputerGameResultDialog extends StatelessWidget {
-  const OfflineComputerGameResultDialog({required this.game, required this.onNewGame, super.key});
+  const OfflineComputerGameResultDialog({
+    required this.game,
+    required this.onNewGame,
+    super.key,
+  });
 
   final OfflineComputerGame game;
   final VoidCallback onNewGame;
@@ -1024,7 +1133,10 @@ class OfflineComputerGameResultDialog extends StatelessWidget {
       title: Text(title),
       content: Text(subtitle),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.close)),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(context.l10n.close),
+        ),
         TextButton(
           onPressed: () {
             Navigator.pop(context);
@@ -1042,7 +1154,10 @@ class OfflineComputerGameResultDialog extends StatelessWidget {
           },
           child: Text(context.l10n.analysis),
         ),
-        TextButton(onPressed: onNewGame, child: Text(context.l10n.mobileNewGame)),
+        TextButton(
+          onPressed: onNewGame,
+          child: Text(context.l10n.mobileNewGame),
+        ),
       ],
     );
   }

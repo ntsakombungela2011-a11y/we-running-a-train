@@ -17,16 +17,20 @@ final _logger = Logger('OfflineComputerGameStorage');
 sealed class SavedOfflineComputerGame with _$SavedOfflineComputerGame {
   const SavedOfflineComputerGame._();
 
-  factory SavedOfflineComputerGame({required OfflineComputerGame game}) = _SavedOfflineComputerGame;
+  factory SavedOfflineComputerGame({required OfflineComputerGame game}) =
+      _SavedOfflineComputerGame;
 
   factory SavedOfflineComputerGame.fromJson(Map<String, dynamic> json) =>
       _$SavedOfflineComputerGameFromJson(json);
 }
 
 /// A provider for [OfflineComputerGameStorage].
-final offlineComputerGameStorageProvider = Provider<OfflineComputerGameStorage>((Ref ref) {
-  return OfflineComputerGameStorage(ref);
-}, name: 'OfflineComputerGameStorageProvider');
+final offlineComputerGameStorageProvider = Provider<OfflineComputerGameStorage>(
+  (Ref ref) {
+    return OfflineComputerGameStorage(ref);
+  },
+  name: 'OfflineComputerGameStorageProvider',
+);
 
 const kOfflineComputerGameFileName = 'offline_computer_game.json';
 

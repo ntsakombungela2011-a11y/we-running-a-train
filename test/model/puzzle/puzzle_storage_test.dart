@@ -29,7 +29,10 @@ void main() {
       final storage = await container.read(puzzleStorageProvider.future);
 
       await storage.save(puzzle: puzzle);
-      expect(storage.fetch(puzzleId: const PuzzleId('pId3')), completion(equals(puzzle)));
+      expect(
+        storage.fetch(puzzleId: const PuzzleId('pId3')),
+        completion(equals(puzzle)),
+      );
     });
   });
 }

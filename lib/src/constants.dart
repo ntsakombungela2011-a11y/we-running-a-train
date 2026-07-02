@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-const kLichessHost = String.fromEnvironment('LICHESS_HOST', defaultValue: 'lichess.dev');
+const kLichessHost = String.fromEnvironment(
+  'LICHESS_HOST',
+  defaultValue: 'lichess.dev',
+);
 
 const kLichessWSHost = String.fromEnvironment(
   'LICHESS_WS_HOST',

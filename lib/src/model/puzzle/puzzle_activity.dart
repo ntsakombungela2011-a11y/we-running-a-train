@@ -46,7 +46,9 @@ class PuzzleActivity extends AsyncNotifier<PuzzleActivityState> {
     );
   }
 
-  Map<DateTime, IList<PuzzleHistoryEntry>> _groupByDay(Iterable<PuzzleHistoryEntry> list) {
+  Map<DateTime, IList<PuzzleHistoryEntry>> _groupByDay(
+    Iterable<PuzzleHistoryEntry> list,
+  ) {
     final map = <DateTime, IList<PuzzleHistoryEntry>>{};
     for (final entry in list) {
       final date = DateTime(entry.date.year, entry.date.month, entry.date.day);
@@ -70,7 +72,9 @@ class PuzzleActivity extends AsyncNotifier<PuzzleActivityState> {
             .read(puzzleRepositoryProvider)
             .puzzleActivity(_nbPerPage, before: _list.last.date);
         if (value.isEmpty) {
-          state = AsyncData(currentVal.copyWith(hasMore: false, isLoading: false));
+          state = AsyncData(
+            currentVal.copyWith(hasMore: false, isLoading: false),
+          );
           return;
         }
         _list.addAll(value);
@@ -83,7 +87,9 @@ class PuzzleActivity extends AsyncNotifier<PuzzleActivityState> {
           ),
         );
       } catch (error) {
-        state = AsyncData(currentVal.copyWith(isLoading: false, hasError: true));
+        state = AsyncData(
+          currentVal.copyWith(isLoading: false, hasError: true),
+        );
       }
     }
   }

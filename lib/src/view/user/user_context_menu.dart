@@ -41,12 +41,16 @@ class UserContextMenu extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  UserFullNameWidget(user: value.lightUser, style: Styles.title),
+                  UserFullNameWidget(
+                    user: value.lightUser,
+                    style: Styles.title,
+                  ),
                   const SizedBox(height: 8.0),
                   if (value.profile?.bio != null)
                     Linkify(
-                      onOpen: (link) async =>
-                          await ref.read(appLinksServiceProvider).onLinkifyOpen(context, link),
+                      onOpen: (link) async => await ref
+                          .read(appLinksServiceProvider)
+                          .onLinkifyOpen(context, link),
                       linkifiers: AppLinksService.kLichessLinkifiers,
                       text: value.profile!.bio!,
                       maxLines: 20,
@@ -63,7 +67,9 @@ class UserContextMenu extends ConsumerWidget {
               children: [
                 BottomSheetContextMenuAction(
                   onPressed: () {
-                    Navigator.of(context).push(UserOrProfileScreen.buildRoute(value.lightUser));
+                    Navigator.of(
+                      context,
+                    ).push(UserOrProfileScreen.buildRoute(value.lightUser));
                   },
                   icon: Icons.person,
                   child: Text(context.l10n.profile),
@@ -81,13 +87,18 @@ class UserContextMenu extends ConsumerWidget {
                 if (authUser != null && value.canChallenge != null)
                   BottomSheetContextMenuAction(
                     onPressed: value.canChallenge == true
-                        ? () =>
-                              UserScreen.challengeUser(value.lightUser, context: context, ref: ref)
+                        ? () => UserScreen.challengeUser(
+                            value.lightUser,
+                            context: context,
+                            ref: ref,
+                          )
                         : () {
                             Navigator.of(context).pop();
                             showSnackBar(
                               context,
-                              context.l10n.challengeXDoesNotAcceptChallenges(value.username),
+                              context.l10n.challengeXDoesNotAcceptChallenges(
+                                value.username,
+                              ),
                             );
                           },
                     icon: LichessIcons.crossed_swords,

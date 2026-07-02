@@ -19,7 +19,11 @@ final _logger = Logger('EvaluationService');
 const kEngineEvalEmissionThrottleDelay = Duration(milliseconds: 200);
 
 /// Variants supported by the official Stockfish engine.
-const officialStockfishVariants = {Variant.standard, Variant.chess960, Variant.fromPosition};
+const officialStockfishVariants = {
+  Variant.standard,
+  Variant.chess960,
+  Variant.fromPosition,
+};
 
 /// Exception thrown when a [EvaluationService.findMove] request is cancelled.
 ///
@@ -29,14 +33,21 @@ class MoveRequestCancelledException implements Exception {
   const MoveRequestCancelledException();
 
   @override
-  String toString() => 'MoveRequestCancelledException: the move request was cancelled';
+  String toString() =>
+      'MoveRequestCancelledException: the move request was cancelled';
 }
 
 /// A provider for [EvaluationService].
 final evaluationServiceProvider = Provider<EvaluationService>((Ref ref) {
-  final maxMemory = ref.read(preloadedDataProvider).requireValue.engineMaxMemoryInMb;
+  final maxMemory = ref
+      .read(preloadedDataProvider)
+      .requireValue
+      .engineMaxMemoryInMb;
   final nnueService = ref.read(nnueServiceProvider);
-  final service = EvaluationService(maxMemory: maxMemory, nnueService: nnueService);
+  final service = EvaluationService(
+    maxMemory: maxMemory,
+    nnueService: nnueService,
+  );
 
   ref.onDispose(() {
     service._dispose();
@@ -122,10 +133,13 @@ class EvaluationService {
   /// Stream of move results tagged with their [MoveWork].
   Stream<MoveResult> get moveStream => _moveController.stream;
 
-  final ValueNotifier<EngineEvaluationState> _evaluationState = ValueNotifier(_defaultState);
+  final ValueNotifier<EngineEvaluationState> _evaluationState = ValueNotifier(
+    _defaultState,
+  );
 
   /// The current engine evaluation state, combining engine name, eval, state, and current work.
-  ValueListenable<EngineEvaluationState> get evaluationState => _evaluationState;
+  ValueListenable<EngineEvaluationState> get evaluationState =>
+      _evaluationState;
 
   /// The current engine state.
   EngineState get _engineState => _evaluationState.value.state;
@@ -186,7 +200,8 @@ class EvaluationService {
     if (!work.threatMode) {
       // If we have an already good enough eval in cache, skip the evaluation
       switch (work.evalCache) {
-        case final LocalEval localEval when localEval.searchTime >= work.searchTime:
+        case final LocalEval localEval
+            when localEval.searchTime >= work.searchTime:
         case CloudEval _ when goDeeper == false:
           stop();
           return null;
@@ -216,7 +231,11 @@ class EvaluationService {
   /// If provided, the evaluation will stop at [depthThreshold], if the [minSearchTime] has passed.
   /// This allows for better evaluations in high end devices while still providing quick responses in low end devices.
   /// Even if [depthThreshold] is not reached, the evaluation will still stop at [EvalWork.searchTime].
-  Future<LocalEval?> findEval(EvalWork work, {int? depthThreshold, Duration? minSearchTime}) async {
+  Future<LocalEval?> findEval(
+    EvalWork work, {
+    int? depthThreshold,
+    Duration? minSearchTime,
+  }) async {
     _setEval(null);
 
     _logger.info(
@@ -237,7 +256,9 @@ class EvaluationService {
         finalEval = eval;
         // if depth threshold is reached quickly, let's still wait min search time (but skip for
         // higher depths)
-        if ((eval.depth >= 25 || minSearchTime == null || eval.searchTime >= minSearchTime) &&
+        if ((eval.depth >= 25 ||
+                minSearchTime == null ||
+                eval.searchTime >= minSearchTime) &&
             (depthThreshold != null && eval.depth >= depthThreshold)) {
           stop();
           break;
@@ -278,13 +299,15 @@ class EvaluationService {
     _cancelPendingMoveRequest();
 
     final completer = Completer<UCIMove>();
-    final subscription = moveStream.where((result) => result.$1 == work).listen((result) {
-      if (!completer.isCompleted) {
-        completer.complete(result.$2);
-      }
-      _pendingMoveRequest?.$2.cancel();
-      _pendingMoveRequest = null;
-    });
+    final subscription = moveStream.where((result) => result.$1 == work).listen(
+      (result) {
+        if (!completer.isCompleted) {
+          completer.complete(result.$2);
+        }
+        _pendingMoveRequest?.$2.cancel();
+        _pendingMoveRequest = null;
+      },
+    );
 
     _pendingMoveRequest = (completer, subscription);
 
@@ -323,7 +346,8 @@ class EvaluationService {
     final previousWork = _evaluationState.value.currentWork ?? _currentMoveWork;
     final needsNewGame =
         previousWork != null &&
-        (previousWork.id != work.id || previousWork.initialPosition != work.initialPosition);
+        (previousWork.id != work.id ||
+            previousWork.initialPosition != work.initialPosition);
 
     _logger.finer(
       'Engine restart needed: $needsRestart, new game needed: $needsNewGame, current engine state: $stockfishState',
@@ -342,7 +366,9 @@ class EvaluationService {
     }
 
     if (_initInProgress) {
-      _logger.fine('Work requested while engine initialization is in progress, queuing work');
+      _logger.fine(
+        'Work requested while engine initialization is in progress, queuing work',
+      );
 
       // Init in progress, work will be computed when init finishes
       // (the _initEngine callback checks the current work state)
@@ -354,7 +380,8 @@ class EvaluationService {
       _setEngineState(EngineState.loading);
       _initEngine(flavor, work.variant).then((_) {
         // Compute the current work (might be different from original if another request came in)
-        final currentWork = _evaluationState.value.currentWork ?? _currentMoveWork;
+        final currentWork =
+            _evaluationState.value.currentWork ?? _currentMoveWork;
         if (currentWork != null) {
           _protocol.compute(currentWork);
         }
@@ -382,7 +409,9 @@ class EvaluationService {
           smallNetPath = nnueFiles.smallNet.path;
           bigNetPath = nnueFiles.bigNet.path;
         } else {
-          _logger.warning('NNUE files not found or corrupted. Falling back to SF16.');
+          _logger.warning(
+            'NNUE files not found or corrupted. Falling back to SF16.',
+          );
           actualFlavor = StockfishFlavor.sf16;
         }
       }
@@ -402,7 +431,9 @@ class EvaluationService {
         return;
       }
 
-      _logger.fine('Engine initialized successfully with flavor: $actualFlavor');
+      _logger.fine(
+        'Engine initialized successfully with flavor: $actualFlavor',
+      );
 
       _currentRequestedFlavor = flavor;
       _currentVariant = variant;
@@ -461,7 +492,10 @@ class EvaluationService {
     if (_evalThrottleTimer == null) {
       // No active throttle - emit immediately and start throttle window
       _emitEval(result);
-      _evalThrottleTimer = Timer(kEngineEvalEmissionThrottleDelay, _onThrottleExpired);
+      _evalThrottleTimer = Timer(
+        kEngineEvalEmissionThrottleDelay,
+        _onThrottleExpired,
+      );
     } else {
       // Within throttle window - store for trailing emission
       _pendingEvalResult = result;
@@ -477,7 +511,10 @@ class EvaluationService {
       if (_discardEvalResults) return;
       _emitEval(pending);
       // Start new throttle window for trailing emission
-      _evalThrottleTimer = Timer(kEngineEvalEmissionThrottleDelay, _onThrottleExpired);
+      _evalThrottleTimer = Timer(
+        kEngineEvalEmissionThrottleDelay,
+        _onThrottleExpired,
+      );
     }
   }
 
@@ -511,7 +548,9 @@ class EvaluationService {
   /// The service can be reused after calling this method.
   void quit() {
     if (_engineState == EngineState.initial && !_initInProgress) {
-      _logger.fine('Engine already quit or uninitialized. Ignoring duplicate quit call.');
+      _logger.fine(
+        'Engine already quit or uninitialized. Ignoring duplicate quit call.',
+      );
       return;
     }
     _logger.info('Quitting engine');
@@ -576,10 +615,11 @@ typedef EngineEvaluationState = ({
 
 /// A provider that exposes the current engine evaluation state to the UI.
 final engineEvaluationProvider = NotifierProvider.autoDispose
-    .family<EngineEvaluationNotifier, EngineEvaluationState, EngineEvaluationFilters>(
-      EngineEvaluationNotifier.new,
-      name: 'EngineEvaluationProvider',
-    );
+    .family<
+      EngineEvaluationNotifier,
+      EngineEvaluationState,
+      EngineEvaluationFilters
+    >(EngineEvaluationNotifier.new, name: 'EngineEvaluationProvider');
 
 /// A type for filtering engine evaluation notifications.
 typedef EngineEvaluationFilters = ({StringId id, UciPath? path});
@@ -623,7 +663,8 @@ class EngineEvaluationNotifier extends Notifier<EngineEvaluationState> {
   bool _filter(EngineEvaluationState state) {
     final (id: id, path: path) = filters;
     final work = state.currentWork;
-    return work == null || (work.id == id && (path == null || work.path == path));
+    return work == null ||
+        (work.id == id && (path == null || work.path == path));
   }
 }
 
@@ -644,7 +685,8 @@ Eval? pickBestEval({
 
   return switch (savedEval) {
     CloudEval() => savedEval,
-    final LocalEval eval => localEval != null && localEval.isBetter(eval) ? localEval : eval,
+    final LocalEval eval =>
+      localEval != null && localEval.isBetter(eval) ? localEval : eval,
     null => localEval ?? serverEval,
   };
 }
@@ -658,7 +700,8 @@ ClientEval? pickBestClientEval({
   required ClientEval? savedEval,
 }) {
   final eval =
-      pickBestEval(localEval: localEval, savedEval: savedEval, serverEval: null) as ClientEval?;
+      pickBestEval(localEval: localEval, savedEval: savedEval, serverEval: null)
+          as ClientEval?;
 
   return eval;
 }

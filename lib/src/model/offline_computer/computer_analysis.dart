@@ -67,7 +67,9 @@ sealed class ComputerAnalysis with _$ComputerAnalysis {
     final practiceCommentJson = stepJson['practiceComment'];
     if (practiceCommentJson == null) return null;
     return ComputerAnalysis(
-      practiceComment: PracticeComment.fromJson(practiceCommentJson as Map<String, dynamic>),
+      practiceComment: PracticeComment.fromJson(
+        practiceCommentJson as Map<String, dynamic>,
+      ),
     );
   }
 

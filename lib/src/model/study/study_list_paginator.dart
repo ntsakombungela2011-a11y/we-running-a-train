@@ -5,7 +5,11 @@ import 'package:lichess_mobile/src/model/study/study_filter.dart';
 import 'package:lichess_mobile/src/model/study/study_repository.dart';
 
 typedef StudyList = ({IList<StudyPageItem> studies, int? nextPage});
-typedef StudyListNotifierParams = ({StudyCategory category, StudyListOrder order, String? search});
+typedef StudyListNotifierParams = ({
+  StudyCategory category,
+  StudyListOrder order,
+  String? search,
+});
 
 /// A provider that gets a list of studies from the paginated API.
 final studyListPaginatorProvider = AsyncNotifierProvider.autoDispose
@@ -43,7 +47,15 @@ class StudyListPaginatorNotifier extends AsyncNotifier<StudyList> {
 
     final repo = ref.read(studyRepositoryProvider);
     return params.search == null
-        ? repo.getStudies(category: params.category, order: params.order, page: nextPage)
-        : repo.searchStudies(query: params.search!, order: params.order, page: nextPage);
+        ? repo.getStudies(
+            category: params.category,
+            order: params.order,
+            page: nextPage,
+          )
+        : repo.searchStudies(
+            query: params.search!,
+            order: params.order,
+            page: nextPage,
+          );
   }
 }

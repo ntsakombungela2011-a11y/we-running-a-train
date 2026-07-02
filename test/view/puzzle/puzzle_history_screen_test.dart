@@ -27,16 +27,22 @@ void main() {
       final beforeDate = beforeDateParam != null
           ? DateTime.fromMillisecondsSinceEpoch(int.parse(beforeDateParam))
           : null;
-      final totalAlreadyRequested = mockActivityRequestsCount.values.fold(0, (p, e) => p + e);
+      final totalAlreadyRequested = mockActivityRequestsCount.values.fold(
+        0,
+        (p, e) => p + e,
+      );
 
       if (totalAlreadyRequested >= totalNumberOfPuzzles) {
         return mockResponse('', 200);
       }
 
-      final key = beforeDate != null ? DateFormat.yMd().format(beforeDate) : null;
+      final key = beforeDate != null
+          ? DateFormat.yMd().format(beforeDate)
+          : null;
 
       final nbPuzzles = math.min(max, totalNumberOfPuzzles);
-      mockActivityRequestsCount[key] = (mockActivityRequestsCount[key] ?? 0) + nbPuzzles;
+      mockActivityRequestsCount[key] =
+          (mockActivityRequestsCount[key] ?? 0) + nbPuzzles;
       return mockResponse(generateHistory(nbPuzzles, beforeDate), 200);
     } else if (request.url.path == '/api/puzzle/batch/mix') {
       return mockResponse(mockMixBatchResponse, 200);
@@ -48,7 +54,9 @@ void main() {
     return mockResponse('', 404);
   });
 
-  testWidgets('Displays an initial list of puzzles', (WidgetTester tester) async {
+  testWidgets('Displays an initial list of puzzles', (
+    WidgetTester tester,
+  ) async {
     final app = await makeTestProviderScopeApp(
       tester,
       home: const PuzzleHistoryScreen(),
@@ -101,7 +109,8 @@ void main() {
 
     await tester.scrollUntilVisible(
       find.byWidgetPredicate(
-        (widget) => widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'Bnull20',
+        (widget) =>
+            widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'Bnull20',
         description: 'last item of 1st page',
       ),
       400,
@@ -113,18 +122,23 @@ void main() {
     // by the time we've scrolled to the end the next puzzles are already here
     await tester.scrollUntilVisible(
       find.byWidgetPredicate(
-        (widget) => widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3150',
+        (widget) =>
+            widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3150',
         description: 'last item of 2nd page',
       ),
       1000,
     );
 
     // one more page
-    expect(mockActivityRequestsCount, equals({null: 20, '1/31/2024': 50, '1/30/2024': 50}));
+    expect(
+      mockActivityRequestsCount,
+      equals({null: 20, '1/31/2024': 50, '1/30/2024': 50}),
+    );
 
     await tester.scrollUntilVisible(
       find.byWidgetPredicate(
-        (widget) => widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3010',
+        (widget) =>
+            widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3010',
         description: 'last item of 3rd page',
       ),
       400,
@@ -138,7 +152,8 @@ void main() {
 
     await tester.tap(
       find.byWidgetPredicate(
-        (widget) => widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3010',
+        (widget) =>
+            widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3010',
       ),
     );
 
@@ -152,7 +167,8 @@ void main() {
     expect(find.byType(PuzzleHistoryScreen), findsOneWidget);
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3010',
+        (widget) =>
+            widget is PuzzleHistoryBoard && widget.puzzle.id.value == 'B3010',
       ),
       findsOneWidget,
     );

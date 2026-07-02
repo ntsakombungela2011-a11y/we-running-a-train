@@ -50,9 +50,13 @@ import 'package:share_plus/share_plus.dart';
 extension _AnalysisGameResultColor on AnalysisGameResult {
   Color? colorFor(Side side, BuildContext context) => switch (this) {
     AnalysisGameResult.whiteWins =>
-      side == Side.white ? context.lichessColors.good : context.lichessColors.error,
+      side == Side.white
+          ? context.lichessColors.good
+          : context.lichessColors.error,
     AnalysisGameResult.blackWins =>
-      side == Side.white ? context.lichessColors.error : context.lichessColors.good,
+      side == Side.white
+          ? context.lichessColors.error
+          : context.lichessColors.good,
     _ => null,
   };
 }
@@ -101,7 +105,11 @@ class _AnalysisScreenState extends ConsumerState<_AnalysisScreen>
         AnalysisTab.conditionalPremoves,
     ];
 
-    _tabController = TabController(vsync: this, initialIndex: 1, length: tabs.length);
+    _tabController = TabController(
+      vsync: this,
+      initialIndex: 1,
+      length: tabs.length,
+    );
   }
 
   @override
@@ -115,7 +123,9 @@ class _AnalysisScreenState extends ConsumerState<_AnalysisScreen>
     final ctrlProvider = analysisControllerProvider(widget.options);
     final asyncState = ref.watch(ctrlProvider);
 
-    final appBarActions = [_AnalysisMenu(options: widget.options, state: asyncState)];
+    final appBarActions = [
+      _AnalysisMenu(options: widget.options, state: asyncState),
+    ];
 
     switch (asyncState) {
       case AsyncData(:final value):
@@ -123,9 +133,14 @@ class _AnalysisScreenState extends ConsumerState<_AnalysisScreen>
         if (value.archivedGame != null) {
           final meta = value.archivedGame!.meta;
           // On mobile space is constrained, so unlike the web we omit the speed for standard chess
-          final isStandardVariant = value.variant == .standard || value.variant == .fromPosition;
-          final ratedOrCasual = meta.rated ? context.l10n.rated : context.l10n.casual;
-          final clockDisplay = value.archivedGame!.data.clockDisplay(context.l10n);
+          final isStandardVariant =
+              value.variant == .standard || value.variant == .fromPosition;
+          final ratedOrCasual = meta.rated
+              ? context.l10n.rated
+              : context.l10n.casual;
+          final clockDisplay = value.archivedGame!.data.clockDisplay(
+            context.l10n,
+          );
           final title = isStandardVariant
               ? '$clockDisplay • $ratedOrCasual'
               : '$clockDisplay • $ratedOrCasual • ${value.variant.label(context.l10n)}';
@@ -139,25 +154,41 @@ class _AnalysisScreenState extends ConsumerState<_AnalysisScreen>
             ],
           );
         } else {
-          appBarTitle = VariantAppBarTitle(variant: value.variant, title: context.l10n.analysis);
+          appBarTitle = VariantAppBarTitle(
+            variant: value.variant,
+            title: context.l10n.analysis,
+          );
         }
 
         return WakelockWidget(
           child: Scaffold(
             resizeToAvoidBottomInset: false,
-            appBar: AppBar(centerTitle: false, title: appBarTitle, actions: appBarActions),
-            body: _Body(options: widget.options, controller: _tabController, tabs: tabs),
+            appBar: AppBar(
+              centerTitle: false,
+              title: appBarTitle,
+              actions: appBarActions,
+            ),
+            body: _Body(
+              options: widget.options,
+              controller: _tabController,
+              tabs: tabs,
+            ),
           ),
         );
       case AsyncError(:final error, :final stackTrace):
         _logger.severe('Cannot load analysis: $error', stackTrace);
-        return FullScreenRetryRequest(onRetry: () => ref.invalidate(ctrlProvider));
+        return FullScreenRetryRequest(
+          onRetry: () => ref.invalidate(ctrlProvider),
+        );
       case _:
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             centerTitle: false,
-            title: VariantAppBarTitle(variant: Variant.standard, title: context.l10n.analysis),
+            title: VariantAppBarTitle(
+              variant: Variant.standard,
+              title: context.l10n.analysis,
+            ),
             actions: appBarActions,
           ),
           body: const Center(child: CircularProgressIndicator.adaptive()),
@@ -182,20 +213,29 @@ class _AnalysisMenu extends ConsumerWidget {
       semanticsLabel: context.l10n.menu,
       actions: [
         ToggleSoundContextMenuAction(
-          isEnabled: ref.watch(generalPreferencesProvider.select((prefs) => prefs.isSoundEnabled)),
-          onPressed: () => ref.read(generalPreferencesProvider.notifier).toggleSoundEnabled(),
+          isEnabled: ref.watch(
+            generalPreferencesProvider.select((prefs) => prefs.isSoundEnabled),
+          ),
+          onPressed: () => ref
+              .read(generalPreferencesProvider.notifier)
+              .toggleSoundEnabled(),
         ),
         ContextMenuAction(
           icon: Icons.settings,
           label: context.l10n.settingsSettings,
-          onPressed: () =>
-              Navigator.of(context).push(AnalysisSettingsScreen.buildRoute(options: options)),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(AnalysisSettingsScreen.buildRoute(options: options)),
         ),
         ContextMenuAction(
-          icon: showEngineLines ? Icons.subtitles_outlined : Icons.subtitles_off_outlined,
+          icon: showEngineLines
+              ? Icons.subtitles_outlined
+              : Icons.subtitles_off_outlined,
           label: showEngineLines ? 'Hide Engine Lines' : 'Show Engine Lines',
           onPressed: () {
-            ref.read(analysisPreferencesProvider.notifier).toggleShowEngineLines();
+            ref
+                .read(analysisPreferencesProvider.notifier)
+                .toggleShowEngineLines();
           },
         ),
         ...(switch (state) {
@@ -205,8 +245,9 @@ class _AnalysisMenu extends ConsumerWidget {
                     GameBookmarkContextMenuAction(
                       id: value.archivedGame!.id,
                       bookmarked: value.archivedGame!.data.bookmarked ?? false,
-                      onToggleBookmark: () =>
-                          ref.read(analysisControllerProvider(options).notifier).toggleBookmark(),
+                      onToggleBookmark: () => ref
+                          .read(analysisControllerProvider(options).notifier)
+                          .toggleBookmark(),
                     ),
                     if (value.archivedGame!.finished)
                       ...makeFinishedGameShareContextMenuActions(
@@ -225,7 +266,11 @@ class _AnalysisMenu extends ConsumerWidget {
 }
 
 class _Body extends ConsumerWidget {
-  const _Body({required this.options, required this.controller, required this.tabs});
+  const _Body({
+    required this.options,
+    required this.controller,
+    required this.tabs,
+  });
 
   final TabController controller;
   final AnalysisOptions options;
@@ -250,11 +295,15 @@ class _Body extends ConsumerWidget {
     if (analysisState.archivedGame != null) {
       final hasClock =
           analysisState.isOnMainline &&
-          analysisState.currentPosition.ply < analysisState.archivedGame!.steps.length;
+          analysisState.currentPosition.ply <
+              analysisState.archivedGame!.steps.length;
       final footerPlayer = analysisState.archivedGame!.playerOf(pov);
       final headerPlayer = analysisState.archivedGame!.playerOf(pov.opposite);
       final footerClock = hasClock
-          ? analysisState.archivedGame!.archivedClockOf(pov, analysisState.currentPosition.ply)
+          ? analysisState.archivedGame!.archivedClockOf(
+              pov,
+              analysisState.currentPosition.ply,
+            )
           : null;
       final headerClock = hasClock
           ? analysisState.archivedGame!.archivedClockOf(
@@ -311,7 +360,9 @@ class _Body extends ConsumerWidget {
     return FocusDetector(
       onFocusRegained: () {
         if (context.mounted) {
-          ref.read(analysisControllerProvider(options).notifier).onFocusRegained();
+          ref
+              .read(analysisControllerProvider(options).notifier)
+              .onFocusRegained();
         }
       },
       child: AnalysisLayout(
@@ -319,19 +370,31 @@ class _Body extends ConsumerWidget {
         tabController: controller,
         pov: pov,
         sideToMove: analysisState.currentPosition.turn,
-        boardBuilder: (context, boardSize, borderRadius) =>
-            GameAnalysisBoard(options: options, boardSize: boardSize, boardRadius: borderRadius),
+        boardBuilder: (context, boardSize, borderRadius) => GameAnalysisBoard(
+          options: options,
+          boardSize: boardSize,
+          boardRadius: borderRadius,
+        ),
         smallBoard: analysisPrefs.smallBoard,
         boardHeader: boardHeader,
         boardFooter: boardFooter,
-        engineGaugeBuilder: showEvaluationGauge && analysisState.hasAvailableEval(enginePrefs)
+        engineGaugeBuilder:
+            showEvaluationGauge && analysisState.hasAvailableEval(enginePrefs)
             ? (context) {
-                return EngineGauge(params: analysisState.engineGaugeParams(enginePrefs));
+                return EngineGauge(
+                  params: analysisState.engineGaugeParams(enginePrefs),
+                );
               }
             : null,
-        engineLines: isEngineAvailable && numEvalLines > 0 && analysisPrefs.showEngineLines
+        engineLines:
+            isEngineAvailable &&
+                numEvalLines > 0 &&
+                analysisPrefs.showEngineLines
             ? EngineLines(
-                filters: (id: analysisState.evaluationContext.id, path: analysisState.currentPath),
+                filters: (
+                  id: analysisState.evaluationContext.id,
+                  path: analysisState.currentPath,
+                ),
                 onTapMove: ref.read(ctrlProvider.notifier).onUserMove,
                 analysisState: analysisState,
               )
@@ -374,7 +437,9 @@ class _Body extends ConsumerWidget {
                           .jumpToNthNodeOnMainline,
                     )
                   : null,
-              onRequestServerAnalysis: ref.read(ctrlProvider.notifier).requestServerAnalysis,
+              onRequestServerAnalysis: ref
+                  .read(ctrlProvider.notifier)
+                  .requestServerAnalysis,
             )
           else if (options case ActiveCorrespondenceGame())
             ConditionalPremoves(options),
@@ -421,13 +486,15 @@ class _PlayerWidget extends StatelessWidget {
                 provisional: player.provisional,
                 aiLevel: player.aiLevel,
                 style: const TextStyle(fontWeight: FontWeight.bold),
-                onTap: () =>
-                    Navigator.of(context).push(UserOrProfileScreen.buildRoute(player.user!)),
+                onTap: () => Navigator.of(
+                  context,
+                ).push(UserOrProfileScreen.buildRoute(player.user!)),
               ),
             )
           else
             Expanded(child: Text(player.fullName(context.l10n))),
-          if (clock != null) _Clock(timeLeft: clock!, isSideToMove: isSideToMove),
+          if (clock != null)
+            _Clock(timeLeft: clock!, isSideToMove: isSideToMove),
         ],
       ),
     );
@@ -449,7 +516,9 @@ class _Clock extends StatelessWidget {
       color: isSideToMove ? colorScheme.secondaryContainer : null,
       child: Center(
         child: Text(
-          timeLeft.toHoursMinutesSeconds(showTenths: timeLeft < const Duration(minutes: 1)),
+          timeLeft.toHoursMinutesSeconds(
+            showTenths: timeLeft < const Duration(minutes: 1),
+          ),
           style: TextStyle(
             color: isSideToMove ? colorScheme.onSecondaryContainer : null,
             fontFeatures: const [FontFeature.tabularFigures()],
@@ -497,7 +566,9 @@ class _BottomBar extends ConsumerWidget {
                         analysisState.isEngineAllowed &&
                             snapshot.connectionState != ConnectionState.waiting
                         ? () async {
-                            toggleFuture = ref.read(ctrlProvider.notifier).toggleEngine();
+                            toggleFuture = ref
+                                .read(ctrlProvider.notifier)
+                                .toggleEngine();
                             try {
                               await toggleFuture;
                             } finally {
@@ -505,14 +576,18 @@ class _BottomBar extends ConsumerWidget {
                             }
                           }
                         : null,
-                    goDeeper: () => ref.read(ctrlProvider.notifier).requestEval(goDeeper: true),
+                    goDeeper: () => ref
+                        .read(ctrlProvider.notifier)
+                        .requestEval(goDeeper: true),
                   );
                 },
               );
             },
           ),
         RepeatButton(
-          onLongPress: analysisState.canGoBack ? () => _moveBackward(ref, fastSeek: true) : null,
+          onLongPress: analysisState.canGoBack
+              ? () => _moveBackward(ref, fastSeek: true)
+              : null,
           child: BottomBarButton(
             key: const ValueKey('goto-previous'),
             onTap: analysisState.canGoBack ? () => _moveBackward(ref) : null,
@@ -522,7 +597,9 @@ class _BottomBar extends ConsumerWidget {
           ),
         ),
         RepeatButton(
-          onLongPress: analysisState.canGoNext ? () => _moveForward(ref, fastSeek: true) : null,
+          onLongPress: analysisState.canGoNext
+              ? () => _moveForward(ref, fastSeek: true)
+              : null,
           child: BottomBarButton(
             key: const ValueKey('goto-next'),
             icon: CupertinoIcons.chevron_forward,
@@ -535,14 +612,18 @@ class _BottomBar extends ConsumerWidget {
     );
   }
 
-  void _moveForward(WidgetRef ref, {bool fastSeek = false}) =>
-      ref.read(analysisControllerProvider(options).notifier).userNext(fastSeek: fastSeek);
+  void _moveForward(WidgetRef ref, {bool fastSeek = false}) => ref
+      .read(analysisControllerProvider(options).notifier)
+      .userNext(fastSeek: fastSeek);
 
-  void _moveBackward(WidgetRef ref, {bool fastSeek = false}) =>
-      ref.read(analysisControllerProvider(options).notifier).userPrevious(fastSeek: fastSeek);
+  void _moveBackward(WidgetRef ref, {bool fastSeek = false}) => ref
+      .read(analysisControllerProvider(options).notifier)
+      .userPrevious(fastSeek: fastSeek);
 
   Future<void> _showAnalysisMenu(BuildContext context, WidgetRef ref) {
-    final analysisState = ref.read(analysisControllerProvider(options)).requireValue;
+    final analysisState = ref
+        .read(analysisControllerProvider(options))
+        .requireValue;
     final evalPrefs = ref.watch(engineEvaluationPreferencesProvider);
     final authUser = ref.read(authControllerProvider);
     final mySide = authUser != null
@@ -567,7 +648,9 @@ class _BottomBar extends ConsumerWidget {
               context,
               choices: readSupportedVariants
                   .where(
-                    (variant) => variant != Variant.fromPosition && variant != Variant.chess960,
+                    (variant) =>
+                        variant != Variant.fromPosition &&
+                        variant != Variant.chess960,
                   )
                   .toList(),
               selectedItem: analysisState.variant,
@@ -580,7 +663,9 @@ class _BottomBar extends ConsumerWidget {
                     Navigator.of(context, rootNavigator: true).pushReplacement(
                       buildScreenRoute<dynamic>(
                         screen: AnalysisScreen(
-                          options: (options as Standalone).copyWith(variant: variant),
+                          options: (options as Standalone).copyWith(
+                            variant: variant,
+                          ),
                         ),
                         transitionDuration: Duration.zero,
                       ),
@@ -589,24 +674,29 @@ class _BottomBar extends ConsumerWidget {
             ),
           ),
         ],
-        if (analysisState.isEngineAvailable(evalPrefs) && analysisState.canShowThreat)
+        if (analysisState.isEngineAvailable(evalPrefs) &&
+            analysisState.canShowThreat)
           BottomSheetAction(
             makeLabel: (context) => Text(
               analysisState.engineInThreatMode
                   ? context.l10n.mobileStopShowingThreat
                   : context.l10n.showThreat,
             ),
-            onPressed: () =>
-                ref.read(analysisControllerProvider(options).notifier).toggleEngineThreatMode(),
+            onPressed: () => ref
+                .read(analysisControllerProvider(options).notifier)
+                .toggleEngineThreatMode(),
           ),
         BottomSheetAction(
           makeLabel: (context) => Text(context.l10n.flipBoard),
-          onPressed: () => ref.read(analysisControllerProvider(options).notifier).toggleBoard(),
+          onPressed: () => ref
+              .read(analysisControllerProvider(options).notifier)
+              .toggleBoard(),
         ),
         if (options case ArchivedGame())
           if (analysisState.canRequestServerAnalysis)
             BottomSheetAction(
-              makeLabel: (context) => Text(context.l10n.requestAComputerAnalysis),
+              makeLabel: (context) =>
+                  Text(context.l10n.requestAComputerAnalysis),
               onPressed: () {
                 if (authUser == null) {
                   showSnackBar(context, context.l10n.youNeedAnAccountToDoThat);
@@ -617,7 +707,11 @@ class _BottomBar extends ConsumerWidget {
                     .requestServerAnalysis()
                     .catchError((Object e) {
                       if (context.mounted) {
-                        showSnackBar(context, e.toString(), type: SnackBarType.error);
+                        showSnackBar(
+                          context,
+                          e.toString(),
+                          type: SnackBarType.error,
+                        );
                       }
                     });
                 tabController.animateTo(2);
@@ -627,23 +721,33 @@ class _BottomBar extends ConsumerWidget {
           if (analysisState.isComputerAnalysisAllowed)
             if (mySide != null)
               BottomSheetAction(
-                makeLabel: (context) => Text(context.l10n.learnFromYourMistakes),
+                makeLabel: (context) =>
+                    Text(context.l10n.learnFromYourMistakes),
                 onPressed: () => Navigator.of(context).push(
-                  RetroScreen.buildRoute((id: options.gameId!, initialSide: analysisState.pov)),
+                  RetroScreen.buildRoute((
+                    id: options.gameId!,
+                    initialSide: analysisState.pov,
+                  )),
                 ),
               )
             else ...[
               BottomSheetAction(
                 makeLabel: (context) => Text(context.l10n.reviewWhiteMistakes),
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(RetroScreen.buildRoute((id: options.gameId!, initialSide: Side.white))),
+                onPressed: () => Navigator.of(context).push(
+                  RetroScreen.buildRoute((
+                    id: options.gameId!,
+                    initialSide: Side.white,
+                  )),
+                ),
               ),
               BottomSheetAction(
                 makeLabel: (context) => Text(context.l10n.reviewBlackMistakes),
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(RetroScreen.buildRoute((id: options.gameId!, initialSide: Side.black))),
+                onPressed: () => Navigator.of(context).push(
+                  RetroScreen.buildRoute((
+                    id: options.gameId!,
+                    initialSide: Side.black,
+                  )),
+                ),
               ),
             ],
         // board editor can be used to quickly analyze a position, so engine must be allowed to access
@@ -666,7 +770,8 @@ class _BottomBar extends ConsumerWidget {
             makeLabel: (context) => Text(context.l10n.continueFromHere),
             onPressed: () => _showContinueFromHereMenu(context, ref),
           ),
-        if (analysisState.gameId != null || analysisState.isComputerAnalysisAllowed)
+        if (analysisState.gameId != null ||
+            analysisState.isComputerAnalysisAllowed)
           BottomSheetAction(
             makeLabel: (context) => Text(context.l10n.studyShareAndExport),
             onPressed: () => _showShareMenu(context, ref),
@@ -676,7 +781,9 @@ class _BottomBar extends ConsumerWidget {
   }
 
   Future<void> _showShareMenu(BuildContext context, WidgetRef ref) {
-    final analysisState = ref.read(analysisControllerProvider(options)).requireValue;
+    final analysisState = ref
+        .read(analysisControllerProvider(options))
+        .requireValue;
     return showAdaptiveActionSheet(
       context: context,
       actions: [
@@ -685,7 +792,9 @@ class _BottomBar extends ConsumerWidget {
           BottomSheetAction(
             makeLabel: (context) => Text(context.l10n.mobileShareGamePGN),
             onPressed: () {
-              Navigator.of(context).push(AnalysisShareScreen.buildRoute(options: options));
+              Navigator.of(
+                context,
+              ).push(AnalysisShareScreen.buildRoute(options: options));
             },
           ),
         // share position as FEN can be used to quickly analyze a position, so engine must be allowed to access
@@ -693,8 +802,13 @@ class _BottomBar extends ConsumerWidget {
           BottomSheetAction(
             makeLabel: (context) => Text(context.l10n.mobileSharePositionAsFEN),
             onPressed: () {
-              final analysisState = ref.read(analysisControllerProvider(options)).requireValue;
-              launchShareDialog(context, ShareParams(text: analysisState.currentPosition.fen));
+              final analysisState = ref
+                  .read(analysisControllerProvider(options))
+                  .requireValue;
+              launchShareDialog(
+                context,
+                ShareParams(text: analysisState.currentPosition.fen),
+              );
             },
           ),
       ],
@@ -702,7 +816,9 @@ class _BottomBar extends ConsumerWidget {
   }
 
   Future<void> _showContinueFromHereMenu(BuildContext context, WidgetRef ref) {
-    final analysisState = ref.read(analysisControllerProvider(options)).requireValue;
+    final analysisState = ref
+        .read(analysisControllerProvider(options))
+        .requireValue;
     final boardFen = analysisState.currentPosition.fen;
     return showAdaptiveActionSheet(
       context: context,
@@ -732,7 +848,11 @@ class _BottomBar extends ConsumerWidget {
 
 /// Player widget for PGN imports, displaying analysis player info
 class _AnalysisPlayerWidget extends StatelessWidget {
-  const _AnalysisPlayerWidget({required this.player, this.result, this.resultColor});
+  const _AnalysisPlayerWidget({
+    required this.player,
+    this.result,
+    this.resultColor,
+  });
 
   final AnalysisPlayer player;
   final String? result;
@@ -776,7 +896,10 @@ class _AnalysisPlayerWidget extends StatelessWidget {
             Text(
               player.rating.toString(),
               overflow: .ellipsis,
-              style: TextStyle(fontWeight: FontWeight.w400, color: textShade(context, 0.8)),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                color: textShade(context, 0.8),
+              ),
             ),
           ],
         ],

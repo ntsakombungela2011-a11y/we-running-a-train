@@ -76,7 +76,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mobileNoSearchResults => '无结果';
 
   @override
-  String get mobileNotAllFeaturesAreAvailable => '请注意，旧版应用或网站中的部分功能目前暂未提供，但我们正在持续添加新功能。';
+  String get mobileNotAllFeaturesAreAvailable =>
+      '请注意，旧版应用或网站中的部分功能目前暂未提供，但我们正在持续添加新功能。';
 
   @override
   String get mobileNotFollowingAnyUser => '您尚未关注任何用户';
@@ -153,7 +154,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mobileSettingsImmersiveMode => '沉浸模式';
 
   @override
-  String get mobileSettingsImmersiveModeSubtitle => '在对局时隐藏系统界面。如果屏幕边缘的系统导航手势打扰到您，则可使用此选项。适用于对局和谜题界面。';
+  String get mobileSettingsImmersiveModeSubtitle =>
+      '在对局时隐藏系统界面。如果屏幕边缘的系统导航手势打扰到您，则可使用此选项。适用于对局和谜题界面。';
 
   @override
   String get mobileSettingsMaterialDifferenceCapturedPieces => '被吃的棋子';
@@ -186,7 +188,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mobileSettingsShapeDrawing => '棋盘标记';
 
   @override
-  String get mobileSettingsShapeDrawingSubtitle => '使用双指绘制图形：一指按住空白格，另一指拖动即可绘制。';
+  String get mobileSettingsShapeDrawingSubtitle =>
+      '使用双指绘制图形：一指按住空白格，另一指拖动即可绘制。';
 
   @override
   String get mobileSettingsShowBorder => '显示边框';
@@ -514,7 +517,12 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String activityRankedInTournament(int count, String param2, String param3, String param4) {
+  String activityRankedInTournament(
+    int count,
+    String param2,
+    String param3,
+    String param4,
+  ) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -568,31 +576,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get arenaHowAreScoresCalculated => '分数如何计算？';
 
   @override
-  String get arenaHowAreScoresCalculatedAnswer => '胜局基础得分为 2 分，和局为 1 分，负局不得分。\n如果您连续赢得两局对局，将开启双倍得分连胜，并用火焰图标表示。\n接下来的对局将继续获得双倍分数，直到您未能赢得对局为止。\n即，胜局得 4 分，和局得 2 分，负局仍不得分。\n\n例如，两场胜局后接一场和局将获得 6 分：2 + 2 + (2 x 1)';
+  String get arenaHowAreScoresCalculatedAnswer =>
+      '胜局基础得分为 2 分，和局为 1 分，负局不得分。\n如果您连续赢得两局对局，将开启双倍得分连胜，并用火焰图标表示。\n接下来的对局将继续获得双倍分数，直到您未能赢得对局为止。\n即，胜局得 4 分，和局得 2 分，负局仍不得分。\n\n例如，两场胜局后接一场和局将获得 6 分：2 + 2 + (2 x 1)';
 
   @override
   String get arenaBerserk => '竞技场狂暴模式';
 
   @override
-  String get arenaBerserkAnswer => '当棋手在对局开始时点击狂暴按钮，他们将损失一半的棋钟时间，但胜局将额外获得 1 点锦标赛分数。\n\n在带有加时的时限设置中使用狂暴模式，也会取消加时（1+2 是例外，它变为 1+0）。\n\n初始时间为零的对局（0+1，0+2）无法使用狂暴模式。\n\n只有在对局中至少走满 7 步，狂暴模式才会授予额外分数。';
+  String get arenaBerserkAnswer =>
+      '当棋手在对局开始时点击狂暴按钮，他们将损失一半的棋钟时间，但胜局将额外获得 1 点锦标赛分数。\n\n在带有加时的时限设置中使用狂暴模式，也会取消加时（1+2 是例外，它变为 1+0）。\n\n初始时间为零的对局（0+1，0+2）无法使用狂暴模式。\n\n只有在对局中至少走满 7 步，狂暴模式才会授予额外分数。';
 
   @override
   String get arenaHowIsTheWinnerDecided => '获胜者如何决定？';
 
   @override
-  String get arenaHowIsTheWinnerDecidedAnswer => '在锦标赛设定的时限结束后，得分最高的棋手将被宣布为获胜者。\n\n当两名或多名棋手得分相同时，以锦标赛表现分作为破同分依据。';
+  String get arenaHowIsTheWinnerDecidedAnswer =>
+      '在锦标赛设定的时限结束后，得分最高的棋手将被宣布为获胜者。\n\n当两名或多名棋手得分相同时，以锦标赛表现分作为破同分依据。';
 
   @override
   String get arenaHowDoesPairingWork => '配对如何运作？';
 
   @override
-  String get arenaHowDoesPairingWorkAnswer => '锦标赛开始时，棋手根据其等级分进行配对。\n一旦您结束一局对局，请返回锦标赛大厅：您将被与排名相近的棋手配对。这确保了最短的等待时间，但您可能不会遇到锦标赛中的所有其他棋手。\n快速对弈并返回大厅，以进行更多对局并赢得更多分数。';
+  String get arenaHowDoesPairingWorkAnswer =>
+      '锦标赛开始时，棋手根据其等级分进行配对。\n一旦您结束一局对局，请返回锦标赛大厅：您将被与排名相近的棋手配对。这确保了最短的等待时间，但您可能不会遇到锦标赛中的所有其他棋手。\n快速对弈并返回大厅，以进行更多对局并赢得更多分数。';
 
   @override
   String get arenaHowDoesItEnd => '锦标赛如何结束？';
 
   @override
-  String get arenaHowDoesItEndAnswer => '锦标赛有一个倒计时时钟。当它归零时，锦标赛排名将冻结，并宣布获胜者。进行中的对局必须完成，但它们不计入锦标赛成绩。';
+  String get arenaHowDoesItEndAnswer =>
+      '锦标赛有一个倒计时时钟。当它归零时，锦标赛排名将冻结，并宣布获胜者。进行中的对局必须完成，但它们不计入锦标赛成绩。';
 
   @override
   String get arenaOtherRules => '其他重要规则';
@@ -614,7 +627,8 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get arenaDrawStreakVariants => '和棋对局需达到最短步数限制才能获得分数，此限制因变体而异。下表列出了各变体的阈值。';
+  String get arenaDrawStreakVariants =>
+      '和棋对局需达到最短步数限制才能获得分数，此限制因变体而异。下表列出了各变体的阈值。';
 
   @override
   String get arenaVariant => '变体';
@@ -695,7 +709,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get arenaTournamentStats => '锦标赛统计';
 
   @override
-  String get arenaRankAvgHelp => '排名平均值是您排名的百分比。数值越低越好。\n\n例如，在 100 名棋手的锦标赛中排名第 3 = 3%。在 1000 名棋手的锦标赛中排名第 10 = 1%。';
+  String get arenaRankAvgHelp =>
+      '排名平均值是您排名的百分比。数值越低越好。\n\n例如，在 100 名棋手的锦标赛中排名第 3 = 3%。在 1000 名棋手的锦标赛中排名第 10 = 1%。';
 
   @override
   String get arenaMedians => '中位数';
@@ -812,7 +827,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get broadcastSourceSingleUrl => 'PGN 源文件链接';
 
   @override
-  String get broadcastSourceUrlHelp => 'Lichess 将检查此链接以获取 PGN 更新。它必须能在互联网上公开访问。';
+  String get broadcastSourceUrlHelp =>
+      'Lichess 将检查此链接以获取 PGN 更新。它必须能在互联网上公开访问。';
 
   @override
   String get broadcastSourceGameIds => '最多 64 个 Lichess 对局 ID，以空格分隔。';
@@ -841,7 +857,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get broadcastDefinitivelyDeleteRound => '永久删除此轮次及其所有对局。';
 
   @override
-  String get broadcastDeleteAllGamesOfThisRound => '删除此轮次的所有对局。需要源文件处于活动状态才能重新创建它们。';
+  String get broadcastDeleteAllGamesOfThisRound =>
+      '删除此轮次的所有对局。需要源文件处于活动状态才能重新创建它们。';
 
   @override
   String get broadcastEditRoundStudy => '编辑轮次研习';
@@ -898,7 +915,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get broadcastOverview => '概览';
 
   @override
-  String get broadcastSubscribeTitle => '订阅以便在每个轮次开始时收到通知。您可以在账户设置中开启或关闭转播的铃声/推送通知。';
+  String get broadcastSubscribeTitle =>
+      '订阅以便在每个轮次开始时收到通知。您可以在账户设置中开启或关闭转播的铃声/推送通知。';
 
   @override
   String get broadcastUploadImage => '上传锦标赛图片';
@@ -1216,16 +1234,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get coordinatesMostChessCourses => '大多数国际象棋课程和练习都广泛使用代数记谱法。';
 
   @override
-  String get coordinatesTalkToYourChessFriends => '这能让您与棋手交流更容易，因为你们都理解“国际象棋的语言”。';
+  String get coordinatesTalkToYourChessFriends =>
+      '这能让您与棋手交流更容易，因为你们都理解“国际象棋的语言”。';
 
   @override
-  String get coordinatesYouCanAnalyseAGameMoreEffectively => '如果您能快速识别坐标，就能更有效地分析对局。';
+  String get coordinatesYouCanAnalyseAGameMoreEffectively =>
+      '如果您能快速识别坐标，就能更有效地分析对局。';
 
   @override
   String get coordinatesACoordinateAppears => '坐标将在棋盘上出现，您必须点击对应的棋格。';
 
   @override
-  String get coordinatesASquareIsHighlightedExplanation => '棋格将在棋盘上高亮显示，您必须输入其坐标（例如“e4”）。';
+  String get coordinatesASquareIsHighlightedExplanation =>
+      '棋格将在棋盘上高亮显示，您必须输入其坐标（例如“e4”）。';
 
   @override
   String get coordinatesYouHaveThirtySeconds => '您有 30 秒时间来尽可能多地正确匹配棋格！';
@@ -1288,7 +1309,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String perfStatRatingDeviationTooltip(String param1, String param2, String param3) {
+  String perfStatRatingDeviationTooltip(
+    String param1,
+    String param2,
+    String param3,
+  ) {
     return '该数值越低，表示等级分越稳定。若高于 $param1，则等级分被视为暂定状态。若想被纳入排行榜，此数值需低于 $param2（标准）或 $param3（变体）。';
   }
 
@@ -1417,7 +1442,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get preferencesShowFlairs => '显示棋手图标';
 
   @override
-  String get preferencesExplainShowPlayerRatings => '此功能将隐藏 Lichess 上的所有等级分，以帮助您专注于对局。排位对局仍会影响您的等级分，这只是关于您所看到的内容。';
+  String get preferencesExplainShowPlayerRatings =>
+      '此功能将隐藏 Lichess 上的所有等级分，以帮助您专注于对局。排位对局仍会影响您的等级分，这只是关于您所看到的内容。';
 
   @override
   String get preferencesDisplayBoardResizeHandle => '调整棋盘大小';
@@ -1477,16 +1503,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get preferencesPromoteToQueenAutomatically => '自动升变为后';
 
   @override
-  String get preferencesExplainPromoteToQueenAutomatically => '按住 <ctrl> 键以临时禁用自动升变';
+  String get preferencesExplainPromoteToQueenAutomatically =>
+      '按住 <ctrl> 键以临时禁用自动升变';
 
   @override
   String get preferencesWhenPremoving => '预走棋時';
 
   @override
-  String get preferencesClaimDrawOnThreefoldRepetitionAutomatically => '在三次重复局面时自动提和';
+  String get preferencesClaimDrawOnThreefoldRepetitionAutomatically =>
+      '在三次重复局面时自动提和';
 
   @override
-  String get preferencesWhenTimeRemainingLessThanThirtySeconds => '当剩余时间小于 30 秒时';
+  String get preferencesWhenTimeRemainingLessThanThirtySeconds =>
+      '当剩余时间小于 30 秒时';
 
   @override
   String get preferencesMoveConfirmation => '着法确认';
@@ -1504,7 +1533,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get preferencesConfirmResignationAndDrawOffers => '确认认输和提和请求';
 
   @override
-  String get preferencesCastleByMovingTheKingTwoSquaresOrOntoTheRook => '王车易位方式';
+  String get preferencesCastleByMovingTheKingTwoSquaresOrOntoTheRook =>
+      '王车易位方式';
 
   @override
   String get preferencesCastleByMovingTwoSquares => '将王移动两格';
@@ -1627,7 +1657,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleDownVote => '踩';
 
   @override
-  String get puzzleYourPuzzleRatingWillNotChange => '您的谜题等级分不会改变。请注意，谜题并非竞赛。您的等级分有助于根据您当前水平筛选最佳题目。';
+  String get puzzleYourPuzzleRatingWillNotChange =>
+      '您的谜题等级分不会改变。请注意，谜题并非竞赛。您的等级分有助于根据您当前水平筛选最佳题目。';
 
   @override
   String get puzzleFindTheBestMoveForWhite => '找出白方的最佳着法';
@@ -1753,7 +1784,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleFailed => '失败';
 
   @override
-  String get puzzleStreakDescription => '逐步挑战更难的谜题，构建您的连胜纪录。这里没有时间限制，所以请慢慢思考。一步走错，挑战即告结束！但每次挑战过程中，您可以跳过一步棋。';
+  String get puzzleStreakDescription =>
+      '逐步挑战更难的谜题，构建您的连胜纪录。这里没有时间限制，所以请慢慢思考。一步走错，挑战即告结束！但每次挑战过程中，您可以跳过一步棋。';
 
   @override
   String puzzleYourStreakX(String param) {
@@ -1779,7 +1811,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleSearchPuzzles => '搜索谜题';
 
   @override
-  String get puzzleFromMyGamesNone => '您的对局数据库中暂无谜题，但 Lichess 依然记得您走过的每一着。\n\n多进行快棋和慢棋对局，会增加您的对局被收录为谜题的机会！';
+  String get puzzleFromMyGamesNone =>
+      '您的对局数据库中暂无谜题，但 Lichess 依然记得您走过的每一着。\n\n多进行快棋和慢棋对局，会增加您的对局被收录为谜题的机会！';
 
   @override
   String get puzzlePuzzleDashboardDescription => '训练、分析、进步';
@@ -1868,13 +1901,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeAdvantage => '优势';
 
   @override
-  String get puzzleThemeAdvantageDescription => '抓住机会获得决定性优势（200 厘兵 ≤ 评估 ≤ 600 厘兵）';
+  String get puzzleThemeAdvantageDescription =>
+      '抓住机会获得决定性优势（200 厘兵 ≤ 评估 ≤ 600 厘兵）';
 
   @override
   String get puzzleThemeAnastasiaMate => '阿纳斯塔西娅将杀';
 
   @override
-  String get puzzleThemeAnastasiaMateDescription => '马与车或后配合，将对方的王困在棋盘边线与己方棋子之间。';
+  String get puzzleThemeAnastasiaMateDescription =>
+      '马与车或后配合，将对方的王困在棋盘边线与己方棋子之间。';
 
   @override
   String get puzzleThemeArabianMate => '阿拉伯将杀';
@@ -1886,13 +1921,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeAttackingF2F7 => '攻击 f2 或 f7 兵';
 
   @override
-  String get puzzleThemeAttackingF2F7Description => '针对 f2 或 f7 兵展开的攻击，例如在“煎肝进攻”开局中。';
+  String get puzzleThemeAttackingF2F7Description =>
+      '针对 f2 或 f7 兵展开的攻击，例如在“煎肝进攻”开局中。';
 
   @override
   String get puzzleThemeAttraction => '引入';
 
   @override
-  String get puzzleThemeAttractionDescription => '通过兑子或弃子，引诱或迫使对方棋子走到一个允许后续战术展开的棋格。';
+  String get puzzleThemeAttractionDescription =>
+      '通过兑子或弃子，引诱或迫使对方棋子走到一个允许后续战术展开的棋格。';
 
   @override
   String get puzzleThemeBackRankMate => '底线杀王';
@@ -1934,13 +1971,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeCapturingDefender => '消除保护';
 
   @override
-  String get puzzleThemeCapturingDefenderDescription => '消除保护另一个棋子的防御子，使得接下来可以吃掉那个失去保护的棋子。';
+  String get puzzleThemeCapturingDefenderDescription =>
+      '消除保护另一个棋子的防御子，使得接下来可以吃掉那个失去保护的棋子。';
 
   @override
   String get puzzleThemeCollinearMove => '共线移动';
 
   @override
-  String get puzzleThemeCollinearMoveDescription => '两枚对立的棋子彼此面对，其中一枚棋子沿攻击线移动但不吃子。';
+  String get puzzleThemeCollinearMoveDescription =>
+      '两枚对立的棋子彼此面对，其中一枚棋子沿攻击线移动但不吃子。';
 
   @override
   String get puzzleThemeCornerMate => '角落将杀';
@@ -1958,19 +1997,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeDiscoveredCheck => '闪将';
 
   @override
-  String get puzzleThemeDiscoveredCheckDescription => '移动一个棋子，露出隐藏的攻击性子力进行将军，这通常能带来决定性的优势。';
+  String get puzzleThemeDiscoveredCheckDescription =>
+      '移动一个棋子，露出隐藏的攻击性子力进行将军，这通常能带来决定性的优势。';
 
   @override
   String get puzzleThemeDoubleBishopMate => '双象杀王';
 
   @override
-  String get puzzleThemeDoubleBishopMateDescription => '两条相邻斜线上的两个进攻象，在己方棋子阻挡下将杀对方的王。';
+  String get puzzleThemeDoubleBishopMateDescription =>
+      '两条相邻斜线上的两个进攻象，在己方棋子阻挡下将杀对方的王。';
 
   @override
   String get puzzleThemeDovetailMate => '鸽尾杀王';
 
   @override
-  String get puzzleThemeDovetailMateDescription => '后将军紧邻的对方王，而对方王仅有的两个逃跑格被己方棋子阻挡。';
+  String get puzzleThemeDovetailMateDescription =>
+      '后将军紧邻的对方王，而对方王仅有的两个逃跑格被己方棋子阻挡。';
 
   @override
   String get puzzleThemeEquality => '均势';
@@ -1988,31 +2030,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeClearance => '腾挪';
 
   @override
-  String get puzzleThemeClearanceDescription => '通常带有先手的着法，为一个后续战术构想腾出棋格、直线或斜线。';
+  String get puzzleThemeClearanceDescription =>
+      '通常带有先手的着法，为一个后续战术构想腾出棋格、直线或斜线。';
 
   @override
   String get puzzleThemeDefensiveMove => '防守着法';
 
   @override
-  String get puzzleThemeDefensiveMoveDescription => '为避免失子或失去其他优势所必需的精确着法或着法序列。';
+  String get puzzleThemeDefensiveMoveDescription =>
+      '为避免失子或失去其他优势所必需的精确着法或着法序列。';
 
   @override
   String get puzzleThemeDeflection => '引离';
 
   @override
-  String get puzzleThemeDeflectionDescription => '将对方棋子从其承担的某项职责（例如守卫关键格）上引开的着法。有时也称为“过载”。';
+  String get puzzleThemeDeflectionDescription =>
+      '将对方棋子从其承担的某项职责（例如守卫关键格）上引开的着法。有时也称为“过载”。';
 
   @override
   String get puzzleThemeDiscoveredAttack => '闪击';
 
   @override
-  String get puzzleThemeDiscoveredAttackDescription => '移动一枚棋子（例如马），该棋子之前阻挡了己方远射程棋子（例如车）的攻击线路，从而解除阻挡。';
+  String get puzzleThemeDiscoveredAttackDescription =>
+      '移动一枚棋子（例如马），该棋子之前阻挡了己方远射程棋子（例如车）的攻击线路，从而解除阻挡。';
 
   @override
   String get puzzleThemeDoubleCheck => '双将';
 
   @override
-  String get puzzleThemeDoubleCheckDescription => '由于闪击导致移动的棋子和露出的棋子同时攻击对方的王，从而形成用两个棋子同时将军的局面。';
+  String get puzzleThemeDoubleCheckDescription =>
+      '由于闪击导致移动的棋子和露出的棋子同时攻击对方的王，从而形成用两个棋子同时将军的局面。';
 
   @override
   String get puzzleThemeEndgame => '残局';
@@ -2021,7 +2068,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeEndgameDescription => '对局最后阶段的战术。';
 
   @override
-  String get puzzleThemeEnPassantDescription => '涉及吃过路兵规则的战术，兵可以吃掉利用初始两格移动越过它的对方兵。';
+  String get puzzleThemeEnPassantDescription =>
+      '涉及吃过路兵规则的战术，兵可以吃掉利用初始两格移动越过它的对方兵。';
 
   @override
   String get puzzleThemeEpauletteMate => '肩章将杀';
@@ -2045,31 +2093,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeHangingPiece => '悬子';
 
   @override
-  String get puzzleThemeHangingPieceDescription => '针对对方未被保护或保护不足、可以免费吃掉的棋子的战术。';
+  String get puzzleThemeHangingPieceDescription =>
+      '针对对方未被保护或保护不足、可以免费吃掉的棋子的战术。';
 
   @override
   String get puzzleThemeHookMate => '钩形将杀';
 
   @override
-  String get puzzleThemeHookMateDescription => '用车、马和兵，配合对方的一个兵来限制对方王的逃跑路线，从而完成将杀。';
+  String get puzzleThemeHookMateDescription =>
+      '用车、马和兵，配合对方的一个兵来限制对方王的逃跑路线，从而完成将杀。';
 
   @override
   String get puzzleThemeInterference => '拦截';
 
   @override
-  String get puzzleThemeInterferenceDescription => '将己方棋子走到对方两个棋子之间，使得其中一个或两个对方棋子失去保护，例如将一个马走到被保护的两个车之间的格子上。';
+  String get puzzleThemeInterferenceDescription =>
+      '将己方棋子走到对方两个棋子之间，使得其中一个或两个对方棋子失去保护，例如将一个马走到被保护的两个车之间的格子上。';
 
   @override
   String get puzzleThemeIntermezzo => '过渡着';
 
   @override
-  String get puzzleThemeIntermezzoDescription => '不走出预期的着法，而是先插入一步构成直接威胁的着法，迫使对方必须应对。也称为“中间着”或“过渡着”。';
+  String get puzzleThemeIntermezzoDescription =>
+      '不走出预期的着法，而是先插入一步构成直接威胁的着法，迫使对方必须应对。也称为“中间着”或“过渡着”。';
 
   @override
   String get puzzleThemeKillBoxMate => '杀箱将杀';
 
   @override
-  String get puzzleThemeKillBoxMateDescription => '车紧邻对方王，并得到后的支持，后也同时封锁了王的逃逸格。车和后将对方王困在一个 3x3 的“杀王箱”中。';
+  String get puzzleThemeKillBoxMateDescription =>
+      '车紧邻对方王，并得到后的支持，后也同时封锁了王的逃逸格。车和后将对方王困在一个 3x3 的“杀王箱”中。';
 
   @override
   String get puzzleThemePillsburysMate => '皮尔斯伯里将杀';
@@ -2093,13 +2146,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeTriangleMate => '三角将杀';
 
   @override
-  String get puzzleThemeTriangleMateDescription => '后和车距离对方王一格，且位于同一横线或直线，中间相隔一格，形成一个三角形。';
+  String get puzzleThemeTriangleMateDescription =>
+      '后和车距离对方王一格，且位于同一横线或直线，中间相隔一格，形成一个三角形。';
 
   @override
   String get puzzleThemeVukovicMate => '瓦科维奇将杀';
 
   @override
-  String get puzzleThemeVukovicMateDescription => '车和马配合将杀对方的王。车在第三个棋子的支持下执行将杀，而马则用于封锁对方王的逃逸格。';
+  String get puzzleThemeVukovicMateDescription =>
+      '车和马配合将杀对方的王。车在第三个棋子的支持下执行将杀，而马则用于封锁对方王的逃逸格。';
 
   @override
   String get puzzleThemeKnightEndgame => '马残局';
@@ -2225,7 +2280,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeQuietMove => '静着';
 
   @override
-  String get puzzleThemeQuietMoveDescription => '一步棋既不将军也不吃子，也不构成直接的吃子威胁，但它为后续着法中更隐蔽且无法避免的威胁做好了准备。';
+  String get puzzleThemeQuietMoveDescription =>
+      '一步棋既不将军也不吃子，也不构成直接的吃子威胁，但它为后续着法中更隐蔽且无法避免的威胁做好了准备。';
 
   @override
   String get puzzleThemeRookEndgame => '车残局';
@@ -2237,7 +2293,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeSacrifice => '弃子';
 
   @override
-  String get puzzleThemeSacrificeDescription => '涉及短期内舍弃子力，以在强制性的着法序列后重新获得优势的战术。';
+  String get puzzleThemeSacrificeDescription =>
+      '涉及短期内舍弃子力，以在强制性的着法序列后重新获得优势的战术。';
 
   @override
   String get puzzleThemeShort => '短谜题';
@@ -2249,13 +2306,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeSkewer => '串击';
 
   @override
-  String get puzzleThemeSkewerDescription => '高价值棋子受到攻击，当其移开后，暴露出其后方一个价值较低的棋子可以被吃掉或攻击，这是牵制的反向操作。';
+  String get puzzleThemeSkewerDescription =>
+      '高价值棋子受到攻击，当其移开后，暴露出其后方一个价值较低的棋子可以被吃掉或攻击，这是牵制的反向操作。';
 
   @override
   String get puzzleThemeSmotheredMate => '闷杀';
 
   @override
-  String get puzzleThemeSmotheredMateDescription => '由马执行的将杀，被将杀的王因被己方棋子完全包围（或“困住”）而无法移动。';
+  String get puzzleThemeSmotheredMateDescription =>
+      '由马执行的将杀，被将杀的王因被己方棋子完全包围（或“困住”）而无法移动。';
 
   @override
   String get puzzleThemeSuperGM => '超级大师对局';
@@ -2297,7 +2356,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get puzzleThemeMix => '健康搭配';
 
   @override
-  String get puzzleThemeMixDescription => '每个主题中选取一些。你不知道会出现什么，因此得时刻打起精神！ 就像在真实对局中一样。';
+  String get puzzleThemeMixDescription =>
+      '每个主题中选取一些。你不知道会出现什么，因此得时刻打起精神！ 就像在真实对局中一样。';
 
   @override
   String get puzzleThemePlayerGames => '棋手对局';
@@ -2365,7 +2425,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reusableChallengeUrl => '可重复使用的挑战链接';
 
   @override
-  String get permanentLinkForAnyoneToChallengeYou => '一个永久链接，任何人都可以使用此设定向您发起挑战。';
+  String get permanentLinkForAnyoneToChallengeYou =>
+      '一个永久链接，任何人都可以使用此设定向您发起挑战。';
 
   @override
   String get waiting => '等待中';
@@ -2682,7 +2743,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lossOr50MovesByPriorMistake => '因先前失误导致的负局或 50 步规则和棋';
 
   @override
-  String get unknownDueToRounding => '仅在自上次吃子或走兵以来遵循了推荐的残局库着法时，才能保证胜负结果，因为 Syzygy 残局库中的 DTZ 值可能存在舍入。';
+  String get unknownDueToRounding =>
+      '仅在自上次吃子或走兵以来遵循了推荐的残局库着法时，才能保证胜负结果，因为 Syzygy 残局库中的 DTZ 值可能存在舍入。';
 
   @override
   String get allSet => '好了！';
@@ -2825,7 +2887,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get signUp => '注册';
 
   @override
-  String get computersAreNotAllowedToPlay => '禁止使用电脑或借助电脑程序进行对弈。对弈时，请勿使用国际象棋引擎、对局数据库或向其他棋手寻求协助。另外，强烈建议您不要创建备用账户，滥用账户行为将导致账户被封禁。';
+  String get computersAreNotAllowedToPlay =>
+      '禁止使用电脑或借助电脑程序进行对弈。对弈时，请勿使用国际象棋引擎、对局数据库或向其他棋手寻求协助。另外，强烈建议您不要创建备用账户，滥用账户行为将导致账户被封禁。';
 
   @override
   String get games => '对局';
@@ -2911,7 +2974,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get changeUsernameDescription => '更改用户名。注意只能更改一次，且只能更改用户名字母的大小写。';
 
   @override
-  String get signupUsernameHint => '请务必选择一个和谐的用户名，用户名设置后无法更改，并且不合规的用户名会导致账户被封禁！';
+  String get signupUsernameHint =>
+      '请务必选择一个和谐的用户名，用户名设置后无法更改，并且不合规的用户名会导致账户被封禁！';
 
   @override
   String get signupEmailPromise => '我们只会向您发送与您账户相关的邮件，绝不会将您的邮箱共享给第三方。';
@@ -2941,7 +3005,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error_namePassword => '请不要使用您的用户名作为密码。';
 
   @override
-  String get blankedPassword => '您在另一个网站上使用了相同的密码，而该网站已遭泄露。为确保您 Lichess 账户的安全，我们需要您设置一个新密码。感谢您的理解。';
+  String get blankedPassword =>
+      '您在另一个网站上使用了相同的密码，而该网站已遭泄露。为确保您 Lichess 账户的安全，我们需要您设置一个新密码。感谢您的理解。';
 
   @override
   String get youAreLeavingLichess => '您正在离开 Lichess';
@@ -3249,7 +3314,8 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get ratingRangeIsDisabledBecauseYourRatingIsProvisional => '由于您的等级分尚不稳定，等级分筛选已被锁定。进行排位对局将提高稳定性。';
+  String get ratingRangeIsDisabledBecauseYourRatingIsProvisional =>
+      '由于您的等级分尚不稳定，等级分筛选已被锁定。进行排位对局将提高稳定性。';
 
   @override
   String yourPerfRatingIsTooHigh(String param1, String param2) {
@@ -3290,7 +3356,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backToGame => '返回对局';
 
   @override
-  String get siteDescription => '免费在线国际象棋平台。在简洁的界面中对弈。免注册，无广告，无插件。与电脑、好友或随机对手对弈吧。';
+  String get siteDescription =>
+      '免费在线国际象棋平台。在简洁的界面中对弈。免注册，无广告，无插件。与电脑、好友或随机对手对弈吧。';
 
   @override
   String xJoinedTeamY(String param1, String param2) {
@@ -3362,7 +3429,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importGame => '导入对局';
 
   @override
-  String get importGameExplanation => '粘贴对局 PGN 以获得可浏览的主线复盘、电脑分析、对局聊天和可公开分享的链接。';
+  String get importGameExplanation =>
+      '粘贴对局 PGN 以获得可浏览的主线复盘、电脑分析、对局聊天和可公开分享的链接。';
 
   @override
   String get importGameDataPrivacyWarning => '此 PGN 可被公开访问。要私密导入对局，请使用研习功能。';
@@ -3746,10 +3814,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get other => '其他';
 
   @override
-  String get reportCheatBoostHelp => '请附上对局链接解释该用户的行为问题。请不要只说“对手作弊”，而是解释为什么您认为对手作弊。';
+  String get reportCheatBoostHelp =>
+      '请附上对局链接解释该用户的行为问题。请不要只说“对手作弊”，而是解释为什么您认为对手作弊。';
 
   @override
-  String get reportUsernameHelp => '解释此用户名有何冒犯之处。不要只说“冒犯/不当”，请告诉我们您是如何得出这个结论的，特别是当侮辱是隐晦的、非英语的、俚语或涉及历史/文化指涉时。';
+  String get reportUsernameHelp =>
+      '解释此用户名有何冒犯之处。不要只说“冒犯/不当”，请告诉我们您是如何得出这个结论的，特别是当侮辱是隐晦的、非英语的、俚语或涉及历史/文化指涉时。';
 
   @override
   String get reportProcessedFasterInEnglish => '如果您使用英语举报，我们将会更快作出答复。';
@@ -4207,7 +4277,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tournamentHomeTitle => '提供多种时间限制和变体的国际象棋锦标赛';
 
   @override
-  String get tournamentHomeDescription => '参加快节奏的国际象棋锦标赛！加入官方安排的锦标赛，或创建您自己的。子弹棋、超快棋、慢棋、Chess960、山丘之王、三次将军等等选项可供选择，带来无尽的国象乐趣。';
+  String get tournamentHomeDescription =>
+      '参加快节奏的国际象棋锦标赛！加入官方安排的锦标赛，或创建您自己的。子弹棋、超快棋、慢棋、Chess960、山丘之王、三次将军等等选项可供选择，带来无尽的国象乐趣。';
 
   @override
   String get tournamentNotFound => '未找到锦标赛';
@@ -4232,12 +4303,19 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String youAreBetterThanPercentOfPerfTypePlayers(String param1, String param2) {
+  String youAreBetterThanPercentOfPerfTypePlayers(
+    String param1,
+    String param2,
+  ) {
     return '您超过了 $param1 的 $param2 棋手。';
   }
 
   @override
-  String userIsBetterThanPercentOfPerfTypePlayers(String param1, String param2, String param3) {
+  String userIsBetterThanPercentOfPerfTypePlayers(
+    String param1,
+    String param2,
+    String param3,
+  ) {
     return '$param1 超过了 $param2 的 $param3 棋手。';
   }
 
@@ -4264,10 +4342,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get checkYourEmail => '请检查您的邮箱';
 
   @override
-  String get weHaveSentYouAnEmailClickTheLink => '我们已向您发送了一封邮件。请点击邮件中的链接以激活您的账户。';
+  String get weHaveSentYouAnEmailClickTheLink =>
+      '我们已向您发送了一封邮件。请点击邮件中的链接以激活您的账户。';
 
   @override
-  String get ifYouDoNotSeeTheEmailCheckOtherPlaces => '如果您没有收到邮件，请检查其可能存在的位置，例如您的垃圾邮件、社交或其他文件夹。';
+  String get ifYouDoNotSeeTheEmailCheckOtherPlaces =>
+      '如果您没有收到邮件，请检查其可能存在的位置，例如您的垃圾邮件、社交或其他文件夹。';
 
   @override
   String get ifYouDoNotGetTheEmail => '如果 5 分钟内未收到邮件：';
@@ -4323,10 +4403,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scrollOverComputerVariationsToPreviewThem => '在电脑变着上滚动以预览它们。';
 
   @override
-  String get analysisShapesHowTo => '按右键（或 Shift+左键）在棋盘上画圈和箭头。对于其他颜色，请结合右键使用以下按键：';
+  String get analysisShapesHowTo =>
+      '按右键（或 Shift+左键）在棋盘上画圈和箭头。对于其他颜色，请结合右键使用以下按键：';
 
   @override
-  String get primaryColorArrowsHowTo => 'Ctrl 或 Shift = 红色；Command、Alt 或 Meta = 蓝色；各按一个键 = 黄色。';
+  String get primaryColorArrowsHowTo =>
+      'Ctrl 或 Shift = 红色；Command、Alt 或 Meta = 蓝色；各按一个键 = 黄色。';
 
   @override
   String get letOtherPlayersMessageYou => '允许其他棋手给您发送消息';
@@ -4353,7 +4435,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get kidModeIsEnabled => '儿童模式已启用';
 
   @override
-  String get kidModeExplanation => '安全第一。在儿童模式下，所有网站通信功能都被禁用。为您的孩子或学生启用此模式，以保护他们免受其他用户的影响。';
+  String get kidModeExplanation =>
+      '安全第一。在儿童模式下，所有网站通信功能都被禁用。为您的孩子或学生启用此模式，以保护他们免受其他用户的影响。';
 
   @override
   String inKidModeTheLichessLogoGetsIconX(String param) {
@@ -4361,7 +4444,8 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get askYourChessTeacherAboutLiftingKidMode => '您的账户已被托管，请咨询您的国际象棋老师以解除儿童模式。';
+  String get askYourChessTeacherAboutLiftingKidMode =>
+      '您的账户已被托管，请咨询您的国际象棋老师以解除儿童模式。';
 
   @override
   String get enableKidMode => '启用儿童模式';
@@ -4907,7 +4991,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tournDescription => '锦标赛描述';
 
   @override
-  String get tournDescriptionHelp => '您有什么特别想告知参与者的吗？请尽量简短描述。支持 Markdown 链接格式：[名称](网址)';
+  String get tournDescriptionHelp =>
+      '您有什么特别想告知参与者的吗？请尽量简短描述。支持 Markdown 链接格式：[名称](网址)';
 
   @override
   String get ratedFormHelp => '对局为排位对局，将影响棋手等级分';
@@ -5008,7 +5093,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reopenYourAccount => '重新激活您的账户';
 
   @override
-  String get reopenYourAccountDescription => '如果您关闭了账户，但此后又改变了主意，您可以获得一次恢复账户的机会。';
+  String get reopenYourAccountDescription =>
+      '如果您关闭了账户，但此后又改变了主意，您可以获得一次恢复账户的机会。';
 
   @override
   String get emailAssociatedToaccount => '与此账户关联的邮箱地址';
@@ -5061,7 +5147,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showMeEverything => '显示全部内容';
 
   @override
-  String get lichessPatronInfo => 'Lichess 是一家非营利机构，其软件是完全免费的自由开源软件。\n该网站的所有运营成本、开发工作以及内容产出，都完全依赖于用户的赞助。';
+  String get lichessPatronInfo =>
+      'Lichess 是一家非营利机构，其软件是完全免费的自由开源软件。\n该网站的所有运营成本、开发工作以及内容产出，都完全依赖于用户的赞助。';
 
   @override
   String get nothingToSeeHere => '目前这里什么都没有。';
@@ -5888,7 +5975,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studyCurrentChapterUrl => '当前章节链接';
 
   @override
-  String get studyYouCanPasteThisInTheForumToEmbed => '您可以将此链接粘贴到论坛或您的 Lichess 博客中以嵌入';
+  String get studyYouCanPasteThisInTheForumToEmbed =>
+      '您可以将此链接粘贴到论坛或您的 Lichess 博客中以嵌入';
 
   @override
   String get studyStartAtInitialPosition => '从初始局面开始';
@@ -6194,7 +6282,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studyWelcomeToLichessStudyTitle => '欢迎来到 Lichess 研习！';
 
   @override
-  String get studyWelcomeToLichessStudyText => '这是一个共享分析棋盘。<br><br>用它来分析和对局评注，<br>与朋友讨论局面，<br>当然，还可以用于象棋课程！<br><br>这是一个强大的工具，让我们花点时间看看它是如何工作的。';
+  String get studyWelcomeToLichessStudyText =>
+      '这是一个共享分析棋盘。<br><br>用它来分析和对局评注，<br>与朋友讨论局面，<br>当然，还可以用于象棋课程！<br><br>这是一个强大的工具，让我们花点时间看看它是如何工作的。';
 
   @override
   String get studySharedAndSaveTitle => '共享与保存';
@@ -6233,19 +6322,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studyAnnotatePositionTitle => '评注某个局面';
 
   @override
-  String get studyAnnotatePositionText => '点击 !? 按钮，或者右键点击右侧的着法列表。<br>评注符号是共享并保存的。';
+  String get studyAnnotatePositionText =>
+      '点击 !? 按钮，或者右键点击右侧的着法列表。<br>评注符号是共享并保存的。';
 
   @override
   String get studyConclusionTitle => '感谢您抽出宝贵的时间';
 
   @override
-  String get studyConclusionText => '您可以在个人资料页找到您<a href=\'/study/mine/hot\'>之前的研习</a>。<br>还有一篇<a href=\'//lichess.org/blog/V0KrLSkAAMo3hsi4/study-chess-the-lichess-way\'>关于研习的博客文章</a>。<br>高级用户可以按\"?\"键查看键盘快捷键。<br>祝您研习愉快！';
+  String get studyConclusionText =>
+      '您可以在个人资料页找到您<a href=\'/study/mine/hot\'>之前的研习</a>。<br>还有一篇<a href=\'//lichess.org/blog/V0KrLSkAAMo3hsi4/study-chess-the-lichess-way\'>关于研习的博客文章</a>。<br>高级用户可以按\"?\"键查看键盘快捷键。<br>祝您研习愉快！';
 
   @override
   String get studyCreateChapterTitle => '让我们创建一个研习章节';
 
   @override
-  String get studyCreateChapterText => '一个研习可以有多个章节。<br>每个章节都有独立的着法树，<br>并且可以通过多种方式创建。';
+  String get studyCreateChapterText =>
+      '一个研习可以有多个章节。<br>每个章节都有独立的着法树，<br>并且可以通过多种方式创建。';
 
   @override
   String get studyFromInitialPositionTitle => '从初始局面开始';
@@ -6263,13 +6355,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studyLoadExistingLichessGameTitle => '加载已有的 Lichess 对局';
 
   @override
-  String get studyLoadExistingLichessGameText => '粘贴一个 Lichess 对局链接<br>（例如 lichess.org/7fHIU0XI）<br>以将对局着法加载到章节中。';
+  String get studyLoadExistingLichessGameText =>
+      '粘贴一个 Lichess 对局链接<br>（例如 lichess.org/7fHIU0XI）<br>以将对局着法加载到章节中。';
 
   @override
   String get studyFromFenStringTitle => '导入 FEN 代码';
 
   @override
-  String get studyFromFenStringText => '粘贴 FEN 格式的局面<br><i>4k3/4rb2/8/7p/8/5Q2/1PP5/1K6 w</i><br>以从某个局面开始章节。';
+  String get studyFromFenStringText =>
+      '粘贴 FEN 格式的局面<br><i>4k3/4rb2/8/7p/8/5Q2/1PP5/1K6 w</i><br>以从某个局面开始章节。';
 
   @override
   String get studyFromPgnGameTitle => '导入 PGN 代码';
@@ -6281,7 +6375,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get studyVariantsAreSupportedTitle => '研习支持变体';
 
   @override
-  String get studyVariantsAreSupportedText => '是的，您可以研习 Crazyhouse<br>以及所有 Lichess 变体！';
+  String get studyVariantsAreSupportedText =>
+      '是的，您可以研习 Crazyhouse<br>以及所有 Lichess 变体！';
 
   @override
   String get studyChapterConclusionText => '章节会被永久保存。<br>祝您愉快地组织您的象棋内容！';
@@ -6531,7 +6626,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
 class AppLocalizationsZhTw extends AppLocalizationsZh {
-  AppLocalizationsZhTw(): super('zh_TW');
+  AppLocalizationsZhTw() : super('zh_TW');
 
   @override
   String get mobileAccount => '帳號';
@@ -6601,7 +6696,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get mobileNoSearchResults => '沒有任何搜尋結果';
 
   @override
-  String get mobileNotAllFeaturesAreAvailable => '請注意，目前尚未提供舊版 App 或網站的所有功能，但我們會持續新增。';
+  String get mobileNotAllFeaturesAreAvailable =>
+      '請注意，目前尚未提供舊版 App 或網站的所有功能，但我們會持續新增。';
 
   @override
   String get mobileNotFollowingAnyUser => '您尚未追蹤任何使用者。';
@@ -6678,7 +6774,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get mobileSettingsImmersiveMode => '沉浸模式';
 
   @override
-  String get mobileSettingsImmersiveModeSubtitle => '對弈時隱藏系統介面。若您會被螢幕邊緣的系統導覽手勢干擾，請使用此功能。將會應用到遊戲和謎題界面中。';
+  String get mobileSettingsImmersiveModeSubtitle =>
+      '對弈時隱藏系統介面。若您會被螢幕邊緣的系統導覽手勢干擾，請使用此功能。將會應用到遊戲和謎題界面中。';
 
   @override
   String get mobileSettingsMaterialDifferenceCapturedPieces => '吃子';
@@ -7039,7 +7136,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String activityRankedInTournament(int count, String param2, String param3, String param4) {
+  String activityRankedInTournament(
+    int count,
+    String param2,
+    String param3,
+    String param4,
+  ) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
@@ -7093,37 +7195,43 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get arenaHowAreScoresCalculated => '分數是如何計算的？';
 
   @override
-  String get arenaHowAreScoresCalculatedAnswer => '贏家將會得到2積分，平局1積分，輸家0分。\n如果您連續贏了2場以上的棋局，您將會開始以火焰符號標示的連勝次數。\n在連勝後您將會收到兩倍的積分直到輸棋。\n換句話說：贏得 4 積分，平局得 2 積分，但是輸家依舊沒有積分。\n\n例如：連贏兩場加上一局平局，您將會得到 2 + 2 + ( 2 x 1 ) = 6 積分';
+  String get arenaHowAreScoresCalculatedAnswer =>
+      '贏家將會得到2積分，平局1積分，輸家0分。\n如果您連續贏了2場以上的棋局，您將會開始以火焰符號標示的連勝次數。\n在連勝後您將會收到兩倍的積分直到輸棋。\n換句話說：贏得 4 積分，平局得 2 積分，但是輸家依舊沒有積分。\n\n例如：連贏兩場加上一局平局，您將會得到 2 + 2 + ( 2 x 1 ) = 6 積分';
 
   @override
   String get arenaBerserk => '狂暴選項';
 
   @override
-  String get arenaBerserkAnswer => '狂暴模式若開啟，玩家時間將會砍半，不過在獲勝時將會多 1 積分\n\n在狂暴模式下，加時制將會被停用（1+2 是一個例外，它將會改為 1+0）。\n\n狂暴模式將不會被允許在零初始時間模式時開啟（例如：0+1，0+2）。\n\n狂暴模式只會在您下了 7 步棋以上才會得到加成分數。';
+  String get arenaBerserkAnswer =>
+      '狂暴模式若開啟，玩家時間將會砍半，不過在獲勝時將會多 1 積分\n\n在狂暴模式下，加時制將會被停用（1+2 是一個例外，它將會改為 1+0）。\n\n狂暴模式將不會被允許在零初始時間模式時開啟（例如：0+1，0+2）。\n\n狂暴模式只會在您下了 7 步棋以上才會得到加成分數。';
 
   @override
   String get arenaHowIsTheWinnerDecided => '贏家是怎麼決定的？';
 
   @override
-  String get arenaHowIsTheWinnerDecidedAnswer => '在錦標賽中獲得最多積分的人將獲勝，當兩位(或以上)玩家擁有相同積分時，這場錦標賽將會被視為平手';
+  String get arenaHowIsTheWinnerDecidedAnswer =>
+      '在錦標賽中獲得最多積分的人將獲勝，當兩位(或以上)玩家擁有相同積分時，這場錦標賽將會被視為平手';
 
   @override
   String get arenaHowDoesPairingWork => '對手是如何配對的?';
 
   @override
-  String get arenaHowDoesPairingWorkAnswer => '在錦標賽開始時，系統將會以您的模式評分為基礎分配對手。\n在您完成了第一場棋局後，系統將會分配與您排名相近的玩家作為對手，這會需要一點時間做分配。\n迅速完成棋局並獲勝就可以得到更多積分。';
+  String get arenaHowDoesPairingWorkAnswer =>
+      '在錦標賽開始時，系統將會以您的模式評分為基礎分配對手。\n在您完成了第一場棋局後，系統將會分配與您排名相近的玩家作為對手，這會需要一點時間做分配。\n迅速完成棋局並獲勝就可以得到更多積分。';
 
   @override
   String get arenaHowDoesItEnd => '錦標賽何時會結束？';
 
   @override
-  String get arenaHowDoesItEndAnswer => '每場錦標賽都會有一個倒數計時器，當它歸零時，錦標賽的排名就會固定，排名將會被顯示。如果有比賽在錦標賽結束後還沒完成，您還是得完成它，但是積分將不會被算進錦標賽的積分裡。';
+  String get arenaHowDoesItEndAnswer =>
+      '每場錦標賽都會有一個倒數計時器，當它歸零時，錦標賽的排名就會固定，排名將會被顯示。如果有比賽在錦標賽結束後還沒完成，您還是得完成它，但是積分將不會被算進錦標賽的積分裡。';
 
   @override
   String get arenaOtherRules => '其他重要的規則';
 
   @override
-  String get arenaThereIsACountdown => '在您開始您的第一步棋前將會有一個倒數計時器，在倒數結束前如果沒有下出您的第一步，您的對手將會直接獲勝';
+  String get arenaThereIsACountdown =>
+      '在您開始您的第一步棋前將會有一個倒數計時器，在倒數結束前如果沒有下出您的第一步，您的對手將會直接獲勝';
 
   @override
   String get arenaThisIsPrivate => '這是一個私人的錦標賽';
@@ -7220,7 +7328,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get arenaTournamentStats => '錦標賽得分';
 
   @override
-  String get arenaRankAvgHelp => '平均等地表示你的等地百分比。越低越好。\n\n舉例而言，在 100 人中被評等地 3 表示 %3；在 1000 人中被評等地 10 表示 %1';
+  String get arenaRankAvgHelp =>
+      '平均等地表示你的等地百分比。越低越好。\n\n舉例而言，在 100 人中被評等地 3 表示 %3；在 1000 人中被評等地 10 表示 %1';
 
   @override
   String get arenaMedians => '中位數';
@@ -7366,7 +7475,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get broadcastDefinitivelyDeleteRound => '刪除這局以及其所有棋局';
 
   @override
-  String get broadcastDeleteAllGamesOfThisRound => '刪除所有此輪的棋局。直播來源必須是開啟的以成功重新建立棋局。';
+  String get broadcastDeleteAllGamesOfThisRound =>
+      '刪除所有此輪的棋局。直播來源必須是開啟的以成功重新建立棋局。';
 
   @override
   String get broadcastEditRoundStudy => '編輯此輪研究';
@@ -7639,13 +7749,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get coordinatesTalkToYourChessFriends => '更容易與棋友討論，因為你們都知道「西洋棋的共同語言」。';
 
   @override
-  String get coordinatesYouCanAnalyseAGameMoreEffectively => '如果能夠快速辨認坐標，便可以更有效地分析一場棋局。';
+  String get coordinatesYouCanAnalyseAGameMoreEffectively =>
+      '如果能夠快速辨認坐標，便可以更有效地分析一場棋局。';
 
   @override
   String get coordinatesACoordinateAppears => '棋盤上將出現坐標，您必須點擊對應的格子。';
 
   @override
-  String get coordinatesASquareIsHighlightedExplanation => '輸入亮起來的格子的坐標（例如「e4」）。';
+  String get coordinatesASquareIsHighlightedExplanation =>
+      '輸入亮起來的格子的坐標（例如「e4」）。';
 
   @override
   String get coordinatesYouHaveThirtySeconds => '30秒內配對越多正確的格子越好！';
@@ -7708,7 +7820,11 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String perfStatRatingDeviationTooltip(String param1, String param2, String param3) {
+  String perfStatRatingDeviationTooltip(
+    String param1,
+    String param2,
+    String param3,
+  ) {
     return '越低的數值代表積分越穩定。 數值高於$param1時的積分會被判定為浮動積分。\n要被列入排名之中，該數值需低於$param2(標準西洋棋) 或是$param3(西洋棋變體)。';
   }
 
@@ -7837,7 +7953,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get preferencesShowFlairs => '顯示玩家身分';
 
   @override
-  String get preferencesExplainShowPlayerRatings => '這允許隱藏本網站上的所有等級分，以輔助專心下棋。每局遊戲仍可以計算及改變等級分，這個設定只會影響到你是否看得到此分數。';
+  String get preferencesExplainShowPlayerRatings =>
+      '這允許隱藏本網站上的所有等級分，以輔助專心下棋。每局遊戲仍可以計算及改變等級分，這個設定只會影響到你是否看得到此分數。';
 
   @override
   String get preferencesDisplayBoardResizeHandle => '顯示盤面大小調整區塊';
@@ -7897,13 +8014,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get preferencesPromoteToQueenAutomatically => '兵自動升為后';
 
   @override
-  String get preferencesExplainPromoteToQueenAutomatically => '升變的同時按住<ctrl>以暫時取消自動升變';
+  String get preferencesExplainPromoteToQueenAutomatically =>
+      '升變的同時按住<ctrl>以暫時取消自動升變';
 
   @override
   String get preferencesWhenPremoving => '預先走棋時';
 
   @override
-  String get preferencesClaimDrawOnThreefoldRepetitionAutomatically => '在三次重覆局面時自動要求和局';
+  String get preferencesClaimDrawOnThreefoldRepetitionAutomatically =>
+      '在三次重覆局面時自動要求和局';
 
   @override
   String get preferencesWhenTimeRemainingLessThanThirtySeconds => '當剩餘時間小於30秒';
@@ -7912,7 +8031,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get preferencesMoveConfirmation => '走棋確認';
 
   @override
-  String get preferencesExplainCanThenBeTemporarilyDisabled => '可以在遊戲中用棋盤選單中關閉此功能';
+  String get preferencesExplainCanThenBeTemporarilyDisabled =>
+      '可以在遊戲中用棋盤選單中關閉此功能';
 
   @override
   String get preferencesInCorrespondenceGames => '在長期對局中';
@@ -7942,7 +8062,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get preferencesSnapArrowsToValidMoves => '將右鍵標示箭頭鎖定到合法棋步';
 
   @override
-  String get preferencesSayGgWpAfterLosingOrDrawing => '輸棋或和棋後自動發送 \"Good game, well played\"。';
+  String get preferencesSayGgWpAfterLosingOrDrawing =>
+      '輸棋或和棋後自動發送 \"Good game, well played\"。';
 
   @override
   String get preferencesYourPreferencesHaveBeenSaved => '已儲存您的設定。';
@@ -8038,7 +8159,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleDownVote => '投票為壞謎題';
 
   @override
-  String get puzzleYourPuzzleRatingWillNotChange => '您的謎題評級不會改變。請注意，謎題不是比賽。您的評分有助於選擇最適合您當前技能的謎題。';
+  String get puzzleYourPuzzleRatingWillNotChange =>
+      '您的謎題評級不會改變。請注意，謎題不是比賽。您的評分有助於選擇最適合您當前技能的謎題。';
 
   @override
   String get puzzleFindTheBestMoveForWhite => '為白方找出最佳移動';
@@ -8164,7 +8286,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleFailed => '失敗';
 
   @override
-  String get puzzleStreakDescription => '累積你的連勝，解著漸漸變難的題目。 沒有時間限制，不要急。走錯一步，將會是遊戲結束！\n不過每一局中你都有跳過一步棋的機會。';
+  String get puzzleStreakDescription =>
+      '累積你的連勝，解著漸漸變難的題目。 沒有時間限制，不要急。走錯一步，將會是遊戲結束！\n不過每一局中你都有跳過一步棋的機會。';
 
   @override
   String puzzleYourStreakX(String param) {
@@ -8190,7 +8313,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleSearchPuzzles => '尋找謎題';
 
   @override
-  String get puzzleFromMyGamesNone => '你在資料庫中沒有謎題，但 Lichess 仍然非常愛你。\n遊玩一些快速和經典遊戲，以增加從你的棋局中生成謎題的機會！';
+  String get puzzleFromMyGamesNone =>
+      '你在資料庫中沒有謎題，但 Lichess 仍然非常愛你。\n遊玩一些快速和經典遊戲，以增加從你的棋局中生成謎題的機會！';
 
   @override
   String get puzzlePuzzleDashboardDescription => '訓練、分析、改進';
@@ -8269,7 +8393,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemeAdvantage => '取得優勢';
 
   @override
-  String get puzzleThemeAdvantageDescription => '把握機會以取得決定性優勢。（200 厘兵 ≤ 評估值 ≤ 600 厘兵）';
+  String get puzzleThemeAdvantageDescription =>
+      '把握機會以取得決定性優勢。（200 厘兵 ≤ 評估值 ≤ 600 厘兵）';
 
   @override
   String get puzzleThemeAnastasiaMate => '阿納斯塔西亞殺法';
@@ -8287,7 +8412,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemeAttackingF2F7 => '攻擊 f2 或 f7';
 
   @override
-  String get puzzleThemeAttackingF2F7Description => '專注於 f2 或 f7 兵的攻擊，像是 fried liver 攻擊';
+  String get puzzleThemeAttackingF2F7Description =>
+      '專注於 f2 或 f7 兵的攻擊，像是 fried liver 攻擊';
 
   @override
   String get puzzleThemeAttraction => '吸引';
@@ -8323,7 +8449,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemeCapturingDefender => '吃子 - 防守者';
 
   @override
-  String get puzzleThemeCapturingDefenderDescription => '移除防守其他棋子的防守者以攻擊未被保護的棋子';
+  String get puzzleThemeCapturingDefenderDescription =>
+      '移除防守其他棋子的防守者以攻擊未被保護的棋子';
 
   @override
   String get puzzleThemeCrushing => '壓倒性優勢';
@@ -8335,7 +8462,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemeDoubleBishopMate => '雙主教將死';
 
   @override
-  String get puzzleThemeDoubleBishopMateDescription => '相鄰對角線上的兩個主教將將死被自身棋子困住的王。';
+  String get puzzleThemeDoubleBishopMateDescription =>
+      '相鄰對角線上的兩個主教將將死被自身棋子困住的王。';
 
   @override
   String get puzzleThemeDovetailMate => '柯齊奧將死';
@@ -8377,7 +8505,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemeDiscoveredAttack => '閃擊';
 
   @override
-  String get puzzleThemeDiscoveredAttackDescription => '將一子（例如騎士）移開長程攻擊格（例如城堡）。';
+  String get puzzleThemeDiscoveredAttackDescription =>
+      '將一子（例如騎士）移開長程攻擊格（例如城堡）。';
 
   @override
   String get puzzleThemeDoubleCheck => '雙將';
@@ -8422,25 +8551,29 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemeInterference => '干擾';
 
   @override
-  String get puzzleThemeInterferenceDescription => '將一子擋在兩個敵方子之間以切斷防護，例如以騎士在兩車之間阻擋。';
+  String get puzzleThemeInterferenceDescription =>
+      '將一子擋在兩個敵方子之間以切斷防護，例如以騎士在兩車之間阻擋。';
 
   @override
   String get puzzleThemeIntermezzo => 'Intermezzo';
 
   @override
-  String get puzzleThemeIntermezzoDescription => '與其走正常的棋譜，不如威脅敵方子吧！這樣不但可以破壞敵方原先計畫，還可以讓敵人必須對威脅採取對應的動作。這種戰術又稱為「Zwischenzug」或「In between」。';
+  String get puzzleThemeIntermezzoDescription =>
+      '與其走正常的棋譜，不如威脅敵方子吧！這樣不但可以破壞敵方原先計畫，還可以讓敵人必須對威脅採取對應的動作。這種戰術又稱為「Zwischenzug」或「In between」。';
 
   @override
   String get puzzleThemeKillBoxMate => '殺戮箱將死';
 
   @override
-  String get puzzleThemeKillBoxMateDescription => '一個城堡在敵方國王旁邊，由皇后支援，同時封鎖國王的逃脫路徑。城堡和皇后會將敵方國王困在 3×3 的『殺戮箱』中。';
+  String get puzzleThemeKillBoxMateDescription =>
+      '一個城堡在敵方國王旁邊，由皇后支援，同時封鎖國王的逃脫路徑。城堡和皇后會將敵方國王困在 3×3 的『殺戮箱』中。';
 
   @override
   String get puzzleThemeVukovicMate => '武科維奇將死';
 
   @override
-  String get puzzleThemeVukovicMateDescription => '一個城堡和一個騎士合作對國王發動將死。城堡執行將死攻擊，並由第三個棋子支援，而騎士則負責封鎖國王的逃脫路徑。';
+  String get puzzleThemeVukovicMateDescription =>
+      '一個城堡和一個騎士合作對國王發動將死。城堡執行將死攻擊，並由第三個棋子支援，而騎士則負責封鎖國王的逃脫路徑。';
 
   @override
   String get puzzleThemeKnightEndgame => '馬殘局';
@@ -8530,7 +8663,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemePin => '牽制';
 
   @override
-  String get puzzleThemePinDescription => '一種涉及「牽制」，讓一敵方子無法在讓其他更高價值的子不被受到攻擊下移動的戰術。';
+  String get puzzleThemePinDescription =>
+      '一種涉及「牽制」，讓一敵方子無法在讓其他更高價值的子不被受到攻擊下移動的戰術。';
 
   @override
   String get puzzleThemePromotion => '升變';
@@ -8584,7 +8718,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get puzzleThemeSkewer => '串擊';
 
   @override
-  String get puzzleThemeSkewerDescription => '攻擊敵方高價值的子以讓敵方移開，以攻擊背後較為低價值未受保護的他子。為一種反向的「牽制」。';
+  String get puzzleThemeSkewerDescription =>
+      '攻擊敵方高價值的子以讓敵方移開，以攻擊背後較為低價值未受保護的他子。為一種反向的「牽制」。';
 
   @override
   String get puzzleThemeSmotheredMate => '悶殺';
@@ -9007,7 +9142,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get lossOr50MovesByPriorMistake => '因我方失誤導致的敗勢或五十步和棋';
 
   @override
-  String get unknownDueToRounding => '由於 Syzygy 終局庫中的 DTZ 值可能經過四捨五入，只有在您從上次吃子或進兵之後都完全遵循其推薦的最佳路線，勝負結果才能保證成立。';
+  String get unknownDueToRounding =>
+      '由於 Syzygy 終局庫中的 DTZ 值可能經過四捨五入，只有在您從上次吃子或進兵之後都完全遵循其推薦的最佳路線，勝負結果才能保證成立。';
 
   @override
   String get allSet => '一切就緒！';
@@ -9123,7 +9259,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get signUp => '註冊';
 
   @override
-  String get computersAreNotAllowedToPlay => '電腦與電腦輔助棋手不允許參加對弈。對弈時，請勿從國際象棋引擎、資料庫以及其他棋手那裡獲取幫助。另外，強烈建議不要創建多個帳號；過分地使用多個帳號將導致封號。';
+  String get computersAreNotAllowedToPlay =>
+      '電腦與電腦輔助棋手不允許參加對弈。對弈時，請勿從國際象棋引擎、資料庫以及其他棋手那裡獲取幫助。另外，強烈建議不要創建多個帳號；過分地使用多個帳號將導致封號。';
 
   @override
   String get games => '棋局';
@@ -9206,7 +9343,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get changeUsernameDescription => '更改使用者名稱。您最多可以更改一次字母大小寫。';
 
   @override
-  String get signupUsernameHint => '請選擇一個妥當的使用者名稱。請注意使用者名稱無法再次更改，並且不妥當的名稱會導致帳號被封禁！';
+  String get signupUsernameHint =>
+      '請選擇一個妥當的使用者名稱。請注意使用者名稱無法再次更改，並且不妥當的名稱會導致帳號被封禁！';
 
   @override
   String get password => '密碼';
@@ -9233,7 +9371,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get error_namePassword => '請不要把密碼設為使用者名稱。';
 
   @override
-  String get blankedPassword => '你在其他站點使用過相同的密碼，並且這些站點已經失效。為確保你的 Lichess 帳戶安全，你需要設置新密碼。感謝你的理解。';
+  String get blankedPassword =>
+      '你在其他站點使用過相同的密碼，並且這些站點已經失效。為確保你的 Lichess 帳戶安全，你需要設置新密碼。感謝你的理解。';
 
   @override
   String get youAreLeavingLichess => '你正要離開 Lichess';
@@ -9568,7 +9707,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get backToGame => '返回棋局';
 
   @override
-  String get siteDescription => '界面清新的免費線上國際象棋平台。不用註冊，沒有廣告，無需插件。快來與電腦、朋友和陌生人一起對戰吧！';
+  String get siteDescription =>
+      '界面清新的免費線上國際象棋平台。不用註冊，沒有廣告，無需插件。快來與電腦、朋友和陌生人一起對戰吧！';
 
   @override
   String xJoinedTeamY(String param1, String param2) {
@@ -10012,10 +10152,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get other => '其他';
 
   @override
-  String get reportCheatBoostHelp => '請詳細說明你舉報此使用者的具體原因並貼上遊戲連結。「他作弊」等簡短說明是不被接受的。';
+  String get reportCheatBoostHelp =>
+      '請詳細說明你舉報此使用者的具體原因並貼上遊戲連結。「他作弊」等簡短說明是不被接受的。';
 
   @override
-  String get reportUsernameHelp => '請詳細說明你舉報此使用者的具體原因。若必要請解釋其名詞的歷史意義、網路用語、或是此使用者名稱如何指桑罵槐。「他的使用者名稱不妥」等簡短說明是不被接受的。';
+  String get reportUsernameHelp =>
+      '請詳細說明你舉報此使用者的具體原因。若必要請解釋其名詞的歷史意義、網路用語、或是此使用者名稱如何指桑罵槐。「他的使用者名稱不妥」等簡短說明是不被接受的。';
 
   @override
   String get reportProcessedFasterInEnglish => '若舉報內容為英文將會更快的被處理。';
@@ -10458,7 +10600,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get tournamentHomeTitle => '富有各種時間以及變體的西洋棋錦標賽';
 
   @override
-  String get tournamentHomeDescription => '加入快節奏的國際象棋比賽！加入定時賽事，或創建自己的。子彈，閃電，經典，菲舍爾任意制，王到中心，三次將軍，並提供更多的選擇為無盡的國際象棋樂趣。';
+  String get tournamentHomeDescription =>
+      '加入快節奏的國際象棋比賽！加入定時賽事，或創建自己的。子彈，閃電，經典，菲舍爾任意制，王到中心，三次將軍，並提供更多的選擇為無盡的國際象棋樂趣。';
 
   @override
   String get tournamentNotFound => '找不到該錦標賽';
@@ -10483,12 +10626,19 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String youAreBetterThanPercentOfPerfTypePlayers(String param1, String param2) {
+  String youAreBetterThanPercentOfPerfTypePlayers(
+    String param1,
+    String param2,
+  ) {
     return '您比$param1的$param2棋手更強。';
   }
 
   @override
-  String userIsBetterThanPercentOfPerfTypePlayers(String param1, String param2, String param3) {
+  String userIsBetterThanPercentOfPerfTypePlayers(
+    String param1,
+    String param2,
+    String param3,
+  ) {
     return '$param1比$param3之中的$param2棋手強。';
   }
 
@@ -10515,10 +10665,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get checkYourEmail => '請檢查您的電子郵件';
 
   @override
-  String get weHaveSentYouAnEmailClickTheLink => '我們已經發送了一封電子郵件到你的郵箱。點擊郵件中的連結以啟用帳號。';
+  String get weHaveSentYouAnEmailClickTheLink =>
+      '我們已經發送了一封電子郵件到你的郵箱。點擊郵件中的連結以啟用帳號。';
 
   @override
-  String get ifYouDoNotSeeTheEmailCheckOtherPlaces => '若您沒收到郵件，請檢查您的其他收件箱，例如垃圾箱、促銷、社交等。';
+  String get ifYouDoNotSeeTheEmailCheckOtherPlaces =>
+      '若您沒收到郵件，請檢查您的其他收件箱，例如垃圾箱、促銷、社交等。';
 
   @override
   String weHaveSentYouAnEmailTo(String param) {
@@ -10590,7 +10742,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get kidModeIsEnabled => '已啟用兒童模式';
 
   @override
-  String get kidModeExplanation => '考量安全，在兒童模式中，網站上全部的文字交流將會被關閉。開啟此模式來保護你的孩子及學生不被網路上的人傷害。';
+  String get kidModeExplanation =>
+      '考量安全，在兒童模式中，網站上全部的文字交流將會被關閉。開啟此模式來保護你的孩子及學生不被網路上的人傷害。';
 
   @override
   String inKidModeTheLichessLogoGetsIconX(String param) {
@@ -11119,7 +11272,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get tournDescription => '錦標賽敘述';
 
   @override
-  String get tournDescriptionHelp => '有甚麼特別要告訴參賽者的嗎？盡量不要太長。可以使用 Markdown 網址 [name](https://url)。';
+  String get tournDescriptionHelp =>
+      '有甚麼特別要告訴參賽者的嗎？盡量不要太長。可以使用 Markdown 網址 [name](https://url)。';
 
   @override
   String get ratedFormHelp => '比賽為積分賽\n會影響到棋手的積分';
@@ -11215,7 +11369,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get reopenYourAccount => '重新開啟帳戶';
 
   @override
-  String get reopenYourAccountDescription => '如果你停用了自己的帳號，但是改變了心意，你有一次的機會可以拿回帳號。';
+  String get reopenYourAccountDescription =>
+      '如果你停用了自己的帳號，但是改變了心意，你有一次的機會可以拿回帳號。';
 
   @override
   String get emailAssociatedToaccount => '和此帳號相關的電子信箱';
@@ -11268,7 +11423,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get showMeEverything => '全部顯示';
 
   @override
-  String get lichessPatronInfo => 'Lichess是個慈善、完全免費且開源的軟體。\n一切營運成本、開發和內容皆來自用戶之捐贈。';
+  String get lichessPatronInfo =>
+      'Lichess是個慈善、完全免費且開源的軟體。\n一切營運成本、開發和內容皆來自用戶之捐贈。';
 
   @override
   String get nothingToSeeHere => '目前這裡沒有什麼好看的。';

@@ -22,7 +22,8 @@ class EngineSettingsScreen extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<EngineSettingsScreen> createState() => _EngineSettingsScreenState();
+  ConsumerState<EngineSettingsScreen> createState() =>
+      _EngineSettingsScreenState();
 }
 
 class _EngineSettingsScreenState extends ConsumerState<EngineSettingsScreen> {
@@ -49,7 +50,9 @@ class _EngineSettingsScreenState extends ConsumerState<EngineSettingsScreen> {
   }
 
   void _startDownload() {
-    final future = ref.read(nnueServiceProvider).downloadNNUEFiles(inBackground: false);
+    final future = ref
+        .read(nnueServiceProvider)
+        .downloadNNUEFiles(inBackground: false);
     future.then((downloaded) {
       if (mounted && downloaded) {
         setState(() {
@@ -72,7 +75,10 @@ class _EngineSettingsScreenState extends ConsumerState<EngineSettingsScreen> {
         children: [
           if (_hasVerifiedNNUEFiles == null)
             Shimmer(
-              child: ShimmerLoading(isLoading: true, child: ListSection.loading(itemsNumber: 2)),
+              child: ShimmerLoading(
+                isLoading: true,
+                child: ListSection.loading(itemsNumber: 2),
+              ),
             )
           else
             ListSection(
@@ -89,19 +95,24 @@ class _EngineSettingsScreenState extends ConsumerState<EngineSettingsScreen> {
                       onSelectedItemChanged: (ChessEnginePref? value) {
                         ref
                             .read(engineEvaluationPreferencesProvider.notifier)
-                            .setEvaluationFunction(value ?? ChessEnginePref.sf16);
-                        if (value == ChessEnginePref.sfLatest && _hasVerifiedNNUEFiles == false) {
+                            .setEvaluationFunction(
+                              value ?? ChessEnginePref.sf16,
+                            );
+                        if (value == ChessEnginePref.sfLatest &&
+                            _hasVerifiedNNUEFiles == false) {
                           _startDownload();
                         }
                       },
                     );
                   },
                 ),
-                if (prefs.enginePref == ChessEnginePref.sfLatest && _hasVerifiedNNUEFiles == false)
+                if (prefs.enginePref == ChessEnginePref.sfLatest &&
+                    _hasVerifiedNNUEFiles == false)
                   LoadingButtonBuilder(
                     initialFuture: _downloadNNUEFilesFuture,
-                    fetchData: () =>
-                        ref.read(nnueServiceProvider).downloadNNUEFiles(inBackground: false),
+                    fetchData: () => ref
+                        .read(nnueServiceProvider)
+                        .downloadNNUEFiles(inBackground: false),
                     builder: (context, isLoading, fetchData) {
                       return ListTile(
                         trailing: isLoading
@@ -115,7 +126,11 @@ class _EngineSettingsScreenState extends ConsumerState<EngineSettingsScreen> {
                                 },
                               )
                             : const Icon(Icons.download),
-                        title: Text(isLoading ? 'Downloading NNUE files' : 'Download NNUE files'),
+                        title: Text(
+                          isLoading
+                              ? 'Downloading NNUE files'
+                              : 'Download NNUE files',
+                        ),
                         subtitle: const Text(nnueTotalSizeMB),
                         enabled: !isLoading,
                         onTap: () async {
@@ -141,7 +156,9 @@ class _EngineSettingsScreenState extends ConsumerState<EngineSettingsScreen> {
                         barrierDismissible: true,
                         builder: (context) {
                           return AlertDialog.adaptive(
-                            content: const Text('Do you want to delete the NNUE files?'),
+                            content: const Text(
+                              'Do you want to delete the NNUE files?',
+                            ),
                             actions: [
                               PlatformDialogAction(
                                 child: const Text('OK'),
@@ -172,13 +189,19 @@ class _EngineSettingsScreenState extends ConsumerState<EngineSettingsScreen> {
             ),
           EngineSettingsWidget(
             onSetEngineSearchTime: (value) {
-              ref.read(engineEvaluationPreferencesProvider.notifier).setEngineSearchTime(value);
+              ref
+                  .read(engineEvaluationPreferencesProvider.notifier)
+                  .setEngineSearchTime(value);
             },
             onSetEngineCores: (value) {
-              ref.read(engineEvaluationPreferencesProvider.notifier).setEngineCores(value);
+              ref
+                  .read(engineEvaluationPreferencesProvider.notifier)
+                  .setEngineCores(value);
             },
             onSetNumEvalLines: (value) {
-              ref.read(engineEvaluationPreferencesProvider.notifier).setNumEvalLines(value);
+              ref
+                  .read(engineEvaluationPreferencesProvider.notifier)
+                  .setNumEvalLines(value);
             },
           ),
         ],

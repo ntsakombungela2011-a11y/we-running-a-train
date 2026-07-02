@@ -21,7 +21,8 @@ mixin ServerAnalysisMixinState {
 /// The parent must implement the following:
 /// - [positionTree] to provide the tree where the evaluations are stored.
 /// - [onServerAnalysisEvent] to react to new analysis events from ongoing server analysis and update internal state.
-mixin ServerAnalysisMixin<T extends ServerAnalysisMixinState> on AnyNotifier<AsyncValue<T>, T> {
+mixin ServerAnalysisMixin<T extends ServerAnalysisMixinState>
+    on AnyNotifier<AsyncValue<T>, T> {
   late ServerAnalysisService _serverAnalysisService;
 
   Root get positionTree;
@@ -34,11 +35,17 @@ mixin ServerAnalysisMixin<T extends ServerAnalysisMixinState> on AnyNotifier<Asy
     _serverAnalysisService = ref.watch(serverAnalysisServiceProvider);
 
     // Avoid registering the listener multiple times when the notifier is rebuilt.
-    _serverAnalysisService.lastAnalysisEvent.removeListener(_onServerAnalysisEvent);
-    _serverAnalysisService.lastAnalysisEvent.addListener(_onServerAnalysisEvent);
+    _serverAnalysisService.lastAnalysisEvent.removeListener(
+      _onServerAnalysisEvent,
+    );
+    _serverAnalysisService.lastAnalysisEvent.addListener(
+      _onServerAnalysisEvent,
+    );
 
     ref.onDispose(() {
-      _serverAnalysisService.lastAnalysisEvent.removeListener(_onServerAnalysisEvent);
+      _serverAnalysisService.lastAnalysisEvent.removeListener(
+        _onServerAnalysisEvent,
+      );
     });
 
     super.runBuild();
@@ -48,7 +55,9 @@ mixin ServerAnalysisMixin<T extends ServerAnalysisMixinState> on AnyNotifier<Asy
   Future<void> requestServerAnalysis([Side? side]) async {
     final serverAnalysisSource = state.requireValue.serverAnalysisSource;
     if (serverAnalysisSource != null) {
-      await ref.read(serverAnalysisServiceProvider).requestAnalysis(serverAnalysisSource, side);
+      await ref
+          .read(serverAnalysisServiceProvider)
+          .requestAnalysis(serverAnalysisSource, side);
     } else {
       return Future.error('Cannot request server analysis');
     }
@@ -68,7 +77,9 @@ mixin ServerAnalysisMixin<T extends ServerAnalysisMixinState> on AnyNotifier<Asy
 
   @protected
   IList<ExternalEval>? makeAcplChartData() {
-    if (!positionTree.mainline.any((node) => node.lichessAnalysisComments != null)) {
+    if (!positionTree.mainline.any(
+      (node) => node.lichessAnalysisComments != null,
+    )) {
       return null;
     }
     final list = positionTree.mainline
@@ -76,7 +87,9 @@ mixin ServerAnalysisMixin<T extends ServerAnalysisMixinState> on AnyNotifier<Asy
           (node) => (
             node.position.isCheckmate,
             node.position.turn,
-            node.lichessAnalysisComments?.firstWhereOrNull((c) => c.eval != null)?.eval,
+            node.lichessAnalysisComments
+                ?.firstWhereOrNull((c) => c.eval != null)
+                ?.eval,
           ),
         )
         .map((el) {

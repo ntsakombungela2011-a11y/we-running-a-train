@@ -8,7 +8,13 @@ import 'package:lichess_mobile/src/widgets/feedback.dart';
 ///
 /// Meant to be used as the listener of `ref.listen(signInMutation, ...)`.
 void showSignInErrorSnackBar(BuildContext context, MutationState<void> state) {
-  if (state case MutationError(:final error) when error is! SignInCancelledException) {
-    showSnackBar(context, context.l10n.mobileSomethingWentWrong, type: SnackBarType.error);
+  if (state case MutationError(
+    :final error,
+  ) when error is! SignInCancelledException) {
+    showSnackBar(
+      context,
+      context.l10n.mobileSomethingWentWrong,
+      type: SnackBarType.error,
+    );
   }
 }

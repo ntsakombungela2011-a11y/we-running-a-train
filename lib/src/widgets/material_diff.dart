@@ -45,19 +45,28 @@ class MaterialDifferenceDisplay extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               for (final role in Role.values)
-                for (int i = 0; i < (piecesToRender.get(role) ?? 0); i++) roleIcon(role),
+                for (int i = 0; i < (piecesToRender.get(role) ?? 0); i++)
+                  roleIcon(role),
               const SizedBox(width: 3),
               Text(
                 // a text font size of 14 is used to ensure that the text will take more vertical space
                 // than the icons
                 // this is a trick to make sure the player name widget will not shift, since the text
                 // widget is always present (contrary to the icons)
-                style: TextStyle(fontSize: textSize, color: textShade(context, 0.5)),
-                materialDiff != null && materialDiff!.score > 0 ? '+${materialDiff!.score}' : '',
+                style: TextStyle(
+                  fontSize: textSize,
+                  color: textShade(context, 0.5),
+                ),
+                materialDiff != null && materialDiff!.score > 0
+                    ? '+${materialDiff!.score}'
+                    : '',
               ),
               if (materialDiff?.checksGiven != null) ...[
                 const SizedBox(width: 3),
-                ...Iterable.generate(materialDiff?.checksGiven ?? 0, (_) => roleIcon(Role.king)),
+                ...Iterable.generate(
+                  materialDiff?.checksGiven ?? 0,
+                  (_) => roleIcon(Role.king),
+                ),
               ],
             ],
           )

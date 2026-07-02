@@ -15,7 +15,11 @@ const kEngineLineHeight = 24.0;
 const kEngineLineFontSize = 11.0;
 
 class EngineLines extends ConsumerStatefulWidget {
-  const EngineLines({required this.filters, required this.onTapMove, required this.analysisState});
+  const EngineLines({
+    required this.filters,
+    required this.onTapMove,
+    required this.analysisState,
+  });
 
   final EngineEvaluationFilters filters;
   final void Function(Move move) onTapMove;
@@ -63,7 +67,10 @@ class _EngineLinesState extends ConsumerState<EngineLines> {
               : emptyLines);
 
     if (content.length < numEvalLines) {
-      final padding = List.filled(numEvalLines - content.length, const Engineline.empty());
+      final padding = List.filled(
+        numEvalLines - content.length,
+        const Engineline.empty(),
+      );
       content.addAll(padding);
     }
 
@@ -91,12 +98,18 @@ class Engineline extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (pvData.moves.isEmpty) {
-      return const SizedBox(height: kEngineLineHeight, child: SizedBox.shrink());
+      return const SizedBox(
+        height: kEngineLineHeight,
+        child: SizedBox.shrink(),
+      );
     }
 
     final pieceNotation = ref
         .watch(pieceNotationProvider)
-        .maybeWhen(data: (value) => value, orElse: () => defaultAccountPreferences.pieceNotation);
+        .maybeWhen(
+          data: (value) => value,
+          orElse: () => defaultAccountPreferences.pieceNotation,
+        );
 
     final lineBuffer = StringBuffer();
     int ply = fromPosition.ply + 1;
@@ -134,11 +147,16 @@ class Engineline extends ConsumerWidget {
                       : EngineGauge.valueColor(context),
                   borderRadius: BorderRadius.circular(4.0),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4.0,
+                  vertical: 2.0,
+                ),
                 child: Text(
                   evalString,
                   style: TextStyle(
-                    color: pvData.winningSide == Side.black ? Colors.white : Colors.black,
+                    color: pvData.winningSide == Side.black
+                        ? Colors.white
+                        : Colors.black,
                     fontSize: kEngineLineFontSize,
                     fontWeight: FontWeight.w600,
                   ),
@@ -151,7 +169,9 @@ class Engineline extends ConsumerWidget {
                   maxLines: 1,
                   softWrap: false,
                   style: TextStyle(
-                    fontFamily: pieceNotation == PieceNotation.symbol ? 'ChessFont' : null,
+                    fontFamily: pieceNotation == PieceNotation.symbol
+                        ? 'ChessFont'
+                        : null,
                     color: textShade(context, onTapMove == null ? 0.8 : 1.0),
                   ),
                   overflow: TextOverflow.ellipsis,

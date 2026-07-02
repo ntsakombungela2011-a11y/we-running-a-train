@@ -25,7 +25,10 @@ class BroadcastPlayerWidget extends ConsumerWidget {
         if (federation != null && showFederation) ...[
           Image.asset(
             'assets/images/fide-fed/$federation.webp',
-            height: ((textStyle ?? DefaultTextStyle.of(context).style).fontSize ?? 14) - 2,
+            height:
+                ((textStyle ?? DefaultTextStyle.of(context).style).fontSize ??
+                    14) -
+                2,
           ),
           const SizedBox(width: 5),
         ],
@@ -33,7 +36,9 @@ class BroadcastPlayerWidget extends ConsumerWidget {
           Text(
             title,
             style: TextStyle(
-              color: (title == 'BOT') ? context.lichessColors.fancy : context.lichessColors.brag,
+              color: (title == 'BOT')
+                  ? context.lichessColors.fancy
+                  : context.lichessColors.brag,
               fontWeight: .bold,
               fontSize: textStyle?.fontSize,
             ),

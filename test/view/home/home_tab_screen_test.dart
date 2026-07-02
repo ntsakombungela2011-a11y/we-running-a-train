@@ -33,7 +33,10 @@ import '../../test_provider_scope.dart';
 void main() {
   group('Home online', () {
     testWidgets('shows Play button', (tester) async {
-      final app = await makeTestProviderScope(tester, child: const Application());
+      final app = await makeTestProviderScope(
+        tester,
+        child: const Application(),
+      );
       await tester.pumpWidget(app);
 
       // wait for connectivity
@@ -86,22 +89,32 @@ void main() {
       );
     });
 
-    testWidgets('no authUser, no stored game: shows welcome screen ', (tester) async {
-      final app = await makeTestProviderScope(tester, child: const Application());
+    testWidgets('no authUser, no stored game: shows welcome screen ', (
+      tester,
+    ) async {
+      final app = await makeTestProviderScope(
+        tester,
+        child: const Application(),
+      );
       await tester.pumpWidget(app);
       // wait for connectivity
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining('libre, no-ads, open source chess server.', findRichText: true),
+        find.textContaining(
+          'libre, no-ads, open source chess server.',
+          findRichText: true,
+        ),
         findsOneWidget,
       );
       expect(find.text('Sign in'), findsOneWidget);
       expect(find.text('About Lichess...'), findsOneWidget);
     });
 
-    testWidgets('authUser, no played game: do not show welcome screen', (tester) async {
+    testWidgets('authUser, no played game: do not show welcome screen', (
+      tester,
+    ) async {
       int nbUserGamesRequests = 0;
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/games/user/testuser') {
@@ -133,7 +146,9 @@ void main() {
       expect(find.text('About Lichess...'), findsNothing);
     });
 
-    testWidgets('no authUser, with stored games: shows list of recent games', (tester) async {
+    testWidgets('no authUser, with stored games: shows list of recent games', (
+      tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/tournament/featured') {
           return mockResponse('{"featured":[]}', 200);
@@ -151,7 +166,9 @@ void main() {
       );
       await tester.pumpWidget(app);
 
-      final container = ProviderScope.containerOf(tester.element(find.byType(Application)));
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(Application)),
+      );
       final storage = await container.read(gameStorageProvider.future);
       final games = generateExportedGames(count: 3);
       for (final game in games) {
@@ -167,7 +184,9 @@ void main() {
       expect(find.text('Anonymous'), findsNWidgets(3));
     });
 
-    testWidgets('authUser, with played games: shows recent games', (tester) async {
+    testWidgets('authUser, with played games: shows recent games', (
+      tester,
+    ) async {
       int nbUserGamesRequests = 0;
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/games/user/testuser') {
@@ -238,7 +257,10 @@ void main() {
 
   group('Home offline', () {
     testWidgets('shows offline banner', (tester) async {
-      final app = await makeOfflineTestProviderScope(tester, child: const Application());
+      final app = await makeOfflineTestProviderScope(
+        tester,
+        child: const Application(),
+      );
 
       await tester.pumpWidget(app);
       // wait for connectivity
@@ -249,7 +271,10 @@ void main() {
     });
 
     testWidgets('shows Play button', (tester) async {
-      final app = await makeOfflineTestProviderScope(tester, child: const Application());
+      final app = await makeOfflineTestProviderScope(
+        tester,
+        child: const Application(),
+      );
 
       await tester.pumpWidget(app);
 
@@ -260,26 +285,41 @@ void main() {
       expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
-    testWidgets('no authUser, no stored game: shows welcome screen ', (tester) async {
-      final app = await makeTestProviderScope(tester, child: const Application());
+    testWidgets('no authUser, no stored game: shows welcome screen ', (
+      tester,
+    ) async {
+      final app = await makeTestProviderScope(
+        tester,
+        child: const Application(),
+      );
       await tester.pumpWidget(app);
       // wait for connectivity
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining('libre, no-ads, open source chess server.', findRichText: true),
+        find.textContaining(
+          'libre, no-ads, open source chess server.',
+          findRichText: true,
+        ),
         findsOneWidget,
       );
       expect(find.text('Sign in'), findsOneWidget);
       expect(find.text('About Lichess...'), findsOneWidget);
     });
 
-    testWidgets('no authUser, with stored games: shows list of recent games', (tester) async {
-      final app = await makeOfflineTestProviderScope(tester, child: const Application());
+    testWidgets('no authUser, with stored games: shows list of recent games', (
+      tester,
+    ) async {
+      final app = await makeOfflineTestProviderScope(
+        tester,
+        child: const Application(),
+      );
       await tester.pumpWidget(app);
 
-      final container = ProviderScope.containerOf(tester.element(find.byType(Application)));
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(Application)),
+      );
       final storage = await container.read(gameStorageProvider.future);
       final games = generateExportedGames(count: 3);
       for (final game in games) {
@@ -295,7 +335,9 @@ void main() {
       expect(find.text('Anonymous'), findsNWidgets(3));
     });
 
-    testWidgets('authUser, with stored games: shows list of recent games', (tester) async {
+    testWidgets('authUser, with stored games: shows list of recent games', (
+      tester,
+    ) async {
       final app = await makeOfflineTestProviderScope(
         tester,
         child: const Application(),
@@ -303,7 +345,9 @@ void main() {
       );
       await tester.pumpWidget(app);
 
-      final container = ProviderScope.containerOf(tester.element(find.byType(Application)));
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(Application)),
+      );
       final storage = await container.read(gameStorageProvider.future);
       final games = generateExportedGames(count: 3, username: 'testUser');
       for (final game in games) {
@@ -322,7 +366,10 @@ void main() {
       const customizeTip =
           "Tip: You can add more widgets to the Home Screen or remove those you don't need!";
       testWidgets('shown when logged out', (tester) async {
-        final app = await makeTestProviderScope(tester, child: const Application());
+        final app = await makeTestProviderScope(
+          tester,
+          child: const Application(),
+        );
 
         await tester.pumpWidget(app);
 
@@ -369,7 +416,10 @@ void main() {
       });
 
       testWidgets('Not shown if already dismissed', (tester) async {
-        final app = await makeTestProviderScope(tester, child: const Application());
+        final app = await makeTestProviderScope(
+          tester,
+          child: const Application(),
+        );
 
         TestLichessBinding.instance.sharedPreferences.setBool(
           'app_hide_home_widget_customization_tip',
@@ -403,68 +453,84 @@ void main() {
         await tester.tap(find.text('Customize'));
         await tester.pumpAndSettle(); // wait for settings screen to open
 
-        expect(find.widgetWithText(PlatformAppBar, 'Home widgets'), findsOneWidget);
+        expect(
+          find.widgetWithText(PlatformAppBar, 'Home widgets'),
+          findsOneWidget,
+        );
 
         await tester.tap(find.widgetWithText(TextButton, 'OK'));
         await tester.pumpAndSettle(); // wait for home screen to re-appear
 
-        expect(find.byIcon(LichessIcons.logo_lichess), findsOneWidget); // we're back on home
+        expect(
+          find.byIcon(LichessIcons.logo_lichess),
+          findsOneWidget,
+        ); // we're back on home
 
         expect(find.text(customizeTip), findsNothing);
       });
 
-      testWidgets('Not shown when > $kColdAppStartsHideCustomizationTipThreshold app starts', (
-        tester,
-      ) async {
-        final app = await makeTestProviderScope(tester, child: const Application());
+      testWidgets(
+        'Not shown when > $kColdAppStartsHideCustomizationTipThreshold app starts',
+        (tester) async {
+          final app = await makeTestProviderScope(
+            tester,
+            child: const Application(),
+          );
 
-        TestLichessBinding.instance.numAppStarts = kColdAppStartsHideCustomizationTipThreshold + 1;
+          TestLichessBinding.instance.numAppStarts =
+              kColdAppStartsHideCustomizationTipThreshold + 1;
 
-        await tester.pumpWidget(app);
+          await tester.pumpWidget(app);
 
-        // wait for connectivity
-        expect(find.byType(CircularProgressIndicator), findsOneWidget);
-        await tester.pump();
+          // wait for connectivity
+          expect(find.byType(CircularProgressIndicator), findsOneWidget);
+          await tester.pump();
 
-        expect(find.text(customizeTip), findsNothing);
-      });
+          expect(find.text(customizeTip), findsNothing);
+        },
+      );
     });
 
     group('NNUE files missing tip', () {
       const nnueFilesMissingTip =
           'New Stockfish version available! Go to the settings to download the updated NNUE files.';
-      testWidgets('Shown if engine pref is latest sf and NNUE files are missing', (tester) async {
-        final app = await makeTestProviderScope(
-          tester,
-          overrides: {
-            nnueServiceProvider: nnueServiceProvider.overrideWithValue(
-              FakeNnueServiceUnavailable(),
-            ),
-          },
-          authUser: fakeAuthUser,
-          defaultPreferences: {
-            PrefCategory.engineEvaluation.storageKey: jsonEncode(
-              EngineEvaluationPrefState.defaults
-                  .copyWith(enginePref: ChessEnginePref.sfLatest)
-                  .toJson(),
-            ),
-          },
-          child: const Application(),
-        );
+      testWidgets(
+        'Shown if engine pref is latest sf and NNUE files are missing',
+        (tester) async {
+          final app = await makeTestProviderScope(
+            tester,
+            overrides: {
+              nnueServiceProvider: nnueServiceProvider.overrideWithValue(
+                FakeNnueServiceUnavailable(),
+              ),
+            },
+            authUser: fakeAuthUser,
+            defaultPreferences: {
+              PrefCategory.engineEvaluation.storageKey: jsonEncode(
+                EngineEvaluationPrefState.defaults
+                    .copyWith(enginePref: ChessEnginePref.sfLatest)
+                    .toJson(),
+              ),
+            },
+            child: const Application(),
+          );
 
-        await tester.pumpWidget(app);
+          await tester.pumpWidget(app);
 
-        // Wait for hasOutdatedNNUEFiles() future to complete
-        await tester.pumpAndSettle();
+          // Wait for hasOutdatedNNUEFiles() future to complete
+          await tester.pumpAndSettle();
 
-        expect(find.text(nnueFilesMissingTip), findsOneWidget);
-      });
+          expect(find.text(nnueFilesMissingTip), findsOneWidget);
+        },
+      );
 
       testWidgets('Not shown if nnue files are available', (tester) async {
         final app = await makeTestProviderScope(
           tester,
           overrides: {
-            nnueServiceProvider: nnueServiceProvider.overrideWithValue(FakeNnueService()),
+            nnueServiceProvider: nnueServiceProvider.overrideWithValue(
+              FakeNnueService(),
+            ),
           },
           authUser: fakeAuthUser,
           defaultPreferences: {
@@ -521,7 +587,9 @@ void main() {
         child: const Application(),
         overrides: {
           appAuthProvider: appAuthProvider.overrideWith(
-            (ref) => FakeFlutterAppAuth((request) async => throw Exception('authorization failed')),
+            (ref) => FakeFlutterAppAuth(
+              (request) async => throw Exception('authorization failed'),
+            ),
           ),
         },
       );
@@ -536,13 +604,16 @@ void main() {
       expect(find.text('Something went wrong.'), findsOneWidget);
     });
 
-    testWidgets('does not show a snackbar when the user cancels sign-in', (tester) async {
+    testWidgets('does not show a snackbar when the user cancels sign-in', (
+      tester,
+    ) async {
       final app = await makeTestProviderScope(
         tester,
         child: const Application(),
         overrides: {
           appAuthProvider: appAuthProvider.overrideWith(
-            (ref) => FakeFlutterAppAuth((request) async => throw userCancelled()),
+            (ref) =>
+                FakeFlutterAppAuth((request) async => throw userCancelled()),
           ),
         },
       );

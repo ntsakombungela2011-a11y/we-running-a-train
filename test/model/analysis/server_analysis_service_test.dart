@@ -11,7 +11,10 @@ void main() {
       final root = Root(position: Chess.initial);
       final e4Move = Move.parse('e2e4')!;
       final e4Position = root.position.playUnchecked(e4Move);
-      final e4Branch = Branch(sanMove: SanMove('e4', e4Move), position: e4Position);
+      final e4Branch = Branch(
+        sanMove: SanMove('e4', e4Move),
+        position: e4Position,
+      );
       root.addChild(e4Branch);
 
       // Server analysis data - note: no 'id' field, only 'uci'
@@ -49,7 +52,10 @@ void main() {
       final root = Root(position: Chess.initial);
       final e4Move = Move.parse('e2e4')!;
       final e4Position = root.position.playUnchecked(e4Move);
-      final e4Branch = Branch(sanMove: SanMove('e4', e4Move), position: e4Position);
+      final e4Branch = Branch(
+        sanMove: SanMove('e4', e4Move),
+        position: e4Position,
+      );
       root.addChild(e4Branch);
 
       // Server sends a new variation (d2d4) - no 'id' field
@@ -76,7 +82,10 @@ void main() {
       final root = Root(position: Chess.initial);
       final e4Move = Move.parse('e2e4')!;
       final e4Position = root.position.playUnchecked(e4Move);
-      final e4Branch = Branch(sanMove: SanMove('e4', e4Move), position: e4Position);
+      final e4Branch = Branch(
+        sanMove: SanMove('e4', e4Move),
+        position: e4Position,
+      );
       root.addChild(e4Branch);
 
       // Server sends eval for e4 - no 'id' field
@@ -99,7 +108,10 @@ void main() {
       // Verify eval was merged
       expect(root.children.length, 1);
       expect(root.children.first.lichessAnalysisComments?.length, 1);
-      expect(root.children.first.lichessAnalysisComments?.first.text, 'Best move!');
+      expect(
+        root.children.first.lichessAnalysisComments?.first.text,
+        'Best move!',
+      );
     });
   });
 }

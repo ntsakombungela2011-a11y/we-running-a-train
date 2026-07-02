@@ -39,7 +39,9 @@ class ConditionalPremoves extends ConsumerWidget {
                 onTap: () {
                   ref
                       .read(analysisControllerProvider(options).notifier)
-                      .userJump(UciPath.join(analysisState.pathToLiveMove!, lines[i]));
+                      .userJump(
+                        UciPath.join(analysisState.pathToLiveMove!, lines[i]),
+                      );
                 },
               ),
               separatorBuilder: (_, _) => const Divider(),
@@ -65,13 +67,19 @@ class _AddVariationButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final analysisState = ref.watch(analysisControllerProvider(options)).requireValue;
+    final analysisState = ref
+        .watch(analysisControllerProvider(options))
+        .requireValue;
 
-    final icon = analysisState.currentPremoveCandidate != null ? Icons.save : Icons.info;
+    final icon = analysisState.currentPremoveCandidate != null
+        ? Icons.save
+        : Icons.info;
 
     return InkWell(
       onTap: analysisState.currentPremoveCandidate != null
-          ? ref.read(analysisControllerProvider(options).notifier).addCurrentPathAsPremove
+          ? ref
+                .read(analysisControllerProvider(options).notifier)
+                .addCurrentPathAsPremove
           : null,
       child: Row(
         children: [
@@ -83,7 +91,9 @@ class _AddVariationButton extends ConsumerWidget {
                     children: [
                       Text(
                         style: TextStyle(
-                          color: ColorScheme.of(context).onSurface.withValues(alpha: 0.7),
+                          color: ColorScheme.of(
+                            context,
+                          ).onSurface.withValues(alpha: 0.7),
                         ),
                         context.l10n.addCurrentVariation,
                         maxLines: 1,
@@ -118,9 +128,13 @@ class _PlayAndSaveButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final analysisState = ref.watch(analysisControllerProvider(options)).requireValue;
+    final analysisState = ref
+        .watch(analysisControllerProvider(options))
+        .requireValue;
 
-    final followUpLines = analysisState.linesForPendingMove!.count((path) => path.size > 1);
+    final followUpLines = analysisState.linesForPendingMove!.count(
+      (path) => path.size > 1,
+    );
 
     return FilledButton.icon(
       icon: const Icon(Icons.play_arrow),
@@ -152,7 +166,12 @@ class _PlayAndSaveButton extends ConsumerWidget {
 }
 
 class _SavedVariation extends ConsumerWidget {
-  const _SavedVariation(this.options, {required this.startingNode, required this.path, this.onTap});
+  const _SavedVariation(
+    this.options, {
+    required this.startingNode,
+    required this.path,
+    this.onTap,
+  });
 
   final AnalysisOptions options;
 
@@ -172,11 +191,17 @@ class _SavedVariation extends ConsumerWidget {
         child: Row(
           children: [
             Expanded(
-              child: _Variation(startingNode: startingNode, path: path, maxLines: 2),
+              child: _Variation(
+                startingNode: startingNode,
+                path: path,
+                maxLines: 2,
+              ),
             ),
             IconButton(
               onPressed: () {
-                ref.read(analysisControllerProvider(options).notifier).removePremovePath(path);
+                ref
+                    .read(analysisControllerProvider(options).notifier)
+                    .removePremovePath(path);
               },
               icon: const Icon(CupertinoIcons.delete, size: 20),
               tooltip: context.l10n.delete,
@@ -189,7 +214,11 @@ class _SavedVariation extends ConsumerWidget {
 }
 
 class _Variation extends ConsumerWidget {
-  const _Variation({required this.startingNode, required this.path, required this.maxLines});
+  const _Variation({
+    required this.startingNode,
+    required this.path,
+    required this.maxLines,
+  });
 
   final ViewNode startingNode;
 
@@ -201,7 +230,10 @@ class _Variation extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pieceNotation = ref
         .watch(pieceNotationProvider)
-        .maybeWhen(data: (value) => value, orElse: () => defaultAccountPreferences.pieceNotation);
+        .maybeWhen(
+          data: (value) => value,
+          orElse: () => defaultAccountPreferences.pieceNotation,
+        );
 
     return Text(
       maxLines: maxLines,

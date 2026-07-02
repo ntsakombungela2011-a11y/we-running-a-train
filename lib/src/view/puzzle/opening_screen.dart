@@ -19,11 +19,13 @@ final _openingsSortProvider = StateProvider.autoDispose<PuzzleOpeningSort>(
 );
 
 final _openingsProvider = FutureProvider.autoDispose
-    .family<(bool, IMap<String, int>, IList<PuzzleOpeningFamily>?), PuzzleOpeningSort>((
-      ref,
-      sort,
-    ) async {
-      final connectivityStatus = await ref.watch(connectivityChangesProvider.future);
+    .family<
+      (bool, IMap<String, int>, IList<PuzzleOpeningFamily>?),
+      PuzzleOpeningSort
+    >((ref, sort) async {
+      final connectivityStatus = await ref.watch(
+        connectivityChangesProvider.future,
+      );
       final savedOpenings = await ref.watch(savedOpeningBatchesProvider.future);
       IList<PuzzleOpeningFamily>? onlineOpenings;
       try {
@@ -57,14 +59,18 @@ class OpeningThemeScreen extends ConsumerWidget {
                 icon: sort == PuzzleOpeningSort.popular ? Icons.check : null,
                 label: context.l10n.popularOpenings,
                 onPressed: () {
-                  ref.read(_openingsSortProvider.notifier).state = PuzzleOpeningSort.popular;
+                  ref.read(_openingsSortProvider.notifier).state =
+                      PuzzleOpeningSort.popular;
                 },
               ),
               ContextMenuAction(
-                icon: sort == PuzzleOpeningSort.alphabetical ? Icons.check : null,
+                icon: sort == PuzzleOpeningSort.alphabetical
+                    ? Icons.check
+                    : null,
                 label: 'Alphabetical',
                 onPressed: () {
-                  ref.read(_openingsSortProvider.notifier).state = PuzzleOpeningSort.alphabetical;
+                  ref.read(_openingsSortProvider.notifier).state =
+                      PuzzleOpeningSort.alphabetical;
                 },
               ),
             ],
@@ -131,10 +137,16 @@ class _OpeningFamily extends ConsumerWidget {
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: openingFamily.openings.isNotEmpty
           ? ExpansionTile(
-              title: Text(openingFamily.name, overflow: TextOverflow.ellipsis, style: titleStyle),
+              title: Text(
+                openingFamily.name,
+                overflow: TextOverflow.ellipsis,
+                style: titleStyle,
+              ),
               subtitle: Text(
                 '${openingFamily.count}',
-                style: TextStyle(color: textShade(context, Styles.subtitleOpacity)),
+                style: TextStyle(
+                  color: textShade(context, Styles.subtitleOpacity),
+                ),
               ),
               children: [
                 ListSection(
@@ -158,16 +170,21 @@ class _OpeningFamily extends ConsumerWidget {
               ],
             )
           : ListTile(
-              title: Text(openingFamily.name, overflow: TextOverflow.ellipsis, style: titleStyle),
+              title: Text(
+                openingFamily.name,
+                overflow: TextOverflow.ellipsis,
+                style: titleStyle,
+              ),
               subtitle: Text(
                 '${openingFamily.count}',
                 style: TextStyle(color: textShade(context, 0.5)),
               ),
               onTap: () {
-                Navigator.of(
-                  context,
-                  rootNavigator: true,
-                ).push(PuzzleScreen.buildRoute(angle: PuzzleOpening(openingFamily.key)));
+                Navigator.of(context, rootNavigator: true).push(
+                  PuzzleScreen.buildRoute(
+                    angle: PuzzleOpening(openingFamily.key),
+                  ),
+                );
               },
             ),
     );
@@ -191,7 +208,10 @@ class _OpeningTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(name, overflow: TextOverflow.ellipsis, style: titleStyle),
-      trailing: Text('$count', style: TextStyle(color: textShade(context, Styles.subtitleOpacity))),
+      trailing: Text(
+        '$count',
+        style: TextStyle(color: textShade(context, Styles.subtitleOpacity)),
+      ),
       onTap: () {
         Navigator.of(
           context,

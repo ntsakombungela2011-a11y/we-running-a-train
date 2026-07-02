@@ -45,7 +45,8 @@ abstract mixin class BaseGame {
   bool get aborted => status == GameStatus.aborted;
 
   /// Whether the game is still playable (not finished or aborted and not imported).
-  bool get playable => status.value < GameStatus.aborted.value && status.value != -1;
+  bool get playable =>
+      status.value < GameStatus.aborted.value && status.value != -1;
 
   /// This field is null if the game is being watched as a spectator, and
   /// represents the side that the current player is playing as otherwise.
@@ -92,7 +93,8 @@ abstract mixin class BaseGame {
     return side == Side.white ? white : black;
   }
 
-  PlayersAnalysis? get playersAnalysis => white.analysis != null && black.analysis != null
+  PlayersAnalysis? get playersAnalysis =>
+      white.analysis != null && black.analysis != null
       ? (white: white.analysis!, black: black.analysis!)
       : null;
 
@@ -130,9 +132,16 @@ abstract mixin class BaseGame {
       }
 
       final comment = eval != null || clock != null
-          ? PgnComment(text: eval?.judgment?.comment, clock: clock, emt: emt, eval: pgnEval)
+          ? PgnComment(
+              text: eval?.judgment?.comment,
+              clock: clock,
+              emt: emt,
+              eval: pgnEval,
+            )
           : null;
-      final nag = eval?.judgment != null ? _judgmentNameToNag(eval!.judgment!.name) : null;
+      final nag = eval?.judgment != null
+          ? _judgmentNameToNag(eval!.judgment!.name)
+          : null;
       final nextNode = Branch(
         sanMove: step.sanMove!,
         position: step.position,
@@ -178,11 +187,15 @@ abstract mixin class BaseGame {
         'White':
             white.user?.name ??
             white.name ??
-            (white.aiLevel != null ? 'Stockfish level ${white.aiLevel}' : 'Anonymous'),
+            (white.aiLevel != null
+                ? 'Stockfish level ${white.aiLevel}'
+                : 'Anonymous'),
         'Black':
             black.user?.name ??
             black.name ??
-            (black.aiLevel != null ? 'Stockfish level ${black.aiLevel}' : 'Anonymous'),
+            (black.aiLevel != null
+                ? 'Stockfish level ${black.aiLevel}'
+                : 'Anonymous'),
         'Result': status.value >= GameStatus.mate.value
             ? winner == null
                   ? '½-½'
@@ -193,12 +206,15 @@ abstract mixin class BaseGame {
         if (white.rating != null) 'WhiteElo': white.rating!.toString(),
         if (black.rating != null) 'BlackElo': black.rating!.toString(),
         if (white.ratingDiff != null)
-          'WhiteRatingDiff': '${white.ratingDiff! > 0 ? '+' : ''}${white.ratingDiff!}',
+          'WhiteRatingDiff':
+              '${white.ratingDiff! > 0 ? '+' : ''}${white.ratingDiff!}',
         if (black.ratingDiff != null)
-          'BlackRatingDiff': '${black.ratingDiff! > 0 ? '+' : ''}${black.ratingDiff!}',
+          'BlackRatingDiff':
+              '${black.ratingDiff! > 0 ? '+' : ''}${black.ratingDiff!}',
         'Variant': meta.variant.pgnName,
         if (meta.clock != null)
-          'TimeControl': '${meta.clock!.initial.inSeconds}+${meta.clock!.increment.inSeconds}',
+          'TimeControl':
+              '${meta.clock!.initial.inSeconds}+${meta.clock!.increment.inSeconds}',
         if (initialFen != null) 'FEN': initialFen!,
         if (meta.opening != null) 'ECO': meta.opening!.eco,
         if (meta.opening != null) 'Opening': meta.opening!.name,
@@ -222,9 +238,13 @@ abstract mixin class LocalGame implements BaseGame {
 
 /// A mixin that provides methods to access game data at a specific step.
 mixin IndexableSteps on BaseGame {
-  String get sanMoves => steps.where((e) => e.sanMove != null).map((e) => e.sanMove!.san).join(' ');
+  String get sanMoves => steps
+      .where((e) => e.sanMove != null)
+      .map((e) => e.sanMove!.san)
+      .join(' ');
 
-  MaterialDiffSide? materialDiffAt(int cursor, Side side) => steps[cursor].diff?.bySide(side);
+  MaterialDiffSide? materialDiffAt(int cursor, Side side) =>
+      steps[cursor].diff?.bySide(side);
 
   GameStep stepAt(int cursor) => steps[cursor];
 
@@ -236,12 +256,16 @@ mixin IndexableSteps on BaseGame {
 
   Position positionAt(int cursor) => steps[cursor].position;
 
-  Duration? archivedWhiteClockAt(int cursor) => steps[cursor].archivedWhiteClock;
+  Duration? archivedWhiteClockAt(int cursor) =>
+      steps[cursor].archivedWhiteClock;
 
-  Duration? archivedBlackClockAt(int cursor) => steps[cursor].archivedBlackClock;
+  Duration? archivedBlackClockAt(int cursor) =>
+      steps[cursor].archivedBlackClock;
 
   Duration? archivedClockOf(Side side, int cursor) {
-    return side == Side.white ? steps[cursor].archivedWhiteClock : steps[cursor].archivedBlackClock;
+    return side == Side.white
+        ? steps[cursor].archivedWhiteClock
+        : steps[cursor].archivedBlackClock;
   }
 
   Move? get lastMove {
@@ -256,7 +280,8 @@ mixin IndexableSteps on BaseGame {
 
   int get lastPly => steps.last.position.ply;
 
-  MaterialDiffSide? lastMaterialDiffAt(Side side) => steps.last.diff?.bySide(side);
+  MaterialDiffSide? lastMaterialDiffAt(Side side) =>
+      steps.last.diff?.bySide(side);
 }
 
 enum GameSource {
@@ -312,7 +337,8 @@ sealed class TournamentMeta with _$TournamentMeta {
     ({int white, int black})? ranks,
   }) = _TournamentMeta;
 
-  factory TournamentMeta.fromJson(Map<String, dynamic> json) => _$TournamentMetaFromJson(json);
+  factory TournamentMeta.fromJson(Map<String, dynamic> json) =>
+      _$TournamentMetaFromJson(json);
 
   bool get isOngoing => clock.timeLeft > Duration.zero;
   bool get isFinished => clock.timeLeft <= Duration.zero;
@@ -354,7 +380,8 @@ sealed class GameMeta with _$GameMeta {
     TournamentMeta? tournament,
   }) = _GameMeta;
 
-  factory GameMeta.fromJson(Map<String, dynamic> json) => _$GameMetaFromJson(json);
+  factory GameMeta.fromJson(Map<String, dynamic> json) =>
+      _$GameMetaFromJson(json);
 }
 
 @Freezed(fromJson: true, toJson: true)
@@ -367,7 +394,9 @@ sealed class CorrespondenceClockData with _$CorrespondenceClockData {
     // server-authoritative reading and reset its displayed time. Excluded from
     // JSON so that serialized games always deserialize to resetId == 0, which
     // is fine: the offline screen drives resets via lastModified instead.
-    @JsonKey(includeFromJson: false, includeToJson: false) @Default(0) int resetId,
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    @Default(0)
+    int resetId,
   }) = _CorrespondenceClockData;
 
   factory CorrespondenceClockData.fromJson(Map<String, dynamic> json) =>

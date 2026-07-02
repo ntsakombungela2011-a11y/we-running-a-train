@@ -12,7 +12,10 @@ void main() {
     final container = ProviderContainer(
       overrides: [soundServiceProvider.overrideWithValue(FakeSoundService())],
     );
-    final subscription = container.listen(clockToolControllerProvider, (_, _) {});
+    final subscription = container.listen(
+      clockToolControllerProvider,
+      (_, _) {},
+    );
     addTearDown(subscription.close);
     addTearDown(container.dispose);
     return container;
@@ -65,7 +68,10 @@ void main() {
 
       controller.onTap(ClockSide.bottom);
       async.elapse(const Duration(seconds: 2));
-      expect(container.read(clockToolControllerProvider).topTime.value, const Duration(seconds: 5));
+      expect(
+        container.read(clockToolControllerProvider).topTime.value,
+        const Duration(seconds: 5),
+      );
 
       async.elapse(const Duration(milliseconds: 100));
       expect(
@@ -108,37 +114,40 @@ void main() {
     });
   });
 
-  test('simple delay does not reapply expired delay across pause and resume', () {
-    fakeAsync((async) {
-      final container = makeClockContainer();
-      final controller = container.read(clockToolControllerProvider.notifier);
+  test(
+    'simple delay does not reapply expired delay across pause and resume',
+    () {
+      fakeAsync((async) {
+        final container = makeClockContainer();
+        final controller = container.read(clockToolControllerProvider.notifier);
 
-      controller
-        ..updateOptions(const TimeIncrement(5, 2))
-        ..updateClockType(ClockTimeControlType.simpleDelay)
-        ..start(ClockSide.top);
+        controller
+          ..updateOptions(const TimeIncrement(5, 2))
+          ..updateClockType(ClockTimeControlType.simpleDelay)
+          ..start(ClockSide.top);
 
-      async.elapse(const Duration(seconds: 3));
-      expect(
-        container.read(clockToolControllerProvider).bottomTime.value,
-        const Duration(seconds: 4),
-      );
+        async.elapse(const Duration(seconds: 3));
+        expect(
+          container.read(clockToolControllerProvider).bottomTime.value,
+          const Duration(seconds: 4),
+        );
 
-      controller.pause();
-      async.elapse(const Duration(seconds: 5));
-      expect(
-        container.read(clockToolControllerProvider).bottomTime.value,
-        const Duration(seconds: 4),
-      );
+        controller.pause();
+        async.elapse(const Duration(seconds: 5));
+        expect(
+          container.read(clockToolControllerProvider).bottomTime.value,
+          const Duration(seconds: 4),
+        );
 
-      controller.resume();
-      async.elapse(const Duration(milliseconds: 100));
-      expect(
-        container.read(clockToolControllerProvider).bottomTime.value,
-        const Duration(milliseconds: 3900),
-      );
-    });
-  });
+        controller.resume();
+        async.elapse(const Duration(milliseconds: 100));
+        expect(
+          container.read(clockToolControllerProvider).bottomTime.value,
+          const Duration(milliseconds: 3900),
+        );
+      });
+    },
+  );
 
   test('bronstein delay restores only the time spent up to the delay', () {
     fakeAsync((async) {
@@ -163,10 +172,16 @@ void main() {
       );
 
       async.elapse(const Duration(seconds: 3));
-      expect(container.read(clockToolControllerProvider).topTime.value, const Duration(seconds: 2));
+      expect(
+        container.read(clockToolControllerProvider).topTime.value,
+        const Duration(seconds: 2),
+      );
 
       controller.onTap(ClockSide.top);
-      expect(container.read(clockToolControllerProvider).topTime.value, const Duration(seconds: 4));
+      expect(
+        container.read(clockToolControllerProvider).topTime.value,
+        const Duration(seconds: 4),
+      );
     });
   });
 
@@ -180,17 +195,30 @@ void main() {
         ..updateClockType(ClockTimeControlType.bronsteinDelay)
         ..start(ClockSide.top);
 
-      final initialTopTime = container.read(clockToolControllerProvider).topTime.value;
-      final initialBottomTime = container.read(clockToolControllerProvider).bottomTime.value;
+      final initialTopTime = container
+          .read(clockToolControllerProvider)
+          .topTime
+          .value;
+      final initialBottomTime = container
+          .read(clockToolControllerProvider)
+          .bottomTime
+          .value;
 
       for (int i = 0; i < 20; i++) {
         async.elapse(const Duration(milliseconds: 50));
-        controller.onTap(container.read(clockToolControllerProvider).activeSide!);
+        controller.onTap(
+          container.read(clockToolControllerProvider).activeSide!,
+        );
       }
 
-      expect(container.read(clockToolControllerProvider).topTime.value <= initialTopTime, true);
       expect(
-        container.read(clockToolControllerProvider).bottomTime.value <= initialBottomTime,
+        container.read(clockToolControllerProvider).topTime.value <=
+            initialTopTime,
+        true,
+      );
+      expect(
+        container.read(clockToolControllerProvider).bottomTime.value <=
+            initialBottomTime,
         true,
       );
     });

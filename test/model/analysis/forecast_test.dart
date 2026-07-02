@@ -13,12 +13,20 @@ void main() {
   final centerGame = UciPath.fromUciMoves(['e2e4', 'e7e5', 'd2d4']);
 
   group('adding a line', () {
-    void expectNoCollision(Forecast forecast, UciPath firstPath, UciPath secondPath) => expect(
+    void expectNoCollision(
+      Forecast forecast,
+      UciPath firstPath,
+      UciPath secondPath,
+    ) => expect(
       forecast.add(firstPath).add(secondPath),
       forecast.copyWith(lines: [secondPath, firstPath].lock),
     );
 
-    void expectCollision(Forecast forecast, UciPath firstPath, UciPath secondPath) => expect(
+    void expectCollision(
+      Forecast forecast,
+      UciPath firstPath,
+      UciPath secondPath,
+    ) => expect(
       forecast.add(firstPath).add(secondPath),
       forecast.copyWith(lines: [secondPath].lock),
     );
@@ -28,7 +36,9 @@ void main() {
         Forecast(
           onMyTurn: false,
           lines: [queensPawnGame, kingsPawnGame].lock,
-        ).add(UciPath.join(kingsPawnGame, UciPath.fromUciMoves(['g1f3', 'b8c6']))),
+        ).add(
+          UciPath.join(kingsPawnGame, UciPath.fromUciMoves(['g1f3', 'b8c6'])),
+        ),
         Forecast(
           onMyTurn: false,
           lines: [
@@ -45,10 +55,13 @@ void main() {
         expectNoCollision(forecast, kingsPawn, queensPawn);
         expectNoCollision(forecast, queensPawn, kingsPawn);
       });
-      test('forecasts with the first divergence on an even index >= 2 collide', () {
-        expectCollision(forecast, centerGame, kingsKnight);
-        expectCollision(forecast, kingsKnight, centerGame);
-      });
+      test(
+        'forecasts with the first divergence on an even index >= 2 collide',
+        () {
+          expectCollision(forecast, centerGame, kingsKnight);
+          expectCollision(forecast, kingsKnight, centerGame);
+        },
+      );
     });
 
     group("on the other player's turn:", () {
@@ -64,7 +77,10 @@ void main() {
   });
 
   group('isCandidate', () {
-    final forecastWithKingsPawnGame = Forecast(onMyTurn: true, lines: [kingsPawnGame].lock);
+    final forecastWithKingsPawnGame = Forecast(
+      onMyTurn: true,
+      lines: [kingsPawnGame].lock,
+    );
 
     test('prefixes of existing lines are not candidates', () {
       expect(forecastWithKingsPawnGame.isCandidate(kingsPawnGame), false);
@@ -84,7 +100,9 @@ void main() {
       });
     });
     group("on the other player's turn", () {
-      final forecastNotMyTurn = forecastWithKingsPawnGame.copyWith(onMyTurn: false);
+      final forecastNotMyTurn = forecastWithKingsPawnGame.copyWith(
+        onMyTurn: false,
+      );
       test('single-ply lines are not candidates', () {
         expect(forecastNotMyTurn.isCandidate(queensPawn), false);
       });

@@ -61,15 +61,18 @@ class ContextMenuIconButton extends StatelessWidget {
                   ),
                   child: IntrinsicHeight(
                     child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(13.0)),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(13.0),
+                      ),
                       child: ColoredBox(
                         color:
-                            MenuTheme.of(
-                              context,
-                            ).style?.backgroundColor?.resolve({WidgetState.focused}) ??
+                            MenuTheme.of(context).style?.backgroundColor
+                                ?.resolve({WidgetState.focused}) ??
                             ColorScheme.of(context).surfaceContainer,
                         child: ScrollConfiguration(
-                          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                          behavior: ScrollConfiguration.of(
+                            context,
+                          ).copyWith(scrollbars: false),
                           child: CupertinoScrollbar(
                             child: SingleChildScrollView(
                               child: Column(
@@ -81,10 +84,11 @@ class ContextMenuIconButton extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         border: Border(
                                           top: BorderSide(
-                                            color: CupertinoDynamicColor.resolve(
-                                              _kBorderColor,
-                                              context,
-                                            ),
+                                            color:
+                                                CupertinoDynamicColor.resolve(
+                                                  _kBorderColor,
+                                                  context,
+                                                ),
                                             width: 0.4,
                                           ),
                                         ),
@@ -117,31 +121,35 @@ class ContextMenuIconButton extends StatelessWidget {
       consumeOutsideTap: consumeOutsideTap,
       style: MenuStyle(
         maximumSize: WidgetStatePropertyAll(
-          Size(MediaQuery.sizeOf(context).width * 0.6, MediaQuery.sizeOf(context).height * 0.8),
+          Size(
+            MediaQuery.sizeOf(context).width * 0.6,
+            MediaQuery.sizeOf(context).height * 0.8,
+          ),
         ),
       ),
       menuChildren: actions,
-      builder: (BuildContext context, MenuController controller, Widget? child) {
-        return IconButton(
-          onPressed: () {
-            if (controller.isOpen) {
-              controller.close();
-            } else {
-              controller.open();
-            }
+      builder:
+          (BuildContext context, MenuController controller, Widget? child) {
+            return IconButton(
+              onPressed: () {
+                if (controller.isOpen) {
+                  controller.close();
+                } else {
+                  controller.open();
+                }
+              },
+              tooltip: semanticsLabel,
+              color: color,
+              icon: icon,
+              iconSize: isCompact ? 20.0 : null,
+              style: isCompact
+                  ? IconButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    )
+                  : null,
+            );
           },
-          tooltip: semanticsLabel,
-          color: color,
-          icon: icon,
-          iconSize: isCompact ? 20.0 : null,
-          style: isCompact
-              ? IconButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                )
-              : null,
-        );
-      },
     );
   }
 }
@@ -231,10 +239,12 @@ class _CupertinoContextMenuAction extends StatefulWidget {
   final IconData? trailingIcon;
 
   @override
-  State<_CupertinoContextMenuAction> createState() => _CupertinoContextMenuActionState();
+  State<_CupertinoContextMenuAction> createState() =>
+      _CupertinoContextMenuActionState();
 }
 
-class _CupertinoContextMenuActionState extends State<_CupertinoContextMenuAction> {
+class _CupertinoContextMenuActionState
+    extends State<_CupertinoContextMenuAction> {
   static const double _kButtonHeight = 43;
   static const TextStyle _kActionSheetActionStyle = TextStyle(
     fontFamily: 'CupertinoSystemText',
@@ -274,7 +284,9 @@ class _CupertinoContextMenuActionState extends State<_CupertinoContextMenuAction
       );
     }
     if (widget.isDestructiveAction) {
-      return _kActionSheetActionStyle.copyWith(color: CupertinoColors.destructiveRed);
+      return _kActionSheetActionStyle.copyWith(
+        color: CupertinoColors.destructiveRed,
+      );
     }
     return _kActionSheetActionStyle.copyWith(
       color: CupertinoDynamicColor.resolve(CupertinoColors.label, context),
@@ -307,7 +319,11 @@ class _CupertinoContextMenuActionState extends State<_CupertinoContextMenuAction
                   children: <Widget>[
                     Flexible(child: widget.child),
                     if (widget.trailingIcon != null)
-                      Icon(widget.trailingIcon, color: _textStyle.color, size: 21.0),
+                      Icon(
+                        widget.trailingIcon,
+                        color: _textStyle.color,
+                        size: 21.0,
+                      ),
                   ],
                 ),
               ),

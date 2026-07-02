@@ -43,7 +43,9 @@ class QuickGameMatrix extends ConsumerWidget {
 
     final rows = <List<TimeIncrement>>[];
     for (var i = 0; i < enabledControls.length; i += 3) {
-      rows.add(enabledControls.sublist(i, (i + 3).clamp(0, enabledControls.length)));
+      rows.add(
+        enabledControls.sublist(i, (i + 3).clamp(0, enabledControls.length)),
+      );
     }
     if (rows.isEmpty && showCustom) {
       rows.add([]);
@@ -58,7 +60,10 @@ class QuickGameMatrix extends ConsumerWidget {
           decoration: scaffoldOpacity != 0
               ? BoxDecoration(
                   image: DecorationImage(
-                    colorFilter: ColorFilter.mode(logoColor, BlendMode.modulate),
+                    colorFilter: ColorFilter.mode(
+                      logoColor,
+                      BlendMode.modulate,
+                    ),
                     image: const AssetImage('assets/images/logo-transp.webp'),
                     fit: BoxFit.contain,
                   ),
@@ -70,7 +75,8 @@ class QuickGameMatrix extends ConsumerWidget {
                 if (index > 0) const SizedBox(height: _kMatrixSpacing),
                 _SectionChoices(
                   choices: row,
-                  showCustom: showCustom && index == rows.length - 1 && row.length < 3,
+                  showCustom:
+                      showCustom && index == rows.length - 1 && row.length < 3,
                 ),
               ],
               if (showCustom && rows.every((r) => r.length >= 3)) ...[
@@ -103,7 +109,10 @@ class _SectionChoices extends ConsumerWidget {
                 key: ValueKey(choice),
                 title: Text(
                   choice.display,
-                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20.0,
+                  ),
                 ),
                 subtitle: Text(
                   choice.speed.label(context.l10n),
@@ -114,14 +123,17 @@ class _SectionChoices extends ConsumerWidget {
                     ? () {
                         Navigator.of(context, rootNavigator: true).push(
                           GameScreen.buildRoute(
-                            source: LobbySource(GameSeek.fastPairing(choice, authUser)),
+                            source: LobbySource(
+                              GameSeek.fastPairing(choice, authUser),
+                            ),
                           ),
                         );
                       }
                     : null,
               ),
             ),
-            if (index < choices.length - 1) const SizedBox(width: _kMatrixSpacing),
+            if (index < choices.length - 1)
+              const SizedBox(width: _kMatrixSpacing),
           ];
         })
         .flattened
@@ -172,7 +184,9 @@ class _ChoiceChip extends StatelessWidget {
   final Speed? speed;
   final void Function()? onTap;
 
-  static const BorderRadius _kBorderRadius = BorderRadius.all(Radius.circular(6.0));
+  static const BorderRadius _kBorderRadius = BorderRadius.all(
+    Radius.circular(6.0),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +195,9 @@ class _ChoiceChip extends StatelessWidget {
         ? scaffoldOpacity > 0
               ? Colors.white10
               : ColorScheme.of(context).surfaceContainerLow
-        : ColorScheme.of(context).surfaceContainerHighest.withValues(alpha: 0.50);
+        : ColorScheme.of(
+            context,
+          ).surfaceContainerHighest.withValues(alpha: 0.50);
 
     return Opacity(
       opacity: onTap != null ? 1.0 : 0.5,
@@ -195,7 +211,9 @@ class _ChoiceChip extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: DefaultTextStyle.merge(
               style: TextStyle(
-                color: Theme.of(context).textTheme.labelMedium?.color?.withValues(alpha: 0.8),
+                color: Theme.of(
+                  context,
+                ).textTheme.labelMedium?.color?.withValues(alpha: 0.8),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +230,9 @@ class _ChoiceChip extends StatelessWidget {
 
 Future<void> showTimeControlPicker(BuildContext context, WidgetRef ref) {
   final homePrefs = ref.read(homePreferencesProvider);
-  final disabledControls = Set<TimeIncrement>.from(homePrefs.disabledTimeControls);
+  final disabledControls = Set<TimeIncrement>.from(
+    homePrefs.disabledTimeControls,
+  );
   var customEnabled = homePrefs.customButtonEnabled;
 
   final grouped = groupBy(TimeIncrement.matrixPresets, (tc) => tc.speed);
@@ -243,7 +263,10 @@ Future<void> showTimeControlPicker(BuildContext context, WidgetRef ref) {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           speed.label(context.l10n),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0,
+                          ),
                         ),
                       ),
                     ),
@@ -251,7 +274,8 @@ Future<void> showTimeControlPicker(BuildContext context, WidgetRef ref) {
                       CheckboxListTile.adaptive(
                         title: Text(tc.display),
                         value: !disabledControls.contains(tc),
-                        onChanged: !disabledControls.contains(tc) && enabledCount <= 1
+                        onChanged:
+                            !disabledControls.contains(tc) && enabledCount <= 1
                             ? null
                             : (value) {
                                 setState(() {

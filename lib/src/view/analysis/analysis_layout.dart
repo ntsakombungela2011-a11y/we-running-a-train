@@ -19,7 +19,11 @@ const kAnalysisBoardHeaderOrFooterHeight = 26.0;
 const kSmallBoardScale = 0.8;
 
 typedef BoardBuilder =
-    Widget Function(BuildContext context, double boardSize, BorderRadius? boardRadius);
+    Widget Function(
+      BuildContext context,
+      double boardSize,
+      BorderRadius? boardRadius,
+    );
 
 typedef EngineGaugeBuilder = Widget Function(BuildContext context);
 
@@ -152,12 +156,18 @@ class AnalysisLayout extends ConsumerWidget {
 
                 if (orientation == Orientation.landscape) {
                   final headerAndFooterHeight =
-                      (boardHeader != null ? kAnalysisBoardHeaderOrFooterHeight : 0.0) +
-                      (boardFooter != null ? kAnalysisBoardHeaderOrFooterHeight : 0.0);
+                      (boardHeader != null
+                          ? kAnalysisBoardHeaderOrFooterHeight
+                          : 0.0) +
+                      (boardFooter != null
+                          ? kAnalysisBoardHeaderOrFooterHeight
+                          : 0.0);
                   final sideWidth =
-                      constraints.biggest.longestSide - constraints.biggest.shortestSide;
+                      constraints.biggest.longestSide -
+                      constraints.biggest.shortestSide;
                   final defaultBoardSize =
-                      constraints.biggest.shortestSide - (kTabletBoardTableSidePadding * 2);
+                      constraints.biggest.shortestSide -
+                      (kTabletBoardTableSidePadding * 2);
                   final boardSize =
                       (sideWidth >= 250
                           ? defaultBoardSize
@@ -170,10 +180,11 @@ class AnalysisLayout extends ConsumerWidget {
                   return Padding(
                     padding: const EdgeInsets.all(kTabletBoardTableSidePadding),
                     child: Row(
-                      textDirection: switch (boardPrefs.landscapeBoardPosition) {
-                        .left => TextDirection.ltr,
-                        .right => TextDirection.rtl,
-                      },
+                      textDirection:
+                          switch (boardPrefs.landscapeBoardPosition) {
+                            .left => TextDirection.ltr,
+                            .right => TextDirection.rtl,
+                          },
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Column(
@@ -190,7 +201,9 @@ class AnalysisLayout extends ConsumerWidget {
                                         )
                                       : null,
                                 ),
-                                clipBehavior: isTablet ? Clip.hardEdge : Clip.none,
+                                clipBehavior: isTablet
+                                    ? Clip.hardEdge
+                                    : Clip.none,
                                 child: SizedBox(
                                   height: kAnalysisBoardHeaderOrFooterHeight,
                                   width: boardSize,
@@ -200,7 +213,9 @@ class AnalysisLayout extends ConsumerWidget {
                             boardBuilder(
                               context,
                               boardSize,
-                              isTablet && boardHeader == null && boardFooter != null
+                              isTablet &&
+                                      boardHeader == null &&
+                                      boardFooter != null
                                   ? tabletBoardRadius
                                   : null,
                             ),
@@ -216,7 +231,9 @@ class AnalysisLayout extends ConsumerWidget {
                                         )
                                       : null,
                                 ),
-                                clipBehavior: isTablet ? Clip.hardEdge : Clip.none,
+                                clipBehavior: isTablet
+                                    ? Clip.hardEdge
+                                    : Clip.none,
                                 height: kAnalysisBoardHeaderOrFooterHeight,
                                 width: boardSize,
                                 child: boardFooter,
@@ -227,7 +244,9 @@ class AnalysisLayout extends ConsumerWidget {
                           const SizedBox(width: 4.0),
                           Container(
                             clipBehavior: Clip.hardEdge,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
                             child: engineGaugeBuilder!(context),
                           ),
                         ],
@@ -292,14 +311,20 @@ class AnalysisLayout extends ConsumerWidget {
                       (smallBoard ? kSmallBoardScale : 1.0) *
                       (constraints.biggest.shortestSide - evalGaugeSize);
 
-                  final remainingHeight = constraints.maxHeight - defaultBoardSize;
-                  final isSmallScreen = remainingHeight < kSmallHeightMinusBoard;
-                  final additionalBoardSidePaddingForPockets = isSmallScreen ? 70.0 : 16.0;
+                  final remainingHeight =
+                      constraints.maxHeight - defaultBoardSize;
+                  final isSmallScreen =
+                      remainingHeight < kSmallHeightMinusBoard;
+                  final additionalBoardSidePaddingForPockets = isSmallScreen
+                      ? 70.0
+                      : 16.0;
 
                   final boardSize =
                       defaultBoardSize -
                       (isTablet ? kTabletBoardTableSidePadding * 2 : 0) -
-                      (pockets != null ? additionalBoardSidePaddingForPockets : 0.0);
+                      (pockets != null
+                          ? additionalBoardSidePaddingForPockets
+                          : 0.0);
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -336,7 +361,9 @@ class AnalysisLayout extends ConsumerWidget {
                                         )
                                       : null,
                                 ),
-                                clipBehavior: isTablet ? Clip.hardEdge : Clip.none,
+                                clipBehavior: isTablet
+                                    ? Clip.hardEdge
+                                    : Clip.none,
                                 height: kAnalysisBoardHeaderOrFooterHeight,
                                 child: boardHeader,
                               ),
@@ -346,12 +373,17 @@ class AnalysisLayout extends ConsumerWidget {
                                 boardBuilder(
                                   context,
                                   boardSize,
-                                  isTablet && boardHeader == null && boardFooter != null
+                                  isTablet &&
+                                          boardHeader == null &&
+                                          boardFooter != null
                                       ? tabletBoardRadius
                                       : null,
                                 ),
                                 if (engineGaugeBuilder != null)
-                                  SizedBox(height: boardSize, child: engineGaugeBuilder!(context)),
+                                  SizedBox(
+                                    height: boardSize,
+                                    child: engineGaugeBuilder!(context),
+                                  ),
                               ],
                             ),
                             if (boardFooter != null)
@@ -366,7 +398,9 @@ class AnalysisLayout extends ConsumerWidget {
                                         )
                                       : null,
                                 ),
-                                clipBehavior: isTablet ? Clip.hardEdge : Clip.none,
+                                clipBehavior: isTablet
+                                    ? Clip.hardEdge
+                                    : Clip.none,
                                 height: kAnalysisBoardHeaderOrFooterHeight,
                                 child: boardFooter,
                               ),
@@ -387,11 +421,15 @@ class AnalysisLayout extends ConsumerWidget {
                       Expanded(
                         child: Padding(
                           padding: isTablet
-                              ? const EdgeInsets.symmetric(horizontal: kTabletBoardTableSidePadding)
+                              ? const EdgeInsets.symmetric(
+                                  horizontal: kTabletBoardTableSidePadding,
+                                )
                               : EdgeInsets.zero,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: ColorScheme.of(context).surfaceContainerLowest,
+                              color: ColorScheme.of(
+                                context,
+                              ).surfaceContainerLowest,
                             ),
                             child: _AnalysisTabView(
                               tabs: tabs,
@@ -415,7 +453,11 @@ class AnalysisLayout extends ConsumerWidget {
 }
 
 class _AnalysisTabView extends StatelessWidget {
-  const _AnalysisTabView({required this.tabs, required this.controller, required this.children});
+  const _AnalysisTabView({
+    required this.tabs,
+    required this.controller,
+    required this.children,
+  });
 
   final List<AnalysisTab>? tabs;
   final TabController? controller;
@@ -436,7 +478,11 @@ class _AnalysisTabView extends StatelessWidget {
                   .map(
                     (tab) => Tab(
                       height: iconSize + 8.0,
-                      icon: Icon(tab.icon, size: iconSize, semanticLabel: tab.l10n(context.l10n)),
+                      icon: Icon(
+                        tab.icon,
+                        size: iconSize,
+                        semanticLabel: tab.l10n(context.l10n),
+                      ),
                     ),
                   )
                   .toList(),

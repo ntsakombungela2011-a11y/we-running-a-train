@@ -60,10 +60,16 @@ class _Body extends ConsumerWidget {
           child: SingleChildScrollView(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final crossAxisCount = math.min(3, (constraints.maxWidth / 300).floor());
+                final crossAxisCount = math.min(
+                  3,
+                  (constraints.maxWidth / 300).floor(),
+                );
                 return LayoutGrid(
                   columnSizes: List.generate(crossAxisCount, (_) => 1.fr),
-                  rowSizes: List.generate((list.length / crossAxisCount).ceil(), (_) => auto),
+                  rowSizes: List.generate(
+                    (list.length / crossAxisCount).ceil(),
+                    (_) => auto,
+                  ),
                   children: list,
                 );
               },
@@ -72,7 +78,8 @@ class _Body extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-      error: (error, stack) => const Center(child: Text('Could not load leaderboard.')),
+      error: (error, stack) =>
+          const Center(child: Text('Could not load leaderboard.')),
     );
   }
 }
@@ -120,9 +127,13 @@ class _Progress extends StatelessWidget {
         Text(rating.toString(), maxLines: 1),
         const SizedBox(width: 5),
         Icon(
-          progress > 0 ? LichessIcons.arrow_full_upperright : LichessIcons.arrow_full_lowerright,
+          progress > 0
+              ? LichessIcons.arrow_full_upperright
+              : LichessIcons.arrow_full_lowerright,
           size: 16,
-          color: progress > 0 ? context.lichessColors.good : context.lichessColors.error,
+          color: progress > 0
+              ? context.lichessColors.good
+              : context.lichessColors.error,
         ),
         Text(
           progress.abs().toString().padRight(2),
@@ -130,7 +141,9 @@ class _Progress extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontFeatures: const [FontFeature.tabularFigures()],
-            color: progress > 0 ? context.lichessColors.good : context.lichessColors.error,
+            color: progress > 0
+                ? context.lichessColors.good
+                : context.lichessColors.error,
           ),
         ),
       ],
@@ -156,7 +169,9 @@ class _Leaderboard extends StatelessWidget {
             Text(perf.label(context.l10n)),
           ],
         ),
-        children: userList.map((user) => LeaderboardListTile(user: user)).toList(),
+        children: userList
+            .map((user) => LeaderboardListTile(user: user))
+            .toList(),
       ),
     );
   }

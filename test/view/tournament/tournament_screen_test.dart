@@ -158,7 +158,10 @@ String makeTournamentJson({
 ''';
 }
 
-String makeStandingJson({required List<StandingPlayer> standings, required int page}) {
+String makeStandingJson({
+  required List<StandingPlayer> standings,
+  required int page,
+}) {
   return '''
 {
   "page": $page,
@@ -191,7 +194,10 @@ String makeReloadedTournamentJson({
 ''';
 
 StandingPlayer makeTestPlayer(int index) => StandingPlayer(
-  user: LightUser(id: UserId.fromUserName('player$index'), name: 'player$index'),
+  user: LightUser(
+    id: UserId.fromUserName('player$index'),
+    name: 'player$index',
+  ),
   rating: 1500 + index,
   rank: index,
   score: index,
@@ -200,7 +206,8 @@ StandingPlayer makeTestPlayer(int index) => StandingPlayer(
   sheet: (fire: index.isEven, scores: const IList.empty()),
 );
 
-List<StandingPlayer> makeTestPlayers(int count) => List.generate(count, makeTestPlayer);
+List<StandingPlayer> makeTestPlayers(int count) =>
+    List.generate(count, makeTestPlayer);
 
 String makeTeamBattleTournamentJson({
   required List<StandingPlayer> standings,
@@ -344,7 +351,9 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('Displays tournament data and standings', (WidgetTester tester) async {
+    testWidgets('Displays tournament data and standings', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/82QbxlJb') {
           return mockResponse(
@@ -353,9 +362,15 @@ void main() {
           );
         }
         if (request.url.path == '/tournament/82QbxlJb/standing/1') {
-          return mockResponse(makeStandingJson(standings: makeTestPlayers(10), page: 1), 200);
+          return mockResponse(
+            makeStandingJson(standings: makeTestPlayers(10), page: 1),
+            200,
+          );
         } else if (request.url.path == '/tournament/82QbxlJb/standing/2') {
-          return mockResponse(makeStandingJson(standings: makeTestPlayers(3), page: 2), 200);
+          return mockResponse(
+            makeStandingJson(standings: makeTestPlayers(3), page: 2),
+            200,
+          );
         }
         return mockResponse('', 404);
       });
@@ -377,16 +392,28 @@ void main() {
       expect(find.text('<=1300 SuperBlitz Arena'), findsOneWidget);
 
       expect(find.text('>= 20 Blitz rated games'), findsOneWidget);
-      expect(find.text('Rated <= 1300 in Blitz for the last week'), findsOneWidget);
+      expect(
+        find.text('Rated <= 1300 in Blitz for the last week'),
+        findsOneWidget,
+      );
       // Description should be hidden by default, but expandable
       expect(find.text('Description'), findsOneWidget);
-      expect(find.text('This is a test tournament. Have fun playing!'), findsNothing);
+      expect(
+        find.text('This is a test tournament. Have fun playing!'),
+        findsNothing,
+      );
       await tester.tap(find.text('Description'));
       await tester.pump();
-      expect(find.text('This is a test tournament. Have fun playing!'), findsOneWidget);
+      expect(
+        find.text('This is a test tournament. Have fun playing!'),
+        findsOneWidget,
+      );
       await tester.tap(find.text('Description'));
       await tester.pump();
-      expect(find.text('This is a test tournament. Have fun playing!'), findsNothing);
+      expect(
+        find.text('This is a test tournament. Have fun playing!'),
+        findsNothing,
+      );
 
       for (var i = 0; i < 10; i++) {
         expect(find.text('player$i'), findsOneWidget);
@@ -466,7 +493,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(BoardThumbnail), findsOneWidget);
-      expect(tester.widget<StaticChessboard>(find.byType(StaticChessboard)).fen, kEmptyBoardFEN);
+      expect(
+        tester.widget<StaticChessboard>(find.byType(StaticChessboard)).fen,
+        kEmptyBoardFEN,
+      );
     });
 
     testWidgets('Can join tournament', (WidgetTester tester) async {
@@ -481,11 +511,18 @@ void main() {
           );
         }
         if (request.url.path == '/tournament/82QbxlJb/standing/1') {
-          return mockResponse(makeStandingJson(standings: makeTestPlayers(10), page: 1), 200);
+          return mockResponse(
+            makeStandingJson(standings: makeTestPlayers(10), page: 1),
+            200,
+          );
         } else if (request.url.path == '/tournament/82QbxlJb/standing/2') {
-          return mockResponse(makeStandingJson(standings: makeTestPlayers(2), page: 2), 200);
+          return mockResponse(
+            makeStandingJson(standings: makeTestPlayers(2), page: 2),
+            200,
+          );
         }
-        if (request.url.path == '/https%253A//http.lichess.org/tournament/82QbxlJb' &&
+        if (request.url.path ==
+                '/https%253A//http.lichess.org/tournament/82QbxlJb' &&
             request.url.queryParameters['partial'] == 'true') {
           return mockResponse(
             makeReloadedTournamentJson(
@@ -528,7 +565,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Join'), findsNothing);
 
-      sendServerSocketMessages(TournamentController.socketUri(tournamentId), ['{"t": "reload"}']);
+      sendServerSocketMessages(TournamentController.socketUri(tournamentId), [
+        '{"t": "reload"}',
+      ]);
       // Wait for reload
       await tester.pump();
 
@@ -544,7 +583,9 @@ void main() {
       expect(find.text('11-12 / 12'), findsOneWidget);
     });
 
-    testWidgets('Cannot join tournament if not logged in', (WidgetTester tester) async {
+    testWidgets('Cannot join tournament if not logged in', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/82QbxlJb') {
           return mockResponse(
@@ -619,7 +660,9 @@ void main() {
       await tester.pump();
     });
 
-    testWidgets('Opens game screen when there is a new pairing', (WidgetTester tester) async {
+    testWidgets('Opens game screen when there is a new pairing', (
+      WidgetTester tester,
+    ) async {
       const gameId = GameFullId('1234567890ab');
 
       final mockClient = MockClient((request) {
@@ -636,12 +679,18 @@ void main() {
             200,
           );
         }
-        if (request.url.path == '/https%253A//http.lichess.org/tournament/82QbxlJb' &&
+        if (request.url.path ==
+                '/https%253A//http.lichess.org/tournament/82QbxlJb' &&
             request.url.queryParameters['partial'] == 'true') {
           if (request.url.queryParameters['page'] == '1') {
             return mockResponse(
               makeReloadedTournamentJson(
-                me: (gameId: gameId, pauseDelay: null, rank: 11, withdraw: null),
+                me: (
+                  gameId: gameId,
+                  pauseDelay: null,
+                  rank: 11,
+                  withdraw: null,
+                ),
                 standings: makeTestPlayers(10),
                 page: 1,
                 nbPlayers: 12,
@@ -673,7 +722,9 @@ void main() {
       // Wait for tournament data to load
       await tester.pump();
 
-      sendServerSocketMessages(TournamentController.socketUri(tournamenId), ['{"t": "reload"}']);
+      sendServerSocketMessages(TournamentController.socketUri(tournamenId), [
+        '{"t": "reload"}',
+      ]);
       // Wait for reload
       await tester.pump();
 
@@ -695,10 +746,15 @@ void main() {
       expect(find.text('Steven'), findsOneWidget);
     });
   });
-  testWidgets('Shows player details when tapping on a player', (WidgetTester tester) async {
+  testWidgets('Shows player details when tapping on a player', (
+    WidgetTester tester,
+  ) async {
     final mockClient = MockClient((request) {
       if (request.url.path == '/api/tournament/82QbxlJb') {
-        return mockResponse(makeTournamentJson(standings: makeTestPlayers(10), nbPlayers: 11), 200);
+        return mockResponse(
+          makeTournamentJson(standings: makeTestPlayers(10), nbPlayers: 11),
+          200,
+        );
       }
       if (request.url.path == '/tournament/82QbxlJb/player/player0') {
         return mockResponse(testTournamentPlayerResponse, 200);
@@ -764,7 +820,9 @@ void main() {
   });
 
   group('Team Battle Tournament', () {
-    testWidgets('displays team battle info and standings', (WidgetTester tester) async {
+    testWidgets('displays team battle info and standings', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/testTeamBattle') {
           return mockResponse(
@@ -784,11 +842,17 @@ void main() {
                   score: 450,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player1'), name: 'Player1'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player1'),
+                        name: 'Player1',
+                      ),
                       score: 90,
                     ),
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player4'), name: 'Player4'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player4'),
+                        name: 'Player4',
+                      ),
                       score: 85,
                     ),
                     TeamPlayer(
@@ -807,7 +871,10 @@ void main() {
                   score: 425,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player2'), name: 'Player2'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player2'),
+                        name: 'Player2',
+                      ),
                       score: 85,
                     ),
                     TeamPlayer(
@@ -826,7 +893,10 @@ void main() {
                   score: 400,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player3'), name: 'Player3'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player3'),
+                        name: 'Player3',
+                      ),
                       score: 80,
                     ),
                     TeamPlayer(
@@ -875,7 +945,9 @@ void main() {
       expect(find.text('400'), findsOneWidget);
     });
 
-    testWidgets('shows team selection dialog when joining', (WidgetTester tester) async {
+    testWidgets('shows team selection dialog when joining', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/testTeamBattle') {
           return mockResponse(
@@ -895,7 +967,10 @@ void main() {
                   score: 450,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player1'), name: 'Player1'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player1'),
+                        name: 'Player1',
+                      ),
                       score: 90,
                     ),
                   ]),
@@ -906,7 +981,10 @@ void main() {
                   score: 425,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player2'), name: 'Player2'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player2'),
+                        name: 'Player2',
+                      ),
                       score: 85,
                     ),
                   ]),
@@ -917,7 +995,10 @@ void main() {
                   score: 400,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player3'), name: 'Player3'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player3'),
+                        name: 'Player3',
+                      ),
                       score: 80,
                     ),
                   ]),
@@ -960,7 +1041,10 @@ void main() {
 
       // Verify team selection dialog appears
       expect(find.text('Pick your team'), findsOneWidget);
-      expect(find.text('Which team will you represent in this battle?'), findsOneWidget);
+      expect(
+        find.text('Which team will you represent in this battle?'),
+        findsOneWidget,
+      );
 
       // Team one are in the dialog and the standings
       expect(find.text('Team one'), findsNWidgets(2));
@@ -969,14 +1053,19 @@ void main() {
       expect(find.text('Team two'), findsOneWidget);
     });
 
-    testWidgets('shows snackbar when user has no participating teams', (WidgetTester tester) async {
+    testWidgets('shows snackbar when user has no participating teams', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/testTeamBattle') {
           return mockResponse(
             makeTeamBattleTournamentJson(
               standings: makeTestPlayers(10),
               nbPlayers: 15,
-              teams: {'team-one': ('Team one', 'nature.fire'), 'team-two': ('Team two', null)},
+              teams: {
+                'team-one': ('Team one', 'nature.fire'),
+                'team-two': ('Team two', null),
+              },
               nbLeaders: 5,
               teamStanding: [
                 TeamStanding(
@@ -985,7 +1074,10 @@ void main() {
                   score: 450,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player1'), name: 'Player1'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player1'),
+                        name: 'Player1',
+                      ),
                       score: 90,
                     ),
                   ]),
@@ -1024,19 +1116,27 @@ void main() {
       await tester.pump();
 
       // Verify snackbar appears with error message
-      expect(find.text('None of your teams are participating in this tournament'), findsOneWidget);
+      expect(
+        find.text('None of your teams are participating in this tournament'),
+        findsOneWidget,
+      );
 
       // Verify dialog did NOT appear
       expect(find.text('Pick your team'), findsNothing);
     });
-    testWidgets('displays team details when tapping on a team', (WidgetTester tester) async {
+    testWidgets('displays team details when tapping on a team', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/testTeamBattle') {
           return mockResponse(
             makeTeamBattleTournamentJson(
               standings: makeTestPlayers(10),
               nbPlayers: 15,
-              teams: {'team-one': ('Team one', 'nature.fire'), 'team-two': ('Team two', null)},
+              teams: {
+                'team-one': ('Team one', 'nature.fire'),
+                'team-two': ('Team two', null),
+              },
               nbLeaders: 5,
               teamStanding: [
                 TeamStanding(
@@ -1045,7 +1145,10 @@ void main() {
                   score: 450,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player1'), name: 'Player1'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player1'),
+                        name: 'Player1',
+                      ),
                       score: 90,
                     ),
                   ]),
@@ -1143,7 +1246,10 @@ void main() {
                   score: 450,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player1'), name: 'Player1'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player1'),
+                        name: 'Player1',
+                      ),
                       score: 90,
                     ),
                   ]),
@@ -1154,7 +1260,10 @@ void main() {
                   score: 400,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player2'), name: 'Player2'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player2'),
+                        name: 'Player2',
+                      ),
                       score: 80,
                     ),
                   ]),
@@ -1165,7 +1274,10 @@ void main() {
                   score: 350,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player3'), name: 'Player3'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player3'),
+                        name: 'Player3',
+                      ),
                       score: 70,
                     ),
                   ]),
@@ -1176,7 +1288,10 @@ void main() {
                   score: 300,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player4'), name: 'Player4'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player4'),
+                        name: 'Player4',
+                      ),
                       score: 60,
                     ),
                   ]),
@@ -1187,7 +1302,10 @@ void main() {
                   score: 250,
                   players: IList([
                     TeamPlayer(
-                      user: LightUser(id: UserId.fromUserName('player5'), name: 'Player5'),
+                      user: LightUser(
+                        id: UserId.fromUserName('player5'),
+                        name: 'Player5',
+                      ),
                       score: 50,
                     ),
                   ]),
@@ -1294,7 +1412,9 @@ void main() {
       expect(find.text('Tournament entry code'), findsOneWidget);
     });
 
-    testWidgets('successfully joins with correct entry code', (WidgetTester tester) async {
+    testWidgets('successfully joins with correct entry code', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/82QbxlJb') {
           return mockResponse(
@@ -1319,7 +1439,8 @@ void main() {
             return mockResponse('{"error": "Wrong entry code"}', 400);
           }
         }
-        if (request.url.path == '/https%253A//http.lichess.org/tournament/82QbxlJb' &&
+        if (request.url.path ==
+                '/https%253A//http.lichess.org/tournament/82QbxlJb' &&
             request.url.queryParameters['partial'] == 'true') {
           return mockResponse(
             makeReloadedTournamentJson(
@@ -1366,7 +1487,9 @@ void main() {
       await tester.pump();
 
       // Trigger reload
-      sendServerSocketMessages(TournamentController.socketUri(tournamentId), ['{"t": "reload"}']);
+      sendServerSocketMessages(TournamentController.socketUri(tournamentId), [
+        '{"t": "reload"}',
+      ]);
       await tester.pump();
 
       // Verify joined successfully
@@ -1374,7 +1497,9 @@ void main() {
       expect(find.text('Join'), findsNothing);
     });
 
-    testWidgets('shows error for incorrect entry code', (WidgetTester tester) async {
+    testWidgets('shows error for incorrect entry code', (
+      WidgetTester tester,
+    ) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/tournament/82QbxlJb') {
           return mockResponse(

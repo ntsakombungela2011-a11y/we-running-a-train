@@ -24,7 +24,10 @@ class AuthStorage {
   }
 
   Future<void> write(AuthUser authUser) async {
-    await SecureStorage.instance.write(key: kAuthStorageKey, value: jsonEncode(authUser.toJson()));
+    await SecureStorage.instance.write(
+      key: kAuthStorageKey,
+      value: jsonEncode(authUser.toJson()),
+    );
   }
 
   Future<void> delete() async {

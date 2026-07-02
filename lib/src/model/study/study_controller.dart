@@ -43,7 +43,12 @@ final studyControllerProvider = AsyncNotifierProvider.autoDispose
       name: 'StudyControllerProvider',
     );
 
-enum ChapterServerAnalysisStatus { canRequest, notEnoughMoves, notWriteable, available }
+enum ChapterServerAnalysisStatus {
+  canRequest,
+  notEnoughMoves,
+  notWriteable,
+  available,
+}
 
 class StudyController extends AsyncNotifier<StudyState>
     with
@@ -115,7 +120,9 @@ class StudyController extends AsyncNotifier<StudyState>
     state = AsyncData(
       state.requireValue.copyWith(
         root: recomputeRootView ? _root.view : state.requireValue.root,
-        currentNode: StudyCurrentNode.fromNode(_root.nodeAt(state.requireValue.currentPath)),
+        currentNode: StudyCurrentNode.fromNode(
+          _root.nodeAt(state.requireValue.currentPath),
+        ),
       ),
     );
   }
@@ -125,7 +132,9 @@ class StudyController extends AsyncNotifier<StudyState>
     final curState = state.requireValue;
     state = AsyncData(
       curState.copyWith(
-        currentNode: StudyCurrentNode.fromNode(_root.nodeAt(curState.currentPath)),
+        currentNode: StudyCurrentNode.fromNode(
+          _root.nodeAt(curState.currentPath),
+        ),
         currentBranchOpening: currentBranchOpeningAt(curState.currentPath),
       ),
     );
@@ -215,7 +224,9 @@ class StudyController extends AsyncNotifier<StudyState>
     // (Note that regular comments by the study author might also exist.)
     if (analysisSummary != null) {
       for (final node in _root.mainline) {
-        final lichessCommentIndex = (node.comments ?? []).indexWhere((c) => c.eval != null);
+        final lichessCommentIndex = (node.comments ?? []).indexWhere(
+          (c) => c.eval != null,
+        );
         if (lichessCommentIndex != -1) {
           node.lichessAnalysisComments = [node.comments![lichessCommentIndex]];
           node.comments!.removeAt(lichessCommentIndex);
@@ -244,7 +255,8 @@ class StudyController extends AsyncNotifier<StudyState>
       pgnHeaders: pgnHeaders,
       lastMove: lastMove,
       pov: orientation,
-      isComputerAnalysisAllowed: study.chapter.features.computer && !study.chapter.gamebook,
+      isComputerAnalysisAllowed:
+          study.chapter.features.computer && !study.chapter.gamebook,
       gamebookActive: study.chapter.gamebook,
       pgn: pgn,
       analysisSummary: analysisSummary,
@@ -271,7 +283,9 @@ class StudyController extends AsyncNotifier<StudyState>
       final liked = state.requireValue.study.liked;
       _socketClient.send('like', {'liked': !liked});
       state = AsyncValue.data(
-        state.requireValue.copyWith(study: state.requireValue.study.copyWith(liked: !liked)),
+        state.requireValue.copyWith(
+          study: state.requireValue.study.copyWith(liked: !liked),
+        ),
       );
     });
   }
@@ -293,12 +307,16 @@ class StudyController extends AsyncNotifier<StudyState>
     }
     switch (event.topic) {
       case 'liking':
-        final data = (event.data as Map<String, dynamic>)['l'] as Map<String, dynamic>;
+        final data =
+            (event.data as Map<String, dynamic>)['l'] as Map<String, dynamic>;
         final likes = data['likes'] as int;
         final bool meLiked = data['me'] as bool;
         state = AsyncValue.data(
           state.requireValue.copyWith(
-            study: state.requireValue.study.copyWith(liked: meLiked, likes: likes),
+            study: state.requireValue.study.copyWith(
+              liked: meLiked,
+              likes: likes,
+            ),
           ),
         );
     }
@@ -325,9 +343,16 @@ class StudyController extends AsyncNotifier<StudyState>
 
     _sendMoveToSocket(move);
 
-    final (newPath, isNewNode) = _root.addMoveAt(state.requireValue.currentPath, move);
+    final (newPath, isNewNode) = _root.addMoveAt(
+      state.requireValue.currentPath,
+      move,
+    );
     if (newPath != null) {
-      _setPath(newPath, shouldRecomputeRootView: isNewNode, shouldForceShowVariation: true);
+      _setPath(
+        newPath,
+        shouldRecomputeRootView: isNewNode,
+        shouldForceShowVariation: true,
+      );
     }
 
     if (state.requireValue.gamebookActive) {
@@ -417,7 +442,9 @@ class StudyController extends AsyncNotifier<StudyState>
 
     final node = _root.nodeAt(path);
 
-    final childrenToShow = _root.isOnMainline(path) ? node.children.skip(1) : node.children;
+    final childrenToShow = _root.isOnMainline(path)
+        ? node.children.skip(1)
+        : node.children;
 
     for (final child in childrenToShow) {
       child.isCollapsed = false;
@@ -447,7 +474,10 @@ class StudyController extends AsyncNotifier<StudyState>
     if (state == null) return;
     _root.promoteAt(path, toMainline: toMainline);
     this.state = AsyncValue.data(
-      state.copyWith(isOnMainline: _root.isOnMainline(state.currentPath), root: _root.view),
+      state.copyWith(
+        isOnMainline: _root.isOnMainline(state.currentPath),
+        root: _root.view,
+      ),
     );
 
     _recordChange('promote', {
@@ -462,7 +492,10 @@ class StudyController extends AsyncNotifier<StudyState>
     if (!state.hasValue) return;
 
     _root.deleteAt(path);
-    _recordChange('deleteNode', {'path': path.value, 'jumpTo': path.penultimate.value});
+    _recordChange('deleteNode', {
+      'path': path.value,
+      'jumpTo': path.penultimate.value,
+    });
     _setPath(path.penultimate, shouldRecomputeRootView: true);
   }
 
@@ -493,7 +526,10 @@ class StudyController extends AsyncNotifier<StudyState>
     if (!state.hasValue) return;
     if (state.requireValue.isWriteable == false) return;
 
-    _socketClient.send(socketEvent, {...data, 'ch': state.requireValue.study.chapter.id.value});
+    _socketClient.send(socketEvent, {
+      ...data,
+      'ch': state.requireValue.study.chapter.id.value,
+    });
   }
 
   void _setPath(
@@ -522,7 +558,9 @@ class StudyController extends AsyncNotifier<StudyState>
     }
 
     // always show variation if the user plays a move
-    if (shouldForceShowVariation && currentNode is Branch && currentNode.isCollapsed) {
+    if (shouldForceShowVariation &&
+        currentNode is Branch &&
+        currentNode.isCollapsed) {
       _root.updateAt(path, (node) {
         if (node is Branch) node.isCollapsed = false;
       });
@@ -531,7 +569,8 @@ class StudyController extends AsyncNotifier<StudyState>
     // root view is only used to display move list, so we need to
     // recompute the root view only when the nodelist length changes
     // or a variation is hidden/shown
-    final rootView = shouldForceShowVariation || shouldRecomputeRootView || pathWasExpanded
+    final rootView =
+        shouldForceShowVariation || shouldRecomputeRootView || pathWasExpanded
         ? _root.view
         : state.root;
 
@@ -541,7 +580,9 @@ class StudyController extends AsyncNotifier<StudyState>
       if (!isNavigating && isForward) {
         final isCheck = currentNode.sanMove.isCheck;
         if (currentNode.sanMove.isCapture) {
-          ref.read(moveFeedbackServiceProvider).captureFeedback(state.variant, check: isCheck);
+          ref
+              .read(moveFeedbackServiceProvider)
+              .captureFeedback(state.variant, check: isCheck);
         } else {
           ref.read(moveFeedbackServiceProvider).moveFeedback(check: isCheck);
         }
@@ -582,7 +623,9 @@ class StudyController extends AsyncNotifier<StudyState>
     }
 
     if (pathChange) {
-      this.state = AsyncData(this.state.requireValue.copyWith(engineInThreatMode: false));
+      this.state = AsyncData(
+        this.state.requireValue.copyWith(engineInThreatMode: false),
+      );
       requestEval();
     }
   }
@@ -595,7 +638,10 @@ class StudyController extends AsyncNotifier<StudyState>
         analysisSummary: event.analysis != null
             ? (
                 division: event.division != null
-                    ? Division(middlegame: event.division!.middle, endgame: event.division!.end)
+                    ? Division(
+                        middlegame: event.division!.middle,
+                        endgame: event.division!.end,
+                      )
                     : state.requireValue.analysisSummary?.division,
                 white: event.analysis!.white,
                 black: event.analysis!.black,
@@ -607,7 +653,13 @@ class StudyController extends AsyncNotifier<StudyState>
   }
 }
 
-enum GamebookState { startLesson, findTheMove, correctMove, incorrectMove, lessonComplete }
+enum GamebookState {
+  startLesson,
+  findTheMove,
+  correctMove,
+  incorrectMove,
+  lessonComplete,
+}
 
 @freezed
 sealed class StudyState
@@ -689,7 +741,8 @@ sealed class StudyState
   }) = _StudyState;
 
   /// Whether the current user is the owner of the study.
-  bool get amIOwner => myId == study.ownerId || (isAdmin == true && canIContribute);
+  bool get amIOwner =>
+      myId == study.ownerId || (isAdmin == true && canIContribute);
 
   /// The current user's member information, if available.
   StudyMember? get myMember => myId != null ? study.members[myId!] : null;
@@ -708,9 +761,11 @@ sealed class StudyState
   bool isEngineAvailable(EngineEvaluationPrefState prefs) =>
       isComputerAnalysisAllowed && prefs.isEnabled;
 
-  bool get isOpeningExplorerAvailable => !gamebookActive && study.chapter.features.explorer;
+  bool get isOpeningExplorerAvailable =>
+      !gamebookActive && study.chapter.features.explorer;
 
-  bool get isServerAnalysisAllowed => !gamebookActive && study.chapter.features.computer;
+  bool get isServerAnalysisAllowed =>
+      !gamebookActive && study.chapter.features.computer;
 
   ChapterServerAnalysisStatus get chapterServerAnalysisStatus {
     if (analysisSummary != null) {
@@ -728,9 +783,13 @@ sealed class StudyState
 
   @override
   ServerAnalysisSource? get serverAnalysisSource =>
-      ServerAnalysisSource.studyChapter(studyId: study.id, chapterId: study.chapter.id);
+      ServerAnalysisSource.studyChapter(
+        studyId: study.id,
+        chapterId: study.chapter.id,
+      );
 
-  EngineGaugeParams? engineGaugeParams(EngineEvaluationPrefState prefs) => isEngineAvailable(prefs)
+  EngineGaugeParams? engineGaugeParams(EngineEvaluationPrefState prefs) =>
+      isEngineAvailable(prefs)
       ? (
           isLocalEngineAvailable: isEngineAvailable(prefs),
           orientation: pov,
@@ -760,10 +819,11 @@ sealed class StudyState
   bool get isAtStartOfChapter => currentPath.isEmpty;
 
   String? get gamebookComment {
-    final comment = (currentNode.isRoot ? pgnRootComments : currentNode.comments)
-        ?.map((comment) => comment.text)
-        .nonNulls
-        .join('\n');
+    final comment =
+        (currentNode.isRoot ? pgnRootComments : currentNode.comments)
+            ?.map((comment) => comment.text)
+            .nonNulls
+            .join('\n');
     return comment?.isNotEmpty == true
         ? comment
         : gamebookState == GamebookState.incorrectMove
@@ -773,7 +833,8 @@ sealed class StudyState
 
   String? get gamebookHint => study.hints.getOrNull(currentPath.size);
 
-  String? get gamebookDeviationComment => study.deviationComments.getOrNull(currentPath.size);
+  String? get gamebookDeviationComment =>
+      study.deviationComments.getOrNull(currentPath.size);
 
   GamebookState get gamebookState {
     if (isAtEndOfChapter) return GamebookState.lessonComplete;
@@ -788,7 +849,8 @@ sealed class StudyState
         : GamebookState.incorrectMove;
   }
 
-  bool get isIntroductoryChapter => currentNode.isRoot && currentNode.children.isEmpty;
+  bool get isIntroductoryChapter =>
+      currentNode.isRoot && currentNode.children.isEmpty;
 
   IList<PgnCommentShape> get pgnShapes => IList(
     (currentNode.isRoot ? pgnRootComments : currentNode.comments)
@@ -796,8 +858,9 @@ sealed class StudyState
         .flattened,
   );
 
-  PlayerSide get playerSide =>
-      gamebookActive ? (pov == Side.white ? PlayerSide.white : PlayerSide.black) : PlayerSide.both;
+  PlayerSide get playerSide => gamebookActive
+      ? (pov == Side.white ? PlayerSide.white : PlayerSide.black)
+      : PlayerSide.both;
 
   PlayersAnalysis? get playersAnalysis => analysisSummary != null
       ? (white: analysisSummary!.white, black: analysisSummary!.black)
@@ -808,7 +871,9 @@ sealed class StudyState
 }
 
 @freezed
-sealed class StudyCurrentNode with _$StudyCurrentNode implements AnalysisCurrentNodeInterface {
+sealed class StudyCurrentNode
+    with _$StudyCurrentNode
+    implements AnalysisCurrentNodeInterface {
   const StudyCurrentNode._();
 
   const factory StudyCurrentNode({

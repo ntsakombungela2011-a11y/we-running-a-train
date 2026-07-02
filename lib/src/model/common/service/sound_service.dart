@@ -43,9 +43,14 @@ final _extension = defaultTargetPlatform == TargetPlatform.iOS ? 'aifc' : 'mp3';
 const Set<Sound> _emtpySet = {};
 
 /// Loads all sounds of the given [SoundTheme].
-Future<void> _loadAllSounds(SoundTheme soundTheme, {Set<Sound> excluded = _emtpySet}) async {
+Future<void> _loadAllSounds(
+  SoundTheme soundTheme, {
+  Set<Sound> excluded = _emtpySet,
+}) async {
   await Future.wait(
-    Sound.values.where((s) => !excluded.contains(s)).map((sound) => _loadSound(soundTheme, sound)),
+    Sound.values
+        .where((s) => !excluded.contains(s))
+        .map((sound) => _loadSound(soundTheme, sound)),
   );
 }
 
@@ -82,7 +87,9 @@ class SoundService {
       );
       final theme =
           (stored != null
-                  ? GeneralPrefs.fromJson(jsonDecode(stored) as Map<String, dynamic>)
+                  ? GeneralPrefs.fromJson(
+                      jsonDecode(stored) as Map<String, dynamic>,
+                    )
                   : GeneralPrefs.defaults)
               .soundTheme;
       await _soundEffectPlugin.initialize(maxStreams: _kMaxConcurrentStreams);
@@ -96,7 +103,8 @@ class SoundService {
   Future<void> play(Sound sound, {double volume = 1.0}) async {
     assert((volume >= 0.0) && (volume <= 1.0));
     final isEnabled = _ref.read(generalPreferencesProvider).isSoundEnabled;
-    final finalVolume = _ref.read(generalPreferencesProvider).masterVolume * volume;
+    final finalVolume =
+        _ref.read(generalPreferencesProvider).masterVolume * volume;
     if (!isEnabled || finalVolume == 0.0) {
       return;
     }
@@ -105,7 +113,10 @@ class SoundService {
 
   /// Play the capture sound for the given chess [variant].
   Future<void> playCaptureSound(Variant variant, {double volume = 1.0}) async {
-    await play(variant == Variant.atomic ? Sound.explosion : Sound.capture, volume: volume);
+    await play(
+      variant == Variant.atomic ? Sound.explosion : Sound.capture,
+      volume: volume,
+    );
   }
 
   /// Change the sound theme and optionally play a move sound.

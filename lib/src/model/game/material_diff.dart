@@ -15,8 +15,12 @@ sealed class MaterialDiffSide with _$MaterialDiffSide {
     required int? checksGiven,
   }) = _MaterialDiffSide;
 
-  factory MaterialDiffSide.empty() =>
-      MaterialDiffSide(pieces: IMap(), score: 0, capturedPieces: IMap(), checksGiven: null);
+  factory MaterialDiffSide.empty() => MaterialDiffSide(
+    pieces: IMap(),
+    score: 0,
+    capturedPieces: IMap(),
+    checksGiven: null,
+  );
 }
 
 const IMap<Role, int> pieceScores = IMapConst({
@@ -32,17 +36,26 @@ const IMap<Role, int> pieceScores = IMapConst({
 sealed class MaterialDiff with _$MaterialDiff {
   const MaterialDiff._();
 
-  const factory MaterialDiff({required MaterialDiffSide black, required MaterialDiffSide white}) =
-      _MaterialDiff;
+  const factory MaterialDiff({
+    required MaterialDiffSide black,
+    required MaterialDiffSide white,
+  }) = _MaterialDiff;
 
   factory MaterialDiff.fromPosition(Position position) {
     if (position.rule == Rule.crazyhouse || position.rule == Rule.horde) {
-      return MaterialDiff(black: MaterialDiffSide.empty(), white: MaterialDiffSide.empty());
+      return MaterialDiff(
+        black: MaterialDiffSide.empty(),
+        white: MaterialDiffSide.empty(),
+      );
     }
 
     int score = 0;
-    final IMap<Role, int> blackCount = position.board.materialCount(Side.black).toIMap();
-    final IMap<Role, int> whiteCount = position.board.materialCount(Side.white).toIMap();
+    final IMap<Role, int> blackCount = position.board
+        .materialCount(Side.black)
+        .toIMap();
+    final IMap<Role, int> whiteCount = position.board
+        .materialCount(Side.white)
+        .toIMap();
 
     final startingPosition = Position.initialPosition(position.rule);
 
@@ -62,8 +75,14 @@ sealed class MaterialDiff with _$MaterialDiff {
       );
     }
 
-    final IMap<Role, int> blackCapturedPieces = subtractPieceCounts(whiteStartingCount, whiteCount);
-    final IMap<Role, int> whiteCapturedPieces = subtractPieceCounts(blackStartingCount, blackCount);
+    final IMap<Role, int> blackCapturedPieces = subtractPieceCounts(
+      whiteStartingCount,
+      whiteCount,
+    );
+    final IMap<Role, int> whiteCapturedPieces = subtractPieceCounts(
+      blackStartingCount,
+      blackCount,
+    );
 
     Map<Role, int> count;
     Map<Role, int> black;

@@ -28,13 +28,23 @@ void main() {
     expect(find.byType(HomeTabScreen), findsOneWidget);
   }, variant: kPlatformVariant);
 
-  testWidgets('App loads with system theme, which defaults to light', (tester) async {
-    final app = await makeTestProviderScope(tester, child: const Application());
+  testWidgets(
+    'App loads with system theme, which defaults to light',
+    (tester) async {
+      final app = await makeTestProviderScope(
+        tester,
+        child: const Application(),
+      );
 
-    await tester.pumpWidget(app);
+      await tester.pumpWidget(app);
 
-    expect(Theme.of(tester.element(find.byType(MaterialApp))).brightness, Brightness.light);
-  }, variant: kPlatformVariant);
+      expect(
+        Theme.of(tester.element(find.byType(MaterialApp))).brightness,
+        Brightness.light,
+      );
+    },
+    variant: kPlatformVariant,
+  );
 
   testWidgets(
     'App will delete a stored authUser on startup if one request return 401',
@@ -119,7 +129,11 @@ void main() {
 
       await tester.pumpWidget(app);
 
-      expect(find.byType(MaterialApp), findsOneWidget, reason: 'app loads with locale: $locale');
+      expect(
+        find.byType(MaterialApp),
+        findsOneWidget,
+        reason: 'app loads with locale: $locale',
+      );
 
       // TODO find the reason why home does not load with eo
       // expect(find.byType(HomeTabScreen), findsOneWidget, reason: 'Home loads with locale: $locale');

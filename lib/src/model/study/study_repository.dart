@@ -40,7 +40,11 @@ class StudyRepository {
   }) {
     return _requestStudies(
       path: 'search',
-      queryParameters: {'page': page.toString(), 'q': query, 'order': order.name},
+      queryParameters: {
+        'page': page.toString(),
+        'q': query,
+        'order': order.name,
+      },
     );
   }
 
@@ -52,13 +56,17 @@ class StudyRepository {
       Uri(path: '/study/$path', queryParameters: queryParameters),
       headers: {'Accept': 'application/json'},
       mapper: (Map<String, dynamic> json) {
-        final paginator = pick(json, 'paginator').asMapOrThrow<String, dynamic>();
+        final paginator = pick(
+          json,
+          'paginator',
+        ).asMapOrThrow<String, dynamic>();
 
         return (
-          studies: pick(
-            paginator,
-            'currentPageResults',
-          ).asListOrThrow((pick) => StudyPageItem.fromJson(pick.asMapOrThrow())).toIList(),
+          studies: pick(paginator, 'currentPageResults')
+              .asListOrThrow(
+                (pick) => StudyPageItem.fromJson(pick.asMapOrThrow()),
+              )
+              .toIList(),
           nextPage: pick(paginator, 'nextPage').asIntOrNull(),
         );
       },
@@ -86,7 +94,11 @@ class StudyRepository {
       headers: {'Accept': 'application/x-chess-pgn'},
     );
 
-    return (study, readAnalysisSummaryFromHeader(response), utf8.decode(response.bodyBytes));
+    return (
+      study,
+      readAnalysisSummaryFromHeader(response),
+      utf8.decode(response.bodyBytes),
+    );
   }
 
   Future<String> getStudyPgn(StudyId id) async {

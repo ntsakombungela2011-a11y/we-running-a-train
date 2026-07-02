@@ -41,7 +41,10 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isOnline = ref.watch(onlineStatusProvider).value ?? false;
     final generalPrefs = ref.watch(generalPreferencesProvider);
-    final packageInfo = ref.read(preloadedDataProvider).requireValue.packageInfo;
+    final packageInfo = ref
+        .read(preloadedDataProvider)
+        .requireValue
+        .packageInfo;
     final authUser = ref.watch(authControllerProvider);
     final signOutState = ref.watch(signOutMutation);
     final dbSize = ref.watch(getDbSizeInBytesProvider);
@@ -62,7 +65,9 @@ class SettingsScreen extends ConsumerWidget {
                   title: Text(context.l10n.mobileAccountPreferences),
                   enabled: isOnline,
                   onTap: () {
-                    Navigator.of(context).push(AccountPreferencesScreen.buildRoute());
+                    Navigator.of(
+                      context,
+                    ).push(AccountPreferencesScreen.buildRoute());
                   },
                 ),
               ],
@@ -94,7 +99,9 @@ class SettingsScreen extends ConsumerWidget {
                     labelBuilder: (t) => Text(t.title(context.l10n)),
                     onSelectedItemChanged: (BackgroundThemeMode? value) => ref
                         .read(generalPreferencesProvider.notifier)
-                        .setBackgroundThemeMode(value ?? BackgroundThemeMode.system),
+                        .setBackgroundThemeMode(
+                          value ?? BackgroundThemeMode.system,
+                        ),
                   );
                 },
               ),
@@ -115,12 +122,17 @@ class SettingsScreen extends ConsumerWidget {
                     ? const CupertinoListTileChevron()
                     : null,
                 onTap: () {
-                  Navigator.of(context).push(HomeTabScreen.buildRoute(editModeEnabled: true));
+                  Navigator.of(
+                    context,
+                  ).push(HomeTabScreen.buildRoute(editModeEnabled: true));
                 },
               ),
               ListTile(
                 leading: const Icon(Symbols.chess_pawn),
-                title: Text(context.l10n.mobileBoardSettings, overflow: TextOverflow.ellipsis),
+                title: Text(
+                  context.l10n.mobileBoardSettings,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: Theme.of(context).platform == TargetPlatform.iOS
                     ? const CupertinoListTileChevron()
                     : null,
@@ -148,14 +160,21 @@ class SettingsScreen extends ConsumerWidget {
                   if (Theme.of(context).platform == TargetPlatform.android) {
                     showChoicePicker<Locale>(
                       context,
-                      choices: localesSortedByLocalizedName(AppLocalizations.supportedLocales),
-                      selectedItem: generalPrefs.locale ?? Localizations.localeOf(context),
+                      choices: localesSortedByLocalizedName(
+                        AppLocalizations.supportedLocales,
+                      ),
+                      selectedItem:
+                          generalPrefs.locale ??
+                          Localizations.localeOf(context),
                       labelBuilder: (t) => Text(localeToLocalizedName(t)),
-                      onSelectedItemChanged: (Locale? locale) =>
-                          ref.read(generalPreferencesProvider.notifier).setLocale(locale),
+                      onSelectedItemChanged: (Locale? locale) => ref
+                          .read(generalPreferencesProvider.notifier)
+                          .setLocale(locale),
                     );
                   } else {
-                    AppSettings.openAppSettings(type: AppSettingsType.appLocale);
+                    AppSettings.openAppSettings(
+                      type: AppSettingsType.appLocale,
+                    );
                   }
                 },
               ),
@@ -167,12 +186,15 @@ class SettingsScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.storage_outlined),
                 title: const Text('Local database size'),
-                trailing: dbSize.hasValue ? Text(_getSizeString(dbSize.value)) : null,
+                trailing: dbSize.hasValue
+                    ? Text(_getSizeString(dbSize.value))
+                    : null,
               ),
               ListTile(
                 leading: const Icon(Icons.http),
                 title: const Text('HTTP logs'),
-                onTap: () => Navigator.push(context, HttpLogScreen.buildRoute()),
+                onTap: () =>
+                    Navigator.push(context, HttpLogScreen.buildRoute()),
               ),
               ListTile(
                 leading: const Icon(Icons.bug_report),
@@ -188,11 +210,14 @@ class SettingsScreen extends ConsumerWidget {
                 leading: const Icon(Icons.star_outline),
                 title: const Text('Rate this app'),
                 onTap: () async {
-                  final isAndroid = Theme.of(context).platform == TargetPlatform.android;
+                  final isAndroid =
+                      Theme.of(context).platform == TargetPlatform.android;
                   final launched = await launchUrl(
                     isAndroid
                         ? Uri.parse('market://details?id=org.lichess.mobileV2')
-                        : Uri.parse('https://apps.apple.com/us/app/lichess/id1662361230'),
+                        : Uri.parse(
+                            'https://apps.apple.com/us/app/lichess/id1662361230',
+                          ),
                     mode: LaunchMode.externalApplication,
                   );
                   if (!launched && isAndroid) {
@@ -228,7 +253,10 @@ class SettingsScreen extends ConsumerWidget {
             ),
           Padding(
             padding: Styles.bodySectionPadding,
-            child: Text('v${packageInfo.version}', style: TextTheme.of(context).bodySmall),
+            child: Text(
+              'v${packageInfo.version}',
+              style: TextTheme.of(context).bodySmall,
+            ),
           ),
         ],
       ),
@@ -277,7 +305,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  String _getSizeString(int? bytes) => '${_bytesToMB(bytes ?? 0).toStringAsFixed(2)}MB';
+  String _getSizeString(int? bytes) =>
+      '${_bytesToMB(bytes ?? 0).toStringAsFixed(2)}MB';
 
   double _bytesToMB(int bytes) => bytes * 0.000001;
 }

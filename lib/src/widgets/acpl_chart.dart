@@ -47,7 +47,9 @@ class AcplChart extends StatelessWidget {
     final aboveLineColor = brightness == .light ? black : white;
 
     final spots = params.acplChartData
-        .mapIndexed((i, e) => FlSpot(i.toDouble(), e.winningChances(Side.white)))
+        .mapIndexed(
+          (i, e) => FlSpot(i.toDouble(), e.winningChances(Side.white)),
+        )
         .toList(growable: false);
 
     final divisionLines = _buildDivisionLines(context, params.division);
@@ -62,24 +64,30 @@ class AcplChart extends StatelessWidget {
               lineTouchData: LineTouchData(
                 enabled: true,
                 handleBuiltInTouches: false,
-                touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
-                  if (event is FlTapUpEvent ||
-                      event is FlPanUpdateEvent ||
-                      event is FlLongPressMoveUpdate) {
-                    final touchX = event.localPosition!.dx;
-                    final chartWidth =
-                        context.size!.width - 32; // Insets on both sides of the chart of 16
-                    final minX = spots.first.x;
-                    final maxX = spots.last.x;
-                    final touchXDataValue = minX + (touchX / chartWidth) * (maxX - minX);
-                    final closestSpot = spots.reduce(
-                      (a, b) =>
-                          (a.x - touchXDataValue).abs() < (b.x - touchXDataValue).abs() ? a : b,
-                    );
-                    final closestNodeIndex = closestSpot.x.round();
-                    params.onJumpToNode(closestNodeIndex);
-                  }
-                },
+                touchCallback:
+                    (FlTouchEvent event, LineTouchResponse? touchResponse) {
+                      if (event is FlTapUpEvent ||
+                          event is FlPanUpdateEvent ||
+                          event is FlLongPressMoveUpdate) {
+                        final touchX = event.localPosition!.dx;
+                        final chartWidth =
+                            context.size!.width -
+                            32; // Insets on both sides of the chart of 16
+                        final minX = spots.first.x;
+                        final maxX = spots.last.x;
+                        final touchXDataValue =
+                            minX + (touchX / chartWidth) * (maxX - minX);
+                        final closestSpot = spots.reduce(
+                          (a, b) =>
+                              (a.x - touchXDataValue).abs() <
+                                  (b.x - touchXDataValue).abs()
+                              ? a
+                              : b,
+                        );
+                        final closestNodeIndex = closestSpot.x.round();
+                        params.onJumpToNode(closestNodeIndex);
+                      }
+                    },
               ),
               minY: -1.0,
               maxY: 1.0,
@@ -89,8 +97,16 @@ class AcplChart extends StatelessWidget {
                   isCurved: false,
                   barWidth: 1,
                   color: mainLineColor.withValues(alpha: 0.7),
-                  aboveBarData: BarAreaData(show: true, color: aboveLineColor, applyCutOffY: true),
-                  belowBarData: BarAreaData(show: true, color: belowLineColor, applyCutOffY: true),
+                  aboveBarData: BarAreaData(
+                    show: true,
+                    color: aboveLineColor,
+                    applyCutOffY: true,
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: belowLineColor,
+                    applyCutOffY: true,
+                  ),
                   dotData: const FlDotData(show: false),
                 ),
               ],
@@ -98,7 +114,8 @@ class AcplChart extends StatelessWidget {
                 verticalLines: [
                   if (params.isOnMainline)
                     VerticalLine(
-                      x: (params.currentNodePly - 1 - params.rootPly).toDouble(),
+                      x: (params.currentNodePly - 1 - params.rootPly)
+                          .toDouble(),
                       color: mainLineColor,
                       strokeWidth: 1.0,
                     ),
@@ -115,7 +132,10 @@ class AcplChart extends StatelessWidget {
     );
   }
 
-  List<VerticalLine> _buildDivisionLines(BuildContext context, Division? division) {
+  List<VerticalLine> _buildDivisionLines(
+    BuildContext context,
+    Division? division,
+  ) {
     final divisionLines = <VerticalLine>[];
 
     VerticalLine phaseVerticalBar(int x, String label) => VerticalLine(
@@ -125,7 +145,9 @@ class AcplChart extends StatelessWidget {
       label: VerticalLineLabel(
         style: TextStyle(
           fontSize: 10,
-          color: Theme.of(context).textTheme.labelMedium?.color?.withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).textTheme.labelMedium?.color?.withValues(alpha: 0.3),
         ),
         labelResolver: (line) => label,
         padding: const EdgeInsets.only(right: 1),
@@ -138,7 +160,9 @@ class AcplChart extends StatelessWidget {
     if (division?.middlegame != null) {
       if (division!.middlegame! > 0) {
         divisionLines.add(phaseVerticalBar(0, context.l10n.opening));
-        divisionLines.add(phaseVerticalBar(division.middlegame! - 1, context.l10n.middlegame));
+        divisionLines.add(
+          phaseVerticalBar(division.middlegame! - 1, context.l10n.middlegame),
+        );
       } else {
         divisionLines.add(phaseVerticalBar(0, context.l10n.middlegame));
       }
@@ -146,7 +170,9 @@ class AcplChart extends StatelessWidget {
 
     if (division?.endgame != null) {
       if (division!.endgame! > 0) {
-        divisionLines.add(phaseVerticalBar(division.endgame! - 1, context.l10n.endgame));
+        divisionLines.add(
+          phaseVerticalBar(division.endgame! - 1, context.l10n.endgame),
+        );
       } else {
         divisionLines.add(phaseVerticalBar(0, context.l10n.endgame));
       }

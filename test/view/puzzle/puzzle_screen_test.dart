@@ -51,7 +51,9 @@ class MockPuzzlePreferences extends PuzzlePreferences with Mock {
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(PuzzleBatch(solved: IList(const []), unsolved: IList([puzzle])));
+    registerFallbackValue(
+      PuzzleBatch(solved: IList(const []), unsolved: IList([puzzle])),
+    );
     registerFallbackValue(puzzle);
   });
 
@@ -74,7 +76,9 @@ void main() {
           puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
             (ref) => mockBatchStorage,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
+          ),
         },
       );
 
@@ -93,35 +97,39 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('Loads puzzle directly by passing a puzzleId', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: PuzzleScreen(
-          angle: const PuzzleTheme(PuzzleThemeKey.mix),
-          puzzleId: puzzle.puzzle.id,
-        ),
-        overrides: {
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-            (ref) => mockBatchStorage,
+    testWidgets(
+      'Loads puzzle directly by passing a puzzleId',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: PuzzleScreen(
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
+            puzzleId: puzzle.puzzle.id,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-        },
-      );
+          overrides: {
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) => mockBatchStorage,
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
+          },
+        );
 
-      when(
-        () => mockHistoryStorage.fetch(puzzleId: puzzle.puzzle.id),
-      ).thenAnswer((_) async => puzzle);
+        when(
+          () => mockHistoryStorage.fetch(puzzleId: puzzle.puzzle.id),
+        ).thenAnswer((_) async => puzzle);
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      // wait for the puzzle to load
-      await tester.pump(const Duration(milliseconds: 200));
+        // wait for the puzzle to load
+        await tester.pump(const Duration(milliseconds: 200));
 
-      expect(find.byType(Chessboard), findsOneWidget);
-      expect(find.text('Your turn'), findsOneWidget);
-    });
+        expect(find.byType(Chessboard), findsOneWidget);
+        expect(find.text('Your turn'), findsOneWidget);
+      },
+    );
 
     testWidgets('Loads next puzzle when no puzzleId is passed', (tester) async {
       final app = await makeTestProviderScopeApp(
@@ -131,15 +139,22 @@ void main() {
           puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
             (ref) => mockBatchStorage,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
+          ),
         },
       );
 
       when(
-        () => mockBatchStorage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
+        () => mockBatchStorage.fetch(
+          userId: null,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        ),
       ).thenAnswer((_) async => batch);
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+      when(
+        () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(app);
 
@@ -153,115 +168,10 @@ void main() {
       expect(find.text('Your turn'), findsOneWidget);
     });
 
-    testWidgets('solves a puzzle and loads the next one', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final mockClient = MockClient((request) {
-        if (request.url.path == '/api/puzzle/batch/mix') {
-          return mockResponse(batchOf1, 200);
-        }
-        return mockResponse('', 404);
-      });
-
-      when(
-        () => mockHistoryStorage.fetch(puzzleId: puzzle2.puzzle.id),
-      ).thenAnswer((_) async => puzzle2);
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: PuzzleScreen(
-          angle: const PuzzleTheme(PuzzleThemeKey.mix),
-          puzzleId: puzzle2.puzzle.id,
-        ),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith((ref) {
-            return LichessClient(mockClient, ref);
-          }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith((ref) {
-            return mockBatchStorage;
-          }),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-        },
-      );
-
-      Future<void> saveDBReq() => mockBatchStorage.save(
-        userId: null,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        data: any(named: 'data'),
-      );
-      when(saveDBReq).thenAnswer((_) async {});
-      when(
-        () => mockBatchStorage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
-      ).thenAnswer((_) async => batch);
-
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
-
-      await tester.pumpWidget(app);
-
-      // wait for the puzzle to load
-      await tester.pump(const Duration(milliseconds: 200));
-
-      expect(find.byType(Chessboard), findsOneWidget);
-      expect(find.text('Your turn'), findsOneWidget);
-
-      // before the first move is played, puzzle is not interactable
-      expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
-      final boardRect = tester.getRect(find.byType(Chessboard));
-      await tester.tapAt(squareOffset(Square.g4, boardRect, orientation: Side.black));
-      await tester.pump();
-      expect(find.byKey(const Key('g4-selected')), findsNothing);
-
-      const orientation = Side.black;
-
-      // wait for first move to be played
-      await tester.pump(const Duration(milliseconds: 1500));
-
-      // in play mode we don't see the continue button
-      expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsNothing);
-      // in play mode we see the solution button
-      expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
-
-      expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
-      expect(boardHasPiece(tester, Square.h8, Piece.whiteQueen), isTrue);
-
-      await playMove(tester, 'g4', 'h4', orientation: orientation);
-
-      expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
-      expect(find.text('Best move!'), findsOneWidget);
-
-      // wait for line reply and move animation
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
-
-      expect(boardHasPiece(tester, Square.h4, Piece.whiteQueen), isTrue);
-
-      await playMove(tester, 'b4', 'h4', orientation: orientation);
-
-      expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
-      expect(find.text('Success!'), findsOneWidget);
-
-      // wait for move animation
-      await tester.pumpAndSettle();
-
-      // called once to save solution and once after fetching a new puzzle
-      verify(saveDBReq).called(2);
-
-      expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
-      expect(find.byIcon(Icons.flag_outlined), findsNothing);
-
-      await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
-
-      // await for new puzzle load
-      await tester.pump(const Duration(milliseconds: 500));
-
-      expect(find.text('Success!'), findsNothing);
-      expect(find.text('Your turn'), findsOneWidget);
-    });
-
-    for (final showRatings in ShowRatings.values) {
-      testWidgets('fails a puzzle, (showRatings: $showRatings)', variant: kPlatformVariant, (
-        tester,
-      ) async {
+    testWidgets(
+      'solves a puzzle and loads the next one',
+      variant: kPlatformVariant,
+      (tester) async {
         final mockClient = MockClient((request) {
           if (request.url.path == '/api/puzzle/batch/mix') {
             return mockResponse(batchOf1, 200);
@@ -283,17 +193,16 @@ void main() {
             lichessClientProvider: lichessClientProvider.overrideWith((ref) {
               return LichessClient(mockClient, ref);
             }),
-            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith((ref) {
-              return mockBatchStorage;
-            }),
-            puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-            showRatingsPrefProvider: showRatingsPrefProvider.overrideWith((ref) {
-              return showRatings;
-            }),
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) {
+                return mockBatchStorage;
+              },
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
           },
         );
-
-        when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
 
         Future<void> saveDBReq() => mockBatchStorage.save(
           userId: null,
@@ -302,8 +211,15 @@ void main() {
         );
         when(saveDBReq).thenAnswer((_) async {});
         when(
-          () => mockBatchStorage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
+          () => mockBatchStorage.fetch(
+            userId: null,
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
+          ),
         ).thenAnswer((_) async => batch);
+
+        when(
+          () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+        ).thenAnswer((_) async {});
 
         await tester.pumpWidget(app);
 
@@ -313,23 +229,27 @@ void main() {
         expect(find.byType(Chessboard), findsOneWidget);
         expect(find.text('Your turn'), findsOneWidget);
 
+        // before the first move is played, puzzle is not interactable
+        expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
+        final boardRect = tester.getRect(find.byType(Chessboard));
+        await tester.tapAt(
+          squareOffset(Square.g4, boardRect, orientation: Side.black),
+        );
+        await tester.pump();
+        expect(find.byKey(const Key('g4-selected')), findsNothing);
+
         const orientation = Side.black;
 
-        // await for first move to be played
+        // wait for first move to be played
         await tester.pump(const Duration(milliseconds: 1500));
 
+        // in play mode we don't see the continue button
+        expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsNothing);
+        // in play mode we see the solution button
+        expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
+
         expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
-
-        await playMove(tester, 'g4', 'f4', orientation: orientation);
-
-        expect(find.text("That's not the move!"), findsOneWidget);
-
-        // wait for move cancel and animation
-        await tester.pump(const Duration(milliseconds: 500));
-        await tester.pumpAndSettle();
-
-        // can still play the puzzle
-        expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
+        expect(boardHasPiece(tester, Square.h8, Piece.whiteQueen), isTrue);
 
         await playMove(tester, 'g4', 'h4', orientation: orientation);
 
@@ -340,27 +260,147 @@ void main() {
         await tester.pump(const Duration(milliseconds: 500));
         await tester.pumpAndSettle();
 
+        expect(boardHasPiece(tester, Square.h4, Piece.whiteQueen), isTrue);
+
         await playMove(tester, 'b4', 'h4', orientation: orientation);
 
         expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
-        expect(find.text('Puzzle complete!'), findsOneWidget);
-        final expectedPlayedXTimes =
-            'Played ${puzzle2.puzzle.plays.toString().localizeNumbers()} times.';
-        expect(
-          find.text(
-            showRatings == ShowRatings.no
-                ? expectedPlayedXTimes
-                : 'Rating: ${puzzle2.puzzle.rating}. $expectedPlayedXTimes',
-          ),
-          findsOneWidget,
-        );
+        expect(find.text('Success!'), findsOneWidget);
 
         // wait for move animation
         await tester.pumpAndSettle();
 
         // called once to save solution and once after fetching a new puzzle
         verify(saveDBReq).called(2);
-      });
+
+        expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
+        expect(find.byIcon(Icons.flag_outlined), findsNothing);
+
+        await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
+
+        // await for new puzzle load
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(find.text('Success!'), findsNothing);
+        expect(find.text('Your turn'), findsOneWidget);
+      },
+    );
+
+    for (final showRatings in ShowRatings.values) {
+      testWidgets(
+        'fails a puzzle, (showRatings: $showRatings)',
+        variant: kPlatformVariant,
+        (tester) async {
+          final mockClient = MockClient((request) {
+            if (request.url.path == '/api/puzzle/batch/mix') {
+              return mockResponse(batchOf1, 200);
+            }
+            return mockResponse('', 404);
+          });
+
+          when(
+            () => mockHistoryStorage.fetch(puzzleId: puzzle2.puzzle.id),
+          ).thenAnswer((_) async => puzzle2);
+
+          final app = await makeTestProviderScopeApp(
+            tester,
+            home: PuzzleScreen(
+              angle: const PuzzleTheme(PuzzleThemeKey.mix),
+              puzzleId: puzzle2.puzzle.id,
+            ),
+            overrides: {
+              lichessClientProvider: lichessClientProvider.overrideWith((ref) {
+                return LichessClient(mockClient, ref);
+              }),
+              puzzleBatchStorageProvider: puzzleBatchStorageProvider
+                  .overrideWith((ref) {
+                    return mockBatchStorage;
+                  }),
+              puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+                (ref) => mockHistoryStorage,
+              ),
+              showRatingsPrefProvider: showRatingsPrefProvider.overrideWith((
+                ref,
+              ) {
+                return showRatings;
+              }),
+            },
+          );
+
+          when(
+            () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+          ).thenAnswer((_) async {});
+
+          Future<void> saveDBReq() => mockBatchStorage.save(
+            userId: null,
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
+            data: any(named: 'data'),
+          );
+          when(saveDBReq).thenAnswer((_) async {});
+          when(
+            () => mockBatchStorage.fetch(
+              userId: null,
+              angle: const PuzzleTheme(PuzzleThemeKey.mix),
+            ),
+          ).thenAnswer((_) async => batch);
+
+          await tester.pumpWidget(app);
+
+          // wait for the puzzle to load
+          await tester.pump(const Duration(milliseconds: 200));
+
+          expect(find.byType(Chessboard), findsOneWidget);
+          expect(find.text('Your turn'), findsOneWidget);
+
+          const orientation = Side.black;
+
+          // await for first move to be played
+          await tester.pump(const Duration(milliseconds: 1500));
+
+          expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
+
+          await playMove(tester, 'g4', 'f4', orientation: orientation);
+
+          expect(find.text("That's not the move!"), findsOneWidget);
+
+          // wait for move cancel and animation
+          await tester.pump(const Duration(milliseconds: 500));
+          await tester.pumpAndSettle();
+
+          // can still play the puzzle
+          expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
+
+          await playMove(tester, 'g4', 'h4', orientation: orientation);
+
+          expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
+          expect(find.text('Best move!'), findsOneWidget);
+
+          // wait for line reply and move animation
+          await tester.pump(const Duration(milliseconds: 500));
+          await tester.pumpAndSettle();
+
+          await playMove(tester, 'b4', 'h4', orientation: orientation);
+
+          expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
+          expect(find.text('Puzzle complete!'), findsOneWidget);
+          final expectedPlayedXTimes =
+              'Played ${puzzle2.puzzle.plays.toString().localizeNumbers()} times.';
+          expect(
+            find.text(
+              showRatings == ShowRatings.no
+                  ? expectedPlayedXTimes
+                  : 'Rating: ${puzzle2.puzzle.rating}. $expectedPlayedXTimes',
+            ),
+            findsOneWidget,
+          );
+
+          // wait for move animation
+          await tester.pumpAndSettle();
+
+          // called once to save solution and once after fetching a new puzzle
+          verify(saveDBReq).called(2);
+        },
+      );
     }
 
     testWidgets('view solution', variant: kPlatformVariant, (tester) async {
@@ -381,10 +421,14 @@ void main() {
           lichessClientProvider: lichessClientProvider.overrideWith((ref) {
             return LichessClient(mockClient, ref);
           }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith((ref) {
+          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith((
+            ref,
+          ) {
             return mockBatchStorage;
           }),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
+          ),
         },
       );
 
@@ -392,7 +436,9 @@ void main() {
         () => mockHistoryStorage.fetch(puzzleId: puzzle2.puzzle.id),
       ).thenAnswer((_) async => puzzle2);
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+      when(
+        () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+      ).thenAnswer((_) async {});
 
       Future<void> saveDBReq() => mockBatchStorage.save(
         userId: null,
@@ -401,7 +447,10 @@ void main() {
       );
       when(saveDBReq).thenAnswer((_) async {});
       when(
-        () => mockBatchStorage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
+        () => mockBatchStorage.fetch(
+          userId: null,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        ),
       ).thenAnswer((_) async => batch);
 
       await tester.pumpWidget(app);
@@ -482,9 +531,8 @@ void main() {
               lichessClientProvider: lichessClientProvider.overrideWith((ref) {
                 return LichessClient(mockClient, ref);
               }),
-              puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-                (ref) => mockBatchStorage,
-              ),
+              puzzleBatchStorageProvider: puzzleBatchStorageProvider
+                  .overrideWith((ref) => mockBatchStorage),
               puzzleStorageProvider: puzzleStorageProvider.overrideWith(
                 (ref) => mockHistoryStorage,
               ),
@@ -528,22 +576,156 @@ void main() {
           await tester.pump(const Duration(seconds: 1));
 
           // check puzzle was saved as isRatedPreference
-          final captured = verify(saveDBReq).captured.map((e) => e as PuzzleBatch).toList();
+          final captured = verify(
+            saveDBReq,
+          ).captured.map((e) => e as PuzzleBatch).toList();
           expect(captured.length, 2);
           expect(captured[0].solved, [
-            PuzzleSolution(id: puzzle2.puzzle.id, win: false, rated: isRatedPreference),
+            PuzzleSolution(
+              id: puzzle2.puzzle.id,
+              win: false,
+              rated: isRatedPreference,
+            ),
           ]);
           expect(captured[1].solved.length, 0);
         },
       );
     }
 
-    testWidgets('puzzle rating is saved correctly when hint is used', variant: kPlatformVariant, (
-      WidgetTester tester,
-    ) async {
+    testWidgets(
+      'puzzle rating is saved correctly when hint is used',
+      variant: kPlatformVariant,
+      (WidgetTester tester) async {
+        final mockClient = MockClient((request) {
+          if (request.url.path == '/api/puzzle/batch/mix') {
+            return mockResponse(batchOf1, 200);
+          }
+          return mockResponse('', 404);
+        });
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: PuzzleScreen(
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
+            puzzleId: puzzle2.puzzle.id,
+          ),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith((ref) {
+              return LichessClient(mockClient, ref);
+            }),
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) => mockBatchStorage,
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
+            puzzlePreferencesProvider: puzzlePreferencesProvider.overrideWith(
+              () => MockPuzzlePreferences(true),
+            ),
+          },
+          authUser: fakeAuthUser,
+        );
+
+        Future<void> saveDBReq() => mockBatchStorage.save(
+          userId: fakeAuthUser.user.id,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+          data: captureAny(named: 'data'),
+        );
+        when(saveDBReq).thenAnswer((_) async {});
+        when(
+          () => mockBatchStorage.fetch(
+            userId: fakeAuthUser.user.id,
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
+          ),
+        ).thenAnswer((_) async => batch);
+
+        when(
+          () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+        ).thenAnswer((_) async {});
+
+        await tester.pumpWidget(app);
+
+        // wait for the puzzle to load
+        await tester.pump(const Duration(milliseconds: 200));
+
+        // wait for first move to be played and hint/view solution buttons to appear
+        await tester.pump(const Duration(seconds: 5));
+
+        // check possible hint widgets before hint is set
+        final customPaintWidgetsBefore = find
+            .byType(CustomPaint)
+            .evaluate()
+            .toSet();
+
+        // get hint and wait for it to show
+        expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
+        await tester.tap(find.byIcon(Icons.lightbulb_outline));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        // check hint is set
+        final customPaintWidgetsAfter = find.byType(CustomPaint).evaluate();
+        expect(
+          customPaintWidgetsAfter.length,
+          customPaintWidgetsBefore.length + 1,
+        );
+        final diff = customPaintWidgetsAfter.toSet().difference(
+          customPaintWidgetsBefore,
+        );
+        expect(diff.length, 1);
+        expect(
+          (diff.first.widget as CustomPaint).painter.runtimeType.toString(),
+          '_CirclePainter',
+        );
+
+        // view solution
+        expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
+        await tester.tap(find.byIcon(Icons.flag_outlined));
+
+        // wait for solution replay animation to finish
+        await tester.pump(const Duration(seconds: 1));
+
+        // go to next puzzle
+        expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
+        await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
+
+        // wait for the puzzle to load
+        await tester.pump(const Duration(milliseconds: 200));
+
+        // wait for first move to be played and hint/view solution buttons to appear
+        await tester.pump(const Duration(seconds: 5));
+
+        // view solution
+        expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
+        await tester.tap(find.byIcon(Icons.flag_outlined));
+
+        // wait for solution replay animation to finish
+        await tester.pump(const Duration(seconds: 1));
+
+        // check first puzzle was unrated due to hint
+        // and following puzzles are still rated when not using the hint
+        final captured = verify(
+          saveDBReq,
+        ).captured.map((e) => e as PuzzleBatch).toList();
+        expect(captured.length, 4);
+        expect(captured[0].solved, [
+          PuzzleSolution(id: puzzle2.puzzle.id, win: false, rated: false),
+        ]);
+        expect(captured[1].solved.length, 0);
+        expect(captured[2].solved, [
+          PuzzleSolution(id: puzzle.puzzle.id, win: false, rated: true),
+        ]);
+        expect(captured[3].solved.length, 0);
+      },
+    );
+  });
+
+  testWidgets(
+    'Open as casual to not send the result',
+    variant: kPlatformVariant,
+    (WidgetTester tester) async {
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/puzzle/batch/mix') {
-          return mockResponse(batchOf1, 200);
+          return mockResponse(emptyBatch, 200);
         }
         return mockResponse('', 404);
       });
@@ -553,6 +735,7 @@ void main() {
         home: PuzzleScreen(
           angle: const PuzzleTheme(PuzzleThemeKey.mix),
           puzzleId: puzzle2.puzzle.id,
+          openCasual: true,
         ),
         overrides: {
           lichessClientProvider: lichessClientProvider.overrideWith((ref) {
@@ -561,9 +744,8 @@ void main() {
           puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
             (ref) => mockBatchStorage,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-          puzzlePreferencesProvider: puzzlePreferencesProvider.overrideWith(
-            () => MockPuzzlePreferences(true),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
           ),
         },
         authUser: fakeAuthUser,
@@ -582,46 +764,43 @@ void main() {
         ),
       ).thenAnswer((_) async => batch);
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+      when(
+        () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(app);
 
       // wait for the puzzle to load
       await tester.pump(const Duration(milliseconds: 200));
 
-      // wait for first move to be played and hint/view solution buttons to appear
-      await tester.pump(const Duration(seconds: 5));
+      // open settings
+      await tester.tap(find.byIcon(Icons.settings));
+      await tester.pumpAndSettle();
 
-      // check possible hint widgets before hint is set
-      final customPaintWidgetsBefore = find.byType(CustomPaint).evaluate().toSet();
+      // see the disabled rating switch
+      expect(find.widgetWithText(SwitchSettingTile, 'Rated'), findsOneWidget);
+      expect(
+        tester
+            .widget<SwitchSettingTile>(
+              find.widgetWithText(SwitchSettingTile, 'Rated'),
+            )
+            .value,
+        isFalse,
+      );
+      // the switch is disabled
+      expect(
+        tester
+            .widget<SwitchSettingTile>(
+              find.widgetWithText(SwitchSettingTile, 'Rated'),
+            )
+            .onChanged,
+        null,
+      );
 
-      // get hint and wait for it to show
-      expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.lightbulb_outline));
-      await tester.pump(const Duration(milliseconds: 100));
+      // dismiss settings by tapping outside of the bottom sheet
+      await tester.tapAt(const Offset(100, 100));
 
-      // check hint is set
-      final customPaintWidgetsAfter = find.byType(CustomPaint).evaluate();
-      expect(customPaintWidgetsAfter.length, customPaintWidgetsBefore.length + 1);
-      final diff = customPaintWidgetsAfter.toSet().difference(customPaintWidgetsBefore);
-      expect(diff.length, 1);
-      expect((diff.first.widget as CustomPaint).painter.runtimeType.toString(), '_CirclePainter');
-
-      // view solution
-      expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.flag_outlined));
-
-      // wait for solution replay animation to finish
-      await tester.pump(const Duration(seconds: 1));
-
-      // go to next puzzle
-      expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
-      await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
-
-      // wait for the puzzle to load
-      await tester.pump(const Duration(milliseconds: 200));
-
-      // wait for first move to be played and hint/view solution buttons to appear
+      // wait for first move to be played and view solution button to appear
       await tester.pump(const Duration(seconds: 5));
 
       // view solution
@@ -631,100 +810,14 @@ void main() {
       // wait for solution replay animation to finish
       await tester.pump(const Duration(seconds: 1));
 
-      // check first puzzle was unrated due to hint
-      // and following puzzles are still rated when not using the hint
-      final captured = verify(saveDBReq).captured.map((e) => e as PuzzleBatch).toList();
-      expect(captured.length, 4);
-      expect(captured[0].solved, [PuzzleSolution(id: puzzle2.puzzle.id, win: false, rated: false)]);
-      expect(captured[1].solved.length, 0);
-      expect(captured[2].solved, [PuzzleSolution(id: puzzle.puzzle.id, win: false, rated: true)]);
-      expect(captured[3].solved.length, 0);
-    });
-  });
-
-  testWidgets('Open as casual to not send the result', variant: kPlatformVariant, (
-    WidgetTester tester,
-  ) async {
-    final mockClient = MockClient((request) {
-      if (request.url.path == '/api/puzzle/batch/mix') {
-        return mockResponse(emptyBatch, 200);
-      }
-      return mockResponse('', 404);
-    });
-
-    final app = await makeTestProviderScopeApp(
-      tester,
-      home: PuzzleScreen(
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        puzzleId: puzzle2.puzzle.id,
-        openCasual: true,
-      ),
-      overrides: {
-        lichessClientProvider: lichessClientProvider.overrideWith((ref) {
-          return LichessClient(mockClient, ref);
-        }),
-        puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-          (ref) => mockBatchStorage,
-        ),
-        puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-      },
-      authUser: fakeAuthUser,
-    );
-
-    Future<void> saveDBReq() => mockBatchStorage.save(
-      userId: fakeAuthUser.user.id,
-      angle: const PuzzleTheme(PuzzleThemeKey.mix),
-      data: captureAny(named: 'data'),
-    );
-    when(saveDBReq).thenAnswer((_) async {});
-    when(
-      () => mockBatchStorage.fetch(
-        userId: fakeAuthUser.user.id,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-      ),
-    ).thenAnswer((_) async => batch);
-
-    when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
-
-    await tester.pumpWidget(app);
-
-    // wait for the puzzle to load
-    await tester.pump(const Duration(milliseconds: 200));
-
-    // open settings
-    await tester.tap(find.byIcon(Icons.settings));
-    await tester.pumpAndSettle();
-
-    // see the disabled rating switch
-    expect(find.widgetWithText(SwitchSettingTile, 'Rated'), findsOneWidget);
-    expect(
-      tester.widget<SwitchSettingTile>(find.widgetWithText(SwitchSettingTile, 'Rated')).value,
-      isFalse,
-    );
-    // the switch is disabled
-    expect(
-      tester.widget<SwitchSettingTile>(find.widgetWithText(SwitchSettingTile, 'Rated')).onChanged,
-      null,
-    );
-
-    // dismiss settings by tapping outside of the bottom sheet
-    await tester.tapAt(const Offset(100, 100));
-
-    // wait for first move to be played and view solution button to appear
-    await tester.pump(const Duration(seconds: 5));
-
-    // view solution
-    expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.flag_outlined));
-
-    // wait for solution replay animation to finish
-    await tester.pump(const Duration(seconds: 1));
-
-    // check puzzle was not added to the solved list
-    final captured = verify(saveDBReq).captured.map((e) => e as PuzzleBatch).toList();
-    expect(captured.length, 1);
-    expect(captured[0].solved.length, 0);
-  });
+      // check puzzle was not added to the solved list
+      final captured = verify(
+        saveDBReq,
+      ).captured.map((e) => e as PuzzleBatch).toList();
+      expect(captured.length, 1);
+      expect(captured[0].solved.length, 0);
+    },
+  );
   testWidgets(
     'can navigate backward and forward through history during play',
     variant: kPlatformVariant,
@@ -750,14 +843,20 @@ void main() {
           lichessClientProvider: lichessClientProvider.overrideWith((ref) {
             return LichessClient(mockClient, ref);
           }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith((ref) {
+          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith((
+            ref,
+          ) {
             return mockBatchStorage;
           }),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
+          ),
         },
       );
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+      when(
+        () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+      ).thenAnswer((_) async {});
 
       Future<void> saveDBReq() => mockBatchStorage.save(
         userId: null,
@@ -766,7 +865,10 @@ void main() {
       );
       when(saveDBReq).thenAnswer((_) async {});
       when(
-        () => mockBatchStorage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
+        () => mockBatchStorage.fetch(
+          userId: null,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        ),
       ).thenAnswer((_) async => batch);
 
       await tester.pumpWidget(app);
@@ -784,7 +886,10 @@ void main() {
       bool isPrevEnabled() {
         return tester
                 .widget<BottomBarButton>(
-                  find.widgetWithIcon(BottomBarButton, CupertinoIcons.chevron_back),
+                  find.widgetWithIcon(
+                    BottomBarButton,
+                    CupertinoIcons.chevron_back,
+                  ),
                 )
                 .onTap !=
             null;
@@ -793,7 +898,10 @@ void main() {
       bool isNextEnabled() {
         return tester
                 .widget<BottomBarButton>(
-                  find.widgetWithIcon(BottomBarButton, CupertinoIcons.chevron_forward),
+                  find.widgetWithIcon(
+                    BottomBarButton,
+                    CupertinoIcons.chevron_forward,
+                  ),
                 )
                 .onTap !=
             null;
@@ -892,7 +1000,9 @@ void main() {
           puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
             (ref) => mockBatchStorage,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
+          ),
         },
       );
 
@@ -900,7 +1010,9 @@ void main() {
         () => mockHistoryStorage.fetch(puzzleId: buggyPuzzle.puzzle.id),
       ).thenAnswer((_) async => buggyPuzzle);
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+      when(
+        () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+      ).thenAnswer((_) async {});
 
       Future<void> saveDBReq() => mockBatchStorage.save(
         userId: null,
@@ -909,7 +1021,10 @@ void main() {
       );
       when(saveDBReq).thenAnswer((_) async {});
       when(
-        () => mockBatchStorage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
+        () => mockBatchStorage.fetch(
+          userId: null,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        ),
       ).thenAnswer((_) async => batch);
 
       await tester.pumpWidget(app);
@@ -975,7 +1090,9 @@ void main() {
           puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
             (ref) => mockBatchStorage,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
+          ),
         },
       );
 
@@ -983,7 +1100,9 @@ void main() {
         () => mockHistoryStorage.fetch(puzzleId: buggyPuzzle.puzzle.id),
       ).thenAnswer((_) async => buggyPuzzle);
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+      when(
+        () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+      ).thenAnswer((_) async {});
 
       Future<void> saveDBReq() => mockBatchStorage.save(
         userId: null,
@@ -992,7 +1111,10 @@ void main() {
       );
       when(saveDBReq).thenAnswer((_) async {});
       when(
-        () => mockBatchStorage.fetch(userId: null, angle: const PuzzleTheme(PuzzleThemeKey.mix)),
+        () => mockBatchStorage.fetch(
+          userId: null,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+        ),
       ).thenAnswer((_) async => batch);
 
       await tester.pumpWidget(app);
@@ -1029,7 +1151,9 @@ void main() {
   );
 
   group('Puzzle Replay', () {
-    testWidgets('Loads a replay puzzle', variant: kPlatformVariant, (tester) async {
+    testWidgets('Loads a replay puzzle', variant: kPlatformVariant, (
+      tester,
+    ) async {
       final replayContext = PuzzleContext(
         puzzle: puzzle2,
         angle: const PuzzleTheme(PuzzleThemeKey.mix),
@@ -1039,20 +1163,30 @@ void main() {
 
       final app = await makeTestProviderScopeApp(
         tester,
-        home: const PuzzleScreen(angle: PuzzleTheme(PuzzleThemeKey.mix), replayDays: 30),
+        home: const PuzzleScreen(
+          angle: PuzzleTheme(PuzzleThemeKey.mix),
+          replayDays: 30,
+        ),
         overrides: {
-          puzzleReplayProvider: puzzleReplayProvider.overrideWith((ref, params) {
+          puzzleReplayProvider: puzzleReplayProvider.overrideWith((
+            ref,
+            params,
+          ) {
             return replayContext;
           }),
           puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
             (ref) => mockBatchStorage,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
+          puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+            (ref) => mockHistoryStorage,
+          ),
         },
         authUser: fakeAuthUser,
       );
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+      when(
+        () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(app);
 
@@ -1063,326 +1197,386 @@ void main() {
       expect(find.text('Your turn'), findsOneWidget);
     });
 
-    testWidgets('Shows error when no puzzles to replay', variant: kPlatformVariant, (tester) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const PuzzleScreen(angle: PuzzleTheme(PuzzleThemeKey.mix), replayDays: 30),
-        overrides: {
-          puzzleReplayProvider: puzzleReplayProvider.overrideWith((ref, params) {
-            return null;
-          }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-            (ref) => mockBatchStorage,
+    testWidgets(
+      'Shows error when no puzzles to replay',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const PuzzleScreen(
+            angle: PuzzleTheme(PuzzleThemeKey.mix),
+            replayDays: 30,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-        },
-        authUser: fakeAuthUser,
-      );
+          overrides: {
+            puzzleReplayProvider: puzzleReplayProvider.overrideWith((
+              ref,
+              params,
+            ) {
+              return null;
+            }),
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) => mockBatchStorage,
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
+          },
+          authUser: fakeAuthUser,
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      // wait for the provider to resolve
-      await tester.pump(const Duration(milliseconds: 200));
+        // wait for the provider to resolve
+        await tester.pump(const Duration(milliseconds: 200));
 
-      expect(find.text('No more puzzles to replay.'), findsOneWidget);
-    });
+        expect(find.text('No more puzzles to replay.'), findsOneWidget);
+      },
+    );
 
-    testWidgets('Solves replay puzzle and loads the next one', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final replayContext = PuzzleContext(
-        puzzle: puzzle2,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        userId: fakeAuthUser.user.id,
-        replayRemaining: IList(const [PuzzleId('6Sz3s')]),
-      );
+    testWidgets(
+      'Solves replay puzzle and loads the next one',
+      variant: kPlatformVariant,
+      (tester) async {
+        final replayContext = PuzzleContext(
+          puzzle: puzzle2,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+          userId: fakeAuthUser.user.id,
+          replayRemaining: IList(const [PuzzleId('6Sz3s')]),
+        );
 
-      final mockClient = MockClient((request) {
-        if (request.url.path == '/api/puzzle/6Sz3s') {
-          return mockResponse(puzzle1Json, 200);
-        }
-        return mockResponse('', 404);
-      });
+        final mockClient = MockClient((request) {
+          if (request.url.path == '/api/puzzle/6Sz3s') {
+            return mockResponse(puzzle1Json, 200);
+          }
+          return mockResponse('', 404);
+        });
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const PuzzleScreen(angle: PuzzleTheme(PuzzleThemeKey.mix), replayDays: 30),
-        overrides: {
-          puzzleReplayProvider: puzzleReplayProvider.overrideWith((ref, params) {
-            return replayContext;
-          }),
-          lichessClientProvider: lichessClientProvider.overrideWith((ref) {
-            return LichessClient(mockClient, ref);
-          }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-            (ref) => mockBatchStorage,
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const PuzzleScreen(
+            angle: PuzzleTheme(PuzzleThemeKey.mix),
+            replayDays: 30,
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-        },
-        authUser: fakeAuthUser,
-      );
+          overrides: {
+            puzzleReplayProvider: puzzleReplayProvider.overrideWith((
+              ref,
+              params,
+            ) {
+              return replayContext;
+            }),
+            lichessClientProvider: lichessClientProvider.overrideWith((ref) {
+              return LichessClient(mockClient, ref);
+            }),
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) => mockBatchStorage,
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
+          },
+          authUser: fakeAuthUser,
+        );
 
-      Future<void> saveDBReq() => mockBatchStorage.save(
-        userId: fakeAuthUser.user.id,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        data: any(named: 'data'),
-      );
-      when(saveDBReq).thenAnswer((_) async {});
-      when(
-        () => mockBatchStorage.fetch(
+        Future<void> saveDBReq() => mockBatchStorage.save(
           userId: fakeAuthUser.user.id,
           angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        ),
-      ).thenAnswer((_) async => batch);
-
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
-
-      await tester.pumpWidget(app);
-
-      // wait for the puzzle to load
-      await tester.pump(const Duration(milliseconds: 200));
-
-      expect(find.byType(Chessboard), findsOneWidget);
-      expect(find.text('Your turn'), findsOneWidget);
-
-      const orientation = Side.black;
-
-      // wait for first move to be played
-      await tester.pump(const Duration(milliseconds: 1500));
-
-      expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
-
-      await playMove(tester, 'g4', 'h4', orientation: orientation);
-
-      expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
-      expect(find.text('Best move!'), findsOneWidget);
-
-      // wait for line reply and move animation
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
-
-      expect(boardHasPiece(tester, Square.h4, Piece.whiteQueen), isTrue);
-
-      await playMove(tester, 'b4', 'h4', orientation: orientation);
-
-      expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
-      expect(find.text('Success!'), findsOneWidget);
-
-      // wait for move animation
-      await tester.pumpAndSettle();
-
-      // continue button should appear to load next replay puzzle
-      expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
-
-      await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
-
-      // await for new puzzle load
-      await tester.pump(const Duration(milliseconds: 500));
-
-      expect(find.text('Success!'), findsNothing);
-      expect(find.text('Your turn'), findsOneWidget);
-    });
-
-    testWidgets('Continue button disabled when replay is exhausted', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final replayContext = PuzzleContext(
-        puzzle: puzzle2,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        userId: fakeAuthUser.user.id,
-        replayRemaining: IList(const []),
-      );
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const PuzzleScreen(angle: PuzzleTheme(PuzzleThemeKey.mix), replayDays: 30),
-        overrides: {
-          puzzleReplayProvider: puzzleReplayProvider.overrideWith((ref, params) {
-            return replayContext;
-          }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-            (ref) => mockBatchStorage,
+          data: any(named: 'data'),
+        );
+        when(saveDBReq).thenAnswer((_) async {});
+        when(
+          () => mockBatchStorage.fetch(
+            userId: fakeAuthUser.user.id,
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-        },
-        authUser: fakeAuthUser,
-      );
+        ).thenAnswer((_) async => batch);
 
-      Future<void> saveDBReq() => mockBatchStorage.save(
-        userId: fakeAuthUser.user.id,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        data: any(named: 'data'),
-      );
-      when(saveDBReq).thenAnswer((_) async {});
-      when(
-        () => mockBatchStorage.fetch(
+        when(
+          () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+        ).thenAnswer((_) async {});
+
+        await tester.pumpWidget(app);
+
+        // wait for the puzzle to load
+        await tester.pump(const Duration(milliseconds: 200));
+
+        expect(find.byType(Chessboard), findsOneWidget);
+        expect(find.text('Your turn'), findsOneWidget);
+
+        const orientation = Side.black;
+
+        // wait for first move to be played
+        await tester.pump(const Duration(milliseconds: 1500));
+
+        expect(boardHasPiece(tester, Square.g4, Piece.blackRook), isTrue);
+
+        await playMove(tester, 'g4', 'h4', orientation: orientation);
+
+        expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
+        expect(find.text('Best move!'), findsOneWidget);
+
+        // wait for line reply and move animation
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
+
+        expect(boardHasPiece(tester, Square.h4, Piece.whiteQueen), isTrue);
+
+        await playMove(tester, 'b4', 'h4', orientation: orientation);
+
+        expect(boardHasPiece(tester, Square.h4, Piece.blackRook), isTrue);
+        expect(find.text('Success!'), findsOneWidget);
+
+        // wait for move animation
+        await tester.pumpAndSettle();
+
+        // continue button should appear to load next replay puzzle
+        expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
+
+        await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
+
+        // await for new puzzle load
+        await tester.pump(const Duration(milliseconds: 500));
+
+        expect(find.text('Success!'), findsNothing);
+        expect(find.text('Your turn'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Continue button disabled when replay is exhausted',
+      variant: kPlatformVariant,
+      (tester) async {
+        final replayContext = PuzzleContext(
+          puzzle: puzzle2,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+          userId: fakeAuthUser.user.id,
+          replayRemaining: IList(const []),
+        );
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const PuzzleScreen(
+            angle: PuzzleTheme(PuzzleThemeKey.mix),
+            replayDays: 30,
+          ),
+          overrides: {
+            puzzleReplayProvider: puzzleReplayProvider.overrideWith((
+              ref,
+              params,
+            ) {
+              return replayContext;
+            }),
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) => mockBatchStorage,
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
+          },
+          authUser: fakeAuthUser,
+        );
+
+        Future<void> saveDBReq() => mockBatchStorage.save(
           userId: fakeAuthUser.user.id,
           angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        ),
-      ).thenAnswer((_) async => batch);
-
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
-
-      await tester.pumpWidget(app);
-
-      // wait for the puzzle to load
-      await tester.pump(const Duration(milliseconds: 200));
-
-      const orientation = Side.black;
-
-      // wait for first move to be played
-      await tester.pump(const Duration(milliseconds: 1500));
-
-      // solve the puzzle
-      await playMove(tester, 'g4', 'h4', orientation: orientation);
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
-      await playMove(tester, 'b4', 'h4', orientation: orientation);
-
-      expect(find.text('Success!'), findsOneWidget);
-      await tester.pumpAndSettle();
-
-      // continue button should be present but disabled since no more replay puzzles
-      final continueBtn = find.byWidgetPredicate(
-        (widget) =>
-            widget is BottomBarButton &&
-            widget.icon == CupertinoIcons.play_arrow_solid &&
-            !widget.enabled,
-      );
-      expect(continueBtn, findsOneWidget);
-    });
-
-    testWidgets('Fails a replay puzzle and can continue', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final replayContext = PuzzleContext(
-        puzzle: puzzle2,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        userId: fakeAuthUser.user.id,
-        replayRemaining: IList(const [PuzzleId('6Sz3s')]),
-      );
-
-      final mockClient = MockClient((request) {
-        if (request.url.path == '/api/puzzle/6Sz3s') {
-          return mockResponse(puzzle1Json, 200);
-        }
-        return mockResponse('', 404);
-      });
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const PuzzleScreen(angle: PuzzleTheme(PuzzleThemeKey.mix), replayDays: 30),
-        overrides: {
-          puzzleReplayProvider: puzzleReplayProvider.overrideWith((ref, params) {
-            return replayContext;
-          }),
-          lichessClientProvider: lichessClientProvider.overrideWith((ref) {
-            return LichessClient(mockClient, ref);
-          }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-            (ref) => mockBatchStorage,
+          data: any(named: 'data'),
+        );
+        when(saveDBReq).thenAnswer((_) async {});
+        when(
+          () => mockBatchStorage.fetch(
+            userId: fakeAuthUser.user.id,
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-        },
-        authUser: fakeAuthUser,
-      );
+        ).thenAnswer((_) async => batch);
 
-      Future<void> saveDBReq() => mockBatchStorage.save(
-        userId: fakeAuthUser.user.id,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        data: any(named: 'data'),
-      );
-      when(saveDBReq).thenAnswer((_) async {});
-      when(
-        () => mockBatchStorage.fetch(
+        when(
+          () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+        ).thenAnswer((_) async {});
+
+        await tester.pumpWidget(app);
+
+        // wait for the puzzle to load
+        await tester.pump(const Duration(milliseconds: 200));
+
+        const orientation = Side.black;
+
+        // wait for first move to be played
+        await tester.pump(const Duration(milliseconds: 1500));
+
+        // solve the puzzle
+        await playMove(tester, 'g4', 'h4', orientation: orientation);
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
+        await playMove(tester, 'b4', 'h4', orientation: orientation);
+
+        expect(find.text('Success!'), findsOneWidget);
+        await tester.pumpAndSettle();
+
+        // continue button should be present but disabled since no more replay puzzles
+        final continueBtn = find.byWidgetPredicate(
+          (widget) =>
+              widget is BottomBarButton &&
+              widget.icon == CupertinoIcons.play_arrow_solid &&
+              !widget.enabled,
+        );
+        expect(continueBtn, findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Fails a replay puzzle and can continue',
+      variant: kPlatformVariant,
+      (tester) async {
+        final replayContext = PuzzleContext(
+          puzzle: puzzle2,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+          userId: fakeAuthUser.user.id,
+          replayRemaining: IList(const [PuzzleId('6Sz3s')]),
+        );
+
+        final mockClient = MockClient((request) {
+          if (request.url.path == '/api/puzzle/6Sz3s') {
+            return mockResponse(puzzle1Json, 200);
+          }
+          return mockResponse('', 404);
+        });
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const PuzzleScreen(
+            angle: PuzzleTheme(PuzzleThemeKey.mix),
+            replayDays: 30,
+          ),
+          overrides: {
+            puzzleReplayProvider: puzzleReplayProvider.overrideWith((
+              ref,
+              params,
+            ) {
+              return replayContext;
+            }),
+            lichessClientProvider: lichessClientProvider.overrideWith((ref) {
+              return LichessClient(mockClient, ref);
+            }),
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) => mockBatchStorage,
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
+          },
+          authUser: fakeAuthUser,
+        );
+
+        Future<void> saveDBReq() => mockBatchStorage.save(
           userId: fakeAuthUser.user.id,
           angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        ),
-      ).thenAnswer((_) async => batch);
-
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
-
-      await tester.pumpWidget(app);
-
-      // wait for the puzzle to load
-      await tester.pump(const Duration(milliseconds: 200));
-
-      const orientation = Side.black;
-
-      // wait for first move to be played
-      await tester.pump(const Duration(milliseconds: 1500));
-
-      // play a wrong move
-      await playMove(tester, 'g4', 'f4', orientation: orientation);
-
-      expect(find.text("That's not the move!"), findsOneWidget);
-
-      // wait for move cancel and animation
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
-
-      // solve the puzzle correctly
-      await playMove(tester, 'g4', 'h4', orientation: orientation);
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
-      await playMove(tester, 'b4', 'h4', orientation: orientation);
-
-      expect(find.text('Puzzle complete!'), findsOneWidget);
-      await tester.pumpAndSettle();
-
-      // continue button should be enabled to load next replay puzzle
-      expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
-
-      await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
-      await tester.pump(const Duration(milliseconds: 500));
-
-      // next puzzle loaded
-      expect(find.text('Puzzle complete!'), findsNothing);
-      expect(find.text('Your turn'), findsOneWidget);
-    });
-
-    testWidgets('Settings hide difficulty and rated in replay mode', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final replayContext = PuzzleContext(
-        puzzle: puzzle2,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        userId: fakeAuthUser.user.id,
-        replayRemaining: IList(const [PuzzleId('6Sz3s')]),
-      );
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const PuzzleScreen(angle: PuzzleTheme(PuzzleThemeKey.mix), replayDays: 30),
-        overrides: {
-          puzzleReplayProvider: puzzleReplayProvider.overrideWith((ref, params) {
-            return replayContext;
-          }),
-          puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
-            (ref) => mockBatchStorage,
+          data: any(named: 'data'),
+        );
+        when(saveDBReq).thenAnswer((_) async {});
+        when(
+          () => mockBatchStorage.fetch(
+            userId: fakeAuthUser.user.id,
+            angle: const PuzzleTheme(PuzzleThemeKey.mix),
           ),
-          puzzleStorageProvider: puzzleStorageProvider.overrideWith((ref) => mockHistoryStorage),
-        },
-        authUser: fakeAuthUser,
-      );
+        ).thenAnswer((_) async => batch);
 
-      when(() => mockHistoryStorage.save(puzzle: any(named: 'puzzle'))).thenAnswer((_) async {});
+        when(
+          () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+        ).thenAnswer((_) async {});
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      // wait for the puzzle to load
-      await tester.pump(const Duration(milliseconds: 200));
+        // wait for the puzzle to load
+        await tester.pump(const Duration(milliseconds: 200));
 
-      // open settings
-      await tester.tap(find.byIcon(Icons.settings));
-      await tester.pumpAndSettle();
+        const orientation = Side.black;
 
-      // the difficulty selector should not be visible in replay mode
-      expect(find.text('Difficulty'), findsNothing);
+        // wait for first move to be played
+        await tester.pump(const Duration(milliseconds: 1500));
 
-      // the rated switch should not be visible in replay mode
-      expect(find.widgetWithText(SwitchSettingTile, 'Rated'), findsNothing);
-    });
+        // play a wrong move
+        await playMove(tester, 'g4', 'f4', orientation: orientation);
+
+        expect(find.text("That's not the move!"), findsOneWidget);
+
+        // wait for move cancel and animation
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
+
+        // solve the puzzle correctly
+        await playMove(tester, 'g4', 'h4', orientation: orientation);
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
+        await playMove(tester, 'b4', 'h4', orientation: orientation);
+
+        expect(find.text('Puzzle complete!'), findsOneWidget);
+        await tester.pumpAndSettle();
+
+        // continue button should be enabled to load next replay puzzle
+        expect(find.byIcon(CupertinoIcons.play_arrow_solid), findsOneWidget);
+
+        await tester.tap(find.byIcon(CupertinoIcons.play_arrow_solid));
+        await tester.pump(const Duration(milliseconds: 500));
+
+        // next puzzle loaded
+        expect(find.text('Puzzle complete!'), findsNothing);
+        expect(find.text('Your turn'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Settings hide difficulty and rated in replay mode',
+      variant: kPlatformVariant,
+      (tester) async {
+        final replayContext = PuzzleContext(
+          puzzle: puzzle2,
+          angle: const PuzzleTheme(PuzzleThemeKey.mix),
+          userId: fakeAuthUser.user.id,
+          replayRemaining: IList(const [PuzzleId('6Sz3s')]),
+        );
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const PuzzleScreen(
+            angle: PuzzleTheme(PuzzleThemeKey.mix),
+            replayDays: 30,
+          ),
+          overrides: {
+            puzzleReplayProvider: puzzleReplayProvider.overrideWith((
+              ref,
+              params,
+            ) {
+              return replayContext;
+            }),
+            puzzleBatchStorageProvider: puzzleBatchStorageProvider.overrideWith(
+              (ref) => mockBatchStorage,
+            ),
+            puzzleStorageProvider: puzzleStorageProvider.overrideWith(
+              (ref) => mockHistoryStorage,
+            ),
+          },
+          authUser: fakeAuthUser,
+        );
+
+        when(
+          () => mockHistoryStorage.save(puzzle: any(named: 'puzzle')),
+        ).thenAnswer((_) async {});
+
+        await tester.pumpWidget(app);
+
+        // wait for the puzzle to load
+        await tester.pump(const Duration(milliseconds: 200));
+
+        // open settings
+        await tester.tap(find.byIcon(Icons.settings));
+        await tester.pumpAndSettle();
+
+        // the difficulty selector should not be visible in replay mode
+        expect(find.text('Difficulty'), findsNothing);
+
+        // the rated switch should not be visible in replay mode
+        expect(find.widgetWithText(SwitchSettingTile, 'Rated'), findsNothing);
+      },
+    );
   });
 }
 

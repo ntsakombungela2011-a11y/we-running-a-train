@@ -46,7 +46,10 @@ class _MoveListState extends ConsumerState<MoveList> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (currentMoveKey.currentContext != null) {
-        Scrollable.ensureVisible(currentMoveKey.currentContext!, alignment: 0.5);
+        Scrollable.ensureVisible(
+          currentMoveKey.currentContext!,
+          alignment: 0.5,
+        );
       }
     });
   }
@@ -76,7 +79,10 @@ class _MoveListState extends ConsumerState<MoveList> {
   Widget build(BuildContext context) {
     final pieceNotation = ref
         .watch(pieceNotationProvider)
-        .maybeWhen(data: (value) => value, orElse: () => defaultAccountPreferences.pieceNotation);
+        .maybeWhen(
+          data: (value) => value,
+          orElse: () => defaultAccountPreferences.pieceNotation,
+        );
 
     return widget.type == MoveListType.inline
         ? Container(
@@ -92,10 +98,14 @@ class _MoveListState extends ConsumerState<MoveList> {
                     .mapIndexed(
                       (index, moves) => Row(
                         children: [
-                          InlineMoveCount(count: index + 1, color: widget.inlineColor),
+                          InlineMoveCount(
+                            count: index + 1,
+                            color: widget.inlineColor,
+                          ),
                           ...moves.map((move) {
                             // cursor index starts at 0, move index starts at 1
-                            final isCurrentMove = widget.currentMoveIndex == move.key + 1;
+                            final isCurrentMove =
+                                widget.currentMoveIndex == move.key + 1;
                             return InlineMoveItem(
                               key: isCurrentMove ? currentMoveKey : null,
                               move: move,
@@ -128,10 +138,13 @@ class _MoveListState extends ConsumerState<MoveList> {
                               children: [
                                 ...moves.map((move) {
                                   // cursor index starts at 0, move index starts at 1
-                                  final isCurrentMove = widget.currentMoveIndex == move.key + 1;
+                                  final isCurrentMove =
+                                      widget.currentMoveIndex == move.key + 1;
                                   return Expanded(
                                     child: StackedMoveItem(
-                                      key: isCurrentMove ? currentMoveKey : null,
+                                      key: isCurrentMove
+                                          ? currentMoveKey
+                                          : null,
                                       move: move,
                                       pieceNotation: pieceNotation,
                                       current: isCurrentMove,
@@ -167,7 +180,9 @@ class InlineMoveCount extends StatelessWidget {
         '$count.',
         style: TextStyle(
           fontWeight: FontWeight.w500,
-          color: color?.withValues(alpha: _moveListOpacity) ?? textShade(context, _moveListOpacity),
+          color:
+              color?.withValues(alpha: _moveListOpacity) ??
+              textShade(context, _moveListOpacity),
         ),
       ),
     );
@@ -200,7 +215,9 @@ class InlineMoveItem extends StatelessWidget {
         child: Text(
           move.value,
           style: TextStyle(
-            fontFamily: pieceNotation == PieceNotation.symbol ? 'ChessFont' : null,
+            fontFamily: pieceNotation == PieceNotation.symbol
+                ? 'ChessFont'
+                : null,
             fontWeight: current == true ? FontWeight.bold : FontWeight.w500,
             color: current != true
                 ? color != null
@@ -225,7 +242,10 @@ class StackedMoveCount extends StatelessWidget {
       width: 40.0,
       child: Text(
         '$count.',
-        style: TextStyle(fontWeight: FontWeight.w600, color: textShade(context, _moveListOpacity)),
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: textShade(context, _moveListOpacity),
+        ),
       ),
     );
   }
@@ -254,7 +274,9 @@ class StackedMoveItem extends StatelessWidget {
         child: Text(
           move.value,
           style: TextStyle(
-            fontFamily: pieceNotation == PieceNotation.symbol ? 'ChessFont' : null,
+            fontFamily: pieceNotation == PieceNotation.symbol
+                ? 'ChessFont'
+                : null,
             fontWeight: current == true ? FontWeight.bold : null,
             color: current != true ? textShade(context, 0.8) : null,
           ),

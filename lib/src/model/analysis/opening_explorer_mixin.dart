@@ -25,7 +25,8 @@ mixin OpeningExplorerMixinState {
 /// Openings are stored on the tree [Node]s. The build-time mainline fetch is
 /// centralized here via [runBuild]; controllers only implement [positionTree]
 /// and [refreshCurrentBranchOpening].
-mixin OpeningExplorerMixin<T extends OpeningExplorerMixinState> on AsyncNotifier<T> {
+mixin OpeningExplorerMixin<T extends OpeningExplorerMixinState>
+    on AsyncNotifier<T> {
   /// The tree where openings are stored.
   @protected
   Root get positionTree;
@@ -86,12 +87,17 @@ mixin OpeningExplorerMixin<T extends OpeningExplorerMixinState> on AsyncNotifier
     return opening;
   }
 
-  Future<(UciPath, FullOpening)?>? _fetchMainlineOpening(Branch branch, UciPath mainlinePath) {
+  Future<(UciPath, FullOpening)?>? _fetchMainlineOpening(
+    Branch branch,
+    UciPath mainlinePath,
+  ) {
     if (branch.position.ply > _kMaxOpeningPly) return null;
     return fetchOpening(branch.position.fen, mainlinePath);
   }
 
-  void _applyFetchedOpenings(List<Future<(UciPath, FullOpening)?>> openingFutures) {
+  void _applyFetchedOpenings(
+    List<Future<(UciPath, FullOpening)?>> openingFutures,
+  ) {
     Future.wait(openingFutures).then((list) {
       var hasOpening = false;
       for (final updated in list) {
@@ -132,7 +138,9 @@ mixin OpeningExplorerMixin<T extends OpeningExplorerMixinState> on AsyncNotifier
   /// variant allows openings.
   @protected
   Future<(UciPath, FullOpening)?> fetchOpening(String fen, UciPath path) async {
-    if (!kOpeningAllowedVariants.contains(state.value?.variant ?? Variant.standard)) {
+    if (!kOpeningAllowedVariants.contains(
+      state.value?.variant ?? Variant.standard,
+    )) {
       return null;
     }
     try {

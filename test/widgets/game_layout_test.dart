@@ -19,55 +19,63 @@ import '../test_helpers.dart';
 import '../test_provider_scope.dart';
 
 void main() {
-  testWidgets('board background size should match board size on all surfaces', (
-    WidgetTester tester,
-  ) async {
-    for (final surface in kTestSurfaces) {
-      final app = await makeTestProviderScope(
-        key: ValueKey(surface),
-        tester,
-        child: const MaterialApp(
-          home: GameLayout(
-            orientation: Side.white,
-            boardParams: GameBoardParams.readonly(
-              variant: Variant.standard,
-              position: Chess.initial,
-            ),
-            topTable: Row(
-              mainAxisSize: MainAxisSize.max,
-              key: ValueKey('top_table'),
-              children: [Text('Top table')],
-            ),
-            bottomTable: Row(
-              mainAxisSize: MainAxisSize.max,
-              key: ValueKey('bottom_table'),
-              children: [Text('Bottom table')],
+  testWidgets(
+    'board background size should match board size on all surfaces',
+    (WidgetTester tester) async {
+      for (final surface in kTestSurfaces) {
+        final app = await makeTestProviderScope(
+          key: ValueKey(surface),
+          tester,
+          child: const MaterialApp(
+            home: GameLayout(
+              orientation: Side.white,
+              boardParams: GameBoardParams.readonly(
+                variant: Variant.standard,
+                position: Chess.initial,
+              ),
+              topTable: Row(
+                mainAxisSize: MainAxisSize.max,
+                key: ValueKey('top_table'),
+                children: [Text('Top table')],
+              ),
+              bottomTable: Row(
+                mainAxisSize: MainAxisSize.max,
+                key: ValueKey('bottom_table'),
+                children: [Text('Bottom table')],
+              ),
             ),
           ),
-        ),
-        surfaceSize: surface,
-      );
-      await tester.pumpWidget(app);
+          surfaceSize: surface,
+        );
+        await tester.pumpWidget(app);
 
-      final backgroundSize = tester.getSize(find.byType(SolidColorChessboardBackground));
+        final backgroundSize = tester.getSize(
+          find.byType(SolidColorChessboardBackground),
+        );
 
-      expect(
-        backgroundSize.width,
-        backgroundSize.height,
-        reason: 'Board background size is square on $surface',
-      );
+        expect(
+          backgroundSize.width,
+          backgroundSize.height,
+          reason: 'Board background size is square on $surface',
+        );
 
-      final boardSize = tester.getSize(find.byType(Chessboard));
+        final boardSize = tester.getSize(find.byType(Chessboard));
 
-      expect(boardSize.width, boardSize.height, reason: 'Board size is square on $surface');
+        expect(
+          boardSize.width,
+          boardSize.height,
+          reason: 'Board size is square on $surface',
+        );
 
-      expect(
-        boardSize,
-        backgroundSize,
-        reason: 'Board size should match background size on $surface',
-      );
-    }
-  }, variant: kPlatformVariant);
+        expect(
+          boardSize,
+          backgroundSize,
+          reason: 'Board size should match background size on $surface',
+        );
+      }
+    },
+    variant: kPlatformVariant,
+  );
 
   testWidgets('Landscape board position', (WidgetTester tester) async {
     for (final boardPosition in LandscapeBoardPosition.values) {
@@ -97,7 +105,9 @@ void main() {
         ),
         defaultPreferences: {
           PrefCategory.board.storageKey: jsonEncode(
-            BoardPrefs.defaults.copyWith(landscapeBoardPosition: boardPosition).toJson(),
+            BoardPrefs.defaults
+                .copyWith(landscapeBoardPosition: boardPosition)
+                .toJson(),
           ),
         },
         surfaceSize: tabletSurface,
@@ -116,100 +126,134 @@ void main() {
     }
   }, variant: kPlatformVariant);
 
-  testWidgets('board size and table side size should be harmonious on all surfaces', (
-    WidgetTester tester,
-  ) async {
-    for (final surface in kTestSurfaces) {
-      final app = await makeTestProviderScope(
-        key: ValueKey(surface),
-        tester,
-        child: const MaterialApp(
-          home: GameLayout(
-            orientation: Side.white,
-            boardParams: GameBoardParams.readonly(
-              variant: Variant.standard,
-              position: Chess.initial,
-            ),
-            topTable: Row(
-              mainAxisSize: MainAxisSize.max,
-              key: ValueKey('top_table'),
-              children: [Text('Top table')],
-            ),
-            bottomTable: Row(
-              mainAxisSize: MainAxisSize.max,
-              key: ValueKey('bottom_table'),
-              children: [Text('Bottom table')],
+  testWidgets(
+    'board size and table side size should be harmonious on all surfaces',
+    (WidgetTester tester) async {
+      for (final surface in kTestSurfaces) {
+        final app = await makeTestProviderScope(
+          key: ValueKey(surface),
+          tester,
+          child: const MaterialApp(
+            home: GameLayout(
+              orientation: Side.white,
+              boardParams: GameBoardParams.readonly(
+                variant: Variant.standard,
+                position: Chess.initial,
+              ),
+              topTable: Row(
+                mainAxisSize: MainAxisSize.max,
+                key: ValueKey('top_table'),
+                children: [Text('Top table')],
+              ),
+              bottomTable: Row(
+                mainAxisSize: MainAxisSize.max,
+                key: ValueKey('bottom_table'),
+                children: [Text('Bottom table')],
+              ),
             ),
           ),
-        ),
-        surfaceSize: surface,
-      );
-      await tester.pumpWidget(app);
+          surfaceSize: surface,
+        );
+        await tester.pumpWidget(app);
 
-      final isPortrait = surface.aspectRatio < 1.0;
-      final isTablet = surface.shortestSide > 600;
-      final boardSize = tester.getSize(find.byType(Chessboard));
+        final isPortrait = surface.aspectRatio < 1.0;
+        final isTablet = surface.shortestSide > 600;
+        final boardSize = tester.getSize(find.byType(Chessboard));
 
-      if (isPortrait) {
-        // isShortVerticalScreen uses viewPadding=0 in tests, kToolbarHeight=56, kBottomBarHeight=56
-        final isShortScreen =
-            surface.height - surface.width - kToolbarHeight - kBottomBarHeight <
-            kSmallHeightMinusBoard;
-        final baseBoardSize = isTablet ? surface.width - 32.0 : surface.width;
-        final expectedBoardSize = isShortScreen ? baseBoardSize - 16.0 : baseBoardSize;
-        expect(
-          boardSize,
-          Size(expectedBoardSize, expectedBoardSize),
-          reason: 'Board size should be $expectedBoardSize on $surface',
-        );
-      } else {
-        final topTableSize = tester.getSize(find.byKey(const ValueKey('top_table')));
-        final bottomTableSize = tester.getSize(find.byKey(const ValueKey('bottom_table')));
-        final goldenBoardSize = (surface.longestSide / kGoldenRatio) - 32.0;
-        final defaultBoardSize = surface.shortestSide - 32.0;
-        final minBoardSize = min(goldenBoardSize, defaultBoardSize);
-        final maxBoardSize = max(goldenBoardSize, defaultBoardSize);
-        final minSideWidth = min(surface.longestSide - goldenBoardSize - 16.0 * 3, 250.0);
-        expect(
-          boardSize.width,
-          greaterThanOrEqualTo(minBoardSize),
-          reason: 'Board size should be at least $minBoardSize on $surface',
-        );
-        expect(
-          boardSize.width,
-          lessThanOrEqualTo(maxBoardSize),
-          reason: 'Board size should be at most $maxBoardSize on $surface',
-        );
-        expect(
-          bottomTableSize.width,
-          greaterThanOrEqualTo(minSideWidth),
-          reason: 'Bottom table width should be at least $minSideWidth on $surface',
-        );
-        expect(
-          topTableSize.width,
-          greaterThanOrEqualTo(minSideWidth),
-          reason: 'Top table width should be at least $minSideWidth on $surface',
-        );
+        if (isPortrait) {
+          // isShortVerticalScreen uses viewPadding=0 in tests, kToolbarHeight=56, kBottomBarHeight=56
+          final isShortScreen =
+              surface.height -
+                  surface.width -
+                  kToolbarHeight -
+                  kBottomBarHeight <
+              kSmallHeightMinusBoard;
+          final baseBoardSize = isTablet ? surface.width - 32.0 : surface.width;
+          final expectedBoardSize = isShortScreen
+              ? baseBoardSize - 16.0
+              : baseBoardSize;
+          expect(
+            boardSize,
+            Size(expectedBoardSize, expectedBoardSize),
+            reason: 'Board size should be $expectedBoardSize on $surface',
+          );
+        } else {
+          final topTableSize = tester.getSize(
+            find.byKey(const ValueKey('top_table')),
+          );
+          final bottomTableSize = tester.getSize(
+            find.byKey(const ValueKey('bottom_table')),
+          );
+          final goldenBoardSize = (surface.longestSide / kGoldenRatio) - 32.0;
+          final defaultBoardSize = surface.shortestSide - 32.0;
+          final minBoardSize = min(goldenBoardSize, defaultBoardSize);
+          final maxBoardSize = max(goldenBoardSize, defaultBoardSize);
+          final minSideWidth = min(
+            surface.longestSide - goldenBoardSize - 16.0 * 3,
+            250.0,
+          );
+          expect(
+            boardSize.width,
+            greaterThanOrEqualTo(minBoardSize),
+            reason: 'Board size should be at least $minBoardSize on $surface',
+          );
+          expect(
+            boardSize.width,
+            lessThanOrEqualTo(maxBoardSize),
+            reason: 'Board size should be at most $maxBoardSize on $surface',
+          );
+          expect(
+            bottomTableSize.width,
+            greaterThanOrEqualTo(minSideWidth),
+            reason:
+                'Bottom table width should be at least $minSideWidth on $surface',
+          );
+          expect(
+            topTableSize.width,
+            greaterThanOrEqualTo(minSideWidth),
+            reason:
+                'Top table width should be at least $minSideWidth on $surface',
+          );
+        }
       }
-    }
-  }, variant: kPlatformVariant);
+    },
+    variant: kPlatformVariant,
+  );
 
   test('variantBoardOrientation', () {
-    for (final variant in Variant.values.where((v) => v != Variant.racingKings)) {
+    for (final variant in Variant.values.where(
+      (v) => v != Variant.racingKings,
+    )) {
       expect(
-        variantBoardOrientation(variant: variant, youAre: Side.white, isBoardTurned: false),
+        variantBoardOrientation(
+          variant: variant,
+          youAre: Side.white,
+          isBoardTurned: false,
+        ),
         Side.white,
       );
       expect(
-        variantBoardOrientation(variant: variant, youAre: Side.black, isBoardTurned: false),
+        variantBoardOrientation(
+          variant: variant,
+          youAre: Side.black,
+          isBoardTurned: false,
+        ),
         Side.black,
       );
       expect(
-        variantBoardOrientation(variant: variant, youAre: Side.white, isBoardTurned: true),
+        variantBoardOrientation(
+          variant: variant,
+          youAre: Side.white,
+          isBoardTurned: true,
+        ),
         Side.black,
       );
       expect(
-        variantBoardOrientation(variant: variant, youAre: Side.black, isBoardTurned: true),
+        variantBoardOrientation(
+          variant: variant,
+          youAre: Side.black,
+          isBoardTurned: true,
+        ),
         Side.white,
       );
     }
@@ -251,7 +295,9 @@ void main() {
   testWidgets(
     'owned board becomes interactive when boardParams transitions from readonly',
     (WidgetTester tester) async {
-      final paramsNotifier = ValueNotifier<GameBoardParams>(GameBoardParams.emptyBoard);
+      final paramsNotifier = ValueNotifier<GameBoardParams>(
+        GameBoardParams.emptyBoard,
+      );
       addTearDown(paramsNotifier.dispose);
       final playedMoves = <Move>[];
 
@@ -268,7 +314,10 @@ void main() {
       await tester.pumpWidget(app);
 
       // Readonly boards are controller-backed but non-interactive (PlayerSide.none).
-      expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isFalse);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isFalse,
+      );
 
       // Transition the same GameLayout to interactive params (triggers didUpdateWidget).
       paramsNotifier.value = GameBoardParams.interactive(
@@ -282,7 +331,10 @@ void main() {
       await tester.pump();
 
       // The same board is now interactive.
-      expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isTrue);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isTrue,
+      );
 
       // And user interaction reaches the onMove callback.
       await playMove(tester, 'e2', 'e4');
@@ -291,7 +343,9 @@ void main() {
     variant: kPlatformVariant,
   );
 
-  testWidgets('Crazyhouse displays pockets and supports drop moves', (WidgetTester tester) async {
+  testWidgets('Crazyhouse displays pockets and supports drop moves', (
+    WidgetTester tester,
+  ) async {
     final playedMoves = <Move>[];
     final app = await makeTestProviderScope(
       tester,
@@ -301,7 +355,9 @@ void main() {
           boardParams: GameBoardParams.interactive(
             variant: Variant.crazyhouse,
             position: Crazyhouse.fromSetup(
-              Setup.parseFen('rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR[Pp] w KQkq - 0 3'),
+              Setup.parseFen(
+                'rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR[Pp] w KQkq - 0 3',
+              ),
             ),
             playerSide: PlayerSide.white,
             onMove: (move, {viaDragAndDrop}) {
@@ -322,139 +378,115 @@ void main() {
     expect(playedMoves, [const DropMove(to: Square.a4, role: Role.pawn)]);
   });
 
-  testWidgets('readonly board animates to a new position and highlights the last move', (
-    tester,
-  ) async {
-    final after1e4 = Chess.initial.play(const NormalMove(from: Square.e2, to: Square.e4));
-    final boardNotifier = ValueNotifier<({Position position, Move? lastMove})>((
-      position: Chess.initial,
-      lastMove: null,
-    ));
-    addTearDown(boardNotifier.dispose);
+  testWidgets(
+    'readonly board animates to a new position and highlights the last move',
+    (tester) async {
+      final after1e4 = Chess.initial.play(
+        const NormalMove(from: Square.e2, to: Square.e4),
+      );
+      final boardNotifier =
+          ValueNotifier<({Position position, Move? lastMove})>((
+            position: Chess.initial,
+            lastMove: null,
+          ));
+      addTearDown(boardNotifier.dispose);
 
-    final app = await makeTestProviderScope(
-      tester,
-      child: MaterialApp(
-        home: ValueListenableBuilder<({Position position, Move? lastMove})>(
-          valueListenable: boardNotifier,
-          builder: (context, value, _) => GameLayout(
-            orientation: Side.white,
-            boardParams: GameBoardParams.readonly(
-              variant: Variant.standard,
-              position: value.position,
-              lastMove: value.lastMove,
+      final app = await makeTestProviderScope(
+        tester,
+        child: MaterialApp(
+          home: ValueListenableBuilder<({Position position, Move? lastMove})>(
+            valueListenable: boardNotifier,
+            builder: (context, value, _) => GameLayout(
+              orientation: Side.white,
+              boardParams: GameBoardParams.readonly(
+                variant: Variant.standard,
+                position: value.position,
+                lastMove: value.lastMove,
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pumpWidget(app);
+      );
+      await tester.pumpWidget(app);
 
-    expect(boardHasPiece(tester, Square.e2, Piece.whitePawn), isTrue);
-    expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isFalse);
+      expect(boardHasPiece(tester, Square.e2, Piece.whitePawn), isTrue);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isFalse,
+      );
 
-    // Advance the readonly board to the position after 1.e4.
-    boardNotifier.value = (
-      position: after1e4,
-      lastMove: const NormalMove(from: Square.e2, to: Square.e4),
-    );
-    await tester.pumpAndSettle();
+      // Advance the readonly board to the position after 1.e4.
+      boardNotifier.value = (
+        position: after1e4,
+        lastMove: const NormalMove(from: Square.e2, to: Square.e4),
+      );
+      await tester.pumpAndSettle();
 
-    expect(boardHasPiece(tester, Square.e4, Piece.whitePawn), isTrue);
-    expect(getBoardPieces(tester).containsKey(Square.e2), isFalse);
-    expect(getBoardLastMove(tester), const NormalMove(from: Square.e2, to: Square.e4));
-    // It must remain non-interactive throughout.
-    expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isFalse);
-  });
+      expect(boardHasPiece(tester, Square.e4, Piece.whitePawn), isTrue);
+      expect(getBoardPieces(tester).containsKey(Square.e2), isFalse);
+      expect(
+        getBoardLastMove(tester),
+        const NormalMove(from: Square.e2, to: Square.e4),
+      );
+      // It must remain non-interactive throughout.
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isFalse,
+      );
+    },
+  );
 
-  testWidgets('interactive board can be disabled via a metadata-only update (PlayerSide.none)', (
-    tester,
-  ) async {
-    void noopOnMove(Move move, {bool? viaDragAndDrop}) {}
+  testWidgets(
+    'interactive board can be disabled via a metadata-only update (PlayerSide.none)',
+    (tester) async {
+      void noopOnMove(Move move, {bool? viaDragAndDrop}) {}
 
-    final sideNotifier = ValueNotifier<PlayerSide>(PlayerSide.white);
-    addTearDown(sideNotifier.dispose);
+      final sideNotifier = ValueNotifier<PlayerSide>(PlayerSide.white);
+      addTearDown(sideNotifier.dispose);
 
-    final app = await makeTestProviderScope(
-      tester,
-      child: MaterialApp(
-        home: ValueListenableBuilder<PlayerSide>(
-          valueListenable: sideNotifier,
-          builder: (context, playerSide, _) => GameLayout(
-            orientation: Side.white,
-            boardParams: GameBoardParams.interactive(
-              variant: Variant.standard,
-              position: Chess.initial,
-              playerSide: playerSide,
-              onMove: noopOnMove,
+      final app = await makeTestProviderScope(
+        tester,
+        child: MaterialApp(
+          home: ValueListenableBuilder<PlayerSide>(
+            valueListenable: sideNotifier,
+            builder: (context, playerSide, _) => GameLayout(
+              orientation: Side.white,
+              boardParams: GameBoardParams.interactive(
+                variant: Variant.standard,
+                position: Chess.initial,
+                playerSide: playerSide,
+                onMove: noopOnMove,
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pumpWidget(app);
+      );
+      await tester.pumpWidget(app);
 
-    expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isTrue);
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isTrue,
+      );
 
-    // Same position, only the playerSide changes (e.g. game over) — the board
-    // should become non-interactive without a position change.
-    sideNotifier.value = PlayerSide.none;
-    await tester.pump();
+      // Same position, only the playerSide changes (e.g. game over) — the board
+      // should become non-interactive without a position change.
+      sideNotifier.value = PlayerSide.none;
+      await tester.pump();
 
-    expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isFalse);
-    expect(getBoardPieces(tester).length, 32);
-  });
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isFalse,
+      );
+      expect(getBoardPieces(tester).length, 32);
+    },
+  );
 
-  testWidgets('controllerParams path renders the external controller and does not dispose it', (
-    tester,
-  ) async {
-    final playedMoves = <Move>[];
-    final controller = ChessboardController(
-      game: buildGameData(
-        fen: kInitialFEN,
-        variant: Variant.standard,
-        position: Chess.initial,
-        playerSide: PlayerSide.white,
-        castlingMethod: CastlingMethod.kingTwoSquares,
-        boardHighlights: true,
-      ),
-    );
-    addTearDown(controller.dispose);
-
-    final showBoard = ValueNotifier<bool>(true);
-    addTearDown(showBoard.dispose);
-
-    final app = await makeTestProviderScope(
-      tester,
-      child: MaterialApp(
-        home: ValueListenableBuilder<bool>(
-          valueListenable: showBoard,
-          builder: (context, show, _) => show
-              ? GameLayout(
-                  orientation: Side.white,
-                  controllerParams: ControllerBoardParams(
-                    controller: controller,
-                    variant: Variant.standard,
-                    onMove: (move, {viaDragAndDrop}) => playedMoves.add(move),
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
-      ),
-    );
-    await tester.pumpWidget(app);
-
-    expect(tester.widget<Chessboard>(find.byType(Chessboard)).interactive, isTrue);
-
-    await playMove(tester, 'e2', 'e4');
-    expect(playedMoves, [const NormalMove(from: Square.e2, to: Square.e4)]);
-
-    // Removing the GameLayout must not dispose the externally-owned controller.
-    showBoard.value = false;
-    await tester.pumpAndSettle();
-    expect(
-      () => controller.updatePosition(
-        buildGameData(
+  testWidgets(
+    'controllerParams path renders the external controller and does not dispose it',
+    (tester) async {
+      final playedMoves = <Move>[];
+      final controller = ChessboardController(
+        game: buildGameData(
           fen: kInitialFEN,
           variant: Variant.standard,
           position: Chess.initial,
@@ -462,8 +494,56 @@ void main() {
           castlingMethod: CastlingMethod.kingTwoSquares,
           boardHighlights: true,
         ),
-      ),
-      returnsNormally,
-    );
-  });
+      );
+      addTearDown(controller.dispose);
+
+      final showBoard = ValueNotifier<bool>(true);
+      addTearDown(showBoard.dispose);
+
+      final app = await makeTestProviderScope(
+        tester,
+        child: MaterialApp(
+          home: ValueListenableBuilder<bool>(
+            valueListenable: showBoard,
+            builder: (context, show, _) => show
+                ? GameLayout(
+                    orientation: Side.white,
+                    controllerParams: ControllerBoardParams(
+                      controller: controller,
+                      variant: Variant.standard,
+                      onMove: (move, {viaDragAndDrop}) => playedMoves.add(move),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+      );
+      await tester.pumpWidget(app);
+
+      expect(
+        tester.widget<Chessboard>(find.byType(Chessboard)).interactive,
+        isTrue,
+      );
+
+      await playMove(tester, 'e2', 'e4');
+      expect(playedMoves, [const NormalMove(from: Square.e2, to: Square.e4)]);
+
+      // Removing the GameLayout must not dispose the externally-owned controller.
+      showBoard.value = false;
+      await tester.pumpAndSettle();
+      expect(
+        () => controller.updatePosition(
+          buildGameData(
+            fen: kInitialFEN,
+            variant: Variant.standard,
+            position: Chess.initial,
+            playerSide: PlayerSide.white,
+            castlingMethod: CastlingMethod.kingTwoSquares,
+            boardHighlights: true,
+          ),
+        ),
+        returnsNormally,
+      );
+    },
+  );
 }

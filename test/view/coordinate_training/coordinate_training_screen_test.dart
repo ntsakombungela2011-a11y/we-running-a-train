@@ -17,17 +17,26 @@ bool _boardHasHighlight(WidgetTester tester, Square square) {
 
 void main() {
   group('Coordinate Training', () {
-    testWidgets('Initial state when started in FindSquare mode', (tester) async {
-      final app = await makeTestProviderScopeApp(tester, home: const CoordinateTrainingScreen());
+    testWidgets('Initial state when started in FindSquare mode', (
+      tester,
+    ) async {
+      final app = await makeTestProviderScopeApp(
+        tester,
+        home: const CoordinateTrainingScreen(),
+      );
       await tester.pumpWidget(app);
 
       await tester.tap(find.text('Start training'));
       await tester.pumpAndSettle();
 
-      final container = ProviderScope.containerOf(tester.element(find.byType(StaticChessboard)));
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(StaticChessboard)),
+      );
       final controllerProvider = coordinateTrainingControllerProvider;
 
-      final trainingPrefsNotifier = container.read(coordinateTrainingPreferencesProvider.notifier);
+      final trainingPrefsNotifier = container.read(
+        coordinateTrainingPreferencesProvider.notifier,
+      );
       trainingPrefsNotifier.setMode(TrainingMode.findSquare);
       await tester.pumpAndSettle();
 
@@ -37,16 +46,29 @@ void main() {
       expect(container.read(controllerProvider).trainingActive, true);
 
       // Current and next coordinate prompt should be displayed
-      expect(find.text(container.read(controllerProvider).currentCoord!.name), findsOneWidget);
-      expect(find.text(container.read(controllerProvider).nextCoord!.name), findsOneWidget);
+      expect(
+        find.text(container.read(controllerProvider).currentCoord!.name),
+        findsOneWidget,
+      );
+      expect(
+        find.text(container.read(controllerProvider).nextCoord!.name),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Tap wrong square', (tester) async {
-      final app = await makeTestProviderScopeApp(tester, home: const CoordinateTrainingScreen());
+      final app = await makeTestProviderScopeApp(
+        tester,
+        home: const CoordinateTrainingScreen(),
+      );
       await tester.pumpWidget(app);
 
-      final container = ProviderScope.containerOf(tester.element(find.byType(StaticChessboard)));
-      final trainingPrefsNotifier = container.read(coordinateTrainingPreferencesProvider.notifier);
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(StaticChessboard)),
+      );
+      final trainingPrefsNotifier = container.read(
+        coordinateTrainingPreferencesProvider.notifier,
+      );
       trainingPrefsNotifier.setMode(TrainingMode.findSquare);
       trainingPrefsNotifier.setSideChoice(SideChoice.white);
 
@@ -58,9 +80,12 @@ void main() {
       final currentCoord = container.read(controllerProvider).currentCoord;
       final nextCoord = container.read(controllerProvider).nextCoord;
 
-      final wrongCoord = Square.values[(currentCoord! + 1) % Square.values.length];
+      final wrongCoord =
+          Square.values[(currentCoord! + 1) % Square.values.length];
 
-      await tester.tapAt(squareOffset(wrongCoord, tester.getRect(find.byType(StaticChessboard))));
+      await tester.tapAt(
+        squareOffset(wrongCoord, tester.getRect(find.byType(StaticChessboard))),
+      );
       await tester.pump();
 
       expect(container.read(controllerProvider).score, 0);
@@ -75,11 +100,18 @@ void main() {
     });
 
     testWidgets('Tap correct square', (tester) async {
-      final app = await makeTestProviderScopeApp(tester, home: const CoordinateTrainingScreen());
+      final app = await makeTestProviderScopeApp(
+        tester,
+        home: const CoordinateTrainingScreen(),
+      );
       await tester.pumpWidget(app);
 
-      final container = ProviderScope.containerOf(tester.element(find.byType(StaticChessboard)));
-      final trainingPrefsNotifier = container.read(coordinateTrainingPreferencesProvider.notifier);
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(StaticChessboard)),
+      );
+      final trainingPrefsNotifier = container.read(
+        coordinateTrainingPreferencesProvider.notifier,
+      );
       trainingPrefsNotifier.setMode(TrainingMode.findSquare);
       trainingPrefsNotifier.setSideChoice(SideChoice.white);
 
@@ -92,7 +124,10 @@ void main() {
       final nextCoord = container.read(controllerProvider).nextCoord;
 
       await tester.tapAt(
-        squareOffset(currentCoord!, tester.getRect(find.byType(StaticChessboard))),
+        squareOffset(
+          currentCoord!,
+          tester.getRect(find.byType(StaticChessboard)),
+        ),
       );
 
       await tester.pump();
@@ -106,8 +141,14 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 300));
       expect(_boardHasHighlight(tester, currentCoord), isFalse);
 
-      expect(find.text(container.read(controllerProvider).currentCoord!.name), findsOneWidget);
-      expect(find.text(container.read(controllerProvider).nextCoord!.name), findsOneWidget);
+      expect(
+        find.text(container.read(controllerProvider).currentCoord!.name),
+        findsOneWidget,
+      );
+      expect(
+        find.text(container.read(controllerProvider).nextCoord!.name),
+        findsOneWidget,
+      );
     });
   });
 }

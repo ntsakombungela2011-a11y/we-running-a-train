@@ -1,6 +1,7 @@
 import 'package:lichess_mobile/src/model/common/id.dart';
 
-const Map<(BroadcastTournamentId, BroadcastRoundId), String> broadcastRoundMockResponses = {
+const Map<(BroadcastTournamentId, BroadcastRoundId), String>
+broadcastRoundMockResponses = {
   (BroadcastTournamentId('RAIoMC7L'), BroadcastRoundId('6VuqTjes')): '''
 {
   "round": {
@@ -193,8 +194,20 @@ const Map<BroadcastGameId, String> broadcastGamePgnResponses = {
 
 const analysisSummaryJson = {
   'summary': {
-    'white': {'inaccuracy': 4, 'mistake': 1, 'blunder': 6, 'acpl': 117, 'accuracy': 61},
-    'black': {'inaccuracy': 2, 'mistake': 1, 'blunder': 4, 'acpl': 78, 'accuracy': 72},
+    'white': {
+      'inaccuracy': 4,
+      'mistake': 1,
+      'blunder': 6,
+      'acpl': 117,
+      'accuracy': 61,
+    },
+    'black': {
+      'inaccuracy': 2,
+      'mistake': 1,
+      'blunder': 4,
+      'acpl': 78,
+      'accuracy': 72,
+    },
   },
   'division': {'middle': 18, 'end': 42},
 };

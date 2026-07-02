@@ -8,12 +8,14 @@ import 'package:lichess_mobile/src/model/user/user.dart';
 part 'puzzle_preferences.freezed.dart';
 part 'puzzle_preferences.g.dart';
 
-final puzzlePreferencesProvider = NotifierProvider<PuzzlePreferences, PuzzlePrefs>(
-  PuzzlePreferences.new,
-  name: 'PuzzlePreferencesProvider',
-);
+final puzzlePreferencesProvider =
+    NotifierProvider<PuzzlePreferences, PuzzlePrefs>(
+      PuzzlePreferences.new,
+      name: 'PuzzlePreferencesProvider',
+    );
 
-class PuzzlePreferences extends Notifier<PuzzlePrefs> with SessionPreferencesStorage<PuzzlePrefs> {
+class PuzzlePreferences extends Notifier<PuzzlePrefs>
+    with SessionPreferencesStorage<PuzzlePrefs> {
   @override
   @protected
   final prefCategory = PrefCategory.puzzle;
@@ -58,8 +60,13 @@ sealed class PuzzlePrefs with _$PuzzlePrefs implements Serializable {
     @Default(true) bool rated,
   }) = _PuzzlePrefs;
 
-  factory PuzzlePrefs.defaults({UserId? id}) =>
-      PuzzlePrefs(id: id, difficulty: PuzzleDifficulty.normal, autoNext: false, rated: true);
+  factory PuzzlePrefs.defaults({UserId? id}) => PuzzlePrefs(
+    id: id,
+    difficulty: PuzzleDifficulty.normal,
+    autoNext: false,
+    rated: true,
+  );
 
-  factory PuzzlePrefs.fromJson(Map<String, dynamic> json) => _$PuzzlePrefsFromJson(json);
+  factory PuzzlePrefs.fromJson(Map<String, dynamic> json) =>
+      _$PuzzlePrefsFromJson(json);
 }

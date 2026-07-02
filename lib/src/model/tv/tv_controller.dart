@@ -34,7 +34,9 @@ class TvController extends AsyncNotifier<TvGameControllerParams> {
   @override
   Future<TvGameControllerParams> build() {
     assert(
-      params.channel != null || params.userId != null || params.initialGame != null,
+      params.channel != null ||
+          params.userId != null ||
+          params.initialGame != null,
       'Either a channel, a userId or an initial game must be provided',
     );
 
@@ -43,7 +45,11 @@ class TvController extends AsyncNotifier<TvGameControllerParams> {
 
   /// Called when the watched channel selects a new game.
   void moveToNextGame((GameId id, Side orientation) game) {
-    state = AsyncValue.data((gameId: game.$1, orientation: game.$2, source: params));
+    state = AsyncValue.data((
+      gameId: game.$1,
+      orientation: game.$2,
+      source: params,
+    ));
   }
 
   /// Looks up which game should be watched now and switches to it.
@@ -54,7 +60,9 @@ class TvController extends AsyncNotifier<TvGameControllerParams> {
     state = AsyncValue.data(await _resolveGame(null));
   }
 
-  Future<TvGameControllerParams> _resolveGame((GameId id, Side orientation)? game) async {
+  Future<TvGameControllerParams> _resolveGame(
+    (GameId id, Side orientation)? game,
+  ) async {
     GameId id;
     Side orientation;
 
@@ -67,7 +75,9 @@ class TvController extends AsyncNotifier<TvGameControllerParams> {
       id = channelGame.id;
       orientation = channelGame.side ?? Side.white;
     } else if (params.userId != null) {
-      final userGame = await ref.read(userRepositoryProvider).getCurrentGame(params.userId!);
+      final userGame = await ref
+          .read(userRepositoryProvider)
+          .getCurrentGame(params.userId!);
       id = userGame.id;
       orientation = userGame.playerSideOf(params.userId!) ?? Side.white;
     } else {

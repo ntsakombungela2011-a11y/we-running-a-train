@@ -26,7 +26,8 @@ class ConfigurableFakeConnectivity implements Connectivity {
   }
 
   @override
-  Stream<List<ConnectivityResult>> get onConnectivityChanged => Stream.value([result]);
+  Stream<List<ConnectivityResult>> get onConnectivityChanged =>
+      Stream.value([result]);
 }
 
 Future<ProviderContainer> makeNnueTestContainer({
@@ -64,7 +65,8 @@ Future<ProviderContainer> makeNnueTestContainer({
         httpClientFactoryProvider.overrideWith((ref) {
           return FakeHttpClientFactory(() => mockClient);
         }),
-      if (connectivity != null) connectivityPluginProvider.overrideWith((_) => connectivity),
+      if (connectivity != null)
+        connectivityPluginProvider.overrideWith((_) => connectivity),
     ],
   );
 
@@ -74,22 +76,35 @@ Future<ProviderContainer> makeNnueTestContainer({
 void main() {
   group('NnueService', () {
     group('nnueFiles', () {
-      test('returns correct file paths when appSupportDirectory is available', () async {
-        final tempDir = await Directory.systemTemp.createTemp('nnue_test_');
-        addTearDown(() => tempDir.delete(recursive: true));
+      test(
+        'returns correct file paths when appSupportDirectory is available',
+        () async {
+          final tempDir = await Directory.systemTemp.createTemp('nnue_test_');
+          addTearDown(() => tempDir.delete(recursive: true));
 
-        final container = await makeNnueTestContainer(appSupportDirectory: tempDir);
-        addTearDown(container.dispose);
+          final container = await makeNnueTestContainer(
+            appSupportDirectory: tempDir,
+          );
+          addTearDown(container.dispose);
 
-        final service = container.read(nnueServiceProvider);
-        final files = service.nnueFiles;
+          final service = container.read(nnueServiceProvider);
+          final files = service.nnueFiles;
 
-        expect(files.bigNet.path, '${tempDir.path}/${Stockfish.latestBigNNUE}');
-        expect(files.smallNet.path, '${tempDir.path}/${Stockfish.latestSmallNNUE}');
-      });
+          expect(
+            files.bigNet.path,
+            '${tempDir.path}/${Stockfish.latestBigNNUE}',
+          );
+          expect(
+            files.smallNet.path,
+            '${tempDir.path}/${Stockfish.latestSmallNNUE}',
+          );
+        },
+      );
 
       test('throws exception when appSupportDirectory is null', () async {
-        final container = await makeNnueTestContainer(appSupportDirectory: null);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: null,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -100,7 +115,9 @@ void main() {
 
     group('checkNNUEFiles', () {
       test('returns false when appSupportDirectory is null', () async {
-        final container = await makeNnueTestContainer(appSupportDirectory: null);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: null,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -113,7 +130,9 @@ void main() {
         final tempDir = await Directory.systemTemp.createTemp('nnue_test_');
         addTearDown(() => tempDir.delete(recursive: true));
 
-        final container = await makeNnueTestContainer(appSupportDirectory: tempDir);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: tempDir,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -130,7 +149,9 @@ void main() {
         final bigNetFile = File('${tempDir.path}/${Stockfish.latestBigNNUE}');
         await bigNetFile.writeAsBytes([1, 2, 3]);
 
-        final container = await makeNnueTestContainer(appSupportDirectory: tempDir);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: tempDir,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -139,29 +160,38 @@ void main() {
         expect(result, isFalse);
       });
 
-      test('returns false when files exist but checksums do not match', () async {
-        final tempDir = await Directory.systemTemp.createTemp('nnue_test_');
-        addTearDown(() => tempDir.delete(recursive: true));
+      test(
+        'returns false when files exist but checksums do not match',
+        () async {
+          final tempDir = await Directory.systemTemp.createTemp('nnue_test_');
+          addTearDown(() => tempDir.delete(recursive: true));
 
-        // Create files with invalid content
-        final bigNetFile = File('${tempDir.path}/${Stockfish.latestBigNNUE}');
-        final smallNetFile = File('${tempDir.path}/${Stockfish.latestSmallNNUE}');
-        await bigNetFile.writeAsBytes([1, 2, 3]);
-        await smallNetFile.writeAsBytes([4, 5, 6]);
+          // Create files with invalid content
+          final bigNetFile = File('${tempDir.path}/${Stockfish.latestBigNNUE}');
+          final smallNetFile = File(
+            '${tempDir.path}/${Stockfish.latestSmallNNUE}',
+          );
+          await bigNetFile.writeAsBytes([1, 2, 3]);
+          await smallNetFile.writeAsBytes([4, 5, 6]);
 
-        final container = await makeNnueTestContainer(appSupportDirectory: tempDir);
-        addTearDown(container.dispose);
+          final container = await makeNnueTestContainer(
+            appSupportDirectory: tempDir,
+          );
+          addTearDown(container.dispose);
 
-        final service = container.read(nnueServiceProvider);
-        final result = await service.checkNNUEFiles();
+          final service = container.read(nnueServiceProvider);
+          final result = await service.checkNNUEFiles();
 
-        expect(result, isFalse);
-      });
+          expect(result, isFalse);
+        },
+      );
     });
 
     group('hasOutdatedNNUEFiles', () {
       test('returns false when appSupportDirectory is null', () async {
-        final container = await makeNnueTestContainer(appSupportDirectory: null);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: null,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -176,7 +206,9 @@ void main() {
 
         File('${tempDir.path}/someOldFile.nnue').create();
 
-        final container = await makeNnueTestContainer(appSupportDirectory: tempDir);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: tempDir,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -188,7 +220,9 @@ void main() {
 
     group('deleteNNUEFiles', () {
       test('throws exception when appSupportDirectory is null', () async {
-        final container = await makeNnueTestContainer(appSupportDirectory: null);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: null,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -208,7 +242,9 @@ void main() {
         await nnueFile2.writeAsString('test2');
         await otherFile.writeAsString('other');
 
-        final container = await makeNnueTestContainer(appSupportDirectory: tempDir);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: tempDir,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -216,13 +252,18 @@ void main() {
 
         expect(await nnueFile1.exists(), isFalse);
         expect(await nnueFile2.exists(), isFalse);
-        expect(await otherFile.exists(), isTrue); // Non-.nnue files should not be deleted
+        expect(
+          await otherFile.exists(),
+          isTrue,
+        ); // Non-.nnue files should not be deleted
       });
     });
 
     group('downloadNNUEFiles', () {
       test('returns false when appSupportDirectory is null', () async {
-        final container = await makeNnueTestContainer(appSupportDirectory: null);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: null,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -268,13 +309,18 @@ void main() {
 
         final container = await makeNnueTestContainer(
           appSupportDirectory: tempDir,
-          connectivity: ConfigurableFakeConnectivity(result: ConnectivityResult.mobile),
+          connectivity: ConfigurableFakeConnectivity(
+            result: ConnectivityResult.mobile,
+          ),
         );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
 
-        expect(() => service.downloadNNUEFiles(inBackground: true), throwsException);
+        expect(
+          () => service.downloadNNUEFiles(inBackground: true),
+          throwsException,
+        );
       });
 
       test('allows sequential downloads after previous one completes', () async {
@@ -309,7 +355,9 @@ void main() {
 
     group('isDownloadingNNUEFiles', () {
       test('returns false when progress is 0', () async {
-        final container = await makeNnueTestContainer(appSupportDirectory: null);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: null,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);
@@ -318,7 +366,9 @@ void main() {
       });
 
       test('returns false when progress is 1', () async {
-        final container = await makeNnueTestContainer(appSupportDirectory: null);
+        final container = await makeNnueTestContainer(
+          appSupportDirectory: null,
+        );
         addTearDown(container.dispose);
 
         final service = container.read(nnueServiceProvider);

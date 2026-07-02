@@ -21,6 +21,9 @@ class BlogRepository {
   final Aggregator aggregator;
 
   Future<IList<BlogPost>> getCarousel() {
-    return client.readJsonList(Uri(path: '/api/blog/carousel'), mapper: BlogPost.fromServerJson);
+    return client.readJsonList(
+      Uri(path: '/api/blog/carousel'),
+      mapper: BlogPost.fromServerJson,
+    );
   }
 }

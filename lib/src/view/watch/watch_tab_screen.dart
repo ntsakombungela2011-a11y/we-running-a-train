@@ -32,27 +32,28 @@ import 'package:lichess_mobile/src/widgets/user.dart';
 
 const kThumbnailImageSize = 40.0;
 
-final featuredChannelsProvider = FutureProvider.autoDispose<IList<TvGameSnapshot>>((ref) async {
-  final repository = ref.watch(tvRepositoryProvider);
-  final channels = await repository.channels();
-  return TvChannel.values
-      .map((channel) => MapEntry(channel, channels[channel]))
-      .where((entry) => entry.value != null)
-      .map(
-        (entry) => TvGameSnapshot(
-          channel: entry.key,
-          id: entry.value!.id,
-          orientation: entry.value!.side ?? Side.white,
-          player: FeaturedPlayer(
-            name: entry.value!.user.name,
-            title: entry.value!.user.title,
-            side: entry.value!.side ?? Side.white,
-            rating: entry.value!.rating,
-          ),
-        ),
-      )
-      .toIList();
-});
+final featuredChannelsProvider =
+    FutureProvider.autoDispose<IList<TvGameSnapshot>>((ref) async {
+      final repository = ref.watch(tvRepositoryProvider);
+      final channels = await repository.channels();
+      return TvChannel.values
+          .map((channel) => MapEntry(channel, channels[channel]))
+          .where((entry) => entry.value != null)
+          .map(
+            (entry) => TvGameSnapshot(
+              channel: entry.key,
+              id: entry.value!.id,
+              orientation: entry.value!.side ?? Side.white,
+              player: FeaturedPlayer(
+                name: entry.value!.user.name,
+                title: entry.value!.user.title,
+                side: entry.value!.side ?? Side.white,
+                rating: entry.value!.rating,
+              ),
+            ),
+          )
+          .toIList();
+    });
 
 class WatchTabScreen extends ConsumerStatefulWidget {
   const WatchTabScreen({super.key});
@@ -188,7 +189,8 @@ Future<void> _doRefreshDataForRef(WidgetRef ref) {
   return Future.wait([
     ref.refresh(broadcastsPaginatorProvider.future),
     ref.refresh(featuredChannelsProvider.future),
-    if (!(ref.read(kidModeProvider).value ?? false)) ref.refresh(liveStreamersProvider.future),
+    if (!(ref.read(kidModeProvider).value ?? false))
+      ref.refresh(liveStreamersProvider.future),
   ]);
 }
 
@@ -215,7 +217,10 @@ class _BroadcastWidget extends ConsumerWidget {
             ),
           ),
           switch (broadcastList) {
-            AsyncData(:final value) => BroadcastCarousel(broadcasts: value, worker: worker),
+            AsyncData(:final value) => BroadcastCarousel(
+              broadcasts: value,
+              worker: worker,
+            ),
             AsyncError() => const Padding(
               padding: Styles.bodySectionPadding,
               child: Text('Could not load broadcasts'),
@@ -257,8 +262,9 @@ class _WatchTvWidget extends ConsumerWidget {
         return ListSection(
           header: const Text('Boipelo TV'),
           hasLeading: true,
-          onHeaderTap: () =>
-              Navigator.of(context).push(LiveTvChannelsScreen.buildRoute()).then((_) {
+          onHeaderTap: () => Navigator.of(context)
+              .push(LiveTvChannelsScreen.buildRoute())
+              .then((_) {
                 if (context.mounted) {
                   _doRefreshDataForRef(ref);
                 }
@@ -299,7 +305,9 @@ class _WatchTvWidget extends ConsumerWidget {
         );
       },
       error: (error, stackTrace) {
-        debugPrint('SEVERE: [WatchTvWidget] could not load TV channels data; $error\n $stackTrace');
+        debugPrint(
+          'SEVERE: [WatchTvWidget] could not load TV channels data; $error\n $stackTrace',
+        );
         return const Padding(
           padding: Styles.bodySectionPadding,
           child: Text('Could not load TV channels'),
@@ -308,7 +316,11 @@ class _WatchTvWidget extends ConsumerWidget {
       loading: () => Shimmer(
         child: ShimmerLoading(
           isLoading: true,
-          child: ListSection.loading(itemsNumber: 4, header: true, hasLeading: true),
+          child: ListSection.loading(
+            itemsNumber: 4,
+            header: true,
+            hasLeading: true,
+          ),
         ),
       ),
     );
@@ -333,16 +345,24 @@ class _StreamerWidget extends ConsumerWidget {
           header: Text(context.l10n.streamersMenu),
           hasLeading: true,
           leadingIndent: kThumbnailImageSize + 16,
-          onHeaderTap: () => Navigator.of(context).push(StreamerScreen.buildRoute(data)),
+          onHeaderTap: () =>
+              Navigator.of(context).push(StreamerScreen.buildRoute(data)),
           children: [
             ...data
                 .take(numberOfItems)
-                .map((e) => StreamerListTile(streamer: e, thumbnailSize: kThumbnailImageSize)),
+                .map(
+                  (e) => StreamerListTile(
+                    streamer: e,
+                    thumbnailSize: kThumbnailImageSize,
+                  ),
+                ),
           ],
         );
       },
       error: (error, stackTrace) {
-        debugPrint('SEVERE: [StreamerWidget] could not load streamer data; $error\n $stackTrace');
+        debugPrint(
+          'SEVERE: [StreamerWidget] could not load streamer data; $error\n $stackTrace',
+        );
         return const Padding(
           padding: Styles.bodySectionPadding,
           child: Text('Could not load live streamers'),
@@ -351,7 +371,11 @@ class _StreamerWidget extends ConsumerWidget {
       loading: () => Shimmer(
         child: ShimmerLoading(
           isLoading: true,
-          child: ListSection.loading(itemsNumber: numberOfItems, header: true, hasLeading: true),
+          child: ListSection.loading(
+            itemsNumber: numberOfItems,
+            header: true,
+            hasLeading: true,
+          ),
         ),
       ),
     );

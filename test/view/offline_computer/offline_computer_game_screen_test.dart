@@ -33,7 +33,8 @@ import '../../model/engine/fake_stockfish.dart';
 import '../../test_helpers.dart';
 import '../../test_provider_scope.dart';
 
-class MockOfflineComputerGameStorage extends Mock implements OfflineComputerGameStorage {}
+class MockOfflineComputerGameStorage extends Mock
+    implements OfflineComputerGameStorage {}
 
 void main() {
   TestLichessBinding.ensureInitialized();
@@ -66,7 +67,9 @@ void main() {
       testBinding.stockfish = LegalMoveFakeStockfish();
     });
 
-    testWidgets('New game dialog is shown on startup with all options', (tester) async {
+    testWidgets('New game dialog is shown on startup with all options', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -74,9 +77,8 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -273,7 +275,9 @@ void main() {
       expect(find.text('New game'), findsWidgets);
     });
 
-    testWidgets('Playing as black shows board from black perspective', (tester) async {
+    testWidgets('Playing as black shows board from black perspective', (
+      tester,
+    ) async {
       await initOfflineComputerGame(tester, side: Side.black);
 
       // Wait for engine to make first move
@@ -361,9 +365,8 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -394,9 +397,8 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -410,7 +412,9 @@ void main() {
       expect(find.byType(Switch), findsNWidgets(2));
     });
 
-    testWidgets('Takeback and hint buttons are disabled in non-casual mode', (tester) async {
+    testWidgets('Takeback and hint buttons are disabled in non-casual mode', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -418,9 +422,8 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -428,7 +431,10 @@ void main() {
 
       // Turn off casual mode (find the switch that's part of the Casual setting tile)
       final casualSwitch = find.descendant(
-        of: find.ancestor(of: find.text('Casual'), matching: find.byType(SwitchSettingTile)),
+        of: find.ancestor(
+          of: find.text('Casual'),
+          matching: find.byType(SwitchSettingTile),
+        ),
         matching: find.byType(Switch),
       );
       await tester.tap(casualSwitch);
@@ -476,14 +482,18 @@ void main() {
               GameStep(
                 position: Position.setupPosition(
                   Rule.chess,
-                  Setup.parseFen('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'),
+                  Setup.parseFen(
+                    'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+                  ),
                 ),
                 sanMove: SanMove('e4', Move.parse('e2e4')!),
               ),
               GameStep(
                 position: Position.setupPosition(
                   Rule.chess,
-                  Setup.parseFen('rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'),
+                  Setup.parseFen(
+                    'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+                  ),
                 ),
                 sanMove: SanMove('e5', Move.parse('e7e5')!),
               ),
@@ -513,16 +523,17 @@ void main() {
             appBar: AppBar(title: const Text('Test Screen')),
             body: FilledButton(
               child: const Text('Go to game'),
-              onPressed: () => Navigator.of(
-                context,
-              ).push(buildScreenRoute<void>(screen: const OfflineComputerGameScreen())),
+              onPressed: () => Navigator.of(context).push(
+                buildScreenRoute<void>(
+                  screen: const OfflineComputerGameScreen(),
+                ),
+              ),
             ),
           ),
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -549,7 +560,9 @@ void main() {
       expect(find.text('e5'), findsOneWidget);
     });
 
-    testWidgets('Last move is highlighted when loading a saved game', (tester) async {
+    testWidgets('Last move is highlighted when loading a saved game', (
+      tester,
+    ) async {
       // Regression test: interactive boards read the last move from
       // InteractiveBoardParams.lastMove, not GameLayout.lastMove (readonly only).
       // The last move of a restored game must be highlighted on the board.
@@ -566,14 +579,18 @@ void main() {
               GameStep(
                 position: Position.setupPosition(
                   Rule.chess,
-                  Setup.parseFen('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'),
+                  Setup.parseFen(
+                    'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+                  ),
                 ),
                 sanMove: SanMove('e4', Move.parse('e2e4')!),
               ),
               GameStep(
                 position: Position.setupPosition(
                   Rule.chess,
-                  Setup.parseFen('rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'),
+                  Setup.parseFen(
+                    'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+                  ),
                 ),
                 sanMove: SanMove('e5', Move.parse('e7e5')!),
               ),
@@ -600,9 +617,8 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -625,16 +641,17 @@ void main() {
             appBar: AppBar(title: const Text('Test Screen')),
             body: FilledButton(
               child: const Text('Go to game'),
-              onPressed: () => Navigator.of(
-                context,
-              ).push(buildScreenRoute<void>(screen: const OfflineComputerGameScreen())),
+              onPressed: () => Navigator.of(context).push(
+                buildScreenRoute<void>(
+                  screen: const OfflineComputerGameScreen(),
+                ),
+              ),
             ),
           ),
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -694,7 +711,9 @@ void main() {
       expect(hintButton, findsOneWidget);
     });
 
-    testWidgets('Hint button is disabled while hints are loading', (tester) async {
+    testWidgets('Hint button is disabled while hints are loading', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -708,9 +727,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -740,7 +758,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('Hint button shows circle on board when pressed', (tester) async {
+    testWidgets('Hint button shows circle on board when pressed', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -754,9 +774,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -789,7 +808,9 @@ void main() {
       }
     });
 
-    testWidgets('Hint button cycles through hints on subsequent presses', (tester) async {
+    testWidgets('Hint button cycles through hints on subsequent presses', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -803,9 +824,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -858,9 +878,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -895,7 +914,9 @@ void main() {
       }
     });
 
-    testWidgets('Hint button is highlighted when hint is showing', (tester) async {
+    testWidgets('Hint button is highlighted when hint is showing', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -909,9 +930,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -980,32 +1000,39 @@ void main() {
       testBinding.stockfish = LegalMoveFakeStockfish();
     });
 
-    testWidgets('New game dialog shows mini board when initialFen is provided', (tester) async {
-      final gameStorage = MockOfflineComputerGameStorage();
-      when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
+    testWidgets(
+      'New game dialog shows mini board when initialFen is provided',
+      (tester) async {
+        final gameStorage = MockOfflineComputerGameStorage();
+        when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
-      // A position after 1.e4 e5
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+        // A position after 1.e4 e5
+        const customFen =
+            'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const OfflineComputerGameScreen(initialFen: customFen),
-        overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
-        },
-      );
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle();
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const OfflineComputerGameScreen(initialFen: customFen),
+          overrides: {
+            offlineComputerGameStorageProvider:
+                offlineComputerGameStorageProvider.overrideWith(
+                  (_) => gameStorage,
+                ),
+          },
+        );
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle();
 
-      // Verify new game bottom sheet is shown
+        // Verify new game bottom sheet is shown
 
-      // Verify that a StaticChessboard is shown (the mini board preview)
-      expect(find.byType(StaticChessboard), findsOneWidget);
-    });
+        // Verify that a StaticChessboard is shown (the mini board preview)
+        expect(find.byType(StaticChessboard), findsOneWidget);
+      },
+    );
 
-    testWidgets('New game dialog does not show mini board without initialFen', (tester) async {
+    testWidgets('New game dialog does not show mini board without initialFen', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -1013,9 +1040,8 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1033,15 +1059,15 @@ void main() {
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
       // A position after 1.e4 e5 - it's white's turn
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+      const customFen =
+          'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
 
       final app = await makeTestProviderScopeApp(
         tester,
         home: const OfflineComputerGameScreen(initialFen: customFen),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1064,15 +1090,108 @@ void main() {
       expect(boardHasPiece(tester, Square.e7, Piece.blackPawn), isFalse);
     });
 
-    testWidgets('Engine plays first when custom position turn differs from player side', (
+    testWidgets(
+      'Engine plays first when custom position turn differs from player side',
+      (tester) async {
+        final gameStorage = MockOfflineComputerGameStorage();
+        when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
+
+        late WidgetRef ref;
+        // A position where it's white's turn, but player chooses black
+        const customFen =
+            'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: Consumer(
+            builder: (context, r, _) {
+              ref = r;
+              return const OfflineComputerGameScreen(initialFen: customFen);
+            },
+          ),
+          overrides: {
+            offlineComputerGameStorageProvider:
+                offlineComputerGameStorageProvider.overrideWith(
+                  (_) => gameStorage,
+                ),
+          },
+        );
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle();
+
+        // Select black (but position has white to move)
+        await selectSide(tester, Side.black);
+        await tester.tap(find.text('Play'));
+
+        // Pump once to start the game
+        await tester.pump();
+
+        // The engine should be thinking (since it's white's turn and player is black)
+        var gameState = ref.read(offlineComputerGameControllerProvider);
+        expect(gameState.game.playerSide, Side.black);
+
+        // Wait for engine to make its move
+        await tester.pumpAndSettle();
+
+        // After engine move, there should be at least one move in the list
+        gameState = ref.read(offlineComputerGameControllerProvider);
+        expect(gameState.game.steps.length, greaterThan(1));
+      },
+    );
+
+    testWidgets(
+      'Player plays first when custom position turn matches player side',
+      (tester) async {
+        final gameStorage = MockOfflineComputerGameStorage();
+        when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
+
+        late WidgetRef ref;
+        // A position where it's black's turn, and player chooses black
+        const customFen =
+            'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2';
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: Consumer(
+            builder: (context, r, _) {
+              ref = r;
+              return const OfflineComputerGameScreen(initialFen: customFen);
+            },
+          ),
+          overrides: {
+            offlineComputerGameStorageProvider:
+                offlineComputerGameStorageProvider.overrideWith(
+                  (_) => gameStorage,
+                ),
+          },
+        );
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle();
+
+        // Select black (position has black to move)
+        await selectSide(tester, Side.black);
+        await tester.tap(find.text('Play'));
+        await tester.pumpAndSettle();
+
+        // Player should be able to move (no engine move yet)
+        final gameState = ref.read(offlineComputerGameControllerProvider);
+        expect(gameState.game.playerSide, Side.black);
+        expect(gameState.turn, Side.black);
+        expect(gameState.isEngineThinking, isFalse);
+        // Only the initial position step
+        expect(gameState.game.steps.length, 1);
+      },
+    );
+
+    testWidgets('Game uses Variant.fromPosition when started with custom FEN', (
       tester,
     ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
       late WidgetRef ref;
-      // A position where it's white's turn, but player chooses black
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+      const customFen =
+          'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
 
       final app = await makeTestProviderScopeApp(
         tester,
@@ -1083,91 +1202,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
-        },
-      );
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle();
-
-      // Select black (but position has white to move)
-      await selectSide(tester, Side.black);
-      await tester.tap(find.text('Play'));
-
-      // Pump once to start the game
-      await tester.pump();
-
-      // The engine should be thinking (since it's white's turn and player is black)
-      var gameState = ref.read(offlineComputerGameControllerProvider);
-      expect(gameState.game.playerSide, Side.black);
-
-      // Wait for engine to make its move
-      await tester.pumpAndSettle();
-
-      // After engine move, there should be at least one move in the list
-      gameState = ref.read(offlineComputerGameControllerProvider);
-      expect(gameState.game.steps.length, greaterThan(1));
-    });
-
-    testWidgets('Player plays first when custom position turn matches player side', (tester) async {
-      final gameStorage = MockOfflineComputerGameStorage();
-      when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
-
-      late WidgetRef ref;
-      // A position where it's black's turn, and player chooses black
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2';
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: Consumer(
-          builder: (context, r, _) {
-            ref = r;
-            return const OfflineComputerGameScreen(initialFen: customFen);
-          },
-        ),
-        overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
-        },
-      );
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle();
-
-      // Select black (position has black to move)
-      await selectSide(tester, Side.black);
-      await tester.tap(find.text('Play'));
-      await tester.pumpAndSettle();
-
-      // Player should be able to move (no engine move yet)
-      final gameState = ref.read(offlineComputerGameControllerProvider);
-      expect(gameState.game.playerSide, Side.black);
-      expect(gameState.turn, Side.black);
-      expect(gameState.isEngineThinking, isFalse);
-      // Only the initial position step
-      expect(gameState.game.steps.length, 1);
-    });
-
-    testWidgets('Game uses Variant.fromPosition when started with custom FEN', (tester) async {
-      final gameStorage = MockOfflineComputerGameStorage();
-      when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
-
-      late WidgetRef ref;
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: Consumer(
-          builder: (context, r, _) {
-            ref = r;
-            return const OfflineComputerGameScreen(initialFen: customFen);
-          },
-        ),
-        overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1182,7 +1218,9 @@ void main() {
       expect(gameState.game.initialFen, customFen);
     });
 
-    testWidgets('Game uses Variant.standard when started without custom FEN', (tester) async {
+    testWidgets('Game uses Variant.standard when started without custom FEN', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -1197,9 +1235,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1214,7 +1251,9 @@ void main() {
       expect(gameState.game.initialFen, null);
     });
 
-    testWidgets('A given initial variant is selected by default', (tester) async {
+    testWidgets('A given initial variant is selected by default', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -1225,13 +1264,14 @@ void main() {
         home: Consumer(
           builder: (context, r, _) {
             ref = r;
-            return const OfflineComputerGameScreen(initialVariant: Variant.atomic);
+            return const OfflineComputerGameScreen(
+              initialVariant: Variant.atomic,
+            );
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1246,19 +1286,21 @@ void main() {
       expect(gameState.game.initialFen, null);
     });
 
-    testWidgets('Side defaults to "Next to play" when initialFen is provided', (tester) async {
+    testWidgets('Side defaults to "Next to play" when initialFen is provided', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+      const customFen =
+          'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
 
       final app = await makeTestProviderScopeApp(
         tester,
         home: const OfflineComputerGameScreen(initialFen: customFen),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1268,13 +1310,16 @@ void main() {
       expect(find.text('Next to play'), findsOneWidget);
     });
 
-    testWidgets('"Next to play" resolves to white when FEN has white to move', (tester) async {
+    testWidgets('"Next to play" resolves to white when FEN has white to move', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
       late WidgetRef ref;
       // White to move
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
+      const customFen =
+          'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
 
       final app = await makeTestProviderScopeApp(
         tester,
@@ -1285,9 +1330,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1302,13 +1346,16 @@ void main() {
       expect(gameState.turn, Side.white);
     });
 
-    testWidgets('"Next to play" resolves to black when FEN has black to move', (tester) async {
+    testWidgets('"Next to play" resolves to black when FEN has black to move', (
+      tester,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
       late WidgetRef ref;
       // Black to move
-      const customFen = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2';
+      const customFen =
+          'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2';
 
       final app = await makeTestProviderScopeApp(
         tester,
@@ -1319,9 +1366,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1335,33 +1381,37 @@ void main() {
       expect(gameState.game.playerSide, Side.black);
     });
 
-    testWidgets('"Next to play" is not shown in side picker without initialFen', (tester) async {
-      final gameStorage = MockOfflineComputerGameStorage();
-      when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
+    testWidgets(
+      '"Next to play" is not shown in side picker without initialFen',
+      (tester) async {
+        final gameStorage = MockOfflineComputerGameStorage();
+        when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const OfflineComputerGameScreen(),
-        overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
-        },
-      );
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle();
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const OfflineComputerGameScreen(),
+          overrides: {
+            offlineComputerGameStorageProvider:
+                offlineComputerGameStorageProvider.overrideWith(
+                  (_) => gameStorage,
+                ),
+          },
+        );
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle();
 
-      // Default should be "Random side", not "Next to play"
-      expect(find.text('Random side'), findsOneWidget);
-      expect(find.text('Next to play'), findsNothing);
+        // Default should be "Random side", not "Next to play"
+        expect(find.text('Random side'), findsOneWidget);
+        expect(find.text('Next to play'), findsNothing);
 
-      // Open side picker
-      await tester.tap(find.byType(SettingsListTile).first);
-      await tester.pumpAndSettle();
+        // Open side picker
+        await tester.tap(find.byType(SettingsListTile).first);
+        await tester.pumpAndSettle();
 
-      // "Next to play" should not be in the picker
-      expect(find.text('Next to play'), findsNothing);
-    });
+        // "Next to play" should not be in the picker
+        expect(find.text('Next to play'), findsNothing);
+      },
+    );
   });
 
   group('Practice comment card', () {
@@ -1369,7 +1419,10 @@ void main() {
       testBinding.stockfish = LegalMoveFakeStockfish();
     });
 
-    Future<void> pumpWithComment(WidgetTester tester, PracticeComment comment) async {
+    Future<void> pumpWithComment(
+      WidgetTester tester,
+      PracticeComment comment,
+    ) async {
       final gameStorage = MockOfflineComputerGameStorage();
       when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -1377,20 +1430,23 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
-          offlineComputerGameControllerProvider: offlineComputerGameControllerProvider.overrideWith(
-            () => _FakePracticeController(_stateWithPracticeComment(comment)),
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
+          offlineComputerGameControllerProvider:
+              offlineComputerGameControllerProvider.overrideWith(
+                () =>
+                    _FakePracticeController(_stateWithPracticeComment(comment)),
+              ),
         },
       );
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
     }
 
-    PracticeComment makeComment(MoveVerdict verdict, {bool isBookMove = false}) =>
-        PracticeComment(verdict: verdict, isBookMove: isBookMove);
+    PracticeComment makeComment(
+      MoveVerdict verdict, {
+      bool isBookMove = false,
+    }) => PracticeComment(verdict: verdict, isBookMove: isBookMove);
 
     // --- icons ---
 
@@ -1419,7 +1475,9 @@ void main() {
       expect(find.byIcon(Icons.cancel), findsOneWidget);
     });
 
-    testWidgets('book move shows menu_book icon regardless of verdict', (tester) async {
+    testWidgets('book move shows menu_book icon regardless of verdict', (
+      tester,
+    ) async {
       await pumpWithComment(tester, makeComment(.goodMove, isBookMove: true));
       expect(find.byIcon(Icons.menu_book), findsOneWidget);
     });
@@ -1431,7 +1489,9 @@ void main() {
       expect(find.text('Good move'), findsOneWidget);
     });
 
-    testWidgets('notBest shows "Good move, but there\'s better" label', (tester) async {
+    testWidgets('notBest shows "Good move, but there\'s better" label', (
+      tester,
+    ) async {
       await pumpWithComment(tester, makeComment(.notBest));
       expect(find.text("Good move, but there's better"), findsOneWidget);
     });
@@ -1466,28 +1526,49 @@ void main() {
 
     // --- card background colors ---
 
-    testWidgets('goodMove card background is lightGreen with low alpha', (tester) async {
+    testWidgets('goodMove card background is lightGreen with low alpha', (
+      tester,
+    ) async {
       await pumpWithComment(tester, makeComment(.goodMove));
       final card = _findCommentCardContainer(tester, Icons.check_circle);
-      expect((card.decoration! as BoxDecoration).color, Colors.lightGreen.withValues(alpha: 0.1));
+      expect(
+        (card.decoration! as BoxDecoration).color,
+        Colors.lightGreen.withValues(alpha: 0.1),
+      );
     });
 
-    testWidgets('inaccuracy card background is inaccuracyColor with low alpha', (tester) async {
-      await pumpWithComment(tester, makeComment(.inaccuracy));
-      final card = _findCommentCardContainer(tester, Icons.help);
-      expect((card.decoration! as BoxDecoration).color, inaccuracyColor.withValues(alpha: 0.1));
-    });
+    testWidgets(
+      'inaccuracy card background is inaccuracyColor with low alpha',
+      (tester) async {
+        await pumpWithComment(tester, makeComment(.inaccuracy));
+        final card = _findCommentCardContainer(tester, Icons.help);
+        expect(
+          (card.decoration! as BoxDecoration).color,
+          inaccuracyColor.withValues(alpha: 0.1),
+        );
+      },
+    );
 
-    testWidgets('mistake card background is mistakeColor with low alpha', (tester) async {
+    testWidgets('mistake card background is mistakeColor with low alpha', (
+      tester,
+    ) async {
       await pumpWithComment(tester, makeComment(.mistake));
       final card = _findCommentCardContainer(tester, Icons.error);
-      expect((card.decoration! as BoxDecoration).color, mistakeColor.withValues(alpha: 0.1));
+      expect(
+        (card.decoration! as BoxDecoration).color,
+        mistakeColor.withValues(alpha: 0.1),
+      );
     });
 
-    testWidgets('blunder card background is blunderColor with low alpha', (tester) async {
+    testWidgets('blunder card background is blunderColor with low alpha', (
+      tester,
+    ) async {
       await pumpWithComment(tester, makeComment(.blunder));
       final card = _findCommentCardContainer(tester, Icons.cancel);
-      expect((card.decoration! as BoxDecoration).color, blunderColor.withValues(alpha: 0.1));
+      expect(
+        (card.decoration! as BoxDecoration).color,
+        blunderColor.withValues(alpha: 0.1),
+      );
     });
 
     // --- suggested moves ---
@@ -1504,25 +1585,32 @@ void main() {
       expect(find.textContaining('e5'), findsOneWidget);
     });
 
-    testWidgets('alternativeGoodMove is shown for good moves with an alternative', (tester) async {
-      await pumpWithComment(
-        tester,
-        PracticeComment(
-          verdict: MoveVerdict.goodMove,
-          moveSuggestion: SanMove('d4', Move.parse('d2d4')!),
-        ),
-      );
-      expect(find.textContaining('Another was'), findsOneWidget);
-      expect(find.textContaining('d4'), findsOneWidget);
-    });
+    testWidgets(
+      'alternativeGoodMove is shown for good moves with an alternative',
+      (tester) async {
+        await pumpWithComment(
+          tester,
+          PracticeComment(
+            verdict: MoveVerdict.goodMove,
+            moveSuggestion: SanMove('d4', Move.parse('d2d4')!),
+          ),
+        );
+        expect(find.textContaining('Another was'), findsOneWidget);
+        expect(find.textContaining('d4'), findsOneWidget);
+      },
+    );
 
-    testWidgets('no suggested move shown for goodMove without alternative', (tester) async {
+    testWidgets('no suggested move shown for goodMove without alternative', (
+      tester,
+    ) async {
       await pumpWithComment(tester, makeComment(.goodMove));
       expect(find.textContaining('Best was'), findsNothing);
       expect(find.textContaining('Another was'), findsNothing);
     });
 
-    testWidgets('hideBestMove preference hides the suggested move', (tester) async {
+    testWidgets('hideBestMove preference hides the suggested move', (
+      tester,
+    ) async {
       await _pumpWithState(
         tester,
         _stateWithPracticeComment(
@@ -1550,7 +1638,10 @@ void main() {
       await _pumpWithState(
         tester,
         _stateWithPracticeComment(
-          const PracticeComment(verdict: MoveVerdict.mistake, evalAfter: '+0.3'),
+          const PracticeComment(
+            verdict: MoveVerdict.mistake,
+            evalAfter: '+0.3',
+          ),
         ),
         prefs: OfflineComputerGamePrefs.defaults.copyWith(hideEvaluation: true),
       );
@@ -1559,7 +1650,9 @@ void main() {
 
     // --- game state display ---
 
-    testWidgets('finished game shows "Game Over" instead of a verdict icon', (tester) async {
+    testWidgets('finished game shows "Game Over" instead of a verdict icon', (
+      tester,
+    ) async {
       await _pumpWithState(tester, _stateGameFinished());
       expect(find.text('Game Over'), findsOneWidget);
       // No verdict icons when game is over
@@ -1579,7 +1672,9 @@ void main() {
       expect(find.byIcon(Icons.cancel), findsNothing);
     });
 
-    testWidgets("player's turn with cached eval shows the eval string", (tester) async {
+    testWidgets("player's turn with cached eval shows the eval string", (
+      tester,
+    ) async {
       await _pumpWithState(
         tester,
         _statePlayerTurn(
@@ -1599,13 +1694,16 @@ void main() {
       expect(find.text('+0.5'), findsOneWidget);
     });
 
-    testWidgets('isEvaluatingMove with no comment renders the card at half opacity', (
-      tester,
-    ) async {
-      await _pumpWithState(tester, _stateEvaluatingMove());
-      final animatedOpacity = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
-      expect(animatedOpacity.opacity, 0.5);
-    });
+    testWidgets(
+      'isEvaluatingMove with no comment renders the card at half opacity',
+      (tester) async {
+        await _pumpWithState(tester, _stateEvaluatingMove());
+        final animatedOpacity = tester.widget<AnimatedOpacity>(
+          find.byType(AnimatedOpacity),
+        );
+        expect(animatedOpacity.opacity, 0.5);
+      },
+    );
   });
 
   group('Practice mode', () {
@@ -1617,9 +1715,8 @@ void main() {
         tester,
         home: const OfflineComputerGameScreen(),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1654,9 +1751,8 @@ void main() {
           },
         ),
         overrides: {
-          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-            (_) => gameStorage,
-          ),
+          offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+              .overrideWith((_) => gameStorage),
         },
       );
       await tester.pumpWidget(app);
@@ -1665,7 +1761,10 @@ void main() {
 
       // Enable practice mode
       final practiceSwitch = find.descendant(
-        of: find.ancestor(of: find.text('Practice mode'), matching: find.byType(SwitchSettingTile)),
+        of: find.ancestor(
+          of: find.text('Practice mode'),
+          matching: find.byType(SwitchSettingTile),
+        ),
         matching: find.byType(Switch),
       );
       await tester.tap(practiceSwitch);
@@ -1799,16 +1898,17 @@ Future<void> _pumpWithState(
     tester,
     home: const OfflineComputerGameScreen(),
     overrides: {
-      offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-        (_) => gameStorage,
-      ),
-      offlineComputerGameControllerProvider: offlineComputerGameControllerProvider.overrideWith(
-        () => _FakePracticeController(state),
-      ),
+      offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+          .overrideWith((_) => gameStorage),
+      offlineComputerGameControllerProvider:
+          offlineComputerGameControllerProvider.overrideWith(
+            () => _FakePracticeController(state),
+          ),
       if (prefs != null)
-        offlineComputerGamePreferencesProvider: offlineComputerGamePreferencesProvider.overrideWith(
-          () => _FakeGamePreferences(prefs),
-        ),
+        offlineComputerGamePreferencesProvider:
+            offlineComputerGamePreferencesProvider.overrideWith(
+              () => _FakeGamePreferences(prefs),
+            ),
     },
   );
   await tester.pumpWidget(app);
@@ -1819,10 +1919,14 @@ Future<void> _pumpWithState(
 /// anchored by [icon] to disambiguate from other containers in the tree.
 Container _findCommentCardContainer(WidgetTester tester, IconData icon) {
   final ancestors = tester
-      .widgetList<Container>(find.ancestor(of: find.byIcon(icon), matching: find.byType(Container)))
+      .widgetList<Container>(
+        find.ancestor(of: find.byIcon(icon), matching: find.byType(Container)),
+      )
       .toList();
   return ancestors.firstWhere(
-    (c) => c.decoration is BoxDecoration && (c.decoration! as BoxDecoration).borderRadius != null,
+    (c) =>
+        c.decoration is BoxDecoration &&
+        (c.decoration! as BoxDecoration).borderRadius != null,
   );
 }
 
@@ -1833,7 +1937,9 @@ Container _findCommentCardContainer(WidgetTester tester, IconData icon) {
 OfflineComputerGameState _stateWithPracticeComment(PracticeComment comment) {
   final afterE4 = Position.setupPosition(
     Rule.chess,
-    Setup.parseFen('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'),
+    Setup.parseFen(
+      'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+    ),
   );
   final game = OfflineComputerGame(
     id: const StringId('test-game-with-comment'),
@@ -1870,7 +1976,9 @@ OfflineComputerGameState _stateWithPracticeComment(PracticeComment comment) {
 OfflineComputerGameState _stateGameFinished() {
   final afterE4 = Position.setupPosition(
     Rule.chess,
-    Setup.parseFen('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'),
+    Setup.parseFen(
+      'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+    ),
   );
   final game = OfflineComputerGame(
     id: const StringId('test-game-finished'),
@@ -1932,11 +2040,15 @@ OfflineComputerGameState _statePlayerTurn({ComputerAnalysis? analysis}) {
 OfflineComputerGameState _stateEvaluatingMove() {
   final afterE4 = Position.setupPosition(
     Rule.chess,
-    Setup.parseFen('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1'),
+    Setup.parseFen(
+      'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1',
+    ),
   );
   final afterE4E5 = Position.setupPosition(
     Rule.chess,
-    Setup.parseFen('rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2'),
+    Setup.parseFen(
+      'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2',
+    ),
   );
   final game = OfflineComputerGame(
     id: const StringId('test-evaluating-move'),
@@ -1944,7 +2056,10 @@ OfflineComputerGameState _stateEvaluatingMove() {
       const GameStep(position: Chess.initial),
       GameStep(position: afterE4, sanMove: SanMove('e4', Move.parse('e2e4')!)),
       // Player (black) moved e5 but no comment yet — evaluation is in flight.
-      GameStep(position: afterE4E5, sanMove: SanMove('e5', Move.parse('e7e5')!)),
+      GameStep(
+        position: afterE4E5,
+        sanMove: SanMove('e5', Move.parse('e7e5')!),
+      ),
     ].lock,
     meta: GameMeta(
       createdAt: DateTime.now(),
@@ -1962,11 +2077,18 @@ OfflineComputerGameState _stateEvaluatingMove() {
     practiceMode: true,
     casual: true,
   );
-  return OfflineComputerGameState(game: game, stepCursor: 2, isEvaluatingMove: true);
+  return OfflineComputerGameState(
+    game: game,
+    stepCursor: 2,
+    isEvaluatingMove: true,
+  );
 }
 
 /// Helper to initialize a practice mode game.
-Future<Rect> initPracticeModeGame(WidgetTester tester, {Side side = Side.white}) async {
+Future<Rect> initPracticeModeGame(
+  WidgetTester tester, {
+  Side side = Side.white,
+}) async {
   final gameStorage = MockOfflineComputerGameStorage();
   when(() => gameStorage.fetchGame()).thenAnswer((_) async => null);
 
@@ -1974,9 +2096,8 @@ Future<Rect> initPracticeModeGame(WidgetTester tester, {Side side = Side.white})
     tester,
     home: const OfflineComputerGameScreen(),
     overrides: {
-      offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-        (_) => gameStorage,
-      ),
+      offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+          .overrideWith((_) => gameStorage),
     },
   );
   await tester.pumpWidget(app);
@@ -1985,7 +2106,10 @@ Future<Rect> initPracticeModeGame(WidgetTester tester, {Side side = Side.white})
 
   // Enable practice mode
   final practiceSwitch = find.descendant(
-    of: find.ancestor(of: find.text('Practice mode'), matching: find.byType(SwitchSettingTile)),
+    of: find.ancestor(
+      of: find.text('Practice mode'),
+      matching: find.byType(SwitchSettingTile),
+    ),
     matching: find.byType(Switch),
   );
   await tester.tap(practiceSwitch);
@@ -2034,9 +2158,8 @@ Future<Rect> initOfflineComputerGame(
     tester,
     home: OfflineComputerGameScreen(initialVariant: variant, initialFen: fen),
     overrides: {
-      offlineComputerGameStorageProvider: offlineComputerGameStorageProvider.overrideWith(
-        (_) => gameStorage,
-      ),
+      offlineComputerGameStorageProvider: offlineComputerGameStorageProvider
+          .overrideWith((_) => gameStorage),
     },
   );
   await tester.pumpWidget(app);

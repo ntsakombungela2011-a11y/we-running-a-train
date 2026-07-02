@@ -58,14 +58,18 @@ class BoardEditorScreen extends ConsumerWidget {
             onPressed: () => showDialog<void>(
               context: context,
               builder: (_) => _FenDialog(
-                onFenLoaded: (fen) =>
-                    ref.read(boardEditorControllerProvider(params).notifier).loadFen(fen),
+                onFenLoaded: (fen) => ref
+                    .read(boardEditorControllerProvider(params).notifier)
+                    .loadFen(fen),
               ),
             ),
           ),
           SemanticIconButton(
             semanticsLabel: context.l10n.mobileSharePositionAsFEN,
-            onPressed: () => launchShareDialog(context, ShareParams(text: boardEditorState.fen)),
+            onPressed: () => launchShareDialog(
+              context,
+              ShareParams(text: boardEditorState.fen),
+            ),
             icon: const PlatformShareIcon(),
           ),
         ],
@@ -146,16 +150,21 @@ class _BoardEditor extends ConsumerWidget {
       settings: boardPrefs
           .toBoardSettings(editorState.variant)
           .copyWith(
-            borderRadius: isTablet ? Styles.boardBorderRadius : BorderRadius.zero,
+            borderRadius: isTablet
+                ? Styles.boardBorderRadius
+                : BorderRadius.zero,
             boxShadow: isTablet ? boardShadows : const <BoxShadow>[],
           ),
       pointerMode: editorState.editorPointerMode,
-      onDiscardedPiece: (Square square) =>
-          ref.read(boardEditorControllerProvider(params).notifier).discardPiece(square),
-      onDroppedPiece: (Square? origin, Square dest, Piece piece) =>
-          ref.read(boardEditorControllerProvider(params).notifier).movePiece(origin, dest, piece),
-      onEditedSquare: (Square square) =>
-          ref.read(boardEditorControllerProvider(params).notifier).editSquare(square),
+      onDiscardedPiece: (Square square) => ref
+          .read(boardEditorControllerProvider(params).notifier)
+          .discardPiece(square),
+      onDroppedPiece: (Square? origin, Square dest, Piece piece) => ref
+          .read(boardEditorControllerProvider(params).notifier)
+          .movePiece(origin, dest, piece),
+      onEditedSquare: (Square square) => ref
+          .read(boardEditorControllerProvider(params).notifier)
+          .editSquare(square),
     );
   }
 }
@@ -195,7 +204,9 @@ class _PieceMenuState extends ConsumerState<_PieceMenu> {
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        borderRadius: widget.isTablet ? Styles.boardBorderRadius : BorderRadius.zero,
+        borderRadius: widget.isTablet
+            ? Styles.boardBorderRadius
+            : BorderRadius.zero,
         boxShadow: widget.isTablet ? boardShadows : const <BoxShadow>[],
       ),
       child: ColoredBox(
@@ -214,8 +225,9 @@ class _PieceMenuState extends ConsumerState<_PieceMenu> {
                     ? context.lichessColors.good
                     : Colors.transparent,
                 child: GestureDetector(
-                  onTap: () =>
-                      ref.read(editorController.notifier).updateMode(EditorPointerMode.drag),
+                  onTap: () => ref
+                      .read(editorController.notifier)
+                      .updateMode(EditorPointerMode.drag),
                   child: Icon(CupertinoIcons.hand_draw, size: 0.9 * squareSize),
                 ),
               ),
@@ -231,7 +243,9 @@ class _PieceMenuState extends ConsumerState<_PieceMenu> {
               return ColoredBox(
                 key: Key('piece-button-${piece.color.name}-${piece.role.name}'),
                 color:
-                    ref.read(boardEditorControllerProvider(widget.params)).activePieceOnEdit ==
+                    ref
+                            .read(boardEditorControllerProvider(widget.params))
+                            .activePieceOnEdit ==
                         piece
                     ? ColorScheme.of(context).primary
                     : Colors.transparent,
@@ -244,11 +258,13 @@ class _PieceMenuState extends ConsumerState<_PieceMenu> {
                       pieceAssets: boardPrefs.pieceSet.assets,
                     ),
                     child: pieceWidget,
-                    onDragEnd: (_) =>
-                        ref.read(editorController.notifier).updateMode(EditorPointerMode.drag),
+                    onDragEnd: (_) => ref
+                        .read(editorController.notifier)
+                        .updateMode(EditorPointerMode.drag),
                   ),
-                  onTap: () =>
-                      ref.read(editorController.notifier).updateMode(EditorPointerMode.edit, piece),
+                  onTap: () => ref
+                      .read(editorController.notifier)
+                      .updateMode(EditorPointerMode.edit, piece),
                 ),
               );
             }),
@@ -261,8 +277,9 @@ class _PieceMenuState extends ConsumerState<_PieceMenu> {
                     ? context.lichessColors.error
                     : Colors.transparent,
                 child: GestureDetector(
-                  onTap: () =>
-                      ref.read(editorController.notifier).updateMode(EditorPointerMode.edit, null),
+                  onTap: () => ref
+                      .read(editorController.notifier)
+                      .updateMode(EditorPointerMode.edit, null),
                   child: Icon(CupertinoIcons.delete, size: 0.8 * squareSize),
                 ),
               ),
@@ -366,7 +383,9 @@ class _BottomBar extends ConsumerWidget {
                   choices: readSupportedVariants
                       .where(
                         // TODO, for chess960 to be meaningful here, we'd need to display a dialog to load one of the starting positions
-                        (variant) => variant != Variant.fromPosition && variant != Variant.chess960,
+                        (variant) =>
+                            variant != Variant.fromPosition &&
+                            variant != Variant.chess960,
                       )
                       .toList(),
                   selectedItem: editorState.variant,
@@ -381,8 +400,11 @@ class _BottomBar extends ConsumerWidget {
               if (editorState.pgn != null && pieceCount > 0 && pieceCount <= 32)
                 BottomSheetAction(
                   makeLabel: (context) => Text(context.l10n.continueFromHere),
-                  onPressed: () =>
-                      _showContinueFromHereMenu(context, editorState.variant, editorState.fen),
+                  onPressed: () => _showContinueFromHereMenu(
+                    context,
+                    editorState.variant,
+                    editorState.fen,
+                  ),
                 ),
               BottomSheetAction(
                 makeLabel: (context) => Text(context.l10n.clearBoard),
@@ -396,7 +418,9 @@ class _BottomBar extends ConsumerWidget {
         BottomBarButton(
           key: const Key('flip-button'),
           label: context.l10n.flipBoard,
-          onTap: ref.read(boardEditorControllerProvider(params).notifier).flipBoard,
+          onTap: ref
+              .read(boardEditorControllerProvider(params).notifier)
+              .flipBoard,
           icon: CupertinoIcons.arrow_2_squarepath,
         ),
         BottomBarButton(
@@ -405,7 +429,9 @@ class _BottomBar extends ConsumerWidget {
           onTap:
               editorState.pgn != null &&
                   // 1 condition (of many) where stockfish segfaults
-                  (pieceCount > 0 && (pieceCount <= 32 || editorState.variant == Variant.horde))
+                  (pieceCount > 0 &&
+                      (pieceCount <= 32 ||
+                          editorState.variant == Variant.horde))
               ? () {
                   Navigator.of(context).push(
                     AnalysisScreen.buildRoute(
@@ -428,9 +454,12 @@ class _BottomBar extends ConsumerWidget {
           label: 'Filters',
           onTap: () => showModalBottomSheet<void>(
             context: context,
-            builder: (BuildContext context) => BoardEditorFilters(params: params),
+            builder: (BuildContext context) =>
+                BoardEditorFilters(params: params),
             showDragHandle: true,
-            constraints: BoxConstraints(minHeight: MediaQuery.sizeOf(context).height * 0.5),
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.sizeOf(context).height * 0.5,
+            ),
           ),
           icon: Icons.tune,
         ),
@@ -438,21 +467,31 @@ class _BottomBar extends ConsumerWidget {
     );
   }
 
-  Future<void> _showContinueFromHereMenu(BuildContext context, Variant variant, String fen) {
+  Future<void> _showContinueFromHereMenu(
+    BuildContext context,
+    Variant variant,
+    String fen,
+  ) {
     return showAdaptiveActionSheet(
       context: context,
       actions: [
         BottomSheetAction(
           makeLabel: (context) => Text(context.l10n.playAgainstComputer),
-          onPressed: () => Navigator.of(
-            context,
-          ).push(OfflineComputerGameScreen.buildRoute(initialVariant: variant, initialFen: fen)),
+          onPressed: () => Navigator.of(context).push(
+            OfflineComputerGameScreen.buildRoute(
+              initialVariant: variant,
+              initialFen: fen,
+            ),
+          ),
         ),
         BottomSheetAction(
           makeLabel: (context) => Text(context.l10n.mobileOverTheBoard),
-          onPressed: () => Navigator.of(
-            context,
-          ).push(OverTheBoardScreen.buildRoute(initialVariant: variant, initialFen: fen)),
+          onPressed: () => Navigator.of(context).push(
+            OverTheBoardScreen.buildRoute(
+              initialVariant: variant,
+              initialFen: fen,
+            ),
+          ),
         ),
       ],
     );

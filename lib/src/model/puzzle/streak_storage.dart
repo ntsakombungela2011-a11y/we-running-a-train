@@ -8,15 +8,15 @@ import 'package:lichess_mobile/src/model/puzzle/puzzle_streak.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Provider for the streak storage for a given user.
-final streakStorageProvider = Provider.autoDispose.family<StreakStorage, UserId?>((
-  Ref ref,
-  UserId? userId,
-) {
-  return StreakStorage(ref, userId);
-});
+final streakStorageProvider = Provider.autoDispose
+    .family<StreakStorage, UserId?>((Ref ref, UserId? userId) {
+      return StreakStorage(ref, userId);
+    });
 
 /// Fetches the current streak score from the local storage if available, returns null otherwise.
-final savedStreakScoreProvider = FutureProvider.autoDispose<int?>((Ref ref) async {
+final savedStreakScoreProvider = FutureProvider.autoDispose<int?>((
+  Ref ref,
+) async {
   final authUser = ref.watch(authControllerProvider);
   // cannot use ref.watch because it would create a circular dependency
   // as we invalidate this provider in the storage saveActiveStreak and clearActiveStreak methods
@@ -50,7 +50,8 @@ class StreakStorage {
     ref.invalidate(savedStreakScoreProvider);
   }
 
-  SharedPreferencesWithCache get _store => LichessBinding.instance.sharedPreferences;
+  SharedPreferencesWithCache get _store =>
+      LichessBinding.instance.sharedPreferences;
 
   String get _storageKey => 'puzzle_streak.${userId ?? '**anon**'}';
 }

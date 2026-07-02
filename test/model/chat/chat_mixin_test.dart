@@ -10,7 +10,8 @@ import 'package:lichess_mobile/src/model/chat/chat_mixin.dart';
 import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/common/service/sound_service.dart';
 import 'package:lichess_mobile/src/model/common/socket.dart';
-import 'package:lichess_mobile/src/model/settings/general_preferences.dart' show SoundTheme;
+import 'package:lichess_mobile/src/model/settings/general_preferences.dart'
+    show SoundTheme;
 import 'package:lichess_mobile/src/model/user/user.dart';
 import 'package:lichess_mobile/src/network/http.dart';
 import 'package:lichess_mobile/src/network/socket.dart';
@@ -29,16 +30,22 @@ class _FakeChatState with ChatMixinState {
   @override
   final bool chatEnabled;
 
-  _FakeChatState copyWith({ChatState? chatState, bool? chatEnabled}) => _FakeChatState(
-    chatState: chatState ?? this.chatState,
-    chatEnabled: chatEnabled ?? this.chatEnabled,
-  );
+  _FakeChatState copyWith({ChatState? chatState, bool? chatEnabled}) =>
+      _FakeChatState(
+        chatState: chatState ?? this.chatState,
+        chatEnabled: chatEnabled ?? this.chatEnabled,
+      );
 }
 
 // A minimal notifier that mixes in [ChatMixin] so its logic can be exercised in
 // isolation. Test helpers expose the protected members.
-class _TestChatNotifier extends AsyncNotifier<_FakeChatState> with ChatMixin<_FakeChatState> {
-  _TestChatNotifier({required this.initialData, required this.isPublic, required this.enabled});
+class _TestChatNotifier extends AsyncNotifier<_FakeChatState>
+    with ChatMixin<_FakeChatState> {
+  _TestChatNotifier({
+    required this.initialData,
+    required this.isPublic,
+    required this.enabled,
+  });
 
   final ChatData? initialData;
   final bool isPublic;
@@ -93,12 +100,25 @@ AsyncNotifierProvider<_TestChatNotifier, _FakeChatState> _makeProvider({
   bool enabled = true,
 }) {
   return AsyncNotifierProvider<_TestChatNotifier, _FakeChatState>(
-    () => _TestChatNotifier(initialData: initialData, isPublic: isPublic, enabled: enabled),
+    () => _TestChatNotifier(
+      initialData: initialData,
+      isPublic: isPublic,
+      enabled: enabled,
+    ),
   );
 }
 
-ChatMessage _msg(String text, {String? username, bool troll = false, bool deleted = false}) =>
-    ChatMessage(message: text, username: username, troll: troll, deleted: deleted);
+ChatMessage _msg(
+  String text, {
+  String? username,
+  bool troll = false,
+  bool deleted = false,
+}) => ChatMessage(
+  message: text,
+  username: username,
+  troll: troll,
+  deleted: deleted,
+);
 
 // Builds the raw json of an incoming 'message' socket event payload.
 Map<String, dynamic> _msgData(
@@ -127,30 +147,39 @@ void main() {
       expect(state.chatState, isNull);
     });
 
-    test('keeps normal messages and computes unread count from scratch', () async {
-      final container = await makeContainer();
-      final provider = _makeProvider(
-        initialData: _chatData([_msg('hello', username: 'alice'), _msg('hi', username: 'bob')]),
-      );
-      final state = await container.read(provider.future);
-      expect(state.chatState!.messages.length, 2);
-      expect(state.chatState!.unreadMessages, 2);
-    });
+    test(
+      'keeps normal messages and computes unread count from scratch',
+      () async {
+        final container = await makeContainer();
+        final provider = _makeProvider(
+          initialData: _chatData([
+            _msg('hello', username: 'alice'),
+            _msg('hi', username: 'bob'),
+          ]),
+        );
+        final state = await container.read(provider.future);
+        expect(state.chatState!.messages.length, 2);
+        expect(state.chatState!.unreadMessages, 2);
+      },
+    );
 
-    test('filters out deleted, spam and troll (from others) messages', () async {
-      final container = await makeContainer();
-      final provider = _makeProvider(
-        initialData: _chatData([
-          _msg('legit', username: 'alice'),
-          _msg('removed', username: 'bob', deleted: true),
-          _msg('troll talk', username: 'eve', troll: true),
-          _msg('join my team please', username: 'spammer'),
-        ]),
-      );
-      final state = await container.read(provider.future);
-      expect(state.chatState!.messages.map((m) => m.message), ['legit']);
-      expect(state.chatState!.unreadMessages, 1);
-    });
+    test(
+      'filters out deleted, spam and troll (from others) messages',
+      () async {
+        final container = await makeContainer();
+        final provider = _makeProvider(
+          initialData: _chatData([
+            _msg('legit', username: 'alice'),
+            _msg('removed', username: 'bob', deleted: true),
+            _msg('troll talk', username: 'eve', troll: true),
+            _msg('join my team please', username: 'spammer'),
+          ]),
+        );
+        final state = await container.read(provider.future);
+        expect(state.chatState!.messages.map((m) => m.message), ['legit']);
+        expect(state.chatState!.unreadMessages, 1);
+      },
+    );
 
     test('keeps troll messages authored by the current user', () async {
       final container = await makeContainer(
@@ -166,57 +195,80 @@ void main() {
         ]),
       );
       final state = await container.read(provider.future);
-      expect(state.chatState!.messages.map((m) => m.message), ['my own troll msg']);
+      expect(state.chatState!.messages.map((m) => m.message), [
+        'my own troll msg',
+      ]);
     });
   });
 
   group('ChatMixin.handleSocketEvent', () {
-    test('appends an incoming message and increments the unread count', () async {
-      final container = await makeContainer();
-      await _warmKidMode(container);
-      final provider = _makeProvider(initialData: _chatData([_msg('hello', username: 'alice')]));
-      final notifier = container.read(provider.notifier);
-      await container.read(provider.future);
+    test(
+      'appends an incoming message and increments the unread count',
+      () async {
+        final container = await makeContainer();
+        await _warmKidMode(container);
+        final provider = _makeProvider(
+          initialData: _chatData([_msg('hello', username: 'alice')]),
+        );
+        final notifier = container.read(provider.notifier);
+        await container.read(provider.future);
 
-      notifier.dispatch(
-        SocketEvent(
-          topic: 'message',
-          data: _msgData('hi there', username: 'bob'),
-        ),
-      );
+        notifier.dispatch(
+          SocketEvent(
+            topic: 'message',
+            data: _msgData('hi there', username: 'bob'),
+          ),
+        );
 
-      final state = container.read(provider).requireValue;
-      expect(state.chatState!.messages.map((m) => m.message), ['hello', 'hi there']);
-      expect(state.chatState!.unreadMessages, 2);
-    });
+        final state = container.read(provider).requireValue;
+        expect(state.chatState!.messages.map((m) => m.message), [
+          'hello',
+          'hi there',
+        ]);
+        expect(state.chatState!.unreadMessages, 2);
+      },
+    );
 
-    test('plays a notification sound for private chats on a new message', () async {
-      final sound = _RecordingSoundService();
-      final container = await makeContainer(
-        overrides: {soundServiceProvider: soundServiceProvider.overrideWithValue(sound)},
-      );
-      await _warmKidMode(container);
-      final provider = _makeProvider(initialData: _chatData([]), isPublic: false);
-      final notifier = container.read(provider.notifier);
-      await container.read(provider.future);
+    test(
+      'plays a notification sound for private chats on a new message',
+      () async {
+        final sound = _RecordingSoundService();
+        final container = await makeContainer(
+          overrides: {
+            soundServiceProvider: soundServiceProvider.overrideWithValue(sound),
+          },
+        );
+        await _warmKidMode(container);
+        final provider = _makeProvider(
+          initialData: _chatData([]),
+          isPublic: false,
+        );
+        final notifier = container.read(provider.notifier);
+        await container.read(provider.future);
 
-      notifier.dispatch(
-        SocketEvent(
-          topic: 'message',
-          data: _msgData('gg', username: 'bob'),
-        ),
-      );
+        notifier.dispatch(
+          SocketEvent(
+            topic: 'message',
+            data: _msgData('gg', username: 'bob'),
+          ),
+        );
 
-      expect(sound.played, [Sound.confirmation]);
-    });
+        expect(sound.played, [Sound.confirmation]);
+      },
+    );
 
     test('does not play a notification sound for public chats', () async {
       final sound = _RecordingSoundService();
       final container = await makeContainer(
-        overrides: {soundServiceProvider: soundServiceProvider.overrideWithValue(sound)},
+        overrides: {
+          soundServiceProvider: soundServiceProvider.overrideWithValue(sound),
+        },
       );
       await _warmKidMode(container);
-      final provider = _makeProvider(initialData: _chatData([]), isPublic: true);
+      final provider = _makeProvider(
+        initialData: _chatData([]),
+        isPublic: true,
+      );
       final notifier = container.read(provider.notifier);
       await container.read(provider.future);
 
@@ -230,47 +282,58 @@ void main() {
       expect(sound.played, isEmpty);
     });
 
-    test('does not increment unread for a filtered (deleted) incoming message', () async {
-      final container = await makeContainer();
-      await _warmKidMode(container);
-      final provider = _makeProvider(initialData: _chatData([_msg('hello', username: 'alice')]));
-      final notifier = container.read(provider.notifier);
-      await container.read(provider.future);
+    test(
+      'does not increment unread for a filtered (deleted) incoming message',
+      () async {
+        final container = await makeContainer();
+        await _warmKidMode(container);
+        final provider = _makeProvider(
+          initialData: _chatData([_msg('hello', username: 'alice')]),
+        );
+        final notifier = container.read(provider.notifier);
+        await container.read(provider.future);
 
-      notifier.dispatch(
-        SocketEvent(
-          topic: 'message',
-          data: _msgData('spam', username: 'eve', deleted: true),
-        ),
-      );
+        notifier.dispatch(
+          SocketEvent(
+            topic: 'message',
+            data: _msgData('spam', username: 'eve', deleted: true),
+          ),
+        );
 
-      final state = container.read(provider).requireValue;
-      expect(state.chatState!.messages.length, 1);
-      expect(state.chatState!.unreadMessages, 1);
-    });
+        final state = container.read(provider).requireValue;
+        expect(state.chatState!.messages.length, 1);
+        expect(state.chatState!.unreadMessages, 1);
+      },
+    );
 
-    test('ignores the event when chat is not initialized (null chat state)', () async {
-      final container = await makeContainer();
-      await _warmKidMode(container);
-      final provider = _makeProvider();
-      final notifier = container.read(provider.notifier);
-      await container.read(provider.future);
+    test(
+      'ignores the event when chat is not initialized (null chat state)',
+      () async {
+        final container = await makeContainer();
+        await _warmKidMode(container);
+        final provider = _makeProvider();
+        final notifier = container.read(provider.notifier);
+        await container.read(provider.future);
 
-      // Must not throw even though chatState is null.
-      notifier.dispatch(
-        SocketEvent(
-          topic: 'message',
-          data: _msgData('hi', username: 'bob'),
-        ),
-      );
+        // Must not throw even though chatState is null.
+        notifier.dispatch(
+          SocketEvent(
+            topic: 'message',
+            data: _msgData('hi', username: 'bob'),
+          ),
+        );
 
-      expect(container.read(provider).requireValue.chatState, isNull);
-    });
+        expect(container.read(provider).requireValue.chatState, isNull);
+      },
+    );
 
     test('ignores the event when chat is disabled', () async {
       final container = await makeContainer();
       await _warmKidMode(container);
-      final provider = _makeProvider(initialData: _chatData([]), enabled: false);
+      final provider = _makeProvider(
+        initialData: _chatData([]),
+        enabled: false,
+      );
       final notifier = container.read(provider.notifier);
       await container.read(provider.future);
 
@@ -281,12 +344,17 @@ void main() {
         ),
       );
 
-      expect(container.read(provider).requireValue.chatState!.messages, isEmpty);
+      expect(
+        container.read(provider).requireValue.chatState!.messages,
+        isEmpty,
+      );
     });
 
     test('ignores the event in kid mode', () async {
       final container = await makeContainer(
-        overrides: {kidModeProvider: kidModeProvider.overrideWith((ref) => true)},
+        overrides: {
+          kidModeProvider: kidModeProvider.overrideWith((ref) => true),
+        },
       );
       await _warmKidMode(container);
       final provider = _makeProvider(initialData: _chatData([]));
@@ -300,7 +368,10 @@ void main() {
         ),
       );
 
-      expect(container.read(provider).requireValue.chatState!.messages, isEmpty);
+      expect(
+        container.read(provider).requireValue.chatState!.messages,
+        isEmpty,
+      );
     });
 
     test('ignores non-message topics', () async {
@@ -310,9 +381,14 @@ void main() {
       final notifier = container.read(provider.notifier);
       await container.read(provider.future);
 
-      notifier.dispatch(const SocketEvent(topic: 'crowd', data: {'foo': 'bar'}));
+      notifier.dispatch(
+        const SocketEvent(topic: 'crowd', data: {'foo': 'bar'}),
+      );
 
-      expect(container.read(provider).requireValue.chatState!.messages, isEmpty);
+      expect(
+        container.read(provider).requireValue.chatState!.messages,
+        isEmpty,
+      );
     });
   });
 
@@ -320,29 +396,45 @@ void main() {
     test('resets the unread count to zero', () async {
       final container = await makeContainer();
       final provider = _makeProvider(
-        initialData: _chatData([_msg('a', username: 'alice'), _msg('b', username: 'bob')]),
+        initialData: _chatData([
+          _msg('a', username: 'alice'),
+          _msg('b', username: 'bob'),
+        ]),
       );
       final notifier = container.read(provider.notifier);
       await container.read(provider.future);
-      expect(container.read(provider).requireValue.chatState!.unreadMessages, 2);
+      expect(
+        container.read(provider).requireValue.chatState!.unreadMessages,
+        2,
+      );
 
       await notifier.markMessagesAsRead();
 
-      expect(container.read(provider).requireValue.chatState!.unreadMessages, 0);
+      expect(
+        container.read(provider).requireValue.chatState!.unreadMessages,
+        0,
+      );
     });
 
-    test('persists the read count so a fresh state starts with no unread', () async {
-      final container = await makeContainer();
-      final provider = _makeProvider(initialData: _chatData([_msg('a', username: 'alice')]));
-      final notifier = container.read(provider.notifier);
-      await container.read(provider.future);
-      await notifier.markMessagesAsRead();
+    test(
+      'persists the read count so a fresh state starts with no unread',
+      () async {
+        final container = await makeContainer();
+        final provider = _makeProvider(
+          initialData: _chatData([_msg('a', username: 'alice')]),
+        );
+        final notifier = container.read(provider.notifier);
+        await container.read(provider.future);
+        await notifier.markMessagesAsRead();
 
-      // A brand new notifier reading the same chat id should see no unread.
-      final freshProvider = _makeProvider(initialData: _chatData([_msg('a', username: 'alice')]));
-      final freshState = await container.read(freshProvider.future);
-      expect(freshState.chatState!.unreadMessages, 0);
-    });
+        // A brand new notifier reading the same chat id should see no unread.
+        final freshProvider = _makeProvider(
+          initialData: _chatData([_msg('a', username: 'alice')]),
+        );
+        final freshState = await container.read(freshProvider.future);
+        expect(freshState.chatState!.unreadMessages, 0);
+      },
+    );
 
     test('is a no-op when chat is not initialized', () async {
       final container = await makeContainer();
@@ -366,7 +458,10 @@ void main() {
 
       notifier.setInputText('draw?');
 
-      expect(container.read(provider).requireValue.chatState!.inputText, 'draw?');
+      expect(
+        container.read(provider).requireValue.chatState!.inputText,
+        'draw?',
+      );
     });
 
     test('is a no-op when chat is not initialized', () async {
@@ -386,12 +481,15 @@ void main() {
       final fakeChannel = FakeWebSocketChannel(Uri(path: kDefaultSocketRoute));
       final container = await makeContainer(
         overrides: {
-          webSocketChannelFactoryProvider: webSocketChannelFactoryProvider.overrideWith((ref) {
-            return FakeWebSocketChannelFactory((_) => fakeChannel);
-          }),
+          webSocketChannelFactoryProvider: webSocketChannelFactoryProvider
+              .overrideWith((ref) {
+                return FakeWebSocketChannelFactory((_) => fakeChannel);
+              }),
         },
       );
-      final client = container.read(socketPoolProvider).open(Uri(path: kDefaultSocketRoute));
+      final client = container
+          .read(socketPoolProvider)
+          .open(Uri(path: kDefaultSocketRoute));
       await client.connect();
 
       final provider = _makeProvider(initialData: _chatData([]));
@@ -412,7 +510,9 @@ void main() {
       http.Request? captured;
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(
               () => MockClient((request) async {
                 captured = request;

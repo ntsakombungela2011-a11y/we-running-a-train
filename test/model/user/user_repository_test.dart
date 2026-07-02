@@ -407,7 +407,11 @@ void main() {
 
   group('UserRepository.getUsersStatuses', () {
     test('json read, minimal example', () async {
-      final ids = ISet(const {UserId('maia1'), UserId('maia5'), UserId('maia9')});
+      final ids = ISet(const {
+        UserId('maia1'),
+        UserId('maia5'),
+        UserId('maia9'),
+      });
 
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/users/status') {
@@ -425,7 +429,11 @@ void main() {
     });
 
     test('json read, full example', () async {
-      final ids = ISet(const {UserId('maia1'), UserId('maia5'), UserId('maia9')});
+      final ids = ISet(const {
+        UserId('maia1'),
+        UserId('maia5'),
+        UserId('maia9'),
+      });
       final mockClient = MockClient((request) {
         if (request.url.path == '/api/users/status') {
           return mockResponse('''

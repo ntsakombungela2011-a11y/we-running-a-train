@@ -18,7 +18,10 @@ void main() {
     test('serialization round-trip preserves new fields', () {
       final prefs = HomePrefs(
         disabledWidgets: IList(const [HomeEditableWidget.quickPairing]),
-        disabledTimeControls: IList(const [TimeIncrement(60, 0), TimeIncrement(300, 0)]),
+        disabledTimeControls: IList(const [
+          TimeIncrement(60, 0),
+          TimeIncrement(300, 0),
+        ]),
         customButtonEnabled: false,
       );
 
@@ -26,13 +29,21 @@ void main() {
       final restored = HomePrefs.fromJson(json);
 
       expect(restored.disabledTimeControls.length, 2);
-      expect(restored.disabledTimeControls, contains(const TimeIncrement(60, 0)));
-      expect(restored.disabledTimeControls, contains(const TimeIncrement(300, 0)));
+      expect(
+        restored.disabledTimeControls,
+        contains(const TimeIncrement(60, 0)),
+      );
+      expect(
+        restored.disabledTimeControls,
+        contains(const TimeIncrement(300, 0)),
+      );
       expect(restored.customButtonEnabled, isFalse);
     });
 
     test('fromJson with missing new fields returns defaults', () {
-      final oldJson = jsonDecode('{"disabledWidgets":["quickPairing"]}') as Map<String, dynamic>;
+      final oldJson =
+          jsonDecode('{"disabledWidgets":["quickPairing"]}')
+              as Map<String, dynamic>;
       final prefs = HomePrefs.fromJson(oldJson);
 
       expect(prefs.disabledWidgets, contains(HomeEditableWidget.quickPairing));
@@ -53,7 +64,10 @@ void main() {
       const prefs = HomePrefs(disabledWidgets: IListConst([]));
 
       final updated = prefs.copyWith(
-        disabledTimeControls: IList(const [TimeIncrement(60, 0), TimeIncrement(300, 0)]),
+        disabledTimeControls: IList(const [
+          TimeIncrement(60, 0),
+          TimeIncrement(300, 0),
+        ]),
         customButtonEnabled: false,
       );
 
@@ -61,15 +75,18 @@ void main() {
       expect(updated.customButtonEnabled, isFalse);
     });
 
-    test('min-1 validation: at least one time control or custom must remain', () {
-      final allDisabledCount = TimeIncrement.matrixPresets.length;
+    test(
+      'min-1 validation: at least one time control or custom must remain',
+      () {
+        final allDisabledCount = TimeIncrement.matrixPresets.length;
 
-      // All TC disabled + custom disabled = 0 enabled → invalid
-      expect(TimeIncrement.matrixPresets.length - allDisabledCount, 0);
+        // All TC disabled + custom disabled = 0 enabled → invalid
+        expect(TimeIncrement.matrixPresets.length - allDisabledCount, 0);
 
-      // All TC disabled + custom enabled = 1 enabled → valid
-      expect(TimeIncrement.matrixPresets.length - allDisabledCount + 1, 1);
-    });
+        // All TC disabled + custom enabled = 1 enabled → valid
+        expect(TimeIncrement.matrixPresets.length - allDisabledCount + 1, 1);
+      },
+    );
 
     test('removing a single control from disabled list re-enables it', () {
       final prefs = HomePrefs(
@@ -78,7 +95,9 @@ void main() {
       );
 
       final updated = prefs.copyWith(
-        disabledTimeControls: prefs.disabledTimeControls.remove(const TimeIncrement(60, 0)),
+        disabledTimeControls: prefs.disabledTimeControls.remove(
+          const TimeIncrement(60, 0),
+        ),
       );
       expect(updated.disabledTimeControls, isEmpty);
     });

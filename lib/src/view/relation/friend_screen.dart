@@ -34,7 +34,8 @@ class FriendScreen extends ConsumerStatefulWidget {
   ConsumerState<FriendScreen> createState() => _FriendScreenState();
 }
 
-class _FriendScreenState extends ConsumerState<FriendScreen> with TickerProviderStateMixin {
+class _FriendScreenState extends ConsumerState<FriendScreen>
+    with TickerProviderStateMixin {
   late final TabController _tabController;
 
   @override
@@ -51,8 +52,12 @@ class _FriendScreenState extends ConsumerState<FriendScreen> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final onlineFriendsCount = ref.watch(onlineFriendsProvider.select((v) => v.value?.length ?? 0));
-    final followingCount = ref.watch(followingProvider.select((v) => v.value?.length ?? 0));
+    final onlineFriendsCount = ref.watch(
+      onlineFriendsProvider.select((v) => v.value?.length ?? 0),
+    );
+    final followingCount = ref.watch(
+      followingProvider.select((v) => v.value?.length ?? 0),
+    );
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
@@ -65,7 +70,10 @@ class _FriendScreenState extends ConsumerState<FriendScreen> with TickerProvider
           ],
         ),
       ),
-      body: TabBarView(controller: _tabController, children: const [_Online(), _Following()]),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [_Online(), _Following()],
+      ),
     );
   }
 }
@@ -84,7 +92,8 @@ class OnlineFriendsWidget extends ConsumerWidget {
             header: Text(context.l10n.nbFriendsOnline(data.length)),
             onHeaderTap: () => _handleTap(context),
             children: [
-              for (final friend in data.take(10)) _OnlineFriendListTile(onlineFriend: friend),
+              for (final friend in data.take(10))
+                _OnlineFriendListTile(onlineFriend: friend),
             ],
           );
         },
@@ -122,19 +131,25 @@ class _OnlineFriendListTile extends ConsumerWidget {
           ? IconButton(
               tooltip: context.l10n.watchGames,
               onPressed: () {
-                Navigator.of(context, rootNavigator: true).push(TvScreen.buildRoute(user: user));
+                Navigator.of(
+                  context,
+                  rootNavigator: true,
+                ).push(TvScreen.buildRoute(user: user));
               },
               icon: const Icon(Icons.live_tv),
             )
           : null,
-      onTap: () => Navigator.of(context).push(UserOrProfileScreen.buildRoute(user)),
+      onTap: () =>
+          Navigator.of(context).push(UserOrProfileScreen.buildRoute(user)),
       onLongPress: () => showModalBottomSheet<void>(
         context: context,
         useRootNavigator: true,
         isDismissible: true,
         isScrollControlled: true,
         showDragHandle: true,
-        constraints: BoxConstraints(minHeight: MediaQuery.sizeOf(context).height * 0.5),
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.sizeOf(context).height * 0.5,
+        ),
         builder: (context) => UserContextMenu(userId: user.id),
       ),
     );
@@ -155,7 +170,8 @@ class _Online extends ConsumerWidget {
         }
         return ListView.separated(
           itemCount: value.length,
-          separatorBuilder: (context, index) => Theme.of(context).platform == TargetPlatform.iOS
+          separatorBuilder: (context, index) =>
+              Theme.of(context).platform == TargetPlatform.iOS
               ? const PlatformDivider(height: 1)
               : const SizedBox.shrink(),
           itemBuilder: (context, index) {
@@ -181,11 +197,14 @@ class _Following extends ConsumerWidget {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             if (following.isEmpty) {
-              return Center(child: Text(context.l10n.mobileNotFollowingAnyUser));
+              return Center(
+                child: Text(context.l10n.mobileNotFollowingAnyUser),
+              );
             }
             return ListView.separated(
               itemCount: following.length,
-              separatorBuilder: (context, index) => Theme.of(context).platform == TargetPlatform.iOS
+              separatorBuilder: (context, index) =>
+                  Theme.of(context).platform == TargetPlatform.iOS
                   ? const PlatformDivider(height: 1)
                   : const SizedBox.shrink(),
               itemBuilder: (context, index) {
@@ -200,10 +219,14 @@ class _Following extends ConsumerWidget {
                         onPressed: (BuildContext context) async {
                           final oldState = following;
                           setState(() {
-                            following = following.removeWhere((v) => v.id == user.id);
+                            following = following.removeWhere(
+                              (v) => v.id == user.id,
+                            );
                           });
                           try {
-                            await ref.read(relationRepositoryProvider).unfollow(user.id);
+                            await ref
+                                .read(relationRepositoryProvider)
+                                .unfollow(user.id);
                           } catch (_) {
                             setState(() {
                               following = oldState;
@@ -219,8 +242,9 @@ class _Following extends ConsumerWidget {
                   ),
                   child: UserListTile.fromUser(
                     user,
-                    onTap: () =>
-                        Navigator.of(context).push(UserOrProfileScreen.buildRoute(user.lightUser)),
+                    onTap: () => Navigator.of(
+                      context,
+                    ).push(UserOrProfileScreen.buildRoute(user.lightUser)),
                   ),
                 );
               },
@@ -228,8 +252,12 @@ class _Following extends ConsumerWidget {
           },
         );
       case AsyncError(:final error, :final stackTrace):
-        debugPrint('SEVERE: [FriendScreen] could not load following users; $error\n$stackTrace');
-        return FullScreenRetryRequest(onRetry: () => ref.invalidate(followingProvider));
+        debugPrint(
+          'SEVERE: [FriendScreen] could not load following users; $error\n$stackTrace',
+        );
+        return FullScreenRetryRequest(
+          onRetry: () => ref.invalidate(followingProvider),
+        );
       case _:
         return const CenterLoadingIndicator();
     }

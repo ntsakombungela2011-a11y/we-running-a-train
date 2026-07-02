@@ -19,9 +19,10 @@ import 'package:lichess_mobile/src/widgets/platform_context_menu_button.dart';
 import 'package:lichess_mobile/src/widgets/shimmer.dart';
 import 'package:lichess_mobile/src/widgets/user.dart';
 
-final followingCarouselProvider = FutureProvider.autoDispose<IList<FollowingUser>>((ref) {
-  return ref.watch(relationRepositoryProvider).getRecentFollowing();
-}, name: 'FollowingCarouselProvider');
+final followingCarouselProvider =
+    FutureProvider.autoDispose<IList<FollowingUser>>((ref) {
+      return ref.watch(relationRepositoryProvider).getRecentFollowing();
+    }, name: 'FollowingCarouselProvider');
 
 /// Sorts following users for display in the carousel.
 ///
@@ -108,9 +109,13 @@ class _FollowingWidgetState extends ConsumerState<FollowingCarousel> {
                 height: 110,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 3.0,
+                  ),
                   itemCount: sortedUsers.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 10),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 10),
                   itemBuilder: (context, index) {
                     final friend = sortedUsers[index];
 
@@ -121,9 +126,13 @@ class _FollowingWidgetState extends ConsumerState<FollowingCarousel> {
                           borderRadius: BorderRadius.all(Radius.circular(6.0)),
                         ),
                         child: InkWell(
-                          borderRadius: const BorderRadius.all(Radius.circular(6.0)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(6.0),
+                          ),
                           onTap: () {
-                            Navigator.of(context).push(UserOrProfileScreen.buildRoute(friend.user));
+                            Navigator.of(
+                              context,
+                            ).push(UserOrProfileScreen.buildRoute(friend.user));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -133,7 +142,10 @@ class _FollowingWidgetState extends ConsumerState<FollowingCarousel> {
                               children: [
                                 UserFullNameWidget(
                                   user: friend.user,
-                                  style: const TextStyle(fontWeight: .w500, fontSize: 16),
+                                  style: const TextStyle(
+                                    fontWeight: .w500,
+                                    fontSize: 16,
+                                  ),
                                 ),
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
@@ -144,18 +156,30 @@ class _FollowingWidgetState extends ConsumerState<FollowingCarousel> {
                                         ? context.l10n.online.capitalize()
                                         : friend.seenAt != null
                                         ? context.l10n.lastSeenActive(
-                                            relativeDate(context.l10n, friend.seenAt!),
+                                            relativeDate(
+                                              context.l10n,
+                                              friend.seenAt!,
+                                            ),
                                           )
                                         : context.l10n.offline.capitalize(),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: textShade(context, Styles.subtitleOpacity),
+                                      color: textShade(
+                                        context,
+                                        Styles.subtitleOpacity,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 const Spacer(),
-                                Center(child: _buildActionButtons(context, ref, friend)),
+                                Center(
+                                  child: _buildActionButtons(
+                                    context,
+                                    ref,
+                                    friend,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -173,7 +197,11 @@ class _FollowingWidgetState extends ConsumerState<FollowingCarousel> {
   }
 }
 
-Widget _buildActionButtons(BuildContext context, WidgetRef ref, FollowingUser friend) {
+Widget _buildActionButtons(
+  BuildContext context,
+  WidgetRef ref,
+  FollowingUser friend,
+) {
   final compactStyle = IconButton.styleFrom(
     visualDensity: VisualDensity.compact,
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -187,7 +215,10 @@ Widget _buildActionButtons(BuildContext context, WidgetRef ref, FollowingUser fr
       if (friend.playing == true)
         IconButton.filledTonal(
           onPressed: () {
-            Navigator.of(context, rootNavigator: true).push(TvScreen.buildRoute(user: friend.user));
+            Navigator.of(
+              context,
+              rootNavigator: true,
+            ).push(TvScreen.buildRoute(user: friend.user));
           },
           icon: const Icon(Icons.live_tv_outlined),
           iconSize: iconSize,
@@ -198,7 +229,9 @@ Widget _buildActionButtons(BuildContext context, WidgetRef ref, FollowingUser fr
       ContextMenuIconButton(
         consumeOutsideTap: true,
         isCompact: true,
-        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+        color: Theme.of(
+          context,
+        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
         icon: const Icon(Icons.more_horiz),
         semanticsLabel: context.l10n.more,
         actions: [
@@ -248,7 +281,10 @@ Widget _buildLoadingSkeleton(BuildContext context) {
               child: ListView.separated(
                 physics: const NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 3.0,
+                ),
                 itemCount: 3,
                 separatorBuilder: (context, index) => const SizedBox(width: 10),
                 itemBuilder: (context, index) {
@@ -261,15 +297,27 @@ Widget _buildLoadingSkeleton(BuildContext context) {
                       child: Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          borderRadius: const BorderRadius.all(Radius.circular(6.0)),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(6.0),
+                          ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(height: 16, width: 100, color: Theme.of(context).cardColor),
+                            Container(
+                              height: 16,
+                              width: 100,
+                              color: Theme.of(context).cardColor,
+                            ),
                             const Spacer(),
-                            Container(height: 12, width: 60, color: Theme.of(context).cardColor),
+                            Container(
+                              height: 12,
+                              width: 60,
+                              color: Theme.of(context).cardColor,
+                            ),
                             const SizedBox(height: 8),
                             Container(
                               height: 36,

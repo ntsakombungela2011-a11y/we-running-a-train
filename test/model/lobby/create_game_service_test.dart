@@ -14,7 +14,10 @@ import '../auth/fake_auth_storage.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const seek = GameSeek(clock: (Duration(minutes: 5), Duration.zero), rated: false);
+  const seek = GameSeek(
+    clock: (Duration(minutes: 5), Duration.zero),
+    rated: false,
+  );
 
   group('cancelSeek', () {
     test('is a no-op when there is no active lobby seek', () async {
@@ -26,7 +29,9 @@ void main() {
 
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },
@@ -47,7 +52,9 @@ void main() {
       final container = await makeContainer(
         authUser: fakeAuthUser,
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => mockClient);
           }),
         },

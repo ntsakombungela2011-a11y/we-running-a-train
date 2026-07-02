@@ -50,7 +50,11 @@ class GameHistoryScreen extends ConsumerWidget {
     GameFilterState gameFilter = const GameFilterState(),
   }) {
     return buildScreenRoute(
-      screen: GameHistoryScreen(user: user, isOnline: isOnline, gameFilter: gameFilter),
+      screen: GameHistoryScreen(
+        user: user,
+        isOnline: isOnline,
+        gameFilter: gameFilter,
+      ),
     );
   }
 
@@ -59,10 +63,14 @@ class GameHistoryScreen extends ConsumerWidget {
     final filtersInUse = ref.watch(gameFilterProvider(gameFilter));
     final nbGamesAsync = ref.watch(userNumberOfGamesProvider(user));
     final title = user != null && gameFilter.opponent != null
-        ? AppBarTitleText(context.l10n.resVsX(user!.name, gameFilter.opponent!.username))
+        ? AppBarTitleText(
+            context.l10n.resVsX(user!.name, gameFilter.opponent!.username),
+          )
         : filtersInUse.count == 0
         ? nbGamesAsync.when(
-            data: (nbGames) => AppBarTitleText(context.l10n.nbGames(nbGames).localizeNumbers()),
+            data: (nbGames) => AppBarTitleText(
+              context.l10n.nbGames(nbGames).localizeNumbers(),
+            ),
             loading: () => const ButtonLoadingIndicator(),
             error: (e, s) => AppBarTitleText(context.l10n.mobileAllGames),
           )
@@ -84,11 +92,15 @@ class GameHistoryScreen extends ConsumerWidget {
             context: context,
             useRootNavigator: true,
             isScrollControlled: true,
-            builder: (_) =>
-                _FilterGames(filter: ref.read(gameFilterProvider(gameFilter)), user: user),
+            builder: (_) => _FilterGames(
+              filter: ref.read(gameFilterProvider(gameFilter)),
+              user: user,
+            ),
           ).then((value) {
             if (value != null) {
-              ref.read(gameFilterProvider(gameFilter).notifier).setFilter(value);
+              ref
+                  .read(gameFilterProvider(gameFilter).notifier)
+                  .setFilter(value);
             }
           }),
     );
@@ -120,14 +132,21 @@ class GameHistoryScreen extends ConsumerWidget {
     );
 
     return PlatformScaffold(
-      appBar: PlatformAppBar(title: title, actions: [filterBtn, displayModeButton]),
+      appBar: PlatformAppBar(
+        title: title,
+        actions: [filterBtn, displayModeButton],
+      ),
       body: _Body(user: user, isOnline: isOnline, gameFilter: gameFilter),
     );
   }
 }
 
 class _Body extends ConsumerStatefulWidget {
-  const _Body({required this.user, required this.isOnline, required this.gameFilter});
+  const _Body({
+    required this.user,
+    required this.isOnline,
+    required this.gameFilter,
+  });
 
   final LightUser? user;
   final bool isOnline;
@@ -154,7 +173,8 @@ class _BodyState extends ConsumerState<_Body> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 300) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
       final state = ref.read(
         userGameHistoryProvider((
           userId: widget.user?.id,
@@ -212,7 +232,9 @@ class _BodyState extends ConsumerState<_Body> {
                     ? PlatformDivider(
                         height: 1,
                         cupertinoHasLeading: true,
-                        indent: displayMode == GameHistoryDisplayMode.detail ? 0 : null,
+                        indent: displayMode == GameHistoryDisplayMode.detail
+                            ? 0
+                            : null,
                       )
                     : const SizedBox.shrink(),
                 itemCount: list.length + (state.isLoading ? 1 : 0),
@@ -222,7 +244,9 @@ class _BodyState extends ConsumerState<_Body> {
                       padding: EdgeInsets.symmetric(vertical: 32.0),
                       child: CenterLoadingIndicator(),
                     );
-                  } else if (state.hasError && state.hasMore && index == list.length) {
+                  } else if (state.hasError &&
+                      state.hasMore &&
+                      index == list.length) {
                     // TODO: add a retry button
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 32.0),
@@ -237,10 +261,17 @@ class _BodyState extends ConsumerState<_Body> {
                     try {
                       await ref
                           .read(accountServiceProvider)
-                          .setGameBookmark(game.id, bookmark: !game.bookmarked!);
+                          .setGameBookmark(
+                            game.id,
+                            bookmark: !game.bookmarked!,
+                          );
                     } on Exception catch (_) {
                       if (context.mounted) {
-                        showSnackBar(context, 'Bookmark action failed', type: SnackBarType.error);
+                        showSnackBar(
+                          context,
+                          'Bookmark action failed',
+                          type: SnackBarType.error,
+                        );
                       }
                     }
                   }
@@ -262,11 +293,18 @@ class _BodyState extends ConsumerState<_Body> {
                       motion: const StretchMotion(),
                       children: [
                         SlidableAction(
-                          backgroundColor: ColorScheme.of(context).tertiaryContainer,
-                          foregroundColor: ColorScheme.of(context).onTertiaryContainer,
+                          backgroundColor: ColorScheme.of(
+                            context,
+                          ).tertiaryContainer,
+                          foregroundColor: ColorScheme.of(
+                            context,
+                          ).onTertiaryContainer,
                           onPressed: game.variant.isReadSupported
                               ? (_) {
-                                  Navigator.of(context, rootNavigator: true).push(
+                                  Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).push(
                                     AnalysisScreen.buildRoute(
                                       AnalysisOptions.archivedGame(
                                         orientation: pov,
@@ -294,18 +332,25 @@ class _BodyState extends ConsumerState<_Body> {
                               if (game.source == GameSource.friend)
                                 Builder(
                                   builder: (context) {
-                                    final opponent = pov == Side.white ? game.black : game.white;
+                                    final opponent = pov == Side.white
+                                        ? game.black
+                                        : game.white;
                                     final sideChoice = pov == Side.white
                                         ? SideChoice.black
                                         : SideChoice.white;
                                     final timeControl = game.clock != null
                                         ? ChallengeTimeControlType.clock
                                         : game.daysPerTurn != null
-                                        ? ChallengeTimeControlType.correspondence
+                                        ? ChallengeTimeControlType
+                                              .correspondence
                                         : ChallengeTimeControlType.unlimited;
                                     return SlidableAction(
-                                      backgroundColor: ColorScheme.of(context).primary,
-                                      foregroundColor: ColorScheme.of(context).onPrimary,
+                                      backgroundColor: ColorScheme.of(
+                                        context,
+                                      ).primary,
+                                      foregroundColor: ColorScheme.of(
+                                        context,
+                                      ).onPrimary,
                                       onPressed: opponent.user != null
                                           ? (_) {
                                               final request = ChallengeRequest(
@@ -316,18 +361,30 @@ class _BodyState extends ConsumerState<_Body> {
                                                 timeControl: timeControl,
                                                 clock: game.clock != null
                                                     ? (
-                                                        time: game.clock!.initial,
-                                                        increment: game.clock!.increment,
+                                                        time:
+                                                            game.clock!.initial,
+                                                        increment: game
+                                                            .clock!
+                                                            .increment,
                                                       )
                                                     : null,
                                                 days: game.daysPerTurn,
                                               );
-                                              final source = UserChallengeSource(request);
-                                              ref.invalidate(gameScreenLoaderProvider(source));
+                                              final source =
+                                                  UserChallengeSource(request);
+                                              ref.invalidate(
+                                                gameScreenLoaderProvider(
+                                                  source,
+                                                ),
+                                              );
                                               Navigator.of(
                                                 context,
                                                 rootNavigator: true,
-                                              ).push(GameScreen.buildRoute(source: source));
+                                              ).push(
+                                                GameScreen.buildRoute(
+                                                  source: source,
+                                                ),
+                                              );
                                             }
                                           : null,
                                       icon: Icons.sync,
@@ -409,7 +466,8 @@ class _FilterGamesState extends ConsumerState<_FilterGames> {
               .watch(userProvider(userId))
               .when(
                 data: (user) => perfFilter(availablePerfs(user)),
-                loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator.adaptive()),
                 error: (_, _) => perfFilter(gamePerfs),
               )
         : perfFilter(gamePerfs);
@@ -460,8 +518,9 @@ class _FilterGamesState extends ConsumerState<_FilterGames> {
         })
         .toList(growable: false);
     perfs.sort(
-      (p1, p2) =>
-          user.perfs[p2]!.numberOfGamesOrRuns.compareTo(user.perfs[p1]!.numberOfGamesOrRuns),
+      (p1, p2) => user.perfs[p2]!.numberOfGamesOrRuns.compareTo(
+        user.perfs[p1]!.numberOfGamesOrRuns,
+      ),
     );
     return perfs;
   }

@@ -11,7 +11,9 @@ import 'package:lichess_mobile/src/view/broadcast/broadcast_round_screen.dart';
 import 'package:lichess_mobile/src/widgets/network_image.dart';
 import 'package:lichess_mobile/src/widgets/shimmer.dart';
 
-const _kDefaultBroadcastImage = AssetImage('assets/images/broadcast_image.webp');
+const _kDefaultBroadcastImage = AssetImage(
+  'assets/images/broadcast_image.webp',
+);
 const _kHandsetThumbnailSize = 80.0;
 const _kTabletThumbnailSize = 250.0;
 
@@ -58,10 +60,15 @@ class BroadcastListTile extends StatelessWidget {
   final bool _isLoading;
 
   static double thumbnailSize(BuildContext context) {
-    return isTabletOrLarger(context) ? _kTabletThumbnailSize : _kHandsetThumbnailSize;
+    return isTabletOrLarger(context)
+        ? _kTabletThumbnailSize
+        : _kHandsetThumbnailSize;
   }
 
-  static const _kPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
+  static const _kPadding = EdgeInsets.symmetric(
+    horizontal: 16.0,
+    vertical: 12.0,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -137,11 +144,16 @@ class BroadcastListTile extends StatelessWidget {
             width: thumbnailSize,
             cacheWidth: (thumbnailSize * devicePixelRatio).toInt(),
             fit: BoxFit.cover,
-            errorBuilder: (context, _, _) => const Icon(LichessIcons.radio_tower_lichess),
+            errorBuilder: (context, _, _) =>
+                const Icon(LichessIcons.radio_tower_lichess),
           )
         : Image(image: _kDefaultBroadcastImage, width: thumbnailSize);
 
-    final title = Text(broadcast.title, maxLines: 2, overflow: TextOverflow.ellipsis);
+    final title = Text(
+      broadcast.title,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
 
     final subtitle = Text.rich(
       TextSpan(
@@ -150,7 +162,9 @@ class BroadcastListTile extends StatelessWidget {
           if (broadcast.tour.information.players != null)
             TextSpan(
               text: '\n${broadcast.tour.information.players}',
-              style: TextStyle(color: textShade(context, Styles.subtitleOpacity)),
+              style: TextStyle(
+                color: textShade(context, Styles.subtitleOpacity),
+              ),
             ),
         ],
       ),
@@ -160,7 +174,10 @@ class BroadcastListTile extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        Navigator.of(context, rootNavigator: true).push(BroadcastRoundScreen.buildRoute(broadcast));
+        Navigator.of(
+          context,
+          rootNavigator: true,
+        ).push(BroadcastRoundScreen.buildRoute(broadcast));
       },
       child: Padding(
         padding: _kPadding,
@@ -185,7 +202,10 @@ class BroadcastListTile extends StatelessWidget {
                     )
                   else if (broadcast.round.startsAt != null)
                     Text(
-                      relativeDate(context.l10n, broadcast.round.startsAt!).toUpperCase(),
+                      relativeDate(
+                        context.l10n,
+                        broadcast.round.startsAt!,
+                      ).toUpperCase(),
                       style: TextStyle(
                         color: textShade(context, 0.5),
                         fontSize: 12,
@@ -196,7 +216,10 @@ class BroadcastListTile extends StatelessWidget {
                     ),
                   const SizedBox(height: 4.0),
                   DefaultTextStyle.merge(
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                     child: title,
                   ),
                   subtitle,
@@ -248,7 +271,10 @@ class _BroadcastNextPageTileState extends State<BroadcastNextPageTile> {
         }
 
         return const Shimmer(
-          child: ShimmerLoading(isLoading: true, child: BroadcastListTile.loading()),
+          child: ShimmerLoading(
+            isLoading: true,
+            child: BroadcastListTile.loading(),
+          ),
         );
       },
     );

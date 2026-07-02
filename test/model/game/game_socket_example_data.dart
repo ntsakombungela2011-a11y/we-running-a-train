@@ -12,7 +12,11 @@ typedef FullEventTestClock = ({
   Duration black,
 });
 
-typedef FullEventTestCorrespondenceClock = ({Duration white, Duration black, int daysPerTurn});
+typedef FullEventTestCorrespondenceClock = ({
+  Duration white,
+  Duration black,
+  int daysPerTurn,
+});
 
 String makeFullEvent(
   GameId id,

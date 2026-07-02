@@ -123,136 +123,156 @@ void main() {
 
     //   expect(find.byKey(const Key('e3-whitebishop')), findsOneWidget);
     // });
-    testWidgets('PGN tags tab shows player info and FIDE ID links', variant: kPlatformVariant, (
+    testWidgets(
+      'PGN tags tab shows player info and FIDE ID links',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const BroadcastGameScreen(
+            tournamentId: _tournamentId,
+            roundId: _roundId,
+            gameId: _gameId,
+          ),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(client, ref),
+            ),
+          },
+        );
+        await tester.pumpWidget(app);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        // Load the broadcast analysis controller
+        await tester.pump();
+        expect(find.byType(Chessboard), findsOneWidget);
+        // Load the broadcast round game provider
+        await tester.pump();
+
+        await tester.tap(find.byIcon(Icons.sell_outlined));
+        await tester.pumpAndSettle();
+
+        expect(find.text('White: '), findsOne);
+        expect(find.text('WhiteElo: '), findsOne);
+        expect(find.text('WhiteFideId: '), findsOne);
+        expect(find.text('6300014', findRichText: true), findsOne);
+        expect(find.text('BlackFideId: '), findsOne);
+        expect(find.text('6336760', findRichText: true), findsOne);
+      },
+    );
+    testWidgets(
+      'Variations bar displays variations and can be tapped',
+      variant: kPlatformVariant,
+      (tester) async {
+        const gameIdVariations = BroadcastGameId('VarTest1');
+        final customClient = MockClient((request) {
+          if (request.url.path == '/api/broadcast/-/-/$_roundId') {
+            return mockResponse(
+              broadcastRoundMockResponses[(_tournamentId, _roundId)]!,
+              200,
+              headers: {'content-type': 'application/json; charset=utf-8'},
+            );
+          }
+          if (request.url.path ==
+              '/api/study/$_roundId/$gameIdVariations.pgn') {
+            return mockResponse(
+              '1. d4 d5 (1... Nf6)',
+              200,
+              headers: {'content-type': 'application/x-chess-pgn'},
+            );
+          }
+          return mockResponse('', 404);
+        });
+
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const BroadcastGameScreen(
+            tournamentId: _tournamentId,
+            roundId: _roundId,
+            gameId: gameIdVariations,
+          ),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(customClient, ref),
+            ),
+          },
+        );
+
+        await tester.pumpWidget(app);
+        await tester.pumpAndSettle(); // Loads the broadcast PGN
+
+        // Jump to 1. d4
+        await tester.tap(find.text('d4'));
+        await tester.pump();
+
+        // The variations bar should now display both d5 and Nf6
+        expect(find.byType(VariationsBar), findsOneWidget);
+
+        expect(
+          find.descendant(
+            of: find.byType(VariationsBar),
+            matching: find.text('d5'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: find.byType(VariationsBar),
+            matching: find.text('Nf6'),
+          ),
+          findsOneWidget,
+        );
+
+        // Tap the 'Nf6' variation inside the VariationsBar widget
+        await tester.tap(
+          find.descendant(
+            of: find.byType(VariationsBar),
+            matching: find.text('Nf6'),
+          ),
+        );
+
+        await tester.pump();
+
+        // Verify the board advanced properly (a black knight is placed on f6)
+        expect(boardHasPiece(tester, Square.f6, Piece.blackKnight), isTrue);
+      },
+    );
+
+    testWidgets(
+      'PGN tags tab shows dash for empty FIDE ID',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const BroadcastGameScreen(
+            tournamentId: _tournamentId,
+            roundId: _roundId,
+            gameId: _gameIdWithEmptyFideId,
+          ),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(client, ref),
+            ),
+          },
+        );
+        await tester.pumpWidget(app);
+        // Load the broadcast analysis controller
+        await tester.pump();
+        expect(find.byType(Chessboard), findsOneWidget);
+        // Load the broadcast round game provider
+        await tester.pump();
+
+        await tester.tap(find.byIcon(Icons.sell_outlined));
+        await tester.pumpAndSettle();
+
+        expect(find.text('WhiteFideId: '), findsOne);
+        expect(find.text('BlackFideId: '), findsOne);
+        expect(find.text('-'), findsAtLeast(2));
+      },
+    );
+
+    testWidgets('Broadcast Game Summary available', variant: kPlatformVariant, (
       tester,
     ) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const BroadcastGameScreen(
-          tournamentId: _tournamentId,
-          roundId: _roundId,
-          gameId: _gameId,
-        ),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(client, ref),
-          ),
-        },
-      );
-      await tester.pumpWidget(app);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      // Load the broadcast analysis controller
-      await tester.pump();
-      expect(find.byType(Chessboard), findsOneWidget);
-      // Load the broadcast round game provider
-      await tester.pump();
-
-      await tester.tap(find.byIcon(Icons.sell_outlined));
-      await tester.pumpAndSettle();
-
-      expect(find.text('White: '), findsOne);
-      expect(find.text('WhiteElo: '), findsOne);
-      expect(find.text('WhiteFideId: '), findsOne);
-      expect(find.text('6300014', findRichText: true), findsOne);
-      expect(find.text('BlackFideId: '), findsOne);
-      expect(find.text('6336760', findRichText: true), findsOne);
-    });
-    testWidgets('Variations bar displays variations and can be tapped', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      const gameIdVariations = BroadcastGameId('VarTest1');
-      final customClient = MockClient((request) {
-        if (request.url.path == '/api/broadcast/-/-/$_roundId') {
-          return mockResponse(
-            broadcastRoundMockResponses[(_tournamentId, _roundId)]!,
-            200,
-            headers: {'content-type': 'application/json; charset=utf-8'},
-          );
-        }
-        if (request.url.path == '/api/study/$_roundId/$gameIdVariations.pgn') {
-          return mockResponse(
-            '1. d4 d5 (1... Nf6)',
-            200,
-            headers: {'content-type': 'application/x-chess-pgn'},
-          );
-        }
-        return mockResponse('', 404);
-      });
-
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const BroadcastGameScreen(
-          tournamentId: _tournamentId,
-          roundId: _roundId,
-          gameId: gameIdVariations,
-        ),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(customClient, ref),
-          ),
-        },
-      );
-
-      await tester.pumpWidget(app);
-      await tester.pumpAndSettle(); // Loads the broadcast PGN
-
-      // Jump to 1. d4
-      await tester.tap(find.text('d4'));
-      await tester.pump();
-
-      // The variations bar should now display both d5 and Nf6
-      expect(find.byType(VariationsBar), findsOneWidget);
-
-      expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('d5')),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: find.byType(VariationsBar), matching: find.text('Nf6')),
-        findsOneWidget,
-      );
-
-      // Tap the 'Nf6' variation inside the VariationsBar widget
-      await tester.tap(find.descendant(of: find.byType(VariationsBar), matching: find.text('Nf6')));
-
-      await tester.pump();
-
-      // Verify the board advanced properly (a black knight is placed on f6)
-      expect(boardHasPiece(tester, Square.f6, Piece.blackKnight), isTrue);
-    });
-
-    testWidgets('PGN tags tab shows dash for empty FIDE ID', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const BroadcastGameScreen(
-          tournamentId: _tournamentId,
-          roundId: _roundId,
-          gameId: _gameIdWithEmptyFideId,
-        ),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(client, ref),
-          ),
-        },
-      );
-      await tester.pumpWidget(app);
-      // Load the broadcast analysis controller
-      await tester.pump();
-      expect(find.byType(Chessboard), findsOneWidget);
-      // Load the broadcast round game provider
-      await tester.pump();
-
-      await tester.tap(find.byIcon(Icons.sell_outlined));
-      await tester.pumpAndSettle();
-
-      expect(find.text('WhiteFideId: '), findsOne);
-      expect(find.text('BlackFideId: '), findsOne);
-      expect(find.text('-'), findsAtLeast(2));
-    });
-
-    testWidgets('Broadcast Game Summary available', variant: kPlatformVariant, (tester) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const BroadcastGameScreen(
@@ -291,116 +311,168 @@ void main() {
   group('Engine evaluation:', () {
     group('Engine lines', () {
       testWidgets('are displayed', (tester) async {
-        await makeEngineTestApp(tester, broadcastGame: (_tournamentId, _roundId, _gameId));
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
+        await makeEngineTestApp(
+          tester,
+          broadcastGame: (_tournamentId, _roundId, _gameId),
+        );
+        await tester.pump(
+          kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+        );
         expect(find.byType(Engineline), findsOne);
       });
 
-      testWidgets('are not displayed if computer analysis is not enabled', (tester) async {
+      testWidgets('are not displayed if computer analysis is not enabled', (
+        tester,
+      ) async {
         await makeEngineTestApp(
           tester,
           broadcastGame: (_tournamentId, _roundId, _gameId),
           isServerAnalysisEnabled: false,
           isEngineEnabled: false,
         );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+        );
         expect(find.byType(Engineline), findsNothing);
       });
 
-      testWidgets('are not displayed if engine is disabled by user preferences', (tester) async {
-        await makeEngineTestApp(
-          tester,
-          broadcastGame: (_tournamentId, _roundId, _gameId),
-          isEngineEnabled: false,
-        );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
-        expect(find.byType(Engineline), findsNothing);
-      });
+      testWidgets(
+        'are not displayed if engine is disabled by user preferences',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            broadcastGame: (_tournamentId, _roundId, _gameId),
+            isEngineEnabled: false,
+          );
+          await tester.pump(
+            kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+          );
+          expect(find.byType(Engineline), findsNothing);
+        },
+      );
 
-      testWidgets('are not displayed if they are disabled by user preferences', (tester) async {
-        await makeEngineTestApp(
-          tester,
-          broadcastGame: (_tournamentId, _roundId, _gameId),
-          numEvalLines: 0,
-        );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
-        expect(find.byType(Engineline), findsNothing);
-      });
+      testWidgets(
+        'are not displayed if they are disabled by user preferences',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            broadcastGame: (_tournamentId, _roundId, _gameId),
+            numEvalLines: 0,
+          );
+          await tester.pump(
+            kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+          );
+          expect(find.byType(Engineline), findsNothing);
+        },
+      );
     });
 
     group('Engine gauge', () {
-      testWidgets('is not displayed if computer analysis is not enabled', (tester) async {
+      testWidgets('is not displayed if computer analysis is not enabled', (
+        tester,
+      ) async {
         await makeEngineTestApp(
           tester,
           broadcastGame: (_tournamentId, _roundId, _gameIdWithServerAnalysis),
           isServerAnalysisEnabled: false,
           isEngineEnabled: false,
         );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+        );
         expect(find.byType(EngineGauge), findsNothing);
       });
 
-      testWidgets('is not displayed if engine is disabled and no server eval available', (
+      testWidgets(
+        'is not displayed if engine is disabled and no server eval available',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            broadcastGame: (_tournamentId, _roundId, _gameId),
+            isEngineEnabled: false,
+          );
+          await tester.pump(
+            kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+          );
+          expect(find.byType(EngineGauge), findsNothing);
+        },
+      );
+
+      testWidgets('engine gauge is displayed if engine is available', (
         tester,
       ) async {
         await makeEngineTestApp(
           tester,
           broadcastGame: (_tournamentId, _roundId, _gameId),
-          isEngineEnabled: false,
         );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
-        expect(find.byType(EngineGauge), findsNothing);
-      });
-
-      testWidgets('engine gauge is displayed if engine is available', (tester) async {
-        await makeEngineTestApp(tester, broadcastGame: (_tournamentId, _roundId, _gameId));
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+        );
         expect(find.byType(EngineGauge), findsOne);
       });
 
-      testWidgets('engine gauge is displayed if engine is disabled but an eval is available', (
-        tester,
-      ) async {
-        await makeEngineTestApp(
-          tester,
-          broadcastGame: (_tournamentId, _roundId, _gameIdWithServerAnalysis),
-          isEngineEnabled: false,
-        );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
-        expect(find.byType(EngineGauge), findsOne);
-      });
+      testWidgets(
+        'engine gauge is displayed if engine is disabled but an eval is available',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            broadcastGame: (_tournamentId, _roundId, _gameIdWithServerAnalysis),
+            isEngineEnabled: false,
+          );
+          await tester.pump(
+            kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+          );
+          expect(find.byType(EngineGauge), findsOne);
+        },
+      );
     });
 
     group('Engine best move arrow', () {
-      testWidgets('is not displayed if best move arrow is disabled', (tester) async {
+      testWidgets('is not displayed if best move arrow is disabled', (
+        tester,
+      ) async {
         await makeEngineTestApp(
           tester,
           broadcastGame: (_tournamentId, _roundId, _gameId),
           showBestMoveArrow: false,
         );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+        );
         expect(find.byType(BoardShapeWidget), findsNothing);
       });
 
-      testWidgets('is not displayed if engine is disabled by user preferences', (tester) async {
+      testWidgets(
+        'is not displayed if engine is disabled by user preferences',
+        (tester) async {
+          await makeEngineTestApp(
+            tester,
+            broadcastGame: (_tournamentId, _roundId, _gameId),
+            isEngineEnabled: false,
+          );
+          await tester.pump(
+            kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+          );
+          expect(find.byType(BoardShapeWidget), findsNothing);
+        },
+      );
+
+      testWidgets('is displayed if engine is available', (tester) async {
         await makeEngineTestApp(
           tester,
           broadcastGame: (_tournamentId, _roundId, _gameId),
-          isEngineEnabled: false,
         );
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
-        expect(find.byType(BoardShapeWidget), findsNothing);
-      });
-
-      testWidgets('is displayed if engine is available', (tester) async {
-        await makeEngineTestApp(tester, broadcastGame: (_tournamentId, _roundId, _gameId));
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+        );
         expect(find.byType(BoardShapeWidget), findsOne);
       });
     });
 
     group('Local engine is delayed:', () {
-      testWidgets('starts local engine if cloud eval is not available', (tester) async {
+      testWidgets('starts local engine if cloud eval is not available', (
+        tester,
+      ) async {
         await makeEngineTestApp(
           tester,
           broadcastGame: (_tournamentId, _roundId, _gameId),
@@ -410,13 +482,17 @@ void main() {
         // displays initial state
         expect(find.widgetWithText(EngineButton, '-'), findsOne);
 
-        await tester.pump(kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag);
+        await tester.pump(
+          kRequestEvalDebounceDelay + kFakeWebSocketConnectionLag,
+        );
         // cloud eval is not available, so it still display initial state
         expect(find.widgetWithText(EngineButton, '-'), findsOne);
         expect(isCloudEvalDisplayed(), isFalse);
 
         // Now wait for local engine
-        await tester.pump(kLocalEngineAfterCloudEvalDelay + kEngineEvalEmissionThrottleDelay);
+        await tester.pump(
+          kLocalEngineAfterCloudEvalDelay + kEngineEvalEmissionThrottleDelay,
+        );
         expect(find.widgetWithText(EngineButton, '16'), findsOne);
       });
 
@@ -442,7 +518,9 @@ void main() {
         expect(find.widgetWithText(EngineButton, '36'), findsOne);
       });
 
-      testWidgets('Local engine will not override cloud eval with greater depth', (tester) async {
+      testWidgets('Local engine will not override cloud eval with greater depth', (
+        tester,
+      ) async {
         // Simulates a connection lag that will make the local engine come 100ms after the cloud eval
         final connectionLag =
             kLocalEngineAfterCloudEvalDelay -
@@ -465,7 +543,9 @@ void main() {
 
         // local engine is still running, but it will not override the cloud eval
         // wait for the next local engine eval emission (after throttle delay minus the 100ms already waited)
-        await tester.pump(kEngineEvalEmissionThrottleDelay - const Duration(milliseconds: 100));
+        await tester.pump(
+          kEngineEvalEmissionThrottleDelay - const Duration(milliseconds: 100),
+        );
         expect(isCloudEvalDisplayed(), isTrue);
         expect(find.widgetWithText(EngineButton, '36'), findsOne);
       });

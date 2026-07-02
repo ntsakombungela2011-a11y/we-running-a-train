@@ -17,21 +17,35 @@ import 'package:lichess_mobile/src/widgets/platform.dart';
 import 'package:lichess_mobile/src/widgets/stat_card.dart';
 
 class BroadcastTeamScreen extends ConsumerWidget {
-  const BroadcastTeamScreen({super.key, required this.tournamentId, required this.teamName});
+  const BroadcastTeamScreen({
+    super.key,
+    required this.tournamentId,
+    required this.teamName,
+  });
 
   final BroadcastTournamentId tournamentId;
   final String teamName;
 
-  static Route<dynamic> buildRoute(BroadcastTournamentId tournamentId, String teamName) {
+  static Route<dynamic> buildRoute(
+    BroadcastTournamentId tournamentId,
+    String teamName,
+  ) {
     return buildScreenRoute(
-      screen: BroadcastTeamScreen(tournamentId: tournamentId, teamName: teamName),
+      screen: BroadcastTeamScreen(
+        tournamentId: tournamentId,
+        teamName: teamName,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final standingsAsync = ref.watch(broadcastTeamStandingsProvider(tournamentId));
-    final tournamentAsync = ref.watch(broadcastTournamentProvider(tournamentId));
+    final standingsAsync = ref.watch(
+      broadcastTeamStandingsProvider(tournamentId),
+    );
+    final tournamentAsync = ref.watch(
+      broadcastTournamentProvider(tournamentId),
+    );
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
@@ -44,15 +58,19 @@ class BroadcastTeamScreen extends ConsumerWidget {
         ),
       ),
       body: switch ((standingsAsync, tournamentAsync)) {
-        (AsyncData(value: final standings), AsyncData(value: final tournament)) => () {
-          final team = standings.where((t) => t.name == teamName).firstOrNull;
-          if (team == null) {
-            return const Center(child: Text('Team not found'));
-          }
-          return _Body(tournament: tournament, team: team);
-        }(),
-        (AsyncError(:final error), _) ||
-        (_, AsyncError(:final error)) => Center(child: Text('Cannot load data: $error')),
+        (
+          AsyncData(value: final standings),
+          AsyncData(value: final tournament),
+        ) =>
+          () {
+            final team = standings.where((t) => t.name == teamName).firstOrNull;
+            if (team == null) {
+              return const Center(child: Text('Team not found'));
+            }
+            return _Body(tournament: tournament, team: team);
+          }(),
+        (AsyncError(:final error), _) || (_, AsyncError(:final error)) =>
+          Center(child: Text('Cannot load data: $error')),
         _ => const Center(child: CircularProgressIndicator.adaptive()),
       },
     );
@@ -92,7 +110,10 @@ class _OverallTeamStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statWidth =
-        (MediaQuery.sizeOf(context).width - Styles.bodyPadding.horizontal - 10 * 2) / 3;
+        (MediaQuery.sizeOf(context).width -
+            Styles.bodyPadding.horizontal -
+            10 * 2) /
+        3;
     const cardSpacing = 10.0;
 
     return Padding(
@@ -134,7 +155,10 @@ class _OverallTeamStat extends StatelessWidget {
               children: [
                 SizedBox(
                   width: statWidth,
-                  child: _StatCard(context.l10n.averageElo, value: team.averageRating.toString()),
+                  child: _StatCard(
+                    context.l10n.averageElo,
+                    value: team.averageRating.toString(),
+                  ),
                 ),
               ],
             ),
@@ -163,7 +187,8 @@ class _SectionHeader extends StatelessWidget {
 
 enum _SortingTypes { elo, score }
 
-typedef _BroadcastPlayerPicker<T> = T? Function(BroadcastPlayerWithOverallResult player);
+typedef _BroadcastPlayerPicker<T> =
+    T? Function(BroadcastPlayerWithOverallResult player);
 
 const _kTableRowVerticalPadding = 12.0;
 const _kTableRowHorizontalPadding = 8.0;
@@ -206,22 +231,23 @@ class _TeamPlayersListState extends State<_TeamPlayersList> {
     }
   }
 
-  Comparator<BroadcastPlayerWithOverallResult> nullableCompare<T extends Comparable<T>>(
-    _BroadcastPlayerPicker<T> picker,
+  Comparator<BroadcastPlayerWithOverallResult>
+  nullableCompare<T extends Comparable<T>>(_BroadcastPlayerPicker<T> picker) =>
+      (p1, p2) {
+        final field1 = picker(p1);
+        final field2 = picker(p2);
+        if (field1 == null && field2 == null) return 0;
+        if (field1 == null) return -1;
+        if (field2 == null) return 1;
+
+        return field1.compareTo(field2);
+      };
+
+  Comparator<BroadcastPlayerWithOverallResult>
+  bothCompare<T extends Comparable<T>, U extends Comparable<U>>(
+    _BroadcastPlayerPicker<T> picker1,
+    _BroadcastPlayerPicker<U> picker2,
   ) => (p1, p2) {
-    final field1 = picker(p1);
-    final field2 = picker(p2);
-    if (field1 == null && field2 == null) return 0;
-    if (field1 == null) return -1;
-    if (field2 == null) return 1;
-
-    return field1.compareTo(field2);
-  };
-
-  Comparator<BroadcastPlayerWithOverallResult> bothCompare<
-    T extends Comparable<T>,
-    U extends Comparable<U>
-  >(_BroadcastPlayerPicker<T> picker1, _BroadcastPlayerPicker<U> picker2) => (p1, p2) {
     final value = nullableCompare(picker1)(p1, p2);
 
     if (value == 0) {
@@ -245,16 +271,20 @@ class _TeamPlayersListState extends State<_TeamPlayersList> {
   void sort() {
     final compare = switch (currentSort) {
       _SortingTypes.elo =>
-        (BroadcastPlayerWithOverallResult p1, BroadcastPlayerWithOverallResult p2) =>
-            bothCompare((p) => p.player.rating, (p) => p.score)(p2, p1),
+        (
+          BroadcastPlayerWithOverallResult p1,
+          BroadcastPlayerWithOverallResult p2,
+        ) => bothCompare((p) => p.player.rating, (p) => p.score)(p2, p1),
       _SortingTypes.score =>
-        (BroadcastPlayerWithOverallResult p1, BroadcastPlayerWithOverallResult p2) =>
-            p1.rank != null && p2.rank != null
+        (
+          BroadcastPlayerWithOverallResult p1,
+          BroadcastPlayerWithOverallResult p2,
+        ) => p1.rank != null && p2.rank != null
             ? p1.rank!.compareTo(p2.rank!)
-            : bothCompare(withScores ? (p) => p.score : (p) => p.played, (p) => p.player.rating)(
-                p2,
-                p1,
-              ),
+            : bothCompare(
+                withScores ? (p) => p.score : (p) => p.played,
+                (p) => p.player.rating,
+              )(p2, p1),
     };
 
     setState(() {
@@ -264,7 +294,9 @@ class _TeamPlayersListState extends State<_TeamPlayersList> {
 
   @override
   Widget build(BuildContext context) {
-    final sortIcon = reverse ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down;
+    final sortIcon = reverse
+        ? Icons.keyboard_arrow_up
+        : Icons.keyboard_arrow_down;
 
     return Column(
       mainAxisSize: .min,
@@ -275,7 +307,10 @@ class _TeamPlayersListState extends State<_TeamPlayersList> {
           children: [
             Expanded(
               child: _TableTitleCell(
-                title: Text('${context.l10n.players} (Elo)', style: _kHeaderTextStyle),
+                title: Text(
+                  '${context.l10n.players} (Elo)',
+                  style: _kHeaderTextStyle,
+                ),
                 onTap: () => toggleSort(.elo),
                 sortIcon: currentSort == .elo ? sortIcon : null,
               ),
@@ -303,7 +338,11 @@ class _TeamPlayersListState extends State<_TeamPlayersList> {
 }
 
 class _TableTitleCell extends StatelessWidget {
-  const _TableTitleCell({required this.title, required this.onTap, this.sortIcon});
+  const _TableTitleCell({
+    required this.title,
+    required this.onTap,
+    this.sortIcon,
+  });
 
   final Widget title;
   final void Function() onTap;
@@ -368,22 +407,37 @@ class _PlayerListTile extends StatelessWidget {
         : null;
 
     return ListTile(
-      tileColor: index.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
+      tileColor: index.isEven
+          ? context.lichessTheme.rowEven
+          : context.lichessTheme.rowOdd,
       leading: ClipRRect(
         borderRadius: Styles.thumbnailBorderRadius,
         child: pic != null
             ? HttpNetworkImageWidget(pic.smallUrl, width: 40, height: 40)
             : playerResult.player.isBot
-            ? Image.asset('assets/images/anon-engine.webp', width: 40, height: 40)
-            : Image.asset('assets/images/anon-face.webp', width: 40, height: 40),
+            ? Image.asset(
+                'assets/images/anon-engine.webp',
+                width: 40,
+                height: 40,
+              )
+            : Image.asset(
+                'assets/images/anon-face.webp',
+                width: 40,
+                height: 40,
+              ),
       ),
-      title: BroadcastPlayerWidget(player: playerResult.player, showRating: false),
+      title: BroadcastPlayerWidget(
+        player: playerResult.player,
+        showRating: false,
+      ),
       subtitle: playerResult.player.rating != null
           ? Text(playerResult.player.rating.toString())
           : null,
       trailing: Text(
         '$scoreStr / ${playerResult.played}',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: .bold),
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: .bold),
       ),
 
       onTap: () {
@@ -409,7 +463,10 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StatCard(
-      contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+      contentPadding: const EdgeInsets.symmetric(
+        vertical: 8.0,
+        horizontal: 4.0,
+      ),
       stat,
       value: value,
     );
@@ -476,7 +533,9 @@ class _MatchHistoryTable extends StatelessWidget {
 
           return TableRow(
             decoration: BoxDecoration(
-              color: index.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
+              color: index.isEven
+                  ? context.lichessTheme.rowEven
+                  : context.lichessTheme.rowOdd,
             ),
             children: [
               _TableTapCell(
@@ -491,12 +550,17 @@ class _MatchHistoryTable extends StatelessWidget {
               ),
               TableRowInkWell(
                 onTap: () {
-                  Navigator.of(
-                    context,
-                  ).push(BroadcastTeamScreen.buildRoute(tournament.data.id, match.opponent));
+                  Navigator.of(context).push(
+                    BroadcastTeamScreen.buildRoute(
+                      tournament.data.id,
+                      match.opponent,
+                    ),
+                  );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: _kMatchHistoryRowVerticalPadding),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: _kMatchHistoryRowVerticalPadding,
+                  ),
                   child: Text(
                     match.opponent,
                     maxLines: 2,
@@ -508,12 +572,17 @@ class _MatchHistoryTable extends StatelessWidget {
               _TableTapCell(
                 match: match,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: _kMatchHistoryRowVerticalPadding),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: _kMatchHistoryRowVerticalPadding,
+                  ),
                   child: match.mp != null
                       ? Text(
                           NumberFormat('#.#').format(match.mp),
                           textAlign: .center,
-                          style: TextStyle(fontWeight: .bold, color: pointsColor),
+                          style: TextStyle(
+                            fontWeight: .bold,
+                            color: pointsColor,
+                          ),
                         )
                       : const Text('*', textAlign: .center),
                 ),
@@ -526,7 +595,10 @@ class _MatchHistoryTable extends StatelessWidget {
                     vertical: _kMatchHistoryRowVerticalPadding,
                   ),
                   child: match.gp != null
-                      ? Text(NumberFormat('#.#').format(match.gp), textAlign: .center)
+                      ? Text(
+                          NumberFormat('#.#').format(match.gp),
+                          textAlign: .center,
+                        )
                       : const Text('*', textAlign: .center),
                 ),
               ),
@@ -548,9 +620,12 @@ class _TableTapCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return TableRowInkWell(
       onTap: () {
-        Navigator.of(
-          context,
-        ).push(BroadcastRoundScreenLoading.buildRoute(match.roundId, initialTab: .teams));
+        Navigator.of(context).push(
+          BroadcastRoundScreenLoading.buildRoute(
+            match.roundId,
+            initialTab: .teams,
+          ),
+        );
       },
       child: child,
     );

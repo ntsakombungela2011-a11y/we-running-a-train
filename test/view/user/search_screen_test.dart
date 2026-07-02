@@ -20,7 +20,9 @@ final client = MockClient((request) {
 
 void main() {
   group('SearchScreen', () {
-    testWidgets('should see search results', variant: kPlatformVariant, (tester) async {
+    testWidgets('should see search results', variant: kPlatformVariant, (
+      tester,
+    ) async {
       final app = await makeTestProviderScopeApp(
         tester,
         home: const SearchScreen(),
@@ -53,36 +55,38 @@ void main() {
       await tester.pump(const Duration(seconds: 2));
     });
 
-    testWidgets('should see "no result" when search finds nothing', variant: kPlatformVariant, (
-      tester,
-    ) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const SearchScreen(),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(client, ref),
-          ),
-        },
-      );
+    testWidgets(
+      'should see "no result" when search finds nothing',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const SearchScreen(),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(client, ref),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      await tester.enterText(find.byType(SearchBar), 'johnny');
-      // await debouce call
-      await tester.pump(const Duration(milliseconds: 300));
+        await tester.enterText(find.byType(SearchBar), 'johnny');
+        // await debouce call
+        await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-      // await response
-      await tester.pumpAndSettle(const Duration(milliseconds: 100));
+        // await response
+        await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
-      expect(find.text('Players with "johnny"'), findsNothing);
-      expect(find.text('No results'), findsOneWidget);
+        expect(find.text('Players with "johnny"'), findsNothing);
+        expect(find.text('No results'), findsOneWidget);
 
-      // await debouce call for saving search history
-      await tester.pump(const Duration(seconds: 2));
-    });
+        // await debouce call for saving search history
+        await tester.pump(const Duration(seconds: 2));
+      },
+    );
   });
 }
 

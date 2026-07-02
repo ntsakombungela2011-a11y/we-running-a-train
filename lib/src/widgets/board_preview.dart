@@ -52,11 +52,14 @@ class SmallBoardPreview extends ConsumerWidget {
     final content = LayoutBuilder(
       builder: (context, constraints) {
         final boardSize =
-            constraints.biggest.shortestSide - (constraints.biggest.shortestSide / 1.518);
+            constraints.biggest.shortestSide -
+            (constraints.biggest.shortestSide / 1.518);
         return Padding(
           padding:
               padding ??
-              Styles.horizontalBodyPadding.add(const EdgeInsets.symmetric(vertical: 8.0)),
+              Styles.horizontalBodyPadding.add(
+                const EdgeInsets.symmetric(vertical: 8.0),
+              ),
           child: SizedBox(
             height: boardSize,
             child: Row(
@@ -151,7 +154,10 @@ class SmallBoardPreview extends ConsumerWidget {
 /// Reads a FEN from the clipboard, validates it, and sets it on [controller].
 ///
 /// Shows a snackbar if the clipboard content is not a valid FEN.
-Future<void> pasteFenFromClipboard(BuildContext context, TextEditingController controller) async {
+Future<void> pasteFenFromClipboard(
+  BuildContext context,
+  TextEditingController controller,
+) async {
   final data = await Clipboard.getData(Clipboard.kTextPlain);
   if (data != null) {
     try {
@@ -159,7 +165,11 @@ Future<void> pasteFenFromClipboard(BuildContext context, TextEditingController c
       controller.text = data.text!.trim();
     } catch (_) {
       if (context.mounted) {
-        showSnackBar(context, context.l10n.invalidFen, type: SnackBarType.error);
+        showSnackBar(
+          context,
+          context.l10n.invalidFen,
+          type: SnackBarType.error,
+        );
       }
     }
   }

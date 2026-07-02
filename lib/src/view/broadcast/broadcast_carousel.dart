@@ -26,10 +26,16 @@ import 'package:lichess_mobile/src/widgets/platform_context_menu_button.dart';
 import 'package:lichess_mobile/src/widgets/text_badge.dart';
 
 const kDefaultBroadcastImage = AssetImage('assets/images/broadcast_image.webp');
-const kBroadcastCardItemContentPadding = EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0);
+const kBroadcastCardItemContentPadding = EdgeInsets.symmetric(
+  horizontal: 12.0,
+  vertical: 8.0,
+);
 const kDefaultCardOpacity = 0.9;
 
-const kBroadcastCarouselItemPadding = EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0);
+const kBroadcastCarouselItemPadding = EdgeInsets.symmetric(
+  horizontal: 8.0,
+  vertical: 4.0,
+);
 const kHandsetCarouselFlexWeights = [6, 2];
 const kTabletCarouselFlexWeights = [4, 4, 1];
 const kDesktopCarouselFlexWeights = [3, 3, 3, 1];
@@ -41,8 +47,11 @@ const BroadcastList _emptyBroadcasts = (
 );
 
 class BroadcastCarousel extends StatefulWidget {
-  const BroadcastCarousel({required this.broadcasts, required this.worker, super.key})
-    : _isLoading = false;
+  const BroadcastCarousel({
+    required this.broadcasts,
+    required this.worker,
+    super.key,
+  }) : _isLoading = false;
 
   const BroadcastCarousel.loading({required this.worker})
     : _isLoading = true,
@@ -98,7 +107,8 @@ class _BroadcastCarouselState extends State<BroadcastCarousel> {
       builder: (context, constraints) {
         final flexWeights = BroadcastCarousel.flexWeights(constraints.maxWidth);
         final widgetWidth = constraints.maxWidth;
-        final elementWidth = widgetWidth * flexWeights[0] / flexWeights.reduce((a, b) => a + b);
+        final elementWidth =
+            widgetWidth * flexWeights[0] / flexWeights.reduce((a, b) => a + b);
         final pictureHeight = elementWidth / 2;
         final elementHeightFactor = flexWeights.length == 2 ? 0.75 : 0.6;
         final infoHeight = math.max(120, pictureHeight * elementHeightFactor);
@@ -111,8 +121,12 @@ class _BroadcastCarouselState extends State<BroadcastCarousel> {
             ),
             child: CarouselView.weighted(
               controller: _controller,
-              shape: const RoundedRectangleBorder(borderRadius: Styles.cardBorderRadius),
-              elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0 : 1,
+              shape: const RoundedRectangleBorder(
+                borderRadius: Styles.cardBorderRadius,
+              ),
+              elevation: Theme.of(context).platform == TargetPlatform.iOS
+                  ? 0
+                  : 1,
               flexWeights: flexWeights,
               itemSnapping: true,
               padding: kBroadcastCarouselItemPadding,
@@ -120,7 +134,10 @@ class _BroadcastCarouselState extends State<BroadcastCarousel> {
               children: [
                 if (widget._isLoading)
                   for (final _ in [1, 2, 3, 4, 5, 6, 7, 8, 9])
-                    BroadcastCarouselItem.loading(worker: widget.worker, flexWeights: flexWeights),
+                    BroadcastCarouselItem.loading(
+                      worker: widget.worker,
+                      flexWeights: flexWeights,
+                    ),
                 for (final broadcast in widget.broadcasts.active)
                   BroadcastCarouselItem(
                     broadcast: broadcast,
@@ -148,40 +165,43 @@ class BroadcastCarouselItem extends ConsumerStatefulWidget {
   final ImageColorWorker worker;
   final List<int> flexWeights;
 
-  const BroadcastCarouselItem.loading({required this.worker, required this.flexWeights})
-    : broadcast = const Broadcast(
-        tour: BroadcastTournamentData(
-          id: BroadcastTournamentId(''),
-          name: '',
-          slug: '',
-          imageUrl: null,
-          description: '',
-          information: (
-            format: null,
-            timeControl: null,
-            players: null,
-            website: null,
-            location: null,
-            dates: null,
-            standings: null,
-          ),
-        ),
-        round: BroadcastRound(
-          id: BroadcastRoundId(''),
-          name: '',
-          slug: '',
-          status: RoundStatus.finished,
-          startsAt: null,
-          finishedAt: null,
-          startsAfterPrevious: false,
-          customScoring: null,
-        ),
-        group: null,
-        roundToLinkId: BroadcastRoundId(''),
-      );
+  const BroadcastCarouselItem.loading({
+    required this.worker,
+    required this.flexWeights,
+  }) : broadcast = const Broadcast(
+         tour: BroadcastTournamentData(
+           id: BroadcastTournamentId(''),
+           name: '',
+           slug: '',
+           imageUrl: null,
+           description: '',
+           information: (
+             format: null,
+             timeControl: null,
+             players: null,
+             website: null,
+             location: null,
+             dates: null,
+             standings: null,
+           ),
+         ),
+         round: BroadcastRound(
+           id: BroadcastRoundId(''),
+           name: '',
+           slug: '',
+           status: RoundStatus.finished,
+           startsAt: null,
+           finishedAt: null,
+           startsAfterPrevious: false,
+           customScoring: null,
+         ),
+         group: null,
+         roundToLinkId: BroadcastRoundId(''),
+       );
 
   @override
-  ConsumerState<BroadcastCarouselItem> createState() => _BroadcastCarouselItemState();
+  ConsumerState<BroadcastCarouselItem> createState() =>
+      _BroadcastCarouselItemState();
 }
 
 class _BroadcastCarouselItemState extends ConsumerState<BroadcastCarouselItem> {
@@ -200,7 +220,9 @@ class _BroadcastCarouselItemState extends ConsumerState<BroadcastCarouselItem> {
     if (_colorsCache.containsKey(imageUrl)) {
       _cardColors = _colorsCache[imageUrl];
     } else if (imageUrl != null) {
-      _getImageColors(HttpNetworkImage(imageUrl!, ref.read(defaultClientProvider)));
+      _getImageColors(
+        HttpNetworkImage(imageUrl!, ref.read(defaultClientProvider)),
+      );
     }
   }
 
@@ -215,7 +237,11 @@ class _BroadcastCarouselItemState extends ConsumerState<BroadcastCarouselItem> {
       await precacheImage(provider, context);
       final ui.Image scaledImage = await imageProviderToScaled(provider);
       final imageBytes = await scaledImage.toByteData();
-      final response = await _computeImageColors(widget.worker, provider.url, imageBytes!);
+      final response = await _computeImageColors(
+        widget.worker,
+        provider.url,
+        imageBytes!,
+      );
       if (response != null) {
         if (mounted) {
           setState(() {
@@ -260,7 +286,9 @@ class _BroadcastCarouselItemState extends ConsumerState<BroadcastCarouselItem> {
         duration: const Duration(milliseconds: 500),
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
-          color: backgroundColor.withValues(alpha: _tapDown ? 1.0 : kDefaultCardOpacity),
+          color: backgroundColor.withValues(
+            alpha: _tapDown ? 1.0 : kDefaultCardOpacity,
+          ),
         ),
         child: OverflowBox(
           maxWidth: width * flexWeights[0] / totalFlex - paddingWidth,
@@ -288,7 +316,10 @@ class _BroadcastCarouselItemState extends ConsumerState<BroadcastCarouselItem> {
                     const Image(image: kDefaultBroadcastImage),
               ),
               Expanded(
-                child: _BroadcastCardContent(broadcast: widget.broadcast, cardColors: _cardColors),
+                child: _BroadcastCardContent(
+                  broadcast: widget.broadcast,
+                  cardColors: _cardColors,
+                ),
               ),
             ],
           ),
@@ -304,7 +335,10 @@ final Map<String, _CardColors?> _colorsCache = {};
 final _dateFormat = DateFormat.MMMd().add_jm();
 
 class _BroadcastCardContent extends StatelessWidget {
-  const _BroadcastCardContent({required this.broadcast, required this._cardColors});
+  const _BroadcastCardContent({
+    required this.broadcast,
+    required this._cardColors,
+  });
 
   final Broadcast broadcast;
   final _CardColors? _cardColors;
@@ -323,7 +357,8 @@ class _BroadcastCardContent extends StatelessWidget {
 
     final titleColor = _cardColors?.onPrimaryContainer;
     final subTitleColor =
-        _cardColors?.onPrimaryContainer.withValues(alpha: 0.8) ?? textShade(context, 0.8);
+        _cardColors?.onPrimaryContainer.withValues(alpha: 0.8) ??
+        textShade(context, 0.8);
 
     return Stack(
       children: [
@@ -347,7 +382,10 @@ class _BroadcastCardContent extends StatelessWidget {
                           flex: 0,
                           child: Text(
                             broadcast.round.name,
-                            style: TextStyle(color: subTitleColor, letterSpacing: -0.2),
+                            style: TextStyle(
+                              color: subTitleColor,
+                              letterSpacing: -0.2,
+                            ),
                             overflow: TextOverflow.clip,
                             softWrap: false,
                             maxLines: 1,
@@ -359,7 +397,10 @@ class _BroadcastCardContent extends StatelessWidget {
                         Flexible(
                           child: Text(
                             eventDate,
-                            style: TextStyle(fontSize: 12, color: subTitleColor),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: subTitleColor,
+                            ),
                             overflow: TextOverflow.clip,
                             softWrap: false,
                             maxLines: 1,
@@ -418,7 +459,10 @@ class _BroadcastCardContent extends StatelessWidget {
               ContextMenuIconButton(
                 consumeOutsideTap: true,
                 semanticsLabel: context.l10n.menu,
-                icon: Icon(Icons.more_horiz, color: titleColor?.withValues(alpha: 0.5)),
+                icon: Icon(
+                  Icons.more_horiz,
+                  color: titleColor?.withValues(alpha: 0.5),
+                ),
                 actions: [
                   ContextMenuAction(
                     icon: Icons.info,
@@ -462,7 +506,11 @@ class _BroadcastCardContent extends StatelessWidget {
                         : Icons.share_outlined,
                     label: context.l10n.studyShareAndExport,
                     onPressed: () {
-                      showBroadcastShareMenu(context, broadcast.tour, broadcast.round);
+                      showBroadcastShareMenu(
+                        context,
+                        broadcast.tour,
+                        broadcast.round,
+                      );
                     },
                   ),
                 ],
@@ -480,7 +528,9 @@ Future<_CardColors?> _computeImageColors(
   String imageUrl,
   ByteData imageBytes,
 ) async {
-  final response = await worker.getImageColors(imageBytes.buffer.asUint32List());
+  final response = await worker.getImageColors(
+    imageBytes.buffer.asUint32List(),
+  );
   if (response != null) {
     final (:primaryContainer, :onPrimaryContainer) = response;
     final cardColors = (

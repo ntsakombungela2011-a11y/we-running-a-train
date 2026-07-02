@@ -21,47 +21,58 @@ final client = MockClient((request) {
 
 void main() {
   group('BroadcastListScreen', () {
-    testWidgets('Displays broadcast tournament screen', variant: kPlatformVariant, (tester) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const BroadcastListScreen(),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(client, ref),
-          ),
-        },
-      );
+    testWidgets(
+      'Displays broadcast tournament screen',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const BroadcastListScreen(),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(client, ref),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-      // Load the broadcast tournaments
-      await tester.pump();
+        // Load the broadcast tournaments
+        await tester.pump();
 
-      expect(find.byType(BroadcastListTile), findsAtLeast(1));
-    });
+        expect(find.byType(BroadcastListTile), findsAtLeast(1));
+      },
+    );
 
-    testWidgets('Scroll broadcast tournament screen', variant: kPlatformVariant, (tester) async {
-      final app = await makeTestProviderScopeApp(
-        tester,
-        home: const BroadcastListScreen(),
-        overrides: {
-          lichessClientProvider: lichessClientProvider.overrideWith(
-            (ref) => LichessClient(client, ref),
-          ),
-        },
-      );
+    testWidgets(
+      'Scroll broadcast tournament screen',
+      variant: kPlatformVariant,
+      (tester) async {
+        final app = await makeTestProviderScopeApp(
+          tester,
+          home: const BroadcastListScreen(),
+          overrides: {
+            lichessClientProvider: lichessClientProvider.overrideWith(
+              (ref) => LichessClient(client, ref),
+            ),
+          },
+        );
 
-      await tester.pumpWidget(app);
+        await tester.pumpWidget(app);
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-      // Load the broadcast tournaments
-      await tester.pump();
+        // Load the broadcast tournaments
+        await tester.pump();
 
-      await tester.scrollUntilVisible(find.byKey(const ValueKey('past')), 100.0);
-    });
+        await tester.scrollUntilVisible(
+          find.byKey(const ValueKey('past')),
+          100.0,
+        );
+      },
+    );
   });
 }
 

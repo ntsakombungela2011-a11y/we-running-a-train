@@ -63,13 +63,17 @@ class GameSummaryTable extends StatelessWidget {
                 children: [
                   _SummaryPlayerName(.white, pgnHeaders, whiteUser),
                   Center(
-                    child: Text(result, style: const TextStyle(fontWeight: .bold)),
+                    child: Text(
+                      result,
+                      style: const TextStyle(fontWeight: .bold),
+                    ),
                   ),
                   _SummaryPlayerName(.black, pgnHeaders, blackUser),
                 ],
               ),
 
-              if (whiteAnalysis.accuracy != null && blackAnalysis.accuracy != null)
+              if (whiteAnalysis.accuracy != null &&
+                  blackAnalysis.accuracy != null)
                 TableRow(
                   children: [
                     _SummaryNumber('${whiteAnalysis.accuracy}%'),
@@ -77,7 +81,9 @@ class GameSummaryTable extends StatelessWidget {
                       heightFactor: 1.8,
                       child: InkWell(
                         onTap: () {
-                          launchUrl(Uri.parse('https://lichess.org/page/accuracy'));
+                          launchUrl(
+                            Uri.parse('https://lichess.org/page/accuracy'),
+                          );
                         },
                         child: Text.rich(
                           TextSpan(
@@ -90,7 +96,9 @@ class GameSummaryTable extends StatelessWidget {
                                   child: Icon(
                                     Icons.info_outline,
                                     size: 16,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -123,7 +131,10 @@ class GameSummaryTable extends StatelessWidget {
                 TableRow(
                   children: [
                     _SummaryNumber(item.$1),
-                    Center(heightFactor: 1.2, child: Text(item.$2, softWrap: true)),
+                    Center(
+                      heightFactor: 1.2,
+                      child: Text(item.$2, softWrap: true),
+                    ),
                     _SummaryNumber(item.$3),
                   ],
                 ),
@@ -219,7 +230,9 @@ class _SummaryPlayerName extends StatelessWidget {
               ),
               if (user != null)
                 GestureDetector(
-                  onTap: () => Navigator.of(context).push(UserOrProfileScreen.buildRoute(user!)),
+                  onTap: () => Navigator.of(
+                    context,
+                  ).push(UserOrProfileScreen.buildRoute(user!)),
                   child: nameText,
                 )
               else

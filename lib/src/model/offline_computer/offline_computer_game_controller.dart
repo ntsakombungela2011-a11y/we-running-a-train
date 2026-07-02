@@ -86,7 +86,10 @@ const _kMoveEvalMinDepth = kDebugMode ? 14 : 18;
 const _kComputerStockfishFlavor = StockfishFlavor.variant;
 
 final offlineComputerGameControllerProvider =
-    NotifierProvider.autoDispose<OfflineComputerGameController, OfflineComputerGameState>(
+    NotifierProvider.autoDispose<
+      OfflineComputerGameController,
+      OfflineComputerGameState
+    >(
       OfflineComputerGameController.new,
       name: 'OfflineComputerGameControllerProvider',
     );
@@ -98,7 +101,9 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
 
   @override
   OfflineComputerGameState build() {
-    socketClient = ref.watch(socketPoolProvider).open(AnalysisController.socketUri);
+    socketClient = ref
+        .watch(socketPoolProvider)
+        .open(AnalysisController.socketUri);
     _socketSubscription?.cancel();
     _socketSubscription = socketClient.stream.listen(_handleSocketEvent);
     final evaluationService = ref.watch(evaluationServiceProvider);
@@ -140,9 +145,14 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
   /// Load a game from storage.
   void loadGame(SavedOfflineComputerGame savedGame) {
     final game = savedGame.game;
-    state = OfflineComputerGameState(game: game, stepCursor: game.steps.length - 1);
+    state = OfflineComputerGameState(
+      game: game,
+      stepCursor: game.steps.length - 1,
+    );
 
-    if (game.playable && state.turn == game.playerSide && (game.casual || game.practiceMode)) {
+    if (game.playable &&
+        state.turn == game.playerSide &&
+        (game.casual || game.practiceMode)) {
       _computeHints();
     } else if (game.playable && state.turn != game.playerSide) {
       _playEngineMove();
@@ -150,7 +160,10 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
   }
 
   void makeMove(Move move) {
-    if (state.isEngineThinking || state.isEvaluatingMove || !state.game.playable) return;
+    if (state.isEngineThinking ||
+        state.isEvaluatingMove ||
+        !state.game.playable)
+      return;
 
     if (state.game.practiceMode) {
       _makeMoveWithEvaluation(move);
@@ -163,7 +176,9 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
   }
 
   SanMove _applyMove(Move move) {
-    final (newPos, newSan) = state.currentPosition.makeSan(Move.parse(move.uci)!);
+    final (newPos, newSan) = state.currentPosition.makeSan(
+      Move.parse(move.uci)!,
+    );
     final sanMove = SanMove(newSan, move);
     final newStep = GameStep(
       position: newPos,
@@ -178,15 +193,25 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
       showingSuggestedMove: null,
     );
 
-    if (state.game.steps.count((p) => p.position.board == newStep.position.board) == 3) {
-      state = state.copyWith(game: state.game.copyWith(isThreefoldRepetition: true));
+    if (state.game.steps.count(
+          (p) => p.position.board == newStep.position.board,
+        ) ==
+        3) {
+      state = state.copyWith(
+        game: state.game.copyWith(isThreefoldRepetition: true),
+      );
     } else {
-      state = state.copyWith(game: state.game.copyWith(isThreefoldRepetition: false));
+      state = state.copyWith(
+        game: state.game.copyWith(isThreefoldRepetition: false),
+      );
     }
 
     if (state.currentPosition.isCheckmate) {
       state = state.copyWith(
-        game: state.game.copyWith(status: GameStatus.mate, winner: state.turn.opposite),
+        game: state.game.copyWith(
+          status: GameStatus.mate,
+          winner: state.turn.opposite,
+        ),
       );
     } else if (state.currentPosition.isVariantEnd) {
       state = state.copyWith(
@@ -196,9 +221,13 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
         ),
       );
     } else if (state.currentPosition.isStalemate) {
-      state = state.copyWith(game: state.game.copyWith(status: GameStatus.stalemate));
+      state = state.copyWith(
+        game: state.game.copyWith(status: GameStatus.stalemate),
+      );
     } else if (state.currentPosition.isInsufficientMaterial) {
-      state = state.copyWith(game: state.game.copyWith(status: GameStatus.draw));
+      state = state.copyWith(
+        game: state.game.copyWith(status: GameStatus.draw),
+      );
     }
 
     _moveFeedback(sanMove);
@@ -241,9 +270,12 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     // the "before" evaluation for comparison.
     // Wait time must be longer than _kHintsMaxSearchTime to account for engine startup overhead.
     if (state.isLoadingHint) {
-      final maxWaitTime = _kHintsMaxSearchTime + const Duration(milliseconds: 1000);
+      final maxWaitTime =
+          _kHintsMaxSearchTime + const Duration(milliseconds: 1000);
       final deadline = DateTime.now().add(maxWaitTime);
-      while (state.isLoadingHint && ref.mounted && DateTime.now().isBefore(deadline)) {
+      while (state.isLoadingHint &&
+          ref.mounted &&
+          DateTime.now().isBefore(deadline)) {
         await Future<void>.delayed(const Duration(milliseconds: 50));
       }
 
@@ -280,7 +312,9 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     }
 
     final playerSide = state.game.playerSide;
-    final normalizedMoveUci = sanMove.isCastles ? normalizeUci(move.uci) : move.uci;
+    final normalizedMoveUci = sanMove.isCastles
+        ? normalizeUci(move.uci)
+        : move.uci;
     final matchingPv = preMoveEval.pvs.firstWhereOrNull(
       (pv) => pv.moves.isNotEmpty && pv.moves.first == normalizedMoveUci,
     );
@@ -409,14 +443,19 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
       }
     });
     evaluationService
-        .findEval(work, depthThreshold: depthThreshold, minSearchTime: minSearchTime)
+        .findEval(
+          work,
+          depthThreshold: depthThreshold,
+          minSearchTime: minSearchTime,
+        )
         .then((eval) {
           if (!completer.isCompleted && eval != null) {
             completer.complete(eval);
           }
         });
 
-    if (state.game.meta.variant == Variant.standard && work.position.ply < _kOpeningPlyThreshold) {
+    if (state.game.meta.variant == Variant.standard &&
+        work.position.ply < _kOpeningPlyThreshold) {
       _getCloudEval(work, numEvalLines: work.multiPv).then((cloudEval) {
         if (!completer.isCompleted && cloudEval != null) {
           completer.complete(cloudEval);
@@ -447,7 +486,10 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     _logger.finer('Received socket event: ${event.topic}');
   }
 
-  Future<CloudEval?> _getCloudEval(EvalWork work, {required int numEvalLines}) async {
+  Future<CloudEval?> _getCloudEval(
+    EvalWork work, {
+    required int numEvalLines,
+  }) async {
     CloudEval? eval;
     try {
       final uciPath = UciPath.fromUciMoves(
@@ -461,7 +503,8 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
       socketClient.send('evalGet', {
         'fen': work.position.fen,
         'path': uciPath.value,
-        if (work.position.rule != Rule.chess) 'variant': Variant.fromRule(work.position.rule).name,
+        if (work.position.rule != Rule.chess)
+          'variant': Variant.fromRule(work.position.rule).name,
         'mpv': numEvalLines,
       });
       await for (final event
@@ -484,9 +527,16 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
             )
             .toIList();
 
-        _logger.fine('Got a cloud eval at ply ${work.position.ply} with depth $depth');
+        _logger.fine(
+          'Got a cloud eval at ply ${work.position.ply} with depth $depth',
+        );
 
-        eval = CloudEval(depth: depth, nodes: nodes, pvs: pvs, position: work.position);
+        eval = CloudEval(
+          depth: depth,
+          nodes: nodes,
+          pvs: pvs,
+          position: work.position,
+        );
         break;
       }
     } catch (e) {
@@ -508,9 +558,12 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     final shift = winningChancesBefore - winningChancesAfter;
 
     final bestPv = preMoveEval.pvs.first;
-    final bestMove = bestPv.moves.isNotEmpty ? Move.parse(bestPv.moves.first) : null;
+    final bestMove = bestPv.moves.isNotEmpty
+        ? Move.parse(bestPv.moves.first)
+        : null;
     final playedMoveIsBest =
-        bestMove != null && bestMove.uci == sanMove.normalizeUci(state.game.meta.variant);
+        bestMove != null &&
+        bestMove.uci == sanMove.normalizeUci(state.game.meta.variant);
 
     final isGoodMove = shift < kGoodMoveThreshold;
 
@@ -519,7 +572,8 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     if (isGoodMove && preMoveEval.pvs.length > 1) {
       for (final pv in preMoveEval.pvs.skip(1)) {
         if (pv.moves.isEmpty) continue;
-        if (winningChancesBefore - pv.winningChances(playerSide) < kGoodMoveThreshold &&
+        if (winningChancesBefore - pv.winningChances(playerSide) <
+                kGoodMoveThreshold &&
             pv.moves.first != sanMove.normalizeUci(state.game.meta.variant)) {
           alternativeGoodMove = Move.parse(pv.moves.first);
           break;
@@ -569,10 +623,12 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     final masterEntry = await _fetchMasterDatabase(positionBefore.fen);
     if (!ref.mounted || masterEntry == null) return;
     if (state.currentPosition != fromPosition) return;
-    final currentComment = state.game.steps[stepCursor].computerAnalysis?.practiceComment;
+    final currentComment =
+        state.game.steps[stepCursor].computerAnalysis?.practiceComment;
     if (currentComment?.isBookMove == true) return;
     final isBookMove = masterEntry.moves.any(
-      (m) => m.uci == sanMove.normalizeUci(state.game.meta.variant) && m.games > 1,
+      (m) =>
+          m.uci == sanMove.normalizeUci(state.game.meta.variant) && m.games > 1,
     );
     if (!isBookMove) return;
     if (currentComment != null) {
@@ -648,7 +704,8 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
         _applyMove(move!);
         // After engine move, precompute hints for player's turn (in casual or practice mode)
         // Wait for the engine move animation to complete before computing hints to avoid stuttering.
-        if (state.game.playable && (state.game.casual || state.game.practiceMode)) {
+        if (state.game.playable &&
+            (state.game.casual || state.game.practiceMode)) {
           await _waitForPlayerMoveAnimation();
           if (ref.mounted && state.game.playable) _computeHints();
         }
@@ -674,27 +731,38 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
   }
 
   Future<void> _waitForPlayerMoveAnimation() {
-    final animationDuration = ref.read(boardPreferencesProvider).pieceAnimationDuration;
+    final animationDuration = ref
+        .read(boardPreferencesProvider)
+        .pieceAnimationDuration;
     if (animationDuration <= Duration.zero) {
       return Future<void>.value();
     }
-    return Future<void>.delayed(animationDuration + _kEngineMoveAnimationBuffer);
+    return Future<void>.delayed(
+      animationDuration + _kEngineMoveAnimationBuffer,
+    );
   }
 
   void resign() {
     if (!state.game.resignable) return;
     state = state.copyWith(
-      game: state.game.copyWith(status: GameStatus.resign, winner: state.game.playerSide.opposite),
+      game: state.game.copyWith(
+        status: GameStatus.resign,
+        winner: state.game.playerSide.opposite,
+      ),
       isEngineThinking: false,
     );
   }
 
   /// Claim a draw due to threefold repetition.
   void claimThreefoldDraw() {
-    if (!state.game.playable || state.game.isThreefoldRepetition != true) return;
+    if (!state.game.playable || state.game.isThreefoldRepetition != true)
+      return;
     ref.read(evaluationServiceProvider).stop();
     state = state.copyWith(
-      game: state.game.copyWith(status: GameStatus.draw, isThreefoldRepetition: false),
+      game: state.game.copyWith(
+        status: GameStatus.draw,
+        isThreefoldRepetition: false,
+      ),
       isEngineThinking: false,
     );
   }
@@ -712,10 +780,15 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     }
 
     final newSteps = state.game.steps.removeLast();
-    final finalSteps = stepsToRemove == 2 && newSteps.length > 1 ? newSteps.removeLast() : newSteps;
+    final finalSteps = stepsToRemove == 2 && newSteps.length > 1
+        ? newSteps.removeLast()
+        : newSteps;
 
     state = state.copyWith(
-      game: state.game.copyWith(steps: finalSteps, isThreefoldRepetition: false),
+      game: state.game.copyWith(
+        steps: finalSteps,
+        isThreefoldRepetition: false,
+      ),
       stepCursor: finalSteps.length - 1,
       isEngineThinking: false,
       isEvaluatingMove: false,
@@ -725,7 +798,8 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
 
     if (state.turn != state.game.playerSide && state.game.playable) {
       _playEngineMove();
-    } else if (state.game.playable && (state.game.casual || state.game.practiceMode)) {
+    } else if (state.game.playable &&
+        (state.game.casual || state.game.practiceMode)) {
       _computeHints();
     }
   }
@@ -748,7 +822,8 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
   /// This method just cycles through the available hints.
   void hint() {
     if (!state.game.casual && !state.game.practiceMode) return;
-    if (!state.game.playable || state.isEngineThinking || state.isLoadingHint) return;
+    if (!state.game.playable || state.isEngineThinking || state.isLoadingHint)
+      return;
     if (state.turn != state.game.playerSide) return;
 
     final existingHints = state.hintMoves;
@@ -759,7 +834,9 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     if (currentIndex == null) {
       state = state.copyWith(hintIndex: 0);
     } else {
-      state = state.copyWith(hintIndex: (currentIndex + 1) % existingHints.length);
+      state = state.copyWith(
+        hintIndex: (currentIndex + 1) % existingHints.length,
+      );
     }
   }
 
@@ -847,9 +924,13 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
 
   /// Updates the computer analysis on the game step at [stepIndex].
   void _setStepAnalysis(int stepIndex, ComputerAnalysis analysis) {
-    final updatedStep = state.game.steps[stepIndex].copyWith(computerAnalysis: analysis);
+    final updatedStep = state.game.steps[stepIndex].copyWith(
+      computerAnalysis: analysis,
+    );
     state = state.copyWith(
-      game: state.game.copyWith(steps: state.game.steps.put(stepIndex, updatedStep)),
+      game: state.game.copyWith(
+        steps: state.game.steps.put(stepIndex, updatedStep),
+      ),
     );
   }
 
@@ -892,8 +973,13 @@ sealed class OfflineComputerGameState with _$OfflineComputerGameState {
     final String? effectiveInitialFen;
 
     if (initialFen != null) {
-      effectiveVariant = variant == Variant.standard ? Variant.fromPosition : variant;
-      position = Position.setupPosition(effectiveVariant.rule, Setup.parseFen(initialFen));
+      effectiveVariant = variant == Variant.standard
+          ? Variant.fromPosition
+          : variant;
+      position = Position.setupPosition(
+        effectiveVariant.rule,
+        Setup.parseFen(initialFen),
+      );
       effectiveInitialFen = initialFen;
     } else if (variant == Variant.chess960) {
       position = randomChess960Position();
@@ -905,7 +991,9 @@ sealed class OfflineComputerGameState with _$OfflineComputerGameState {
       effectiveInitialFen = null;
     }
 
-    final sessionId = StringId('ocg_${_random.nextInt(1 << 32).toRadixString(16).padLeft(8, '0')}');
+    final sessionId = StringId(
+      'ocg_${_random.nextInt(1 << 32).toRadixString(16).padLeft(8, '0')}',
+    );
     return OfflineComputerGameState(
       game: OfflineComputerGame(
         id: sessionId,
@@ -930,7 +1018,8 @@ sealed class OfflineComputerGameState with _$OfflineComputerGameState {
   }
 
   /// The computer analysis for the current step.
-  ComputerAnalysis? get currentAnalysis => game.steps[stepCursor].computerAnalysis;
+  ComputerAnalysis? get currentAnalysis =>
+      game.steps[stepCursor].computerAnalysis;
 
   /// The practice comment which can be on the last step or the previous step (after computer played a move).
   PracticeComment? get practiceComment =>
@@ -946,21 +1035,26 @@ sealed class OfflineComputerGameState with _$OfflineComputerGameState {
   Side get turn => currentPosition.turn;
   bool get finished => game.finished;
 
-  Move? get lastMove =>
-      stepCursor > 0 ? Move.parse(game.steps[stepCursor].sanMove!.move.uci) : null;
+  Move? get lastMove => stepCursor > 0
+      ? Move.parse(game.steps[stepCursor].sanMove!.move.uci)
+      : null;
 
   MaterialDiffSide? currentMaterialDiff(Side side) {
     return game.steps[stepCursor].diff?.bySide(side);
   }
 
-  List<String> get moves => game.steps.skip(1).map((e) => e.sanMove!.san).toList(growable: false);
+  List<String> get moves =>
+      game.steps.skip(1).map((e) => e.sanMove!.san).toList(growable: false);
 
   bool get canGoForward => stepCursor < game.steps.length - 1;
   bool get canGoBack => stepCursor > 0;
 
   /// Player can take back if it's their turn and there are moves to take back.
   bool get canTakeback =>
-      game.playable && game.steps.length > 1 && !isEngineThinking && !isEvaluatingMove;
+      game.playable &&
+      game.steps.length > 1 &&
+      !isEngineThinking &&
+      !isEvaluatingMove;
 
   /// The square to highlight for the current hint.
   Square? get hintSquare {

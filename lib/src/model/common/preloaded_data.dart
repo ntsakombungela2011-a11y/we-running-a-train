@@ -53,9 +53,16 @@ final preloadedDataProvider = FutureProvider<PreloadedData>((Ref ref) async {
 
   if (token != null) {
     final userAgent = makeUserAgent(pInfo, deviceInfo, sri, null);
-    final client = DefaultClient(ref.read(httpClientFactoryProvider)(), userAgent: userAgent);
+    final client = DefaultClient(
+      ref.read(httpClientFactoryProvider)(),
+      userAgent: userAgent,
+    );
     client
-        .postReadJson(lichessUri('/api/token/test'), mapper: (json) => json, body: token)
+        .postReadJson(
+          lichessUri('/api/token/test'),
+          mapper: (json) => json,
+          body: token,
+        )
         .timeout(const Duration(seconds: 5))
         .then((data) {
           final isValid = data[token] != null;

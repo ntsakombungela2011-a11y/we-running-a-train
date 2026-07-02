@@ -81,7 +81,9 @@ extension IDPick on Pick {
     if (value is String) {
       return StringId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to StringId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to StringId",
+    );
   }
 
   StringId? asStringIdOrNull() {
@@ -98,7 +100,9 @@ extension IDPick on Pick {
     if (value is String) {
       return UserId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to UserId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to UserId",
+    );
   }
 
   UserId? asUserIdOrNull() {
@@ -115,7 +119,9 @@ extension IDPick on Pick {
     if (value is String) {
       return GameId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to GameId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to GameId",
+    );
   }
 
   GameId? asGameIdOrNull() {
@@ -132,7 +138,9 @@ extension IDPick on Pick {
     if (value is String) {
       return GameFullId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to GameId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to GameId",
+    );
   }
 
   GameFullId? asGameFullIdOrNull() {
@@ -149,7 +157,9 @@ extension IDPick on Pick {
     if (value is String) {
       return PuzzleId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to PuzzleId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to PuzzleId",
+    );
   }
 
   PuzzleId? asPuzzleIdOrNull() {
@@ -166,7 +176,9 @@ extension IDPick on Pick {
     if (value is String) {
       return ChallengeId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to ChallengeId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to ChallengeId",
+    );
   }
 
   ChallengeId? asChallengeIdOrNull() {
@@ -202,7 +214,9 @@ extension IDPick on Pick {
     if (value is String) {
       return BroadcastRoundId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to BroadcastRoundId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to BroadcastRoundId",
+    );
   }
 
   BroadcastRoundId? asBroadcastRoundIdOrNull() {
@@ -219,7 +233,9 @@ extension IDPick on Pick {
     if (value is String) {
       return BroadcastGameId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to BroadcastGameId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to BroadcastGameId",
+    );
   }
 
   BroadcastGameId? asBroadcastGameIdOrNull() {
@@ -245,7 +261,9 @@ extension IDPick on Pick {
     if (value is String) {
       return TeamId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to TeamId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to TeamId",
+    );
   }
 
   StudyId asStudyIdOrThrow() {
@@ -253,7 +271,9 @@ extension IDPick on Pick {
     if (value is String) {
       return StudyId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to StudyId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to StudyId",
+    );
   }
 
   FideId asFideIdOrThrow() {
@@ -261,7 +281,9 @@ extension IDPick on Pick {
     if (value is int && value != 0) {
       return FideId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to FideId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to FideId",
+    );
   }
 
   FideId? asFideIdOrNull() {
@@ -278,6 +300,8 @@ extension IDPick on Pick {
     if (value is String) {
       return TournamentId(value);
     }
-    throw PickException("value $value at $debugParsingExit can't be casted to TournamentId");
+    throw PickException(
+      "value $value at $debugParsingExit can't be casted to TournamentId",
+    );
   }
 }

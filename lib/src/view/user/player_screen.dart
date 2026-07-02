@@ -72,7 +72,9 @@ class _BodyState extends ConsumerState<_Body> {
             onTap: () => Navigator.of(context).push(
               SearchScreen.buildRoute(
                 onUserTap: (user) {
-                  Navigator.of(context).push(UserOrProfileScreen.buildRoute(user));
+                  Navigator.of(
+                    context,
+                  ).push(UserOrProfileScreen.buildRoute(user));
                 },
               ),
             ),

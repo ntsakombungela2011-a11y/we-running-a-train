@@ -26,7 +26,8 @@ class TournamentListScreen extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<TournamentListScreen> createState() => _TournamentListScreenState();
+  ConsumerState<TournamentListScreen> createState() =>
+      _TournamentListScreenState();
 }
 
 enum _ViewMode {
@@ -85,7 +86,8 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen>
             IconButton(
               icon: const Icon(Icons.help_outline),
               tooltip: context.l10n.tournamentFAQ,
-              onPressed: () => Navigator.of(context).push(TournamentFAQScreen.buildRoute()),
+              onPressed: () =>
+                  Navigator.of(context).push(TournamentFAQScreen.buildRoute()),
             ),
           ],
           bottom: TabBar(
@@ -101,12 +103,23 @@ class _TournamentListScreenState extends ConsumerState<TournamentListScreen>
           AsyncData(:final value) => TabBarView(
             controller: _tabController,
             children: <Widget>[
-              _TournamentListBody(tournaments: value.finished, viewMode: _ViewMode.completed),
-              _TournamentListBody(tournaments: value.started, viewMode: _ViewMode.ongoing),
-              _TournamentListBody(tournaments: value.created, viewMode: _ViewMode.upcoming),
+              _TournamentListBody(
+                tournaments: value.finished,
+                viewMode: _ViewMode.completed,
+              ),
+              _TournamentListBody(
+                tournaments: value.started,
+                viewMode: _ViewMode.ongoing,
+              ),
+              _TournamentListBody(
+                tournaments: value.created,
+                viewMode: _ViewMode.upcoming,
+              ),
             ],
           ),
-          AsyncError(:final error) => Center(child: Text('Could not load tournaments: $error')),
+          AsyncError(:final error) => Center(
+            child: Text('Could not load tournaments: $error'),
+          ),
           _ => const Center(child: CircularProgressIndicator.adaptive()),
         },
       ),
@@ -134,7 +147,8 @@ class FeaturedTournamentsWidget extends ConsumerWidget {
           },
           children: [
             for (final tournament in value)
-              if (tournament.isSupportedInApp) _TournamentListItem(tournament: tournament),
+              if (tournament.isSupportedInApp)
+                _TournamentListItem(tournament: tournament),
           ],
         );
 
@@ -156,38 +170,47 @@ class FeaturedTournamentsWidget extends ConsumerWidget {
 }
 
 class _TournamentListBody extends ConsumerStatefulWidget {
-  const _TournamentListBody({required this.tournaments, required this.viewMode});
+  const _TournamentListBody({
+    required this.tournaments,
+    required this.viewMode,
+  });
 
   final IList<LightTournament> tournaments;
 
   final _ViewMode viewMode;
 
   @override
-  ConsumerState<_TournamentListBody> createState() => _TournamentListBodyState();
+  ConsumerState<_TournamentListBody> createState() =>
+      _TournamentListBodyState();
 }
 
 class _TournamentListBodyState extends ConsumerState<_TournamentListBody> {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   Widget build(BuildContext context) {
     final List<LightTournament> systemTours = [];
     final List<LightTournament> userTours = [];
 
-    widget.tournaments.where((tournament) => tournament.isSupportedInApp).forEach((tournament) {
-      if (tournament.isSystemTournament) {
-        systemTours.add(tournament);
-      } else {
-        userTours.add(tournament);
-      }
-    });
+    widget.tournaments
+        .where((tournament) => tournament.isSupportedInApp)
+        .forEach((tournament) {
+          if (tournament.isSystemTournament) {
+            systemTours.add(tournament);
+          } else {
+            userTours.add(tournament);
+          }
+        });
 
     Comparator<LightTournament> makeComparator<T extends Comparable<T>>(
       T Function(LightTournament) p,
     ) =>
         (LightTournament a, LightTournament b) => p(a).compareTo(p(b));
 
-    final sortByFrequency = makeComparator((t) => t.meta.freq ?? TournamentFreq.values.first);
+    final sortByFrequency = makeComparator(
+      (t) => t.meta.freq ?? TournamentFreq.values.first,
+    );
     final sortByStartTime = makeComparator((t) => t.startsAt);
     final sortByPosition = makeComparator((t) => t.position);
 
@@ -219,8 +242,12 @@ class _TournamentListBodyState extends ConsumerState<_TournamentListBody> {
               .sortedBy((t) => t.meta.freq ?? TournamentFreq.values.first);
 
     final tournamentListItems = [
-      ...sortedSystemTours.map((tournament) => _TournamentListItem(tournament: tournament)),
-      ...userTours.map((tournament) => _TournamentListItem(tournament: tournament)),
+      ...sortedSystemTours.map(
+        (tournament) => _TournamentListItem(tournament: tournament),
+      ),
+      ...userTours.map(
+        (tournament) => _TournamentListItem(tournament: tournament),
+      ),
     ];
 
     return HapticRefreshIndicator(
@@ -232,7 +259,8 @@ class _TournamentListBodyState extends ConsumerState<_TournamentListBody> {
       child: ListView.separated(
         shrinkWrap: true,
         itemCount: tournamentListItems.length,
-        separatorBuilder: (context, index) => Theme.of(context).platform == TargetPlatform.iOS
+        separatorBuilder: (context, index) =>
+            Theme.of(context).platform == TargetPlatform.iOS
             ? const PlatformDivider(height: 1, cupertinoHasLeading: true)
             : const SizedBox.shrink(),
         itemBuilder: (context, index) => tournamentListItems[index],
@@ -263,7 +291,11 @@ class _TournamentListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(tournament.meta.perf.icon, color: _iconColor(tournament)),
-      title: Text(tournament.meta.fullName, overflow: TextOverflow.ellipsis, maxLines: 2),
+      title: Text(
+        tournament.meta.fullName,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2,
+      ),
       subtitle: Text(
         '${tournament.meta.timeIncrement.display} ${tournament.meta.rated ? context.l10n.rated : context.l10n.broadcastUnrated} • ${context.l10n.nbMinutes(tournament.meta.duration.inMinutes)}',
       ),
@@ -273,7 +305,10 @@ class _TournamentListItem extends StatelessWidget {
         children: [
           Text(
             '${_hourMinuteFormat.format(tournament.startsAt)} - ${_hourMinuteFormat.format(tournament.finishesAt)}',
-            style: const TextStyle(fontSize: 14, fontFeatures: [FontFeature.tabularFigures()]),
+            style: const TextStyle(
+              fontSize: 14,
+              fontFeatures: [FontFeature.tabularFigures()],
+            ),
           ),
           Text.rich(
             TextSpan(
@@ -283,7 +318,10 @@ class _TournamentListItem extends StatelessWidget {
                   alignment: PlaceholderAlignment.middle,
                   child: Icon(Icons.group_outlined, size: 18),
                 ),
-                TextSpan(text: '${tournament.nbPlayers}', style: const TextStyle(fontSize: 14)),
+                TextSpan(
+                  text: '${tournament.nbPlayers}',
+                  style: const TextStyle(fontSize: 14),
+                ),
               ],
             ),
           ),

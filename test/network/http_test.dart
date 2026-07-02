@@ -23,7 +23,9 @@ void main() {
     test('sends requests to lichess host when only path is provided', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
@@ -44,13 +46,17 @@ void main() {
     test('uses full URL as-is when host is provided', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
       );
       final client = container.read(lichessClientProvider);
-      final response = await client.get(Uri.https('explorer.lichess.org', '/test'));
+      final response = await client.get(
+        Uri.https('explorer.lichess.org', '/test'),
+      );
       expect(response.statusCode, 200);
       final requests = FakeClient.verifyRequests();
       expect(
@@ -62,30 +68,43 @@ void main() {
       );
     });
 
-    test('uses full URL as-is with query parameters when host is provided', () async {
-      final container = await makeContainer(
-        overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
-            return FakeHttpClientFactory(() => FakeClient());
-          }),
-        },
-      );
-      final client = container.read(lichessClientProvider);
-      final response = await client.get(Uri.https('explorer.lichess.org', '/test', {'foo': 'bar'}));
-      expect(response.statusCode, 200);
-      final requests = FakeClient.verifyRequests();
-      expect(
-        requests.first,
-        isA<http.BaseRequest>()
-            .having((r) => r.url.host, 'host', 'explorer.lichess.org')
-            .having((r) => r.url.queryParameters['foo'], 'query param', 'bar'),
-      );
-    });
+    test(
+      'uses full URL as-is with query parameters when host is provided',
+      () async {
+        final container = await makeContainer(
+          overrides: {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
+              return FakeHttpClientFactory(() => FakeClient());
+            }),
+          },
+        );
+        final client = container.read(lichessClientProvider);
+        final response = await client.get(
+          Uri.https('explorer.lichess.org', '/test', {'foo': 'bar'}),
+        );
+        expect(response.statusCode, 200);
+        final requests = FakeClient.verifyRequests();
+        expect(
+          requests.first,
+          isA<http.BaseRequest>()
+              .having((r) => r.url.host, 'host', 'explorer.lichess.org')
+              .having(
+                (r) => r.url.queryParameters['foo'],
+                'query param',
+                'bar',
+              ),
+        );
+      },
+    );
 
     test('sets user agent (no authUser)', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
@@ -106,7 +125,9 @@ void main() {
     test('sets user agent (with authUser)', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
@@ -131,7 +152,9 @@ void main() {
     test('read methods throw ServerException on status code >= 400', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
@@ -147,27 +170,63 @@ void main() {
       ]) {
         expect(
           () => method(Uri(path: '/will/return/500')),
-          throwsA(isA<ServerException>().having((e) => e.statusCode, 'statusCode', 500)),
+          throwsA(
+            isA<ServerException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              500,
+            ),
+          ),
         );
         expect(
           () => method(Uri(path: '/will/return/503')),
-          throwsA(isA<ServerException>().having((e) => e.statusCode, 'statusCode', 503)),
+          throwsA(
+            isA<ServerException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              503,
+            ),
+          ),
         );
         expect(
           () => method(Uri(path: '/will/return/400')),
-          throwsA(isA<ServerException>().having((e) => e.statusCode, 'statusCode', 400)),
+          throwsA(
+            isA<ServerException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              400,
+            ),
+          ),
         );
         expect(
           () => method(Uri(path: '/will/return/404')),
-          throwsA(isA<ServerException>().having((e) => e.statusCode, 'statusCode', 404)),
+          throwsA(
+            isA<ServerException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              404,
+            ),
+          ),
         );
         expect(
           () => method(Uri(path: '/will/return/401')),
-          throwsA(isA<ServerException>().having((e) => e.statusCode, 'statusCode', 401)),
+          throwsA(
+            isA<ServerException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              401,
+            ),
+          ),
         );
         expect(
           () => method(Uri(path: '/will/return/403')),
-          throwsA(isA<ServerException>().having((e) => e.statusCode, 'statusCode', 403)),
+          throwsA(
+            isA<ServerException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              403,
+            ),
+          ),
         );
       }
     });
@@ -175,13 +234,21 @@ void main() {
     test('other methods do not throw on status code >= 400', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
       );
       final client = container.read(lichessClientProvider);
-      for (final method in [client.get, client.post, client.put, client.patch, client.delete]) {
+      for (final method in [
+        client.get,
+        client.post,
+        client.put,
+        client.patch,
+        client.delete,
+      ]) {
         expect(() => method(Uri(path: '/will/return/500')), returnsNormally);
         expect(() => method(Uri(path: '/will/return/503')), returnsNormally);
         expect(() => method(Uri(path: '/will/return/400')), returnsNormally);
@@ -194,7 +261,9 @@ void main() {
     test('socket and tls errors do not throw ClientException', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
@@ -202,18 +271,28 @@ void main() {
       final client = container.read(lichessClientProvider);
       expect(
         () => client.get(Uri(path: '/will/throw/socket/exception')),
-        throwsA(isA<SocketException>().having((e) => e.message, 'message', 'no internet')),
+        throwsA(
+          isA<SocketException>().having(
+            (e) => e.message,
+            'message',
+            'no internet',
+          ),
+        ),
       );
       expect(
         () => client.get(Uri(path: '/will/throw/tls/exception')),
-        throwsA(isA<TlsException>().having((e) => e.message, 'message', 'tls error')),
+        throwsA(
+          isA<TlsException>().having((e) => e.message, 'message', 'tls error'),
+        ),
       );
     });
 
     test('failed JSON parsing will throw ClientException', () async {
       final container = await makeContainer(
         overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+            ref,
+          ) {
             return FakeHttpClientFactory(() => FakeClient());
           }),
         },
@@ -236,36 +315,41 @@ void main() {
       );
     });
 
-    test('adds a signed bearer token when a authUser is available the request', () async {
-      final container = await makeContainer(
-        overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
-            return FakeHttpClientFactory(() => FakeClient());
-          }),
-        },
-        authUser: const AuthUser(
-          token: 'test-token',
-          user: LightUser(id: UserId('test-user-id'), name: 'test-username'),
-        ),
-      );
+    test(
+      'adds a signed bearer token when a authUser is available the request',
+      () async {
+        final container = await makeContainer(
+          overrides: {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
+              return FakeHttpClientFactory(() => FakeClient());
+            }),
+          },
+          authUser: const AuthUser(
+            token: 'test-token',
+            user: LightUser(id: UserId('test-user-id'), name: 'test-username'),
+          ),
+        );
 
-      final authUser = container.read(authControllerProvider);
-      expect(authUser, isNotNull);
+        final authUser = container.read(authControllerProvider);
+        expect(authUser, isNotNull);
 
-      final client = container.read(lichessClientProvider);
-      await client.get(Uri(path: '/test'));
+        final client = container.read(lichessClientProvider);
+        await client.get(Uri(path: '/test'));
 
-      final requests = FakeClient.verifyRequests();
-      expect(requests.length, 1);
-      expect(
-        requests.first,
-        isA<http.BaseRequest>().having(
-          (r) => r.headers['Authorization'],
-          'Authorization',
-          'Bearer ${signBearerToken('test-token')}',
-        ),
-      );
-    });
+        final requests = FakeClient.verifyRequests();
+        expect(requests.length, 1);
+        expect(
+          requests.first,
+          isA<http.BaseRequest>().having(
+            (r) => r.headers['Authorization'],
+            'Authorization',
+            'Bearer ${signBearerToken('test-token')}',
+          ),
+        );
+      },
+    );
 
     test(
       'when receiving a 401, will test authUser token and delete authUser if not valid anymore',
@@ -273,7 +357,9 @@ void main() {
         int nbTokenTestRequests = 0;
         final container = await makeContainer(
           overrides: {
-            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
               return FakeHttpClientFactory(() => FakeClient());
             }),
             defaultClientProvider: defaultClientProvider.overrideWith((ref) {
@@ -326,62 +412,67 @@ void main() {
       },
     );
 
-    test('when receiving a 401, will test authUser token and keep authUser if still valid', () async {
-      int nbTokenTestRequests = 0;
-      final container = await makeContainer(
-        overrides: {
-          httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((ref) {
-            return FakeHttpClientFactory(() => FakeClient());
-          }),
-          defaultClientProvider: defaultClientProvider.overrideWith((ref) {
-            return DefaultClient(
-              MockClient((request) async {
-                if (request.url.path == '/api/token/test') {
-                  nbTokenTestRequests++;
-                  final token = request.body.split(',')[0];
-                  final response =
-                      '{"$token": {"userId": "test-user-id","scope": "web:mobile", "expires":1760704968038}}';
-                  return http.Response(response, 200);
-                }
-                return http.Response('', 404);
-              }),
-              userAgent: 'Lichess Mobile/0.0.0 as:test-user-id sri:test-sri',
-            );
-          }),
-        },
-        authUser: const AuthUser(
-          token: 'test-token',
-          user: LightUser(id: UserId('test-user-id'), name: 'test-username'),
-        ),
-      );
-
-      fakeAsync((async) {
-        final authUser = container.read(authControllerProvider);
-        expect(authUser, isNotNull);
-
-        final client = container.read(lichessClientProvider);
-        try {
-          client.get(Uri(path: '/will/return/401'));
-        } on ServerException catch (_) {}
-
-        async.flushMicrotasks();
-
-        final requests = FakeClient.verifyRequests();
-        expect(requests.length, 1);
-        expect(
-          requests.first,
-          isA<http.BaseRequest>().having(
-            (r) => r.headers['Authorization'],
-            'Authorization',
-            'Bearer ${signBearerToken('test-token')}',
+    test(
+      'when receiving a 401, will test authUser token and keep authUser if still valid',
+      () async {
+        int nbTokenTestRequests = 0;
+        final container = await makeContainer(
+          overrides: {
+            httpClientFactoryProvider: httpClientFactoryProvider.overrideWith((
+              ref,
+            ) {
+              return FakeHttpClientFactory(() => FakeClient());
+            }),
+            defaultClientProvider: defaultClientProvider.overrideWith((ref) {
+              return DefaultClient(
+                MockClient((request) async {
+                  if (request.url.path == '/api/token/test') {
+                    nbTokenTestRequests++;
+                    final token = request.body.split(',')[0];
+                    final response =
+                        '{"$token": {"userId": "test-user-id","scope": "web:mobile", "expires":1760704968038}}';
+                    return http.Response(response, 200);
+                  }
+                  return http.Response('', 404);
+                }),
+                userAgent: 'Lichess Mobile/0.0.0 as:test-user-id sri:test-sri',
+              );
+            }),
+          },
+          authUser: const AuthUser(
+            token: 'test-token',
+            user: LightUser(id: UserId('test-user-id'), name: 'test-username'),
           ),
         );
 
-        expect(nbTokenTestRequests, 1);
+        fakeAsync((async) {
+          final authUser = container.read(authControllerProvider);
+          expect(authUser, isNotNull);
 
-        expect(container.read(authControllerProvider), equals(authUser));
-      });
-    });
+          final client = container.read(lichessClientProvider);
+          try {
+            client.get(Uri(path: '/will/return/401'));
+          } on ServerException catch (_) {}
+
+          async.flushMicrotasks();
+
+          final requests = FakeClient.verifyRequests();
+          expect(requests.length, 1);
+          expect(
+            requests.first,
+            isA<http.BaseRequest>().having(
+              (r) => r.headers['Authorization'],
+              'Authorization',
+              'Bearer ${signBearerToken('test-token')}',
+            ),
+          );
+
+          expect(nbTokenTestRequests, 1);
+
+          expect(container.read(authControllerProvider), equals(authUser));
+        });
+      },
+    );
   });
 }
 

@@ -27,7 +27,11 @@ part 'tv_game_controller.freezed.dart';
 ///
 /// [source] is the parameters of the [TvController] that produced this game,
 /// and lets the game controller route channel switches back to it.
-typedef TvGameControllerParams = ({GameId gameId, Side orientation, TvControllerParams source});
+typedef TvGameControllerParams = ({
+  GameId gameId,
+  Side orientation,
+  TvControllerParams source,
+});
 
 final tvGameControllerProvider = AsyncNotifierProvider.autoDispose
     .family<TvGameController, TvGameState, TvGameControllerParams>(
@@ -40,7 +44,8 @@ final tvGameControllerProvider = AsyncNotifierProvider.autoDispose
 ///
 /// Chat is only enabled when watching a single game or a user's TV, not when
 /// watching a TV channel.
-class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameState> {
+class TvGameController extends AsyncNotifier<TvGameState>
+    with ChatMixin<TvGameState> {
   TvGameController(this.params);
 
   final TvGameControllerParams params;
@@ -106,8 +111,12 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
     _socketSubscription?.cancel();
     _socketSubscription = socketClient.stream.listen(handleSocketEvent);
 
-    final rawFullEvent = await socketClient.stream.firstWhere((e) => e.topic == 'full');
-    final fullEvent = GameFullEvent.fromJson(rawFullEvent.data as Map<String, dynamic>);
+    final rawFullEvent = await socketClient.stream.firstWhere(
+      (e) => e.topic == 'full',
+    );
+    final fullEvent = GameFullEvent.fromJson(
+      rawFullEvent.data as Map<String, dynamic>,
+    );
     socketClient.version = fullEvent.socketEventVersion;
 
     return TvGameState(
@@ -118,15 +127,21 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
     );
   }
 
-  bool canGoBack() => state.mapOrNull(data: (d) => d.value.stepCursor > 0) ?? false;
+  bool canGoBack() =>
+      state.mapOrNull(data: (d) => d.value.stepCursor > 0) ?? false;
 
   bool canGoForward() =>
-      state.mapOrNull(data: (d) => d.value.stepCursor < d.value.game.steps.length - 1) ?? false;
+      state.mapOrNull(
+        data: (d) => d.value.stepCursor < d.value.game.steps.length - 1,
+      ) ??
+      false;
 
   void toggleBoard() {
     if (state.hasValue) {
       final curState = state.requireValue;
-      state = AsyncValue.data(curState.copyWith(orientation: curState.orientation.opposite));
+      state = AsyncValue.data(
+        curState.copyWith(orientation: curState.orientation.opposite),
+      );
     }
   }
 
@@ -134,7 +149,9 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
     if (state.hasValue) {
       final curState = state.requireValue;
       if (curState.stepCursor < curState.game.steps.length - 1) {
-        state = AsyncValue.data(curState.copyWith(stepCursor: curState.stepCursor + 1));
+        state = AsyncValue.data(
+          curState.copyWith(stepCursor: curState.stepCursor + 1),
+        );
         final san = curState.game.stepAt(curState.stepCursor + 1).sanMove?.san;
         if (san != null) {
           _playReplayMoveSound(san);
@@ -147,7 +164,9 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
     if (state.hasValue) {
       final curState = state.requireValue;
       if (curState.stepCursor > 0) {
-        state = AsyncValue.data(curState.copyWith(stepCursor: curState.stepCursor - 1));
+        state = AsyncValue.data(
+          curState.copyWith(stepCursor: curState.stepCursor - 1),
+        );
         final san = curState.game.stepAt(curState.stepCursor - 1).sanMove?.san;
         if (san != null) {
           _playReplayMoveSound(san);
@@ -183,7 +202,9 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
   Future<void> _onResyncOrRematchTaken() async {
     if (!ref.mounted) return;
     if (params.source.userId != null) {
-      await ref.read(tvControllerProvider(params.source).notifier).resolveCurrentGame();
+      await ref
+          .read(tvControllerProvider(params.source).notifier)
+          .resolveCurrentGame();
     } else {
       _onReload?.call();
     }
@@ -215,7 +236,10 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
             _onReload?.call();
             return;
           }
-          final reloadEvent = SocketEvent(topic: data['t'] as String, data: data['d']);
+          final reloadEvent = SocketEvent(
+            topic: data['t'] as String,
+            data: data['d'],
+          );
           handleSocketEvent(reloadEvent);
         } else {
           _onReload?.call();
@@ -226,9 +250,13 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
         if (watcherData != null && watcherData is Map<String, dynamic>) {
           final nb = watcherData['nb'] as int? ?? 0;
           final users =
-              (watcherData['users'] as List<dynamic>?)?.map((e) => e.toString()).toIList() ??
+              (watcherData['users'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toIList() ??
               const IList.empty();
-          state = AsyncData(state.requireValue.copyWith(nbWatchers: nb, watcherNames: users));
+          state = AsyncData(
+            state.requireValue.copyWith(nbWatchers: nb, watcherNames: users),
+          );
         }
       case 'move' || 'drop':
         final curState = state.requireValue;
@@ -268,9 +296,14 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
         state = AsyncData(newState);
 
       case 'endData':
-        final endData = GameEndEvent.fromJson(event.data as Map<String, dynamic>);
+        final endData = GameEndEvent.fromJson(
+          event.data as Map<String, dynamic>,
+        );
         TvGameState newState = state.requireValue.copyWith(
-          game: state.requireValue.game.copyWith(status: endData.status, winner: endData.winner),
+          game: state.requireValue.game.copyWith(
+            status: endData.status,
+            winner: endData.winner,
+          ),
         );
         if (endData.clock != null) {
           newState = newState.copyWith.game.clock!(
@@ -287,10 +320,9 @@ class TvGameController extends AsyncNotifier<TvGameState> with ChatMixin<TvGameS
         final eventChannel = pick(json, 'channel').asTvChannelOrNull();
         if (eventChannel != null && eventChannel == params.source.channel) {
           final data = TvSelectEvent.fromJson(json);
-          ref.read(tvControllerProvider(params.source).notifier).moveToNextGame((
-            data.id,
-            data.orientation,
-          ));
+          ref.read(tvControllerProvider(params.source).notifier).moveToNextGame(
+            (data.id, data.orientation),
+          );
         }
     }
   }

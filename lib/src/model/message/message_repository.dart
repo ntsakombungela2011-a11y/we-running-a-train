@@ -12,11 +12,16 @@ final contactsProvider = FutureProvider.autoDispose<Contacts>((ref) {
 
 /// A provider for [MessageRepository].
 final messageRepositoryProvider = Provider<MessageRepository>((ref) {
-  return MessageRepository(ref.watch(lichessClientProvider), ref.watch(aggregatorProvider));
+  return MessageRepository(
+    ref.watch(lichessClientProvider),
+    ref.watch(aggregatorProvider),
+  );
 }, name: 'MessageRepositoryProvider');
 
 /// A provider that gets the unread messages count for the current user.
-final unreadMessagesProvider = FutureProvider.autoDispose<UnreadMessages>((ref) {
+final unreadMessagesProvider = FutureProvider.autoDispose<UnreadMessages>((
+  ref,
+) {
   final authUser = ref.watch(authControllerProvider);
   if (authUser == null) {
     return Future.value((unread: 0, lichess: false));
@@ -25,7 +30,10 @@ final unreadMessagesProvider = FutureProvider.autoDispose<UnreadMessages>((ref) 
   return aggregator.readJson(
     Uri(path: '/inbox/unread-count'),
     atomicMapper: (Map<String, dynamic> json) {
-      return (unread: json['unread'] as int, lichess: json['lichess'] as bool? ?? false);
+      return (
+        unread: json['unread'] as int,
+        lichess: json['lichess'] as bool? ?? false,
+      );
     },
   );
 }, name: 'UnreadMessagesProvider');
@@ -40,8 +48,10 @@ class MessageRepository {
     return aggregator.readJson(
       Uri(path: '/inbox/unread-count'),
       headers: {'Accept': 'application/json'},
-      atomicMapper: (Map<String, dynamic> json) =>
-          (unread: json['unread'] as int, lichess: json['lichess'] as bool? ?? false),
+      atomicMapper: (Map<String, dynamic> json) => (
+        unread: json['unread'] as int,
+        lichess: json['lichess'] as bool? ?? false,
+      ),
     );
   }
 
@@ -57,7 +67,8 @@ class MessageRepository {
     return client.readJson(
       Uri(path: '/inbox/$userId'),
       headers: {'Accept': 'application/json'},
-      mapper: (Map<String, dynamic> json) => ConversationData.fromServerJson(json),
+      mapper: (Map<String, dynamic> json) =>
+          ConversationData.fromServerJson(json),
     );
   }
 
@@ -68,7 +79,8 @@ class MessageRepository {
         queryParameters: {'before': before.millisecondsSinceEpoch.toString()},
       ),
       headers: {'Accept': 'application/json'},
-      mapper: (Map<String, dynamic> json) => ConversationData.fromServerJson(json),
+      mapper: (Map<String, dynamic> json) =>
+          ConversationData.fromServerJson(json),
     );
   }
 

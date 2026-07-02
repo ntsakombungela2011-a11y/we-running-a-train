@@ -28,7 +28,8 @@ class AppLogSettingsScreen extends ConsumerStatefulWidget {
   }
 
   @override
-  ConsumerState<AppLogSettingsScreen> createState() => _AppLogSettingsScreenState();
+  ConsumerState<AppLogSettingsScreen> createState() =>
+      _AppLogSettingsScreenState();
 }
 
 class _AppLogSettingsScreenState extends ConsumerState<AppLogSettingsScreen> {
@@ -51,9 +52,12 @@ class _AppLogSettingsScreenState extends ConsumerState<AppLogSettingsScreen> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 300) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
       final currentState = ref.read(appLogPaginatorProvider(_searchQuery));
-      if (currentState.hasValue && !currentState.isLoading && currentState.requireValue.hasMore) {
+      if (currentState.hasValue &&
+          !currentState.isLoading &&
+          currentState.requireValue.hasMore) {
         ref.read(appLogPaginatorProvider(_searchQuery).notifier).next();
       }
     }
@@ -66,7 +70,9 @@ class _AppLogSettingsScreenState extends ConsumerState<AppLogSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentLevel = ref.watch(logPreferencesProvider.select((prefs) => prefs.level));
+    final currentLevel = ref.watch(
+      logPreferencesProvider.select((prefs) => prefs.level),
+    );
     final asyncState = ref.watch(appLogPaginatorProvider(_searchQuery));
     final logs = asyncState.value?.logs ?? [];
 
@@ -100,7 +106,9 @@ class _AppLogSettingsScreenState extends ConsumerState<AppLogSettingsScreen> {
                   title: const Text('Delete all logs'),
                   onConfirm: () {
                     ref.read(appLogServiceProvider).clear();
-                    ref.read(appLogPaginatorProvider(_searchQuery).notifier).deleteAll();
+                    ref
+                        .read(appLogPaginatorProvider(_searchQuery).notifier)
+                        .deleteAll();
                   },
                 );
               },
@@ -109,7 +117,10 @@ class _AppLogSettingsScreenState extends ConsumerState<AppLogSettingsScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -134,7 +145,9 @@ class _AppLogSettingsScreenState extends ConsumerState<AppLogSettingsScreen> {
                       labelBuilder: (Level l) => Text(l.name),
                       onSelectedItemChanged: (Level value) {
                         _logger.fine('Changing log level to ${value.name}');
-                        ref.read(logPreferencesProvider.notifier).setLogLevel(value);
+                        ref
+                            .read(logPreferencesProvider.notifier)
+                            .setLogLevel(value);
                       },
                     );
                   },
@@ -151,7 +164,10 @@ class _AppLogSettingsScreenState extends ConsumerState<AppLogSettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text('No logs to show'),
-              TextButton(onPressed: _onRefresh, child: const Text('Tap to refresh')),
+              TextButton(
+                onPressed: _onRefresh,
+                child: const Text('Tap to refresh'),
+              ),
             ],
           ),
         ),
