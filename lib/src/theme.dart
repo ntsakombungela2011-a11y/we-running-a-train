@@ -92,6 +92,16 @@ ThemeData _makeDefaultTheme(
     ),
     scaffoldBackgroundColor: scheme.surface,
     cupertinoOverrideTheme: _makeCupertinoThemeData(scheme, brightness),
+    extensions: [
+      LichessTheme(
+        rowEven: brightness == Brightness.light
+            ? const Color(0xFFF1F1F1)
+            : const Color(0xFF262421),
+        rowOdd: brightness == Brightness.light
+            ? Colors.white
+            : const Color(0xFF302E2C),
+      ),
+    ],
     listTileTheme: _makeListTileTheme(scheme, isIOS),
     cardTheme: _kCupertinoCardTheme.copyWith(
       color: scheme.surfaceContainerHigh,
@@ -119,6 +129,12 @@ ThemeData _makeBackgroundImageTheme({
           : seedColor.withValues(alpha: kCupertinoBarOpacity),
     ),
     scaffoldBackgroundColor: seedColor.withValues(alpha: 0),
+    extensions: [
+      LichessTheme(
+        rowEven: scheme.surface.withValues(alpha: 0.1),
+        rowOdd: Colors.transparent,
+      ),
+    ],
     sliderTheme: kSliderTheme,
   );
 }

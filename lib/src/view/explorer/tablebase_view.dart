@@ -1,3 +1,4 @@
+import 'package:lichess_mobile/src/styles/styles.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,10 +13,8 @@ import 'package:lichess_mobile/src/widgets/shimmer.dart';
 
 class TablebaseView extends ConsumerWidget {
   const TablebaseView({required this.position, this.onMoveSelected, super.key});
-
   final Position position;
   final void Function(Move)? onMoveSelected;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tablebaseAsync = ref.watch(
@@ -24,7 +23,6 @@ class TablebaseView extends ConsumerWidget {
         variant: Variant.fromRule(position.rule),
       )),
     );
-
     switch (tablebaseAsync) {
       case AsyncData(:final value):
         if (value == null) {
@@ -40,9 +38,7 @@ class TablebaseView extends ConsumerWidget {
             ),
           );
         }
-
         final children = <Widget>[];
-
         void addMoveSection({
           required TablebaseCategory category,
           required String headerKey,
@@ -74,7 +70,6 @@ class TablebaseView extends ConsumerWidget {
             );
           }
         }
-
         addMoveSection(
           category: TablebaseCategory.win,
           headerKey: 'winMovesHeader',
@@ -145,9 +140,7 @@ class TablebaseView extends ConsumerWidget {
           isWinningForWhite: position.turn != Side.white,
           moveKeyPrefix: 'loss-move',
         );
-
         return _TablebaseListView(isLoading: false, children: children);
-
       case AsyncError(:final error):
         debugPrint(
           'SEVERE: [TablebaseView] could not load tablebase data; $error',
@@ -163,7 +156,6 @@ class TablebaseView extends ConsumerWidget {
             child: Text(message),
           ),
         );
-
       case _:
         return _TablebaseListView(
           isLoading: true,
@@ -182,10 +174,8 @@ class TablebaseView extends ConsumerWidget {
 
 class _TablebaseListView extends StatelessWidget {
   const _TablebaseListView({required this.children, required this.isLoading});
-
   final List<Widget> children;
   final bool isLoading;
-
   @override
   Widget build(BuildContext context) {
     final brightness = Theme.of(context).brightness;
@@ -202,7 +192,6 @@ class _TablebaseListView extends StatelessWidget {
         ),
       ),
     );
-
     return Stack(
       children: [
         ListView(padding: EdgeInsets.zero, children: children),
@@ -214,9 +203,7 @@ class _TablebaseListView extends StatelessWidget {
 
 class _TablebaseHeaderTile extends StatelessWidget {
   const _TablebaseHeaderTile({required this.child, super.key});
-
   final Widget child;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -239,16 +226,13 @@ class _TablebaseMoveRow extends StatelessWidget {
     this.onMoveSelected,
     super.key,
   });
-
   final TablebaseMove move;
   final Color color;
   final bool? isWinningForWhite;
   final void Function(Move)? onMoveSelected;
-
   @override
   Widget build(BuildContext context) {
     final metrics = <String>[];
-
     if (move.checkmate) {
       metrics.add(context.l10n.checkmate);
     } else if (move.stalemate) {
@@ -268,16 +252,13 @@ class _TablebaseMoveRow extends StatelessWidget {
       if (move.dtc != null) metrics.add('DTC ${move.dtc!.abs()}');
       if (move.dtm != null) metrics.add('DTM ${move.dtm!.abs()}');
     }
-
     Widget metricsWidget = const SizedBox.shrink();
-
     if (metrics.isNotEmpty) {
       final List<Widget> metricBoxes = metrics.map((metric) {
         final Widget metricText = Text(
           metric,
           style: const TextStyle(fontSize: 12),
         );
-
         if (isWinningForWhite == true) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -347,9 +328,7 @@ class _TablebaseMoveRow extends StatelessWidget {
 
 class _TablebaseLoadingPlaceholder extends StatelessWidget {
   const _TablebaseLoadingPlaceholder({required this.position});
-
   final Position position;
-
   @override
   Widget build(BuildContext context) {
     return Column(
