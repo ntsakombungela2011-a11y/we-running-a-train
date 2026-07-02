@@ -1,3 +1,4 @@
+import "package:lichess_mobile/src/styles/styles.dart";
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
