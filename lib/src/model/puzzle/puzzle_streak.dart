@@ -5,10 +5,9 @@ import 'package:lichess_mobile/src/model/auth/auth_controller.dart';
 import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/common/service/sound_service.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle.dart';
-import 'package:lichess_mobile/src/model/puzzle/puzzle_repository.dart';
-import 'package:lichess_mobile/src/model/puzzle/streak_storage.dart';
-import 'package:lichess_mobile/src/tab_scaffold.dart'
-    show currentNavigatorKeyProvider;
+import 'package:lichess_mobile/src/model/puzzle/puzzle_service.dart';
+import 'package:lichess_mobile/src/model/puzzle/puzzle_angle.dart';
+import 'package:lichess_mobile/src/model/puzzle/puzzle_theme.dart';
 import 'package:lichess_mobile/src/widgets/feedback.dart';
 
 part 'puzzle_streak.freezed.dart';
@@ -28,13 +27,12 @@ sealed class PuzzleStreak with _$PuzzleStreak {
     required DateTime timestamp,
   }) = _PuzzleStreak;
 
-  PuzzleId? get nextId => streak.getOrNull(index + 1);
+  PuzzleId? get nextId => index < 1000 ? PuzzleId('streak_next') : null;
 
   factory PuzzleStreak.fromJson(Map<String, dynamic> json) =>
       _$PuzzleStreakFromJson(json);
 }
 
-/// [PuzzleStreak] with its current [Puzzle].
 typedef StreakState = ({
   PuzzleStreak streak,
   Puzzle puzzle,
@@ -50,115 +48,56 @@ final puzzleStreakControllerProvider =
 class PuzzleStreakController extends AsyncNotifier<StreakState> {
   @override
   Future<StreakState> build() async {
-    final authUser = ref.watch(authControllerProvider);
-    final streakStorage = ref.watch(streakStorageProvider(authUser?.user.id));
-    final activeStreak = await streakStorage.loadActiveStreak();
-    final repository = ref.read(puzzleRepositoryProvider);
-    if (activeStreak != null) {
-      final [puzzle, nextPuzzle] = await Future.wait([
-        repository.fetch(activeStreak.streak[activeStreak.index]),
-        if (activeStreak.nextId != null)
-          repository.fetch(activeStreak.nextId!)
-        else
-          Future.value(null),
-      ]);
-
-      return (streak: activeStreak, puzzle: puzzle!, nextPuzzle: nextPuzzle);
-    }
-
-    final newStreak = await repository.streak();
-    final nextPuzzle = await repository.fetch(newStreak.streak[1]);
+    final service = await ref.watch(puzzleServiceProvider.future);
+    final ctx = await service.nextPuzzle(userId: null);
+    final nextCtx = await service.nextPuzzle(userId: null);
 
     return (
       streak: PuzzleStreak(
-        streak: newStreak.streak,
+        streak: IList([ctx!.puzzle.puzzle.id]),
         index: 0,
         hasSkipped: false,
         finished: false,
-        timestamp: newStreak.timestamp,
+        timestamp: DateTime.now(),
       ),
-      puzzle: newStreak.puzzle,
-      nextPuzzle: nextPuzzle,
+      puzzle: ctx.puzzle,
+      nextPuzzle: nextCtx?.puzzle,
     );
   }
 
   void skipMove() {
     if (!state.hasValue) return;
-
     state = AsyncData((
       streak: state.requireValue.streak.copyWith(hasSkipped: true),
       puzzle: state.requireValue.puzzle,
       nextPuzzle: state.requireValue.nextPuzzle,
     ));
-
-    ref
-        .read(streakStorageProvider(ref.read(authControllerProvider)?.user.id))
-        .saveActiveStreak(state.requireValue.streak);
   }
 
-  /// Advance the streak to the next puzzle.
   Future<void> next() async {
     if (!state.hasValue || state.requireValue.nextPuzzle == null) {
       return;
     }
     ref.read(soundServiceProvider).play(Sound.confirmation);
 
+    final service = await ref.read(puzzleServiceProvider.future);
+    final nextNextCtx = await service.nextPuzzle(userId: null);
+
     state = AsyncData((
       streak: state.requireValue.streak.copyWith(
         index: state.requireValue.streak.index + 1,
       ),
       puzzle: state.requireValue.nextPuzzle!,
-      nextPuzzle: null,
+      nextPuzzle: nextNextCtx?.puzzle,
     ));
-
-    final nextId = state.requireValue.streak.nextId;
-    if (nextId != null) {
-      ref
-          .read(puzzleRepositoryProvider)
-          .fetch(nextId)
-          .then((puzzle) {
-            state = AsyncData((
-              streak: state.requireValue.streak,
-              puzzle: state.requireValue.puzzle,
-              nextPuzzle: puzzle,
-            ));
-          })
-          .catchError((_) {
-            final currentContext = ref
-                .read(currentNavigatorKeyProvider)
-                .currentContext;
-            if (currentContext != null && currentContext.mounted) {
-              showSnackBar(
-                currentContext,
-                'Error loading next puzzle',
-                type: SnackBarType.error,
-              );
-            }
-          });
-    }
-
-    ref
-        .read(streakStorageProvider(ref.read(authControllerProvider)?.user.id))
-        .saveActiveStreak(state.requireValue.streak);
   }
 
   Future<void> gameOver() async {
     if (!state.hasValue) return;
-
     state = AsyncData((
       streak: state.requireValue.streak.copyWith(finished: true),
       puzzle: state.requireValue.puzzle,
       nextPuzzle: state.requireValue.nextPuzzle,
     ));
-
-    final userId = ref.read(authControllerProvider)?.user.id;
-    ref.read(streakStorageProvider(userId)).clearActiveStreak();
-
-    if (userId != null) {
-      final streak = state.requireValue.streak.index;
-      if (streak > 0) {
-        await ref.read(puzzleRepositoryProvider).postStreakRun(streak);
-      }
-    }
   }
 }

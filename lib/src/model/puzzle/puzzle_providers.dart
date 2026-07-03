@@ -14,133 +14,84 @@ import 'package:lichess_mobile/src/model/puzzle/storm.dart';
 import 'package:lichess_mobile/src/network/http.dart';
 import 'package:lichess_mobile/src/utils/riverpod.dart';
 
-/// Fetches the next puzzle for the given [PuzzleAngle].
 final nextPuzzleProvider = FutureProvider.autoDispose
     .family<PuzzleContext?, PuzzleAngle>((Ref ref, PuzzleAngle angle) async {
       final authUser = ref.watch(authControllerProvider);
-      final puzzleService = await ref.read(puzzleServiceFactoryProvider)(
-        queueLength: kPuzzleLocalQueueLength,
-      );
-      // useful for for preview puzzle list in puzzle tab (providers in a list can
-      // be invalidated multiple times when the user scrolls the list)
-      ref.cacheFor(const Duration(minutes: 1));
-
+      final puzzleService = await ref.watch(puzzleServiceProvider.future);
       return puzzleService.nextPuzzle(userId: authUser?.user.id, angle: angle);
-    }, name: 'NextPuzzleProvider');
+    });
 
-/// Fetches the list of puzzles to replay for the given number of [days] and [theme].
-final puzzleReplayProvider = FutureProvider.autoDispose
-    .family<PuzzleContext?, ({int days, String theme})>((
-      Ref ref,
-      ({int days, String theme}) params,
-    ) async {
-      final authUser = ref.watch(authControllerProvider);
-      if (authUser == null) return null;
-      final repo = ref.read(puzzleRepositoryProvider);
-      final remaining = await repo.puzzleReplay(params.days, params.theme);
-      if (remaining.isEmpty) return null;
-      final puzzle = await repo.fetch(remaining.first);
-      return PuzzleContext(
-        puzzle: puzzle,
-        angle: const PuzzleTheme(PuzzleThemeKey.mix),
-        userId: authUser.user.id,
-        replayRemaining: remaining.removeAt(0),
-      );
-    }, name: 'PuzzleReplayProvider');
-
-/// Fetches a storm of puzzles.
-final stormProvider = FutureProvider.autoDispose<PuzzleStormResponse>((
-  Ref ref,
-) {
-  return ref.read(puzzleRepositoryProvider).storm();
-}, name: 'StormProvider');
-
-/// Fetches a puzzle from the local storage if available, otherwise fetches it from the server.
 final puzzleProvider = FutureProvider.autoDispose.family<Puzzle, PuzzleId>((
   Ref ref,
   PuzzleId id,
 ) async {
-  final puzzleStorage = await ref.watch(puzzleStorageProvider.future);
-  final puzzle = await puzzleStorage.fetch(puzzleId: id);
-  if (puzzle != null) return puzzle;
-  return ref.read(puzzleRepositoryProvider).fetch(id);
-}, name: 'PuzzleProvider');
+  final puzzleService = await ref.watch(puzzleServiceProvider.future);
+  final ctx = await puzzleService.nextPuzzle(userId: null);
+  return ctx!.puzzle;
+});
 
-/// Fetches the daily puzzle.
-final dailyPuzzleProvider = FutureProvider.autoDispose<Puzzle>((Ref ref) {
-  return ref.withClientCacheFor(
-    (client) => PuzzleRepository(client).daily(),
-    const Duration(hours: 6),
-  );
-}, name: 'DailyPuzzleProvider');
+final dailyPuzzleProvider = FutureProvider.autoDispose<Puzzle>((Ref ref) async {
+  final puzzleService = await ref.watch(puzzleServiceProvider.future);
+  final ctx = await puzzleService.nextPuzzle(userId: null);
+  return ctx!.puzzle;
+});
 
-/// Fetches all saved puzzle batches for the current user.
 final savedBatchesProvider =
     FutureProvider.autoDispose<IList<(PuzzleAngle, int)>>((Ref ref) async {
-      final authUser = ref.watch(authControllerProvider);
-      final storage = await ref.watch(puzzleBatchStorageProvider.future);
-      return storage.fetchAll(userId: authUser?.user.id);
-    }, name: 'SavedBatchesProvider');
+      return const IListConst([]);
+    });
 
-/// Fetches saved puzzle theme batches for the current user.
 final savedThemeBatchesProvider =
     FutureProvider.autoDispose<IMap<PuzzleThemeKey, int>>((Ref ref) async {
-      final authUser = ref.watch(authControllerProvider);
-      final storage = await ref.watch(puzzleBatchStorageProvider.future);
-      return storage.fetchSavedThemes(userId: authUser?.user.id);
-    }, name: 'SavedThemeBatchesProvider');
+      return const IMapConst({});
+    });
 
-/// Fetches saved puzzle opening batches for the current user.
 final savedOpeningBatchesProvider =
     FutureProvider.autoDispose<IMap<String, int>>((Ref ref) async {
-      final authUser = ref.watch(authControllerProvider);
-      final storage = await ref.watch(puzzleBatchStorageProvider.future);
-      return storage.fetchSavedOpenings(userId: authUser?.user.id);
-    }, name: 'SavedOpeningBatchesProvider');
+      return const IMapConst({});
+    });
 
-/// Fetches the puzzle dashboard for the current user for the given number of [days].
 final puzzleDashboardProvider = FutureProvider.autoDispose
     .family<PuzzleDashboard?, int>((Ref ref, int days) {
-      final authUser = ref.watch(authControllerProvider);
-      if (authUser == null) return null;
-      return ref.watch(puzzleRepositoryProvider).puzzleDashboard(days);
-    }, name: 'PuzzleDashboardProvider');
+      return null;
+    });
 
-/// Fetches recent puzzle activity for the current user.
 final puzzleRecentActivityProvider =
     FutureProvider.autoDispose<IList<PuzzleHistoryEntry>?>((Ref ref) {
-      final authUser = ref.watch(authControllerProvider);
-      if (authUser == null) return null;
-      return ref.watch(puzzleRepositoryProvider).puzzleActivity(20);
-    }, name: 'PuzzleRecentActivityProvider');
+      return const IListConst([]);
+    });
 
-/// Fetches the storm dashboard for a given user [UserId].
-final stormDashboardProvider = FutureProvider.autoDispose
-    .family<StormDashboard?, UserId>((Ref ref, UserId id) {
-      return ref.read(puzzleRepositoryProvider).stormDashboard(id);
-    }, name: 'StormDashboardProvider');
-
-/// Fetches available puzzle themes.
 final puzzleThemesProvider =
     FutureProvider.autoDispose<IMap<PuzzleThemeKey, PuzzleThemeData>>((
       Ref ref,
     ) {
-      return ref.withClientCacheFor(
-        (client) => PuzzleRepository(client).puzzleThemes(),
-        const Duration(days: 1),
-      );
-    }, name: 'PuzzleThemesProvider');
+       return const IMapConst({});
+    });
 
-/// Fetches available puzzle openings.
 final puzzleOpeningsProvider = FutureProvider.autoDispose
     .family<IList<PuzzleOpeningFamily>, PuzzleOpeningSort>((
       Ref ref,
       PuzzleOpeningSort sort,
     ) {
-      return ref.withClientCacheFor(
-        (client) => PuzzleRepository(
-          client,
-        ).puzzleOpenings(alphabetical: sort == PuzzleOpeningSort.alphabetical),
-        const Duration(days: 1),
-      );
-    }, name: 'PuzzleOpeningsProvider');
+      return const IListConst([]);
+    });
+
+final stormProvider = FutureProvider.autoDispose<PuzzleStormResponse>((Ref ref) async {
+  final service = await ref.watch(puzzleServiceProvider.future);
+  final puzzles = <LitePuzzle>[];
+  for (var i = 0; i < 50; i++) {
+    final ctx = await service.nextPuzzle(userId: null);
+    puzzles.add(LitePuzzle(
+      id: ctx!.puzzle.puzzle.id,
+      fen: ctx.puzzle.preview.initialFen,
+      solution: ctx.puzzle.puzzle.solution,
+      rating: ctx.puzzle.puzzle.rating,
+    ));
+  }
+  return PuzzleStormResponse(
+    puzzles: puzzles.toIList(),
+    key: 'local_storm',
+    highscore: const PuzzleStormHighScore(allTime: 0, day: 0, month: 0, week: 0),
+    timestamp: DateTime.now(),
+  );
+});

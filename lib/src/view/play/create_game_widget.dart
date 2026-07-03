@@ -118,25 +118,6 @@ class CreateGameWidget extends ConsumerWidget {
             ),
           ],
         ),
-        if (account != null) ...[
-          const SizedBox(height: 6.0),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(context.l10n.gameMode, style: labelStyle),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Theme.of(context).dividerColor),
-                      ),
-                      onPressed: () {
-                        showChoicePicker(
-                          context,
-                          title: Text(context.l10n.gameMode),
-                          choices: [context.l10n.casual, context.l10n.rated],
                           selectedItem: playPrefs.customRated
                               ? context.l10n.rated
                               : context.l10n.casual,
@@ -237,29 +218,6 @@ class CreateGameWidget extends ConsumerWidget {
             ],
           ),
         ],
-        FilledButton.icon(
-          icon: const Icon(Icons.groups),
-          onPressed: isOnline
-              ? () {
-                  // Pops the play bottom sheet
-                  Navigator.of(
-                    context,
-                  ).popUntil((route) => route is! ModalBottomSheetRoute);
-
-                  final playban = ref.read(accountProvider).value?.playban;
-                  if (playban != null) {
-                    ref.read(accountServiceProvider).showPlaybanDialog(playban);
-                    return;
-                  }
-
-                  Navigator.of(context, rootNavigator: true).push(
-                    GameScreen.buildRoute(
-                      source: LobbySource(GameSeek.custom(playPrefs, account)),
-                    ),
-                  );
-                }
-              : null,
-          label: Text(context.l10n.createLobbyGame),
         ),
       ],
     );
