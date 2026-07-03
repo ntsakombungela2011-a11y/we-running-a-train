@@ -1,28 +1,36 @@
-import 'dart:math' show max;
-import 'package:async/async.dart';
+import 'dart:async';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_angle.dart';
-import 'package:lichess_mobile/src/model/puzzle/puzzle_batch_storage.dart';
-import 'package:lichess_mobile/src/model/puzzle/puzzle_preferences.dart';
-import 'package:lichess_mobile/src/model/puzzle/puzzle_repository.dart';
-import 'package:lichess_mobile/src/model/puzzle/puzzle_storage.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_theme.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_generator.dart';
 import 'package:lichess_mobile/src/model/engine/evaluation_service.dart';
-import 'package:logging/logging.dart';
-import 'package:result_extensions/result_extensions.dart';
 
 part 'puzzle_service.freezed.dart';
 
 const kPuzzleLocalQueueLength = 50;
 
-final puzzleServiceProvider = FutureProvider<PuzzleService>((Ref ref) {
-  return ref.read(puzzleServiceFactoryProvider)(
-    queueLength: kPuzzleLocalQueueLength,
+@freezed
+class PuzzleContext with _$PuzzleContext {
+  const factory PuzzleContext({
+    required Puzzle puzzle,
+    required PuzzleAngle angle,
+    required UserId? userId,
+    PuzzleGlicko? glicko,
+    IList<PuzzleRound>? rounds,
+    bool? casual,
+    bool? isPuzzleStreak,
+    IList<PuzzleId>? replayRemaining,
+  }) = _PuzzleContext;
+}
+
+final puzzleServiceProvider = FutureProvider<PuzzleService>((Ref ref) async {
+  return PuzzleService(
+    ref,
+    generator: PuzzleGenerator(ref.read(evaluationServiceProvider)),
   );
 });
 
@@ -42,25 +50,10 @@ class PuzzleServiceFactory {
   }
 }
 
-@freezed
-sealed class PuzzleContext with _$PuzzleContext {
-  const factory PuzzleContext({
-    required Puzzle puzzle,
-    required PuzzleAngle angle,
-    required UserId? userId,
-    PuzzleGlicko? glicko,
-    IList<PuzzleRound>? rounds,
-    bool? casual,
-    bool? isPuzzleStreak,
-    IList<PuzzleId>? replayRemaining,
-  }) = _PuzzleContext;
-}
-
 class PuzzleService {
   PuzzleService(this._ref, {required this.generator});
   final Ref _ref;
   final PuzzleGenerator generator;
-  final Logger _log = Logger('PuzzleService');
 
   Future<PuzzleContext?> nextPuzzle({
     required UserId? userId,

@@ -6,9 +6,6 @@ import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/common/service/sound_service.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_service.dart';
-import 'package:lichess_mobile/src/model/puzzle/puzzle_angle.dart';
-import 'package:lichess_mobile/src/model/puzzle/puzzle_theme.dart';
-import 'package:lichess_mobile/src/widgets/feedback.dart';
 
 part 'puzzle_streak.freezed.dart';
 part 'puzzle_streak.g.dart';
@@ -16,7 +13,7 @@ part 'puzzle_streak.g.dart';
 typedef Streak = IList<PuzzleId>;
 
 @Freezed(fromJson: true, toJson: true)
-sealed class PuzzleStreak with _$PuzzleStreak {
+class PuzzleStreak with _$PuzzleStreak {
   const PuzzleStreak._();
 
   const factory PuzzleStreak({
@@ -27,7 +24,7 @@ sealed class PuzzleStreak with _$PuzzleStreak {
     required DateTime timestamp,
   }) = _PuzzleStreak;
 
-  PuzzleId? get nextId => index < 1000 ? PuzzleId('streak_next') : null;
+  PuzzleId? get nextId => index < 1000 ? const PuzzleId('streak_next') : null;
 
   factory PuzzleStreak.fromJson(Map<String, dynamic> json) =>
       _$PuzzleStreakFromJson(json);
@@ -41,9 +38,9 @@ typedef StreakState = ({
 
 final puzzleStreakControllerProvider =
     AsyncNotifierProvider.autoDispose<PuzzleStreakController, StreakState>(
-      PuzzleStreakController.new,
-      name: 'PuzzleStreakControllerProvider',
-    );
+  PuzzleStreakController.new,
+  name: 'PuzzleStreakControllerProvider',
+);
 
 class PuzzleStreakController extends AsyncNotifier<StreakState> {
   @override

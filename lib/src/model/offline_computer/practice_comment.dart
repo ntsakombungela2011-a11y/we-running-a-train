@@ -1,97 +1,73 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lichess_mobile/src/model/common/chess.dart';
+import 'package:lichess_mobile/src/styles/lichess_icons.dart';
 
 part 'practice_comment.freezed.dart';
 part 'practice_comment.g.dart';
 
-/// Maximum winning chances shift for a move to be considered good.
-const kGoodMoveThreshold = 0.05;
-
-/// Maximum winning chances shift for a move to be considered an inaccuracy.
-const kInaccuracyThreshold = 0.11;
-
-/// Maximum winning chances shift for a move to be considered a mistake.
-const kMistakeThreshold = 0.24;
-
-/// Winning chances threshold above which a position is considered winning.
-///
-/// 0.5 corresponds to roughly +200cp (+2.0 pawns advantage).
-const kWinningThreshold = 0.5;
-
-/// The verdict for a player's move in practice mode.
-///
-/// Based on the winning chances difference between the position before and after the move.
-/// Thresholds loosely adapted from lila practice mode.
 enum MoveVerdict {
-  /// The move is good (shift < [kGoodMoveThreshold] or no better move exists).
-  goodMove,
-
-  /// The move is not the best but keeps a winning position.
-  notBest,
-
-  /// The move is an inaccuracy ([kGoodMoveThreshold] <= shift < [kInaccuracyThreshold]).
-  inaccuracy,
-
-  /// The move is a mistake ([kInaccuracyThreshold] <= shift < [kMistakeThreshold]).
+  brilliant,
+  greatMove,
+  bestMove,
+  bookMove,
+  blunder,
   mistake,
+  inaccuracy,
+  notBest,
+  goodMove;
 
-  /// The move is a blunder (shift >= [kMistakeThreshold]).
-  blunder;
-
-  /// Returns the verdict based on the winning chances shift.
-  ///
-  /// [shift] is the negative difference in winning chances between the played move
-  /// and the best move evaluation. A larger shift indicates a greater deterioration.
-  /// [hasBetterMove] indicates whether there was a better move available.
-  /// [winningChancesBefore] and [winningChancesAfter] are the player's POV winning
-  /// chances before and after the move, used to determine if the position stays winning.
   static MoveVerdict fromShift(
     double shift, {
     required bool hasBetterMove,
     required double winningChancesBefore,
     required double winningChancesAfter,
+    bool isBookMove = false,
   }) {
-    if (!hasBetterMove) return .goodMove;
-    if (shift < kGoodMoveThreshold) return .goodMove;
-    // If the position was winning and is still winning, the move is suboptimal but not a real mistake.
-    if (winningChancesBefore >= kWinningThreshold &&
-        winningChancesAfter >= kWinningThreshold) {
-      return .notBest;
-    }
-    if (shift < kInaccuracyThreshold) return .inaccuracy;
-    if (shift < kMistakeThreshold) return .mistake;
-    return .blunder;
+    if (isBookMove) return MoveVerdict.bookMove;
+    if (!hasBetterMove) return MoveVerdict.bestMove;
+    if (shift < 0.01) return MoveVerdict.brilliant;
+    if (shift < 0.02) return MoveVerdict.bestMove;
+    if (shift < 0.05) return MoveVerdict.greatMove;
+    if (winningChancesBefore >= 0.5 && winningChancesAfter >= 0.5) return MoveVerdict.notBest;
+    if (shift < 0.11) return MoveVerdict.inaccuracy;
+    if (shift < 0.24) return MoveVerdict.mistake;
+    return MoveVerdict.blunder;
   }
 
-  /// The symbol for this verdict.
-  String get symbol => switch (this) {
-    .goodMove => '!',
-    .notBest => '!?',
-    .inaccuracy => '?!',
-    .mistake => '?',
-    .blunder => '??',
+  IconData get icon => switch (this) {
+    MoveVerdict.brilliant => Icons.auto_awesome,
+    MoveVerdict.greatMove => Icons.stars,
+    MoveVerdict.bestMove => Icons.check_circle,
+    MoveVerdict.bookMove => LichessIcons.book_lichess,
+    MoveVerdict.blunder => Icons.cancel,
+    MoveVerdict.mistake => Icons.error,
+    MoveVerdict.inaccuracy => Icons.help,
+    MoveVerdict.notBest => Icons.info,
+    MoveVerdict.goodMove => Icons.check,
+  };
+
+  Color get color => switch (this) {
+    MoveVerdict.brilliant => Colors.cyan,
+    MoveVerdict.greatMove => Colors.blue,
+    MoveVerdict.bestMove => Colors.green,
+    MoveVerdict.bookMove => Colors.brown,
+    MoveVerdict.blunder => Colors.red,
+    MoveVerdict.mistake => Colors.orange,
+    MoveVerdict.inaccuracy => Colors.yellow,
+    MoveVerdict.notBest => Colors.grey,
+    MoveVerdict.goodMove => Colors.lightGreen,
   };
 }
 
-/// A comment about a player's move in practice mode.
 @Freezed(fromJson: true, toJson: true)
-sealed class PracticeComment with _$PracticeComment {
+class PracticeComment with _$PracticeComment {
   const PracticeComment._();
-
-  factory PracticeComment.fromJson(Map<String, dynamic> json) =>
-      _$PracticeCommentFromJson(json);
-
   const factory PracticeComment({
-    /// The verdict for the move.
     required MoveVerdict verdict,
-
-    /// The move suggestion to display as an alternative to the move played.
     SanMove? moveSuggestion,
-
-    /// The evaluation string after the move (e.g., "+0.5", "-1.2", "#3").
     String? evalAfter,
-
-    /// Whether the move is a book move (found in the master database).
     @Default(false) bool isBookMove,
   }) = _PracticeComment;
+  factory PracticeComment.fromJson(Map<String, dynamic> json) => _$PracticeCommentFromJson(json);
 }

@@ -33,7 +33,6 @@ final preloadedDataProvider = FutureProvider<PreloadedData>((Ref ref) async {
   }
   final sri = storedSri ?? genRandomString(12);
 
-  // Return a static offline user immediately
   const authUser = AuthUser(
     user: LightUser(id: UserId('offline_user'), name: 'Offline User'),
     token: 'offline_token',
