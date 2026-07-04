@@ -10,6 +10,7 @@ import 'package:lichess_mobile/src/model/puzzle/puzzle.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_angle.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_controller.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_providers.dart';
+import 'package:lichess_mobile/src/model/puzzle/puzzle_service.dart';
 import 'package:lichess_mobile/src/model/settings/board_preferences.dart';
 import 'package:lichess_mobile/src/utils/l10n_context.dart';
 import 'package:lichess_mobile/src/utils/navigation.dart';
@@ -90,7 +91,9 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
                       pieceSet: boardPrefs.pieceSet,
                       theme: boardPrefs.boardTheme,
                     ),
-                    fen: puzzleState.root.position.fen,
+                    controller: ChessboardController(
+                      fen: puzzleState.root.position.fen,
+                    ),
                   ),
                 ),
               ),

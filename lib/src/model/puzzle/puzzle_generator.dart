@@ -9,6 +9,7 @@ import 'package:lichess_mobile/src/model/puzzle/puzzle_theme.dart';
 import 'package:lichess_mobile/src/model/engine/engine.dart';
 import 'package:lichess_mobile/src/model/engine/evaluation_service.dart';
 import 'package:lichess_mobile/src/model/common/uci.dart';
+import 'package:lichess_mobile/src/model/common/chess.dart';
 
 class PuzzleGenerator {
   final EvaluationService _evaluationService;
@@ -141,7 +142,7 @@ class PuzzleGenerator {
         rating: 1500,
         plays: 0,
         initialPly: 0,
-        solution: IList(solution.map((s) => UCIMove(s))),
+        solution: IList(solution.map((s) => s as UCIMove)),
         themes: ISet(themes),
       ),
       game: PuzzleGame(

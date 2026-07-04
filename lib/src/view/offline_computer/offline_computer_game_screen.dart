@@ -8,21 +8,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lichess_mobile/src/model/common/chess.dart';
 import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/offline_computer/offline_computer_game_controller.dart';
-import 'package:lichess_mobile/src/model/offline_computer/offline_computer_game_preferences.dart';
 import 'package:lichess_mobile/src/model/offline_computer/practice_comment.dart';
 import 'package:lichess_mobile/src/model/settings/board_preferences.dart';
 import 'package:lichess_mobile/src/styles/styles.dart';
-import 'package:lichess_mobile/src/utils/gestures_exclusion.dart';
-import 'package:lichess_mobile/src/utils/immersive_mode.dart';
 import 'package:lichess_mobile/src/utils/l10n_context.dart';
 import 'package:lichess_mobile/src/utils/navigation.dart';
-import 'package:lichess_mobile/src/view/analysis/analysis_screen.dart';
-import 'package:lichess_mobile/src/view/offline_computer/computer_analysis.dart';
 import 'package:lichess_mobile/src/widgets/board.dart';
 import 'package:lichess_mobile/src/widgets/bottom_bar.dart';
-import 'package:lichess_mobile/src/widgets/list.dart';
 import 'package:lichess_mobile/src/widgets/platform.dart';
-import 'package:lichess_mobile/src/widgets/settings.dart';
 
 extension _MoveVerdictDisplay on MoveVerdict {
   IconData get icon => switch (this) {
@@ -86,7 +79,7 @@ class _OfflineComputerGameScreenState
     final gameState = ref.watch(offlineComputerGameControllerProvider);
     final boardPrefs = ref.watch(boardPreferencesProvider);
 
-    final content = PlatformScaffold(
+    return PlatformScaffold(
       appBar: PlatformAppBar(
         title: Text(context.l10n.playAgainstComputer),
       ),
@@ -101,11 +94,17 @@ class _OfflineComputerGameScreenState
                   ref.read(offlineComputerGameControllerProvider.notifier).makeMove(move);
                 },
                 orientation: gameState.game.playerSide,
-                settings: BoardSettings(
-                  pieceSet: boardPrefs.pieceSet,
-                  theme: boardPrefs.boardTheme,
+                settings: boardPrefs.toBoardSettings(gameState.game.meta.variant),
+                controller: ChessboardController(
+                  game: buildGameData(
+                    fen: gameState.currentPosition.fen,
+                    variant: gameState.game.meta.variant,
+                    position: gameState.currentPosition,
+                    playerSide: PlayerSide.fromSide(gameState.game.playerSide),
+                    castlingMethod: boardPrefs.castlingMethod,
+                    boardHighlights: boardPrefs.boardHighlights,
+                  ),
                 ),
-                fen: gameState.currentPosition.fen,
               ),
             ),
           ),
@@ -113,24 +112,22 @@ class _OfflineComputerGameScreenState
         ],
       ),
     );
-
-    return content;
   }
 }
 
-class _BottomBar extends StatelessWidget {
+class _BottomBar extends ConsumerWidget {
   const _BottomBar({required this.gameState});
   final OfflineComputerGameState gameState;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return BottomBar(
       children: [
         BottomBarButton(
           icon: Icons.refresh,
           label: 'New Game',
           onTap: () {
-             // Show new game dialog
+             // New game logic
           },
         ),
       ],

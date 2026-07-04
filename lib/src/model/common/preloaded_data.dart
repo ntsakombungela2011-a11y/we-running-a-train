@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lichess_mobile/src/constants.dart';
 import 'package:lichess_mobile/src/db/secure_storage.dart';
 import 'package:lichess_mobile/src/model/auth/auth_controller.dart';
+import 'package:lichess_mobile/src/model/common/id.dart';
+import 'package:lichess_mobile/src/model/user/user.dart';
 import 'package:lichess_mobile/src/utils/string.dart';
 import 'package:lichess_mobile/src/utils/system.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -60,4 +62,4 @@ final preloadedDataProvider = FutureProvider<PreloadedData>((Ref ref) async {
     appDocumentsDirectory: appDocumentsDirectory,
     appSupportDirectory: appSupportDirectory,
   );
-}, name: 'PreloadedDataProvider');
+});

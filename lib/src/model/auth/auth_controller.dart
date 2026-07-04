@@ -1,21 +1,30 @@
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lichess_mobile/src/model/user/user.dart';
 import 'package:lichess_mobile/src/model/common/id.dart';
 
-part 'auth_controller.freezed.dart';
-part 'auth_controller.g.dart';
+class AuthUser {
+  final LightUser user;
+  final String token;
 
-@freezed
-class AuthUser with _$AuthUser {
-  const factory AuthUser({
-    required LightUser user,
-    required String token,
-  }) = _AuthUser;
+  const AuthUser({
+    required this.user,
+    required this.token,
+  });
 
-  factory AuthUser.fromJson(Map<String, dynamic> json) =>
-      _$AuthUserFromJson(json);
+  factory AuthUser.fromJson(Map<String, dynamic> json) {
+    return AuthUser(
+      user: LightUser.fromJson(json['user'] as Map<String, dynamic>),
+      token: json['token'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'user': user.toJson(),
+      'token': token,
+    };
+  }
 }
 
 final authControllerProvider =
@@ -31,7 +40,7 @@ final isLoggedInProvider = Provider.autoDispose<bool>((Ref ref) {
 final signInMutation = Mutation<void>();
 final signOutMutation = Mutation<void>();
 
-class AuthController extends Notifier<AuthUser?> {
+class AuthController extends AutoDisposeNotifier<AuthUser?> {
   @override
   AuthUser? build() {
     return const AuthUser(
