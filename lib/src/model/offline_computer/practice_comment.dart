@@ -29,7 +29,8 @@ enum MoveVerdict {
     if (shift < 0.01) return MoveVerdict.brilliant;
     if (shift < 0.02) return MoveVerdict.bestMove;
     if (shift < 0.05) return MoveVerdict.greatMove;
-    if (winningChancesBefore >= 0.5 && winningChancesAfter >= 0.5) return MoveVerdict.notBest;
+    if (winningChancesBefore >= 0.5 && winningChancesAfter >= 0.5)
+      return MoveVerdict.notBest;
     if (shift < 0.11) return MoveVerdict.inaccuracy;
     if (shift < 0.24) return MoveVerdict.mistake;
     return MoveVerdict.blunder;
@@ -69,5 +70,6 @@ class PracticeComment with _$PracticeComment {
     String? evalAfter,
     @Default(false) bool isBookMove,
   }) = _PracticeComment;
-  factory PracticeComment.fromJson(Map<String, dynamic> json) => _$PracticeCommentFromJson(json);
+  factory PracticeComment.fromJson(Map<String, dynamic> json) =>
+      _$PracticeCommentFromJson(json);
 }

@@ -63,7 +63,13 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
   @override
   Widget build(BuildContext context) {
     final puzzleAsync = widget.puzzle != null
-        ? AsyncValue.data(PuzzleContext(puzzle: widget.puzzle!, angle: widget.angle, userId: null))
+        ? AsyncValue.data(
+            PuzzleContext(
+              puzzle: widget.puzzle!,
+              angle: widget.angle,
+              userId: null,
+            ),
+          )
         : ref.watch(nextPuzzleProvider(widget.angle));
 
     return puzzleAsync.when(
@@ -73,18 +79,21 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
         final boardPrefs = ref.watch(boardPreferencesProvider);
 
         return PlatformScaffold(
-          appBar: PlatformAppBar(
-            title: Text(context.l10n.puzzles),
-          ),
+          appBar: PlatformAppBar(title: Text(context.l10n.puzzles)),
           body: Column(
             children: [
               Expanded(
                 child: Center(
                   child: BoardWidget(
                     boardKey: _boardKey,
-                    size: min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height - 200),
+                    size: min(
+                      MediaQuery.of(context).size.width,
+                      MediaQuery.of(context).size.height - 200,
+                    ),
                     onMove: (move, {viaDragAndDrop}) {
-                      ref.read(puzzleControllerProvider(ctx).notifier).onUserMove(move);
+                      ref
+                          .read(puzzleControllerProvider(ctx).notifier)
+                          .onUserMove(move);
                     },
                     orientation: puzzleState.pov,
                     settings: BoardSettings(

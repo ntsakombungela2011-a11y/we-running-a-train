@@ -34,7 +34,9 @@ class CreateGameWidget extends ConsumerWidget {
                     icon: Icon(playPrefs.timeIncrement.speed.icon),
                     label: Text(playPrefs.timeIncrement.display),
                     onPressed: () {
-                      final double screenHeight = MediaQuery.sizeOf(context).height;
+                      final double screenHeight = MediaQuery.sizeOf(
+                        context,
+                      ).height;
                       showModalBottomSheet<void>(
                         context: context,
                         isScrollControlled: true,

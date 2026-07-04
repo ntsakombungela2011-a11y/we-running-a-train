@@ -82,14 +82,16 @@ class PuzzleState {
 }
 
 enum PuzzleMode { load, play, view }
+
 enum PuzzleResult { win, lose }
+
 enum PuzzleFeedback { none, good, bad }
 
 final puzzleControllerProvider = NotifierProvider.autoDispose
     .family<PuzzleController, PuzzleState, PuzzleContext>(
-  PuzzleController.new,
-  name: 'PuzzleControllerProvider',
-);
+      PuzzleController.new,
+      name: 'PuzzleControllerProvider',
+    );
 
 class PuzzleController extends FamilyNotifier<PuzzleState, PuzzleContext> {
   @override
@@ -119,9 +121,9 @@ class PuzzleController extends FamilyNotifier<PuzzleState, PuzzleContext> {
     final res = state.node.position.makeSan(move);
     final sanMove = SanMove(res.$2, move);
     if (arg.puzzle.testSolution([sanMove])) {
-       ref.read(soundServiceProvider).play(Sound.move);
+      ref.read(soundServiceProvider).play(Sound.move);
     } else {
-       ref.read(soundServiceProvider).play(Sound.error);
+      ref.read(soundServiceProvider).play(Sound.error);
     }
   }
 
@@ -130,6 +132,7 @@ class PuzzleController extends FamilyNotifier<PuzzleState, PuzzleContext> {
   void onLoadPuzzle(PuzzleContext context) {
     state = _loadNewContext(context);
   }
+
   void changeDifficulty(dynamic difficulty) {}
   void skipMove() {}
   void userPrevious() {}

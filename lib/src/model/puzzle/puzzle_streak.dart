@@ -38,9 +38,9 @@ typedef StreakState = ({
 
 final puzzleStreakControllerProvider =
     AsyncNotifierProvider.autoDispose<PuzzleStreakController, StreakState>(
-  PuzzleStreakController.new,
-  name: 'PuzzleStreakControllerProvider',
-);
+      PuzzleStreakController.new,
+      name: 'PuzzleStreakControllerProvider',
+    );
 
 class PuzzleStreakController extends AsyncNotifier<StreakState> {
   @override

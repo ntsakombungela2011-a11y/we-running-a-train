@@ -7,6 +7,7 @@ class StreakScreen extends StatelessWidget {
   static Route<dynamic> buildRoute() {
     return buildScreenRoute(screen: const StreakScreen());
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -48,7 +48,10 @@ class OfflineComputerGameState {
   }) {
     final Position position;
     if (initialFen != null) {
-      position = Position.setupPosition(variant.rule, Setup.parseFen(initialFen));
+      position = Position.setupPosition(
+        variant.rule,
+        Setup.parseFen(initialFen),
+      );
     } else {
       position = variant.initialPosition;
     }
@@ -92,18 +95,23 @@ class OfflineComputerGameState {
   }
 }
 
-final offlineComputerGameControllerProvider = StateNotifierProvider.autoDispose<
-    OfflineComputerGameController, OfflineComputerGameState>((ref) {
-  return OfflineComputerGameController(ref);
-});
+final offlineComputerGameControllerProvider =
+    StateNotifierProvider.autoDispose<
+      OfflineComputerGameController,
+      OfflineComputerGameState
+    >((ref) {
+      return OfflineComputerGameController(ref);
+    });
 
 class OfflineComputerGameController
     extends StateNotifier<OfflineComputerGameState> {
   OfflineComputerGameController(this.ref)
-      : super(OfflineComputerGameState.initial(
+    : super(
+        OfflineComputerGameState.initial(
           stockfishLevel: StockfishLevel.level1,
           playerSide: Side.white,
-        ));
+        ),
+      );
 
   final Ref ref;
 
@@ -113,15 +121,10 @@ class OfflineComputerGameController
     final res = state.currentPosition.makeSan(move);
     final sanMove = SanMove(res.$2, move);
 
-    final newStep = GameStep(
-      position: res.$1,
-      sanMove: sanMove,
-    );
+    final newStep = GameStep(position: res.$1, sanMove: sanMove);
 
     state = state.copyWith(
-      game: state.game.copyWith(
-        steps: state.game.steps.add(newStep),
-      ),
+      game: state.game.copyWith(steps: state.game.steps.add(newStep)),
       stepCursor: state.stepCursor + 1,
     );
 

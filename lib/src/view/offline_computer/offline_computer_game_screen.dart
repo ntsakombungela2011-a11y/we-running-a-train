@@ -80,21 +80,26 @@ class _OfflineComputerGameScreenState
     final boardPrefs = ref.watch(boardPreferencesProvider);
 
     return PlatformScaffold(
-      appBar: PlatformAppBar(
-        title: Text(context.l10n.playAgainstComputer),
-      ),
+      appBar: PlatformAppBar(title: Text(context.l10n.playAgainstComputer)),
       body: Column(
         children: [
           Expanded(
             child: Center(
               child: BoardWidget(
                 boardKey: _boardKey,
-                size: min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height - 200),
+                size: min(
+                  MediaQuery.of(context).size.width,
+                  MediaQuery.of(context).size.height - 200,
+                ),
                 onMove: (move, {viaDragAndDrop}) {
-                  ref.read(offlineComputerGameControllerProvider.notifier).makeMove(move);
+                  ref
+                      .read(offlineComputerGameControllerProvider.notifier)
+                      .makeMove(move);
                 },
                 orientation: gameState.game.playerSide,
-                settings: boardPrefs.toBoardSettings(gameState.game.meta.variant),
+                settings: boardPrefs.toBoardSettings(
+                  gameState.game.meta.variant,
+                ),
                 controller: ChessboardController(
                   game: buildGameData(
                     fen: gameState.currentPosition.fen,
@@ -127,7 +132,7 @@ class _BottomBar extends ConsumerWidget {
           icon: Icons.refresh,
           label: 'New Game',
           onTap: () {
-             // New game logic
+            // New game logic
           },
         ),
       ],

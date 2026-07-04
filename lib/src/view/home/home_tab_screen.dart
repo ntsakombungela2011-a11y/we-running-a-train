@@ -14,8 +14,11 @@ class HomeTabScreen extends ConsumerStatefulWidget {
   const HomeTabScreen({this.editModeEnabled = false, super.key});
   final bool editModeEnabled;
   static Route<void> buildRoute({bool editModeEnabled = false}) {
-    return buildScreenRoute(screen: HomeTabScreen(editModeEnabled: editModeEnabled));
+    return buildScreenRoute(
+      screen: HomeTabScreen(editModeEnabled: editModeEnabled),
+    );
   }
+
   @override
   ConsumerState<HomeTabScreen> createState() => _HomeScreenState();
 }
@@ -27,9 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeTabScreen> {
       child: Scaffold(
         appBar: PlatformAppBar(
           title: const AppBarLichessTitle(),
-          actions: const [
-            AccountMenuButton(),
-          ],
+          actions: const [AccountMenuButton()],
         ),
         body: ListView(
           controller: homeScrollController,
@@ -48,9 +49,10 @@ class _HomeScreenState extends ConsumerState<HomeTabScreen> {
                 children: [
                   FilledButton.icon(
                     onPressed: () {
-                       Navigator.of(context, rootNavigator: true).push(
-                         OfflineComputerGameScreen.buildRoute(),
-                       );
+                      Navigator.of(
+                        context,
+                        rootNavigator: true,
+                      ).push(OfflineComputerGameScreen.buildRoute());
                     },
                     icon: const Icon(Icons.computer),
                     label: const Text('Play vs Computer'),
