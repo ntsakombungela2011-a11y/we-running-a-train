@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lichess_mobile/src/model/account/account_providers.dart';
 import 'package:lichess_mobile/src/model/auth/auth_controller.dart';
-import 'package:lichess_mobile/src/model/common/service/sound_service.dart';
 import 'package:lichess_mobile/src/styles/styles.dart';
 import 'package:lichess_mobile/src/utils/l10n_context.dart';
 import 'package:lichess_mobile/src/widgets/platform.dart';
@@ -12,9 +11,7 @@ import 'package:lichess_mobile/src/styles/lichess_icons.dart';
 import 'package:lichess_mobile/src/model/common/preloaded_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lichess_mobile/src/utils/navigation.dart';
-import 'package:lichess_mobile/src/model/account/ongoing_game.dart';
 import 'package:lichess_mobile/src/network/http.dart';
-import 'package:lichess_mobile/src/constants.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:lichess_mobile/src/widgets/list_section.dart';
 

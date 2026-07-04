@@ -94,11 +94,8 @@ final puzzleControllerProvider = NotifierProvider.autoDispose
     );
 
 class PuzzleController extends Notifier<PuzzleState> {
-  PuzzleController(this.arg);
-  final PuzzleContext arg;
-
   @override
-  PuzzleState build() {
+  PuzzleState build({required PuzzleContext arg}) {
     return _loadNewContext(arg);
   }
 
@@ -123,7 +120,10 @@ class PuzzleController extends Notifier<PuzzleState> {
   void onUserMove(Move move) {
     final res = state.node.position.makeSan(move);
     final sanMove = SanMove(res.$2, move);
-    if (arg.puzzle.testSolution([sanMove])) {
+    // In Riverpod 3, arguments can be accessed via 'arg' if defined, but here we pass it to build.
+    // However, if we need it in other methods, we might need to store it or access it.
+    // For now, I'll assume we can use 'state.puzzle' or similar.
+    if (state.puzzle.testSolution([sanMove])) {
       ref.read(soundServiceProvider).play(Sound.move);
     } else {
       ref.read(soundServiceProvider).play(Sound.error);

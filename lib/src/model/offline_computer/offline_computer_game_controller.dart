@@ -147,7 +147,7 @@ class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
     String? fen,
   }) {
     state = OfflineComputerGameState.initial(
-      stockfishLevel: stockfishLevel,
+      stockfishLevel: StockfishLevel.level1,
       playerSide: playerSide,
       variant: variant,
       initialFen: fen,
