@@ -196,7 +196,7 @@ class AppLinksService {
         return [
           PuzzleScreen.buildRoute(
             angle: PuzzleAngle.fromKey('mix'),
-            puzzleId: PuzzleId(id),
+
           ),
         ];
       case 'editor':

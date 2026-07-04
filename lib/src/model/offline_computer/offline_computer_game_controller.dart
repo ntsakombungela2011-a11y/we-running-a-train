@@ -27,6 +27,7 @@ class OfflineComputerGameState {
         id: StringId('local'),
         steps: [GameStep(position: position)].lock,
         status: GameStatus.started,
+        initialFen: null,
         meta: GameMeta(
           createdAt: DateTime.now(),
           rated: false,

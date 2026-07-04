@@ -1413,55 +1413,7 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                         }
                       : null,
                 )
-        else if (widget.state.tournament.isFinished != true)
-          BottomBarButton(
-            label: context.l10n.signIn,
-            showLabel: true,
-            icon: Icons.login,
-            onTap: switch (signInState) {
-              MutationPending() => null,
-              _ => () {
-                signInMutation.run(ref, (tsx) async {
-                  await tsx.get(authControllerProvider.notifier).signIn();
-                });
-              },
-            },
-          ),
       ],
-    );
-  }
-}
-
-void _showPlayerDetails(
-  BuildContext context,
-  TournamentId tournamentId,
-  UserId userId,
-) {
-  showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    builder: (context) {
-      return DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) {
-          return Consumer(
-            builder: (context, ref, child) {
-              final playerAsync = ref.watch(
-                tournamentPlayerProvider((tournamentId, userId)),
-              );
-
-              return switch (playerAsync) {
-                AsyncData(value: final player) => _TournamentPlayerDetails(
-                  player: player,
-                  tournamentId: tournamentId,
-                  scrollController: scrollController,
-                ),
-                AsyncError(error: final error) => Center(
-                  child: Text('Error loading player data: $error'),
-                ),
                 _ => const Center(child: CircularProgressIndicator.adaptive()),
               };
             },

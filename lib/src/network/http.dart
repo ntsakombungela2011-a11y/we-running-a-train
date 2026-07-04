@@ -385,7 +385,6 @@ class LichessClient implements Client {
       _logIfError(response);
 
       if (response.statusCode == 401 && authUser != null) {
-        _ref.read(authControllerProvider.notifier).checkToken();
       }
 
       return response;

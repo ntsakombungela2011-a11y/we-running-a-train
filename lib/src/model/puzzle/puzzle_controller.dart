@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lichess_mobile/src/model/common/chess.dart';
+import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/common/node.dart';
 import 'package:lichess_mobile/src/model/common/service/sound_service.dart';
 import 'package:lichess_mobile/src/model/common/uci.dart';
@@ -14,6 +16,8 @@ class PuzzleState {
   final ViewNode root;
   final ViewNode node;
   final Side pov;
+  final PuzzleResult? result;
+  final PuzzleFeedback? feedback;
 
   const PuzzleState({
     required this.puzzle,
@@ -21,6 +25,8 @@ class PuzzleState {
     required this.root,
     required this.node,
     required this.pov,
+    this.result,
+    this.feedback,
   });
 
   PuzzleState copyWith({
@@ -29,6 +35,8 @@ class PuzzleState {
     ViewNode? root,
     ViewNode? node,
     Side? pov,
+    PuzzleResult? result,
+    PuzzleFeedback? feedback,
   }) {
     return PuzzleState(
       puzzle: puzzle ?? this.puzzle,
@@ -36,11 +44,17 @@ class PuzzleState {
       root: root ?? this.root,
       node: node ?? this.node,
       pov: pov ?? this.pov,
+      result: result ?? this.result,
+      feedback: feedback ?? this.feedback,
     );
   }
 }
 
 enum PuzzleMode { load, play, view }
+
+enum PuzzleResult { win, lose }
+
+enum PuzzleFeedback { none, good, bad }
 
 final puzzleControllerProvider = NotifierProvider.autoDispose
     .family<PuzzleController, PuzzleState, PuzzleContext>(
