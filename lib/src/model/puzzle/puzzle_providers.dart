@@ -65,7 +65,7 @@ final puzzleThemesProvider =
     FutureProvider.autoDispose<IMap<PuzzleThemeKey, PuzzleThemeData>>((
       Ref ref,
     ) {
-       return const IMapConst({});
+      return const IMapConst({});
     });
 
 final puzzleOpeningsProvider = FutureProvider.autoDispose
@@ -76,22 +76,31 @@ final puzzleOpeningsProvider = FutureProvider.autoDispose
       return const IListConst([]);
     });
 
-final stormProvider = FutureProvider.autoDispose<PuzzleStormResponse>((Ref ref) async {
+final stormProvider = FutureProvider.autoDispose<PuzzleStormResponse>((
+  Ref ref,
+) async {
   final service = await ref.watch(puzzleServiceProvider.future);
   final puzzles = <LitePuzzle>[];
   for (var i = 0; i < 50; i++) {
     final ctx = await service.nextPuzzle(userId: null);
-    puzzles.add(LitePuzzle(
-      id: ctx!.puzzle.puzzle.id,
-      fen: ctx.puzzle.preview.initialFen,
-      solution: ctx.puzzle.puzzle.solution,
-      rating: ctx.puzzle.puzzle.rating,
-    ));
+    puzzles.add(
+      LitePuzzle(
+        id: ctx!.puzzle.puzzle.id,
+        fen: PuzzlePreview.fromPuzzle(ctx.puzzle).initialFen,
+        solution: ctx.puzzle.puzzle.solution,
+        rating: ctx.puzzle.puzzle.rating,
+      ),
+    );
   }
   return PuzzleStormResponse(
     puzzles: puzzles.toIList(),
     key: 'local_storm',
-    highscore: const PuzzleStormHighScore(allTime: 0, day: 0, month: 0, week: 0),
+    highscore: const PuzzleStormHighScore(
+      allTime: 0,
+      day: 0,
+      month: 0,
+      week: 0,
+    ),
     timestamp: DateTime.now(),
   );
 });

@@ -50,8 +50,8 @@ class PuzzleHistoryPreview extends ConsumerWidget {
               Navigator.of(context, rootNavigator: true).push(
                 PuzzleScreen.buildRoute(
                   angle: const PuzzleTheme(PuzzleThemeKey.mix),
-                  puzzleId: e.id,
-                  openCasual: shouldOpenCasualPuzzleRun ?? false,
+
+
                 ),
               );
             },
@@ -235,7 +235,7 @@ class PuzzleHistoryBoard extends ConsumerWidget {
           Navigator.of(context, rootNavigator: true).push(
             PuzzleScreen.buildRoute(
               angle: const PuzzleTheme(PuzzleThemeKey.mix),
-              puzzleId: puzzle.id,
+
             ),
           );
         },

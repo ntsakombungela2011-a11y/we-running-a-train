@@ -11,7 +11,6 @@ import 'package:lichess_mobile/src/network/http.dart';
 import 'package:lichess_mobile/src/styles/styles.dart';
 import 'package:lichess_mobile/src/tab_scaffold.dart';
 import 'package:lichess_mobile/src/utils/l10n_context.dart';
-import 'package:lichess_mobile/src/view/account/account_menu.dart';
 import 'package:lichess_mobile/src/view/coordinate_training/coordinate_training_screen.dart';
 import 'package:lichess_mobile/src/view/study/study_list_screen.dart';
 import 'package:lichess_mobile/src/widgets/list.dart';
@@ -77,7 +76,6 @@ class LearnTabScreen extends ConsumerWidget {
           titleTextStyle: Theme.of(context).platform == TargetPlatform.iOS
               ? Theme.of(context).textTheme.headlineSmall
               : null,
-          actions: const [AccountMenuButton()],
         ),
         body: const _Body(),
       ),

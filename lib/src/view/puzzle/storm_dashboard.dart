@@ -8,6 +8,7 @@ class StormDashboardModal extends StatelessWidget {
   static Route<void> buildRoute(LightUser user) {
     return buildScreenRoute(screen: StormDashboardModal(user: user));
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

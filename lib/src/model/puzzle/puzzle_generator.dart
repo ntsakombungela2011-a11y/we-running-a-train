@@ -61,7 +61,8 @@ class PuzzleGenerator {
   Puzzle _seedFork() {
     return _createPuzzle(
       id: 'fork_${_random.nextInt(1000)}',
-      fen: 'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1',
+      fen:
+          'r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1',
       solution: ['e5g6'],
       themes: ['fork'],
     );
@@ -115,7 +116,8 @@ class PuzzleGenerator {
   Puzzle _seedMateIn2() {
     return _createPuzzle(
       id: 'mate2_${_random.nextInt(1000)}',
-      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
+      fen:
+          'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
       solution: ['h5f7'],
       themes: ['mateIn2'],
     );

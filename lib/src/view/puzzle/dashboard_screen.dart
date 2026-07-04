@@ -222,7 +222,7 @@ class _ChartSection extends StatelessWidget {
                 Navigator.of(context, rootNavigator: true).push(
                   PuzzleScreen.buildRoute(
                     angle: const PuzzleTheme(PuzzleThemeKey.mix),
-                    replayDays: days,
+
                   ),
                 );
               },

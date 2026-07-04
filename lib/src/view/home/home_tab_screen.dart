@@ -1,3 +1,4 @@
+import 'package:lichess_mobile/src/widgets/platform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lichess_mobile/src/tab_scaffold.dart';
@@ -6,7 +7,6 @@ import 'package:lichess_mobile/src/utils/navigation.dart';
 import 'package:lichess_mobile/src/widgets/background.dart';
 import 'package:lichess_mobile/src/view/offline_computer/offline_computer_game_screen.dart';
 import 'package:lichess_mobile/src/view/play/play_bottom_sheet.dart';
-import 'package:lichess_mobile/src/view/account/account_menu.dart';
 import 'package:lichess_mobile/src/widgets/misc.dart';
 import 'package:lichess_mobile/src/styles/styles.dart';
 
@@ -14,8 +14,11 @@ class HomeTabScreen extends ConsumerStatefulWidget {
   const HomeTabScreen({this.editModeEnabled = false, super.key});
   final bool editModeEnabled;
   static Route<void> buildRoute({bool editModeEnabled = false}) {
-    return buildScreenRoute(screen: HomeTabScreen(editModeEnabled: editModeEnabled));
+    return buildScreenRoute(
+      screen: HomeTabScreen(editModeEnabled: editModeEnabled),
+    );
   }
+
   @override
   ConsumerState<HomeTabScreen> createState() => _HomeScreenState();
 }
@@ -25,12 +28,7 @@ class _HomeScreenState extends ConsumerState<HomeTabScreen> {
   Widget build(BuildContext context) {
     return FullScreenBackground(
       child: Scaffold(
-        appBar: PlatformAppBar(
-          title: const AppBarLichessTitle(),
-          actions: const [
-            AccountMenuButton(),
-          ],
-        ),
+        appBar: PlatformAppBar(title: const AppBarLichessTitle()),
         body: ListView(
           controller: homeScrollController,
           children: [
@@ -48,9 +46,10 @@ class _HomeScreenState extends ConsumerState<HomeTabScreen> {
                 children: [
                   FilledButton.icon(
                     onPressed: () {
-                       Navigator.of(context, rootNavigator: true).push(
-                         OfflineComputerGameScreen.buildRoute(),
-                       );
+                      Navigator.of(
+                        context,
+                        rootNavigator: true,
+                      ).push(OfflineComputerGameScreen.buildRoute());
                     },
                     icon: const Icon(Icons.computer),
                     label: const Text('Play vs Computer'),

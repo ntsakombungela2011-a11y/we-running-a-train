@@ -1,14 +1,12 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lichess_mobile/l10n/l10n.dart';
-import 'package:lichess_mobile/src/db/database.dart';
 import 'package:lichess_mobile/src/model/auth/auth_controller.dart';
 import 'package:lichess_mobile/src/model/common/preloaded_data.dart';
-import 'package:lichess_mobile/src/model/settings/general_preferences.dart';
-import 'package:lichess_mobile/src/network/connectivity.dart';
+import 'package:lichess_mobile/src/model/preferences/general_preferences.dart';
+import 'package:lichess_mobile/src/model/preferences/preferences_providers.dart';
 import 'package:lichess_mobile/src/styles/styles.dart';
 import 'package:lichess_mobile/src/utils/l10n.dart';
 import 'package:lichess_mobile/src/utils/l10n_context.dart';
@@ -45,33 +43,30 @@ class SettingsScreen extends ConsumerWidget {
         .read(preloadedDataProvider)
         .requireValue
         .packageInfo;
-    final authUser = ref.watch(authControllerProvider);
-    final signOutState = ref.watch(signOutMutation);
     final dbSize = ref.watch(getDbSizeInBytesProvider);
 
     return PlatformScaffold(
       appBar: PlatformAppBar(title: Text(context.l10n.settingsSettings)),
       body: ListView(
         children: [
-          if (authUser != null)
-            ListSection(
-              hasLeading: true,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.manage_accounts_outlined),
-                  trailing: Theme.of(context).platform == TargetPlatform.iOS
-                      ? const CupertinoListTileChevron()
-                      : null,
-                  title: Text(context.l10n.mobileAccountPreferences),
-                  enabled: isOnline,
-                  onTap: () {
-                    Navigator.of(
-                      context,
-                    ).push(AccountPreferencesScreen.buildRoute());
-                  },
-                ),
-              ],
-            ),
+          ListSection(
+            hasLeading: true,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.manage_accounts_outlined),
+                trailing: Theme.of(context).platform == TargetPlatform.iOS
+                    ? const CupertinoListTileChevron()
+                    : null,
+                title: Text(context.l10n.mobileAccountPreferences),
+                enabled: isOnline,
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(AccountPreferencesScreen.buildRoute());
+                },
+              ),
+            ],
+          ),
           ListSection(
             hasLeading: true,
             children: [
@@ -206,56 +201,14 @@ class SettingsScreen extends ConsumerWidget {
                   Navigator.of(context).push(AppLogSettingsScreen.buildRoute());
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.star_outline),
-                title: const Text('Rate this app'),
-                onTap: () async {
-                  final isAndroid =
-                      Theme.of(context).platform == TargetPlatform.android;
-                  final launched = await launchUrl(
-                    isAndroid
-                        ? Uri.parse('market://details?id=org.lichess.mobileV2')
-                        : Uri.parse(
-                            'https://apps.apple.com/us/app/lichess/id1662361230',
-                          ),
-                    mode: LaunchMode.externalApplication,
-                  );
-                  if (!launched && isAndroid) {
-                    launchUrl(
-                      Uri.parse(
-                        'https://play.google.com/store/apps/details?id=org.lichess.mobileV2',
-                      ),
-                      mode: LaunchMode.externalApplication,
-                    );
-                  }
-                },
-              ),
             ],
           ),
-          if (authUser != null)
-            ListSection(
-              hasLeading: true,
-              children: [
-                switch (signOutState) {
-                  MutationPending() => const ListTile(
-                    leading: Icon(Icons.logout_outlined),
-                    enabled: false,
-                    title: Center(child: ButtonLoadingIndicator()),
-                  ),
-                  _ => ListTile(
-                    leading: const Icon(Icons.logout_outlined),
-                    title: Text(context.l10n.logOut),
-                    enabled: isOnline,
-                    onTap: () => _showSignOutConfirmDialog(context, ref),
-                  ),
-                },
-              ],
-            ),
           Padding(
-            padding: Styles.bodySectionPadding,
+            padding: const EdgeInsets.symmetric(vertical: 40),
             child: Text(
               'v${packageInfo.version}',
               style: TextTheme.of(context).bodySmall,
+              textAlign: TextAlign.center,
             ),
           ),
         ],
@@ -263,50 +216,10 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showSignOutConfirmDialog(BuildContext context, WidgetRef ref) {
-    if (Theme.of(context).platform == TargetPlatform.iOS) {
-      return showCupertinoActionSheet(
-        context: context,
-        actions: [
-          BottomSheetAction(
-            makeLabel: (context) => Text(context.l10n.logOut),
-            isDestructiveAction: true,
-            onPressed: () async {
-              await signOutMutation.run(ref, (tsx) async {
-                await tsx.get(authControllerProvider.notifier).signOut();
-              });
-            },
-          ),
-        ],
-      );
-    }
-    return showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(context.l10n.logOut),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(context.l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                await signOutMutation.run(ref, (tsx) async {
-                  await tsx.get(authControllerProvider.notifier).signOut();
-                });
-              },
-              child: Text(context.l10n.mobileOkButton),
-            ),
-          ],
-        );
-      },
-    );
+  String _getSizeString(int? bytes) {
+    if (bytes == null) return '';
+    if (bytes < 1024) return '$bytes B';
+    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(2)} KB';
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(2)} MB';
   }
-
-  String _getSizeString(int? bytes) =>
-      '${_bytesToMB(bytes ?? 0).toStringAsFixed(2)}MB';
-
-  double _bytesToMB(int bytes) => bytes * 0.000001;
 }

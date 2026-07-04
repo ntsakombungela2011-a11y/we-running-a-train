@@ -1264,7 +1264,6 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
   @override
   Widget build(BuildContext context) {
     final authUser = ref.watch(authControllerProvider);
-    final signInState = ref.watch(signInMutation);
     final kidModeAsync = ref.watch(kidModeProvider);
 
     ref.listen(
@@ -1413,20 +1412,6 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                         }
                       : null,
                 )
-        else if (widget.state.tournament.isFinished != true)
-          BottomBarButton(
-            label: context.l10n.signIn,
-            showLabel: true,
-            icon: Icons.login,
-            onTap: switch (signInState) {
-              MutationPending() => null,
-              _ => () {
-                signInMutation.run(ref, (tsx) async {
-                  await tsx.get(authControllerProvider.notifier).signIn();
-                });
-              },
-            },
-          ),
       ],
     );
   }
@@ -1452,15 +1437,11 @@ void _showPlayerDetails(
               final playerAsync = ref.watch(
                 tournamentPlayerProvider((tournamentId, userId)),
               );
-
               return switch (playerAsync) {
-                AsyncData(value: final player) => _TournamentPlayerDetails(
-                  player: player,
+                AsyncData(:final value) => _TournamentPlayerDetails(
+                  player: value,
                   tournamentId: tournamentId,
                   scrollController: scrollController,
-                ),
-                AsyncError(error: final error) => Center(
-                  child: Text('Error loading player data: $error'),
                 ),
                 _ => const Center(child: CircularProgressIndicator.adaptive()),
               };
@@ -1471,11 +1452,6 @@ void _showPlayerDetails(
     },
   );
 }
-
-class _TournamentPlayerDetails extends ConsumerWidget {
-  final TournamentPlayer player;
-  final TournamentId tournamentId;
-  final ScrollController scrollController;
 
   const _TournamentPlayerDetails({
     required this.player,

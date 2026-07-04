@@ -14,7 +14,7 @@ part 'puzzle_service.freezed.dart';
 const kPuzzleLocalQueueLength = 50;
 
 @freezed
-class PuzzleContext with _$PuzzleContext {
+sealed class PuzzleContext with _$PuzzleContext {
   const factory PuzzleContext({
     required Puzzle puzzle,
     required PuzzleAngle angle,
@@ -61,11 +61,7 @@ class PuzzleService {
   }) async {
     final themeKey = angle is PuzzleTheme ? angle.themeKey : PuzzleThemeKey.mix;
     final puzzle = await generator.generate(theme: themeKey);
-    return PuzzleContext(
-      puzzle: puzzle,
-      angle: angle,
-      userId: userId,
-    );
+    return PuzzleContext(puzzle: puzzle, angle: angle, userId: userId);
   }
 
   Future<PuzzleContext?> solve({
