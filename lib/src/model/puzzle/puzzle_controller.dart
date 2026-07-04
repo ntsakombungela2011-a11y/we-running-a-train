@@ -93,7 +93,7 @@ final puzzleControllerProvider = NotifierProvider.autoDispose
       name: 'PuzzleControllerProvider',
     );
 
-class PuzzleController extends AutoDisposeNotifier<PuzzleState> {
+class PuzzleController extends Notifier<PuzzleState> {
   PuzzleController(this.arg);
   final PuzzleContext arg;
 

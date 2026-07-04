@@ -97,19 +97,12 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
                     },
                     orientation: puzzleState.pov,
                     settings: ChessboardSettings(
-                      pieceSet: boardPrefs.pieceSet,
-                      theme: boardPrefs.boardTheme,
+                      pieceAssets: boardPrefs.pieceSet.assets,
+                      colorScheme: boardPrefs.boardTheme.colors,
                     ),
                     controller: ChessboardController(
                       game: buildGameData(
-                        game: buildGameData(
-                          fen: puzzleState.root.position.fen,
-                          variant: Variant.standard,
-                          position: puzzleState.root.position,
-                          playerSide: PlayerSide.none,
-                          castlingMethod: boardPrefs.castlingMethod,
-                          boardHighlights: boardPrefs.boardHighlights,
-                        ),
+                        fen: puzzleState.root.position.fen,
                         variant: Variant.standard,
                         position: puzzleState.root.position,
                         playerSide: PlayerSide.none,

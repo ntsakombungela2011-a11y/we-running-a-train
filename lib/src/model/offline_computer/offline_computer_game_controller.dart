@@ -107,8 +107,7 @@ final offlineComputerGameControllerProvider =
       name: 'OfflineComputerGameControllerProvider',
     );
 
-class OfflineComputerGameController
-    extends AutoDisposeNotifier<OfflineComputerGameState> {
+class OfflineComputerGameController extends Notifier<OfflineComputerGameState> {
   @override
   OfflineComputerGameState build() {
     return OfflineComputerGameState.initial(

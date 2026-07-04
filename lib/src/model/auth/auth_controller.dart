@@ -34,7 +34,7 @@ final isLoggedInProvider = Provider.autoDispose<bool>((Ref ref) {
 final signInMutation = Mutation<void>();
 final signOutMutation = Mutation<void>();
 
-class AuthController extends AutoDisposeNotifier<AuthUser?> {
+class AuthController extends Notifier<AuthUser?> {
   @override
   AuthUser? build() {
     return const AuthUser(
