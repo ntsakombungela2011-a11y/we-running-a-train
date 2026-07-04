@@ -93,9 +93,12 @@ final puzzleControllerProvider = NotifierProvider.autoDispose
       name: 'PuzzleControllerProvider',
     );
 
-class PuzzleController extends FamilyNotifier<PuzzleState, PuzzleContext> {
+class PuzzleController extends AutoDisposeNotifier<PuzzleState> {
+  PuzzleController(this.arg);
+  final PuzzleContext arg;
+
   @override
-  PuzzleState build(PuzzleContext arg) {
+  PuzzleState build() {
     return _loadNewContext(arg);
   }
 

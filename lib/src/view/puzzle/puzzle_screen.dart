@@ -96,13 +96,20 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
                           .onUserMove(move);
                     },
                     orientation: puzzleState.pov,
-                    settings: BoardSettings(
+                    settings: ChessboardSettings(
                       pieceSet: boardPrefs.pieceSet,
                       theme: boardPrefs.boardTheme,
                     ),
                     controller: ChessboardController(
                       game: buildGameData(
-                        fen: puzzleState.root.position.fen,
+                        game: buildGameData(
+                          fen: puzzleState.root.position.fen,
+                          variant: Variant.standard,
+                          position: puzzleState.root.position,
+                          playerSide: PlayerSide.none,
+                          castlingMethod: boardPrefs.castlingMethod,
+                          boardHighlights: boardPrefs.boardHighlights,
+                        ),
                         variant: Variant.standard,
                         position: puzzleState.root.position,
                         playerSide: PlayerSide.none,

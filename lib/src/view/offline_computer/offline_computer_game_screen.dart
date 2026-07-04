@@ -105,7 +105,9 @@ class _OfflineComputerGameScreenState
                     fen: gameState.currentPosition.fen,
                     variant: gameState.game.meta.variant,
                     position: gameState.currentPosition,
-                    playerSide: PlayerSide.fromSide(gameState.game.playerSide),
+                    playerSide: gameState.game.playerSide == Side.white
+                        ? PlayerSide.white
+                        : PlayerSide.black,
                     castlingMethod: boardPrefs.castlingMethod,
                     boardHighlights: boardPrefs.boardHighlights,
                   ),

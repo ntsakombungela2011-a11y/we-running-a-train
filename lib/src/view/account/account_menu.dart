@@ -86,17 +86,7 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen>
     final signInState = ref.watch(signInMutation);
     final signOutState = ref.watch(signOutMutation);
 
-    ref.listen(
-      signInMutation,
-      (prev, next) {},
-      signInMutation,
-      // showSignInErrorSnackBar removed
-    );
-    final account = ref.watch(accountProvider);
-    final authUser = ref.watch(authControllerProvider);
-    final kidMode = account.value?.kid ?? false;
-    final LightUser? user = account.value?.lightUser ?? authUser?.user;
-    final unreadMessages = ref.watch(unreadMessagesProvider).value?.unread ?? 0;
+    ref.listen(signInMutation, (prev, next) {});
 
     return PlatformScaffold(
       appBar: PlatformAppBar(

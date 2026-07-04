@@ -8,8 +8,10 @@ import 'package:lichess_mobile/src/model/common/chess.dart';
 import 'package:lichess_mobile/src/model/common/eval.dart';
 import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/common/node.dart';
+import 'package:lichess_mobile/src/model/common/perf.dart';
 import 'package:lichess_mobile/src/model/common/service/move_feedback.dart';
 import 'package:lichess_mobile/src/model/common/service/sound_service.dart';
+import 'package:lichess_mobile/src/model/common/speed.dart';
 import 'package:lichess_mobile/src/model/common/uci.dart';
 import 'package:lichess_mobile/src/model/engine/evaluation_service.dart';
 import 'package:lichess_mobile/src/model/game/game.dart';
@@ -18,11 +20,12 @@ import 'package:lichess_mobile/src/model/game/player.dart';
 import 'package:lichess_mobile/src/model/game/offline_computer_game.dart';
 import 'package:lichess_mobile/src/model/offline_computer/practice_comment.dart';
 import 'package:logging/logging.dart';
+import 'package:multistockfish/multistockfish.dart';
 
 final _logger = Logger('OfflineComputerGameController');
 final _random = Random();
 
-const _kComputerStockfishFlavor = StockfishFlavor.nnue;
+const _kComputerStockfishFlavor = StockfishFlavor.latestNoNNUE;
 const _kHintsMaxSearchTime = Duration(milliseconds: 1000);
 const _kHintsEvalMinDepth = 15;
 const kGoodMoveThreshold = 0.1;
@@ -96,24 +99,23 @@ class OfflineComputerGameState {
 }
 
 final offlineComputerGameControllerProvider =
-    StateNotifierProvider.autoDispose<
+    NotifierProvider.autoDispose<
       OfflineComputerGameController,
       OfflineComputerGameState
-    >((ref) {
-      return OfflineComputerGameController(ref);
-    });
+    >(
+      OfflineComputerGameController.new,
+      name: 'OfflineComputerGameControllerProvider',
+    );
 
 class OfflineComputerGameController
-    extends StateNotifier<OfflineComputerGameState> {
-  OfflineComputerGameController(this.ref)
-    : super(
-        OfflineComputerGameState.initial(
-          stockfishLevel: StockfishLevel.level1,
-          playerSide: Side.white,
-        ),
-      );
-
-  final Ref ref;
+    extends AutoDisposeNotifier<OfflineComputerGameState> {
+  @override
+  OfflineComputerGameState build() {
+    return OfflineComputerGameState.initial(
+      stockfishLevel: StockfishLevel.level1,
+      playerSide: Side.white,
+    );
+  }
 
   Future<void> makeMove(Move move) async {
     if (state.turn != state.game.playerSide || !state.game.playable) return;
