@@ -252,7 +252,7 @@ class SocketClient {
     );
 
     final Map<String, String> headers = authUser != null
-        ? {'Authorization': 'Bearer ${signBearerToken(authUser.token)}'}
+        ? {'Authorization': 'Bearer ${authUser.token}'}
         : {};
     WebSocket.userAgent = makeUserAgent(
       packageInfo,

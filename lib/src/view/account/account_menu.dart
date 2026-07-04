@@ -88,7 +88,7 @@ class _AccountMenuScreenState extends ConsumerState<AccountMenuScreen>
 
     ref.listen(
       signInMutation,
-      (_, next) => showSignInErrorSnackBar(context, next),
+      // showSignInErrorSnackBar removed
     );
     final account = ref.watch(accountProvider);
     final authUser = ref.watch(authControllerProvider);

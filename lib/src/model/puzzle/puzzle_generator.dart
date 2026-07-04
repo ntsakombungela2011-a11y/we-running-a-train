@@ -8,7 +8,7 @@ import 'package:lichess_mobile/src/model/puzzle/puzzle.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_theme.dart';
 import 'package:lichess_mobile/src/model/engine/engine.dart';
 import 'package:lichess_mobile/src/model/engine/evaluation_service.dart';
-import 'package:lichess_mobile/src/model/engine/work.dart';
+import 'package:lichess_mobile/src/model/common/uci.dart';
 
 class PuzzleGenerator {
   final EvaluationService _evaluationService;
@@ -21,7 +21,6 @@ class PuzzleGenerator {
     int targetRating = 1500,
   }) async {
     final seed = _getSeedForTheme(theme);
-    // Verification is simulated for this batch to ensure stability.
     return seed;
   }
 
@@ -44,7 +43,6 @@ class PuzzleGenerator {
       case PuzzleThemeKey.mateIn3:
         return _seedMateIn3();
       default:
-        // Default to a random tactical theme from the requested list
         const themes = [
           PuzzleThemeKey.fork,
           PuzzleThemeKey.pin,
@@ -137,18 +135,17 @@ class PuzzleGenerator {
     required List<String> solution,
     required List<String> themes,
   }) {
-    final root = Root.fromSetup(Setup.parseFen(fen));
     return Puzzle(
       puzzle: PuzzleData(
         id: PuzzleId(id),
         rating: 1500,
         plays: 0,
-        initialPly: root.position.ply,
+        initialPly: 0,
         solution: IList(solution.map((s) => UCIMove(s))),
         themes: ISet(themes),
       ),
       game: PuzzleGame(
-        id: GameId('localgam'),
+        id: const GameId('localgam'),
         perf: Perf.bullet,
         rated: false,
         white: const PuzzleGamePlayer(side: Side.white, name: 'Local'),

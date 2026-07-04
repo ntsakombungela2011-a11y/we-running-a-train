@@ -11,24 +11,47 @@ import 'package:lichess_mobile/src/model/common/uci.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_service.dart';
 import 'package:lichess_mobile/src/model/puzzle/puzzle_session.dart';
+import 'package:lichess_mobile/src/model/puzzle/puzzle_difficulty.dart';
+import 'package:lichess_mobile/src/view/analysis/analysis_screen.dart';
 
 part 'puzzle_controller.freezed.dart';
 
 @freezed
 class PuzzleState with _$PuzzleState {
+  const PuzzleState._();
   const factory PuzzleState({
     required Puzzle puzzle,
     required PuzzleMode mode,
-    required NodeView root,
+    required ViewNode root,
     required Position initialPosition,
     required UciPath initialPath,
     required UciPath currentPath,
-    required NodeView node,
+    required ViewNode node,
     required Side pov,
     PuzzleGlicko? glicko,
     PuzzleResult? result,
     PuzzleFeedback? feedback,
+    PuzzleContext? nextContext,
+    @Default(false) bool isChangingDifficulty,
   }) = _PuzzleState;
+
+  Position get currentPosition => node.position;
+  Move? get lastMove => node.sanMove?.move;
+  Square? get hintSquare => null;
+  bool get canGoNext => false;
+  bool get canGoBack => false;
+  bool get shouldBlinkNextArrow => false;
+
+  AnalysisOptions makeAnalysisOptions({required int initialMoveCursor}) {
+    return AnalysisOptions.pgn(
+      id: puzzle.puzzle.id,
+      orientation: pov,
+      pgn: '',
+      isComputerAnalysisAllowed: true,
+      variant: Variant.standard,
+      initialMoveCursor: initialMoveCursor,
+    );
+  }
 }
 
 enum PuzzleMode { load, play, view }
@@ -51,16 +74,18 @@ class PuzzleController extends Notifier<PuzzleState> {
   }
 
   PuzzleState _loadNewContext(PuzzleContext context) {
-    final root = Root.fromSetup(Setup.parseFen(context.puzzle.preview.initialFen));
+    final setup = Setup.parseFen(context.puzzle.preview.initialFen);
+    final position = Position.setupPosition(Variant.standard.rule, setup);
+    final root = ViewRoot(position: position, children: const IListConst([]));
 
     return PuzzleState(
       puzzle: context.puzzle,
       mode: PuzzleMode.play,
-      root: root.view,
-      initialPosition: root.position,
+      root: root,
+      initialPosition: position,
       initialPath: UciPath.empty,
       currentPath: UciPath.empty,
-      node: root.view,
+      node: root,
       pov: context.puzzle.puzzle.sideToMove,
     );
   }
@@ -74,6 +99,12 @@ class PuzzleController extends Notifier<PuzzleState> {
     }
   }
 
+  void toggleHint() {}
+  void viewSolution() {}
+  void onLoadPuzzle(PuzzleContext context) {
+    state = _loadNewContext(context);
+  }
+  void changeDifficulty(PuzzleDifficulty difficulty) {}
   void skipMove() {}
   void userPrevious() {}
   void userNext() {}

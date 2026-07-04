@@ -1,41 +1,22 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lichess_mobile/src/model/account/account_repository.dart';
-import 'package:lichess_mobile/src/model/account/account_service.dart';
 import 'package:lichess_mobile/src/model/common/chess.dart';
-import 'package:lichess_mobile/src/model/lobby/game_seek.dart';
 import 'package:lichess_mobile/src/model/lobby/game_setup_preferences.dart';
-import 'package:lichess_mobile/src/network/connectivity.dart';
-import 'package:lichess_mobile/src/styles/styles.dart';
 import 'package:lichess_mobile/src/utils/l10n_context.dart';
-import 'package:lichess_mobile/src/view/game/game_screen.dart';
-import 'package:lichess_mobile/src/view/game/game_screen_providers.dart';
-import 'package:lichess_mobile/src/view/play/common_play_widgets.dart';
 import 'package:lichess_mobile/src/view/play/time_control_modal.dart';
-import 'package:lichess_mobile/src/widgets/adaptive_bottom_sheet.dart';
+import 'package:lichess_mobile/src/view/play/variant_label.dart';
 import 'package:lichess_mobile/src/widgets/adaptive_choice_picker.dart';
-import 'package:lichess_mobile/src/widgets/platform_alert_dialog.dart';
-import 'package:lichess_mobile/src/widgets/variant_app_bar_title.dart';
 
 class CreateGameWidget extends ConsumerWidget {
-  const CreateGameWidget();
+  const CreateGameWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playPrefs = ref.watch(gameSetupPreferencesProvider);
-    final isOnline = ref.watch(onlineStatusProvider).value ?? false;
-    final account = ref.watch(accountProvider).value;
-    final userPerf = account?.perfs[playPrefs.realTimePerf];
-    final canUseRatingRange = userPerf != null && userPerf.provisional != true;
-
-    final labelStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
-      color: textShade(context, 0.5),
-      height: 1.0,
-    );
+    final labelStyle = Theme.of(context).textTheme.labelLarge;
 
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,14 +32,9 @@ class CreateGameWidget extends ConsumerWidget {
                       side: BorderSide(color: Theme.of(context).dividerColor),
                     ),
                     icon: Icon(playPrefs.timeIncrement.speed.icon),
-                    label: Text(
-                      playPrefs.timeIncrement.display,
-                      style: const TextStyle(letterSpacing: 2.0),
-                    ),
+                    label: Text(playPrefs.timeIncrement.display),
                     onPressed: () {
-                      final double screenHeight = MediaQuery.sizeOf(
-                        context,
-                      ).height;
+                      final double screenHeight = MediaQuery.sizeOf(context).height;
                       showModalBottomSheet<void>(
                         context: context,
                         isScrollControlled: true,
@@ -118,125 +94,7 @@ class CreateGameWidget extends ConsumerWidget {
             ),
           ],
         ),
-                          selectedItem: playPrefs.customRated
-                              ? context.l10n.rated
-                              : context.l10n.casual,
-                          labelBuilder: (String label) => Text(label),
-                          onSelectedItemChanged: (String label) {
-                            ref
-                                .read(gameSetupPreferencesProvider.notifier)
-                                .setCustomRated(label == context.l10n.rated);
-                          },
-                        );
-                      },
-                      child: Text(
-                        playPrefs.customRated
-                            ? context.l10n.rated
-                            : context.l10n.casual,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8.0),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onTap: canUseRatingRange
-                          ? null
-                          : () => _showDisabledRatingRangeExplanation(context),
-                      child: Row(
-                        mainAxisSize: .min,
-                        children: [
-                          Text(context.l10n.ratingFilter, style: labelStyle),
-                          if (!canUseRatingRange)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 4.0),
-                              child: Icon(
-                                Icons.info_outline,
-                                size: 16.0,
-                                color: Theme.of(context).disabledColor,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Theme.of(context).dividerColor),
-                        foregroundColor: canUseRatingRange
-                            ? null
-                            : Theme.of(context).disabledColor,
-                      ),
-                      onPressed: canUseRatingRange
-                          ? () {
-                              showModalBottomSheet<void>(
-                                context: context,
-                                constraints: BoxConstraints(
-                                  minHeight:
-                                      MediaQuery.sizeOf(context).height * 0.4,
-                                ),
-                                isScrollControlled: true,
-                                builder: (BuildContext context) {
-                                  return BottomSheetScrollableContainer(
-                                    children: [
-                                      PlayRatingRange(
-                                        perf: userPerf,
-                                        ratingDelta:
-                                            playPrefs.customRatingDelta,
-                                        onRatingDeltaChange:
-                                            (int subtract, int add) {
-                                              ref
-                                                  .read(
-                                                    gameSetupPreferencesProvider
-                                                        .notifier,
-                                                  )
-                                                  .setCustomRatingRange(
-                                                    subtract,
-                                                    add,
-                                                  );
-                                            },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          : () => _showDisabledRatingRangeExplanation(context),
-                      child: canUseRatingRange
-                          ? Text(
-                              '${playPrefs.customRatingDelta.$1 == 0 ? '-' : ''}${playPrefs.customRatingDelta.$1} / +${playPrefs.customRatingDelta.$2}',
-                            )
-                          : const Text('-500 / +500'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-        ),
       ],
-    );
-  }
-
-  void _showDisabledRatingRangeExplanation(BuildContext context) {
-    showAdaptiveDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog.adaptive(
-        content: Text(
-          context.l10n.ratingRangeIsDisabledBecauseYourRatingIsProvisional,
-        ),
-        actions: [
-          PlatformDialogAction(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(context.l10n.mobileOkButton),
-          ),
-        ],
-      ),
     );
   }
 }
