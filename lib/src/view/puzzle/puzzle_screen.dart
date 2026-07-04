@@ -101,7 +101,14 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
                       theme: boardPrefs.boardTheme,
                     ),
                     controller: ChessboardController(
-                      fen: puzzleState.root.position.fen,
+                      game: buildGameData(
+                        fen: puzzleState.root.position.fen,
+                        variant: Variant.standard,
+                        position: puzzleState.root.position,
+                        playerSide: PlayerSide.none,
+                        castlingMethod: boardPrefs.castlingMethod,
+                        boardHighlights: boardPrefs.boardHighlights,
+                      ),
                     ),
                   ),
                 ),

@@ -86,7 +86,7 @@ final stormProvider = FutureProvider.autoDispose<PuzzleStormResponse>((
     puzzles.add(
       LitePuzzle(
         id: ctx!.puzzle.puzzle.id,
-        fen: ctx.puzzle.preview.initialFen,
+        fen: PuzzlePreview.fromPuzzle(ctx.puzzle).initialFen,
         solution: ctx.puzzle.puzzle.solution,
         rating: ctx.puzzle.puzzle.rating,
       ),
