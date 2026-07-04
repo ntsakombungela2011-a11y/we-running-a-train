@@ -62,7 +62,7 @@ enum MoveVerdict {
 }
 
 @Freezed(fromJson: true, toJson: true)
-class PracticeComment with _$PracticeComment {
+sealed class PracticeComment with _$PracticeComment {
   const PracticeComment._();
   const factory PracticeComment({
     required MoveVerdict verdict,

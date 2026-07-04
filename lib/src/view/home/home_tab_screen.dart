@@ -7,7 +7,6 @@ import 'package:lichess_mobile/src/utils/navigation.dart';
 import 'package:lichess_mobile/src/widgets/background.dart';
 import 'package:lichess_mobile/src/view/offline_computer/offline_computer_game_screen.dart';
 import 'package:lichess_mobile/src/view/play/play_bottom_sheet.dart';
-import 'package:lichess_mobile/src/view/account/account_menu.dart';
 import 'package:lichess_mobile/src/widgets/misc.dart';
 import 'package:lichess_mobile/src/styles/styles.dart';
 
@@ -29,10 +28,7 @@ class _HomeScreenState extends ConsumerState<HomeTabScreen> {
   Widget build(BuildContext context) {
     return FullScreenBackground(
       child: Scaffold(
-        appBar: PlatformAppBar(
-          title: const AppBarLichessTitle(),
-          actions: const [AccountMenuButton()],
-        ),
+        appBar: PlatformAppBar(title: const AppBarLichessTitle()),
         body: ListView(
           controller: homeScrollController,
           children: [
