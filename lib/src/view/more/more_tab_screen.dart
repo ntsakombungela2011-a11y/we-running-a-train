@@ -1,3 +1,4 @@
+import 'package:lichess_mobile/src/view/account/about_screen.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

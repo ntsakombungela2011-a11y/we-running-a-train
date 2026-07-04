@@ -1264,7 +1264,6 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
   @override
   Widget build(BuildContext context) {
     final authUser = ref.watch(authControllerProvider);
-    final signInState = ref.watch(signInMutation);
     final kidModeAsync = ref.watch(kidModeProvider);
 
     ref.listen(
@@ -1414,6 +1413,36 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                       : null,
                 )
       ],
+    );
+  }
+}
+
+void _showPlayerDetails(
+  BuildContext context,
+  TournamentId tournamentId,
+  UserId userId,
+) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) {
+      return DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) {
+          return Consumer(
+            builder: (context, ref, child) {
+              final playerAsync = ref.watch(
+                tournamentPlayerProvider((tournamentId, userId)),
+              );
+              return switch (playerAsync) {
+                AsyncData(:final value) => _TournamentPlayerDetails(
+                  player: value,
+                  tournamentId: tournamentId,
+                  scrollController: scrollController,
+                ),
                 _ => const Center(child: CircularProgressIndicator.adaptive()),
               };
             },
@@ -1423,11 +1452,6 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
     },
   );
 }
-
-class _TournamentPlayerDetails extends ConsumerWidget {
-  final TournamentPlayer player;
-  final TournamentId tournamentId;
-  final ScrollController scrollController;
 
   const _TournamentPlayerDetails({
     required this.player,
