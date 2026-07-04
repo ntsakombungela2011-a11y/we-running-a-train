@@ -8,7 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lichess_mobile/src/model/account/ongoing_game.dart';
 import 'package:lichess_mobile/src/model/auth/auth_controller.dart';
-import 'package:lichess_mobile/src/model/auth/bearer.dart';
 import 'package:lichess_mobile/src/model/common/id.dart';
 import 'package:lichess_mobile/src/model/common/socket.dart';
 import 'package:lichess_mobile/src/model/correspondence/correspondence_game_storage.dart';
@@ -151,7 +150,7 @@ class CorrespondenceService {
 
     WebSocket.userAgent = ref.read(userAgentProvider);
     final Map<String, String> wsHeaders = _authUser != null
-        ? {'Authorization': 'Bearer ${signBearerToken(_authUser!.token)}'}
+        ? {'Authorization': 'Bearer ${_authUser!.token}'}
         : {};
 
     int movesPlayed = 0;
