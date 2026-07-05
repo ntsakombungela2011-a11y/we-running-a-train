@@ -5,7 +5,7 @@ import 'package:dartchess/dartchess.dart' hide File;
 import 'package:fast_immutable_collections/fast_immutable_collections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lichess_mobile/src/constants.dart';
@@ -71,8 +71,7 @@ class TournamentScreen extends ConsumerStatefulWidget {
   ConsumerState<TournamentScreen> createState() => _TournamentScreenState();
 }
 
-class _TournamentScreenState extends ConsumerState<TournamentScreen>
-    with RouteAware {
+class _TournamentScreenState extends ConsumerState<TournamentScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
@@ -103,10 +102,7 @@ class _TournamentScreenState extends ConsumerState<TournamentScreen>
   @override
   void didPop() {
     if (mounted) {
-      final joined = ref
-          .read(tournamentControllerProvider(widget.id))
-          .value
-          ?.hasJoined;
+      final joined = ref.read(tournamentControllerProvider(widget.id)).value?.hasJoined;
       if (joined == true) {
         ref.invalidate(myRecentGamesProvider);
         ref.invalidate(accountProvider);
@@ -118,17 +114,16 @@ class _TournamentScreenState extends ConsumerState<TournamentScreen>
   @override
   Widget build(BuildContext context) {
     ref.listen(
-      tournamentControllerProvider(
-        widget.id,
-      ).select((value) => value.value?.currentGame),
+      tournamentControllerProvider(widget.id).select((value) => value.value?.currentGame),
       (prevGameId, currentGameId) {
         if (prevGameId != currentGameId && currentGameId != null) {
-          Navigator.of(context).popUntil(
-            (route) => route.settings.name == TournamentScreen.routeName,
-          );
-          Navigator.of(context, rootNavigator: true).push(
-            GameScreen.buildRoute(source: ExistingGameSource(currentGameId)),
-          );
+          Navigator.of(
+            context,
+          ).popUntil((route) => route.settings.name == TournamentScreen.routeName);
+          Navigator.of(
+            context,
+            rootNavigator: true,
+          ).push(GameScreen.buildRoute(source: ExistingGameSource(currentGameId)));
         }
       },
     );
@@ -159,8 +154,7 @@ class _Body extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authUser = ref.watch(authControllerProvider);
-    final timeLeft =
-        state.tournament.timeToStart ?? state.tournament.timeToFinish;
+    final timeLeft = state.tournament.timeToStart ?? state.tournament.timeToFinish;
 
     return FocusDetector(
       onFocusRegained: () {
@@ -176,15 +170,11 @@ class _Body extends ConsumerWidget {
             SemanticIconButton(
               icon: const PlatformShareIcon(),
               semanticsLabel: 'Share tournament',
-              onPressed: () => launchShareDialog(
-                context,
-                ShareParams(uri: lichessUri('/tournament/$id')),
-              ),
+              onPressed: () =>
+                  launchShareDialog(context, ShareParams(uri: lichessUri('/tournament/$id'))),
             ),
             if (state.tournament.isFinished != true)
-              SocketPingRatingIcon(
-                socketUri: TournamentController.socketUri(id),
-              ),
+              SocketPingRatingIcon(socketUri: TournamentController.socketUri(id)),
             if (timeLeft != null)
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
@@ -192,23 +182,19 @@ class _Body extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (state.tournament.timeToStart != null)
-                      Text(
-                        context.l10n.startingIn,
-                        style: const TextStyle(fontSize: 14),
-                      ),
+                      Text(context.l10n.startingIn, style: const TextStyle(fontSize: 14)),
                     CountdownClockBuilder(
                       timeLeft: timeLeft.$1,
                       clockUpdatedAt: timeLeft.$2,
                       active: true,
                       tickInterval: const Duration(seconds: 1),
-                      builder: (BuildContext context, Duration timeLeft) =>
-                          Text(
-                            '${timeLeft.toHoursMinutesSeconds()} ',
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              fontFeatures: [FontFeature.tabularFigures()],
-                            ),
-                          ),
+                      builder: (BuildContext context, Duration timeLeft) => Text(
+                        '${timeLeft.toHoursMinutesSeconds()} ',
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -239,12 +225,8 @@ class _Body extends ConsumerWidget {
                         Text.rich(
                           TextSpan(
                             children: [
-                              const WidgetSpan(
-                                child: Icon(LichessIcons.body_cut, size: 16),
-                              ),
-                              TextSpan(
-                                text: ' ${context.l10n.arenaNoBerserkAllowed}',
-                              ),
+                              const WidgetSpan(child: Icon(LichessIcons.body_cut, size: 16)),
+                              TextSpan(text: ' ${context.l10n.arenaNoBerserkAllowed}'),
                             ],
                           ),
                         ),
@@ -252,9 +234,7 @@ class _Body extends ConsumerWidget {
                       if (state.tournament.description != null &&
                           state.tournament.description!.isNotEmpty) ...[
                         const SizedBox(height: 10),
-                        _ExpandableDescription(
-                          description: state.tournament.description!,
-                        ),
+                        _ExpandableDescription(description: state.tournament.description!),
                       ],
                     ],
                   ),
@@ -267,21 +247,17 @@ class _Body extends ConsumerWidget {
               ],
               _Standing(state),
               const SizedBox(height: 16),
-              if (state.tournament.isStarted != true &&
-                  state.tournament.isFinished != true)
+              if (state.tournament.isStarted != true && state.tournament.isFinished != true)
                 _TournamentHelp(state: state)
               else if (state.tournament.isFinished == true)
                 _TournamentCompleteWidget(state: state)
               else if (state.tournament.featuredGame != null)
                 _FeaturedGame(state.tournament.featuredGame!),
-              if (authUser != null && state.joined) const SizedBox(height: 35),
+              if (state.joined) const SizedBox(height: 35),
             ],
           ),
         ),
-        bottomSheet:
-            authUser != null &&
-                state.joined &&
-                state.tournament.isFinished != true
+        bottomSheet: state.joined && state.tournament.isFinished != true
             ? Material(
                 child: Container(
                   height: 35,
@@ -295,7 +271,7 @@ class _Body extends ConsumerWidget {
                       child: Text(
                         state.tournament.pairingsClosed
                             ? context.l10n.arenaTournamentPairingsAreNowClosed
-                            : context.l10n.standByX(authUser.user.name),
+                            : context.l10n.standByX('Offline Player'),
                         style: const TextStyle(color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -344,14 +320,8 @@ class _TournamentHelp extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     decoration: BoxDecoration(
                       border: Border(
-                        top: BorderSide(
-                          color: Theme.of(context).dividerColor,
-                          width: 1,
-                        ),
-                        bottom: BorderSide(
-                          color: Theme.of(context).dividerColor,
-                          width: 1,
-                        ),
+                        top: BorderSide(color: Theme.of(context).dividerColor, width: 1),
+                        bottom: BorderSide(color: Theme.of(context).dividerColor, width: 1),
                       ),
                     ),
                     child: Text(
@@ -389,10 +359,7 @@ class _TournamentHelp extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  context.l10n.arenaHowAreScoresCalculated,
-                  style: Styles.sectionTitle,
-                ),
+                Text(context.l10n.arenaHowAreScoresCalculated, style: Styles.sectionTitle),
                 const SizedBox(height: 10),
                 Text(context.l10n.arenaHowAreScoresCalculatedAnswer),
               ],
@@ -415,10 +382,7 @@ class _TournamentHelp extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  context.l10n.arenaHowIsTheWinnerDecided,
-                  style: Styles.sectionTitle,
-                ),
+                Text(context.l10n.arenaHowIsTheWinnerDecided, style: Styles.sectionTitle),
                 const SizedBox(height: 10),
                 Text(context.l10n.arenaHowIsTheWinnerDecidedAnswer),
               ],
@@ -429,10 +393,7 @@ class _TournamentHelp extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  context.l10n.arenaHowDoesPairingWork,
-                  style: Styles.sectionTitle,
-                ),
+                Text(context.l10n.arenaHowDoesPairingWork, style: Styles.sectionTitle),
                 const SizedBox(height: 10),
                 Text(context.l10n.arenaHowDoesPairingWorkAnswer),
               ],
@@ -443,10 +404,7 @@ class _TournamentHelp extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  context.l10n.arenaHowDoesItEnd,
-                  style: Styles.sectionTitle,
-                ),
+                Text(context.l10n.arenaHowDoesItEnd, style: Styles.sectionTitle),
                 const SizedBox(height: 10),
                 Text(context.l10n.arenaHowDoesItEndAnswer),
               ],
@@ -612,9 +570,7 @@ class _TeamStanding extends ConsumerWidget {
                 style: TextStyle(color: context.lichessColors.primary),
               ),
               onTap: () {
-                Navigator.of(
-                  context,
-                ).push(_AllTeamsScreen.buildRoute(state.id, teamBattle));
+                Navigator.of(context).push(_AllTeamsScreen.buildRoute(state.id, teamBattle));
               },
             ),
         ],
@@ -641,13 +597,8 @@ class _TeamStandingTile extends ConsumerWidget {
     return ListTile(
       contentPadding: const EdgeInsetsDirectional.only(start: 16.0, end: 16.0),
       visualDensity: .compact,
-      tileColor: team.rank.isEven
-          ? context.lichessTheme.rowEven
-          : context.lichessTheme.rowOdd,
-      leading: Text(
-        team.rank.toString().padLeft(2).padRight(3),
-        textAlign: .center,
-      ),
+      tileColor: team.rank.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
+      leading: Text(team.rank.toString().padLeft(2).padRight(3), textAlign: .center),
       title: Row(
         children: [
           Flexible(
@@ -677,10 +628,7 @@ class _TeamStandingTile extends ConsumerWidget {
                     alignment: .middle,
                     child: UserFullNameWidget(
                       user: team.players.first.user,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: textShade(context, 0.6),
-                      ),
+                      style: TextStyle(fontSize: 14, color: textShade(context, 0.6)),
                       showPatron: false,
                     ),
                   ),
@@ -721,8 +669,10 @@ class _Standing extends ConsumerWidget {
       child: Column(
         children: [
           _StandingControls(state: state),
-          ...List.generate(10, (i) => standing.players.getOrNull(i)).nonNulls
-              .map((player) => _StandingPlayer(player: player, state: state)),
+          ...List.generate(
+            10,
+            (i) => standing.players.getOrNull(i),
+          ).nonNulls.map((player) => _StandingPlayer(player: player, state: state)),
         ],
       ),
     );
@@ -743,34 +693,23 @@ class _StandingPlayer extends ConsumerWidget {
       contentPadding: const EdgeInsetsDirectional.only(start: 16.0, end: 16.0),
       visualDensity: VisualDensity.compact,
       selected: isMe,
-      tileColor: player.rank.isEven
-          ? context.lichessTheme.rowEven
-          : context.lichessTheme.rowOdd,
+      tileColor: player.rank.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
       leading: player.withdraw
           ? Icon(Icons.pause, color: textShade(context, 0.3), size: 20)
-          : Text(
-              player.rank.toString().padLeft(2).padRight(3),
-              textAlign: TextAlign.center,
-            ),
+          : Text(player.rank.toString().padLeft(2).padRight(3), textAlign: TextAlign.center),
       title: UserFullNameWidget(
         user: player.user,
         rating: player.rating,
         provisional: player.provisional,
         shouldShowOnline: false,
       ),
-      subtitle: player.sheet.scores.isNotEmpty
-          ? _Scores(player.sheet.scores)
-          : null,
+      subtitle: player.sheet.scores.isNotEmpty ? _Scores(player.sheet.scores) : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Visibility.maintain(
             visible: player.sheet.fire,
-            child: Icon(
-              LichessIcons.blitz,
-              size: 15,
-              color: context.lichessColors.brag,
-            ),
+            child: Icon(LichessIcons.blitz, size: 15, color: context.lichessColors.brag),
           ),
           Text(
             player.score.toString().padLeft(2),
@@ -825,14 +764,10 @@ class _StandingControls extends ConsumerWidget {
       children: [
         SemanticIconButton(
           onPressed: state.hasPreviousPage
-              ? ref
-                    .read(tournamentControllerProvider(state.id).notifier)
-                    .loadPreviousStandingsPage
+              ? ref.read(tournamentControllerProvider(state.id).notifier).loadPreviousStandingsPage
               : null,
           onLongPress: state.hasPreviousPage
-              ? ref
-                    .read(tournamentControllerProvider(state.id).notifier)
-                    .loadFirstStandingsPage
+              ? ref.read(tournamentControllerProvider(state.id).notifier).loadFirstStandingsPage
               : null,
           semanticsLabel: context.l10n.mobilePreviousPage,
           icon: const Icon(Icons.chevron_left),
@@ -840,31 +775,23 @@ class _StandingControls extends ConsumerWidget {
         Expanded(
           child: Text(
             '${state.firstRankOfPage}-${min(state.firstRankOfPage + kStandingsPageSize - 1, state.tournament.nbPlayers)} / ${state.tournament.nbPlayers}',
-            style: const TextStyle(
-              fontFeatures: [FontFeature.tabularFigures()],
-            ),
+            style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
             textAlign: TextAlign.center,
           ),
         ),
         SemanticIconButton(
           onPressed: state.hasNextPage
-              ? ref
-                    .read(tournamentControllerProvider(state.id).notifier)
-                    .loadNextStandingsPage
+              ? ref.read(tournamentControllerProvider(state.id).notifier).loadNextStandingsPage
               : null,
           onLongPress: state.hasNextPage
-              ? ref
-                    .read(tournamentControllerProvider(state.id).notifier)
-                    .loadLastStandingsPage
+              ? ref.read(tournamentControllerProvider(state.id).notifier).loadLastStandingsPage
               : null,
           semanticsLabel: context.l10n.studyNext,
           icon: const Icon(Icons.chevron_right),
         ),
         if (state.tournament.me != null)
           SemanticIconButton(
-            onPressed: ref
-                .read(tournamentControllerProvider(state.id).notifier)
-                .jumpToMyPage,
+            onPressed: ref.read(tournamentControllerProvider(state.id).notifier).jumpToMyPage,
             icon: const Icon(Icons.person_pin_circle_outlined),
             semanticsLabel: context.l10n.mobileTournamentJumpToMyPage,
           ),
@@ -991,14 +918,8 @@ class _FeaturedGame extends ConsumerWidget {
           size: boardSize,
           orientation: featuredGame.orientation,
           fen: featuredGame.fen,
-          header: _FeaturedGamePlayer(
-            game: featuredGame,
-            side: featuredGame.orientation.opposite,
-          ),
-          footer: _FeaturedGamePlayer(
-            game: featuredGame,
-            side: featuredGame.orientation,
-          ),
+          header: _FeaturedGamePlayer(game: featuredGame, side: featuredGame.orientation.opposite),
+          footer: _FeaturedGamePlayer(game: featuredGame, side: featuredGame.orientation),
           lastMove: featuredGame.lastMove,
         );
       },
@@ -1036,10 +957,7 @@ class _FeaturedGamePlayer extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                Text(
-                  '#${player.rank} ',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('#${player.rank} ', style: const TextStyle(fontWeight: FontWeight.bold)),
                 Flexible(
                   child: UserFullNameWidget(
                     user: player.user,
@@ -1115,48 +1033,32 @@ class _TournamentCompleteWidget extends ConsumerWidget {
               rows: [
                 DataRow(
                   cells: [
-                    DataCell(
-                      Text(context.l10n.averageElo, style: _headerStyle),
-                    ),
-                    DataCell(
-                      Text(stats.averageRating.toString(), style: _valueStyle),
-                    ),
+                    DataCell(Text(context.l10n.averageElo, style: _headerStyle)),
+                    DataCell(Text(stats.averageRating.toString(), style: _valueStyle)),
                   ],
                 ),
                 DataRow(
                   cells: [
-                    DataCell(
-                      Text(context.l10n.gamesPlayed, style: _headerStyle),
-                    ),
-                    DataCell(
-                      Text(stats.nbGames.toString(), style: _valueStyle),
-                    ),
+                    DataCell(Text(context.l10n.gamesPlayed, style: _headerStyle)),
+                    DataCell(Text(stats.nbGames.toString(), style: _valueStyle)),
                   ],
                 ),
                 DataRow(
                   cells: [
-                    DataCell(
-                      Text(context.l10n.movesPlayed, style: _headerStyle),
-                    ),
-                    DataCell(
-                      Text(stats.nbMoves.toString(), style: _valueStyle),
-                    ),
+                    DataCell(Text(context.l10n.movesPlayed, style: _headerStyle)),
+                    DataCell(Text(stats.nbMoves.toString(), style: _valueStyle)),
                   ],
                 ),
                 DataRow(
                   cells: [
                     DataCell(Text(context.l10n.whiteWins, style: _headerStyle)),
-                    DataCell(
-                      Text('${stats.whiteWinRate}%', style: _valueStyle),
-                    ),
+                    DataCell(Text('${stats.whiteWinRate}%', style: _valueStyle)),
                   ],
                 ),
                 DataRow(
                   cells: [
                     DataCell(Text(context.l10n.blackWins, style: _headerStyle)),
-                    DataCell(
-                      Text('${stats.blackWinRate}%', style: _valueStyle),
-                    ),
+                    DataCell(Text('${stats.blackWinRate}%', style: _valueStyle)),
                   ],
                 ),
                 DataRow(
@@ -1167,9 +1069,7 @@ class _TournamentCompleteWidget extends ConsumerWidget {
                 ),
                 DataRow(
                   cells: [
-                    DataCell(
-                      Text(context.l10n.arenaBerserkRate, style: _headerStyle),
-                    ),
+                    DataCell(Text(context.l10n.arenaBerserkRate, style: _headerStyle)),
                     DataCell(Text('${stats.berserkRate}%', style: _valueStyle)),
                   ],
                 ),
@@ -1200,9 +1100,9 @@ class _TournamentCompleteWidget extends ConsumerWidget {
                 );
               },
             ),
-            if (authUser != null)
+            if (true)
               LoadingButtonBuilder<File>(
-                fetchData: () => _downloadGames(ref, authUser.user),
+                fetchData: () => _downloadGames(ref, authUser?.user),
                 builder: (context, isLoading, fetchData) {
                   return ListTile(
                     leading: const Icon(Icons.download),
@@ -1215,7 +1115,7 @@ class _TournamentCompleteWidget extends ConsumerWidget {
                           context,
                           ShareParams(
                             fileNameOverrides: [
-                              'lichess_tournament_${state.tournament.startsAt}.${state.tournament.id}_${authUser.user.name}.pgn',
+                              'lichess_tournament_${state.tournament.startsAt}.${state.tournament.id}_${authUser?.user.name ?? "offline"}.pgn',
                             ],
                             files: [XFile(file.path, mimeType: 'text/plain')],
                           ),
@@ -1263,13 +1163,10 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    final authUser = ref.watch(authControllerProvider);
     final kidModeAsync = ref.watch(kidModeProvider);
 
     ref.listen(
-      tournamentControllerProvider(
-        widget.state.id,
-      ).select((value) => value.value?.joined),
+      tournamentControllerProvider(widget.state.id).select((value) => value.value?.joined),
       (prevJoined, joined) {
         if (prevJoined != joined) {
           setState(() {
@@ -1283,30 +1180,22 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
       cupertinoTransparent: true,
       children: [
         if (widget.state.chatOptions != null && kidModeAsync.value == false)
-          ChatBottomBarButton(
-            options: widget.state.chatOptions!,
-            showLabel: true,
-          ),
+          ChatBottomBarButton(options: widget.state.chatOptions!, showLabel: true),
 
-        if (widget.state.tournament.isFinished != true && authUser != null)
+        if (widget.state.tournament.isFinished != true)
           joinOrLeaveInProgress
               ? const Center(child: CircularProgressIndicator.adaptive())
               : BottomBarButton(
-                  label: widget.state.joined
-                      ? context.l10n.pause
-                      : context.l10n.join,
+                  label: widget.state.joined ? context.l10n.pause : context.l10n.join,
                   icon: widget.state.joined ? Icons.pause : Icons.play_arrow,
                   showLabel: true,
                   onTap: widget.state.canJoin
                       ? () async {
-                          final teamBattle =
-                              widget.state.tournament.meta.teamBattle;
+                          final teamBattle = widget.state.tournament.meta.teamBattle;
 
-                          // If user is joining a team battle tournament
                           if (!widget.state.joined &&
                               teamBattle != null &&
                               teamBattle.joinWith != null) {
-                            // Check if user has no teams participating
                             if (teamBattle.joinWith!.isEmpty) {
                               showSnackBar(
                                 context,
@@ -1315,7 +1204,6 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                               );
                               return;
                             }
-                            // Only one team available or if the user previously joined, join directly
                             if (teamBattle.joinWith!.length == 1 ||
                                 (widget.state.tournament.me != null)) {
                               setState(() {
@@ -1323,25 +1211,18 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                               });
 
                               ref
-                                  .read(
-                                    tournamentControllerProvider(
-                                      widget.state.id,
-                                    ).notifier,
-                                  )
-                                  .joinOrPause(
-                                    teamId: teamBattle.joinWith!.first,
-                                  );
+                                  .read(tournamentControllerProvider(widget.state.id).notifier)
+                                  .joinOrPause(teamId: teamBattle.joinWith!.first);
                               return;
                             }
 
-                            final selectedTeamId =
-                                await _showTeamSelectionDialog(
-                                  context,
-                                  teamBattle,
-                                );
+                            final selectedTeamId = await _showTeamSelectionDialog(
+                              context,
+                              teamBattle,
+                            );
 
                             if (selectedTeamId == null) {
-                              return; // User cancelled
+                              return;
                             }
                             if (!mounted) return;
                             setState(() {
@@ -1349,19 +1230,12 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                             });
 
                             ref
-                                .read(
-                                  tournamentControllerProvider(
-                                    widget.state.id,
-                                  ).notifier,
-                                )
+                                .read(tournamentControllerProvider(widget.state.id).notifier)
                                 .joinOrPause(teamId: selectedTeamId);
                           } else if (!widget.state.joined &&
                               widget.state.tournament.private &&
                               !widget.state.hasJoined) {
-                            // Joining a private tournament
-                            final entryCode = await _showEntryCodeDialog(
-                              context,
-                            );
+                            final entryCode = await _showEntryCodeDialog(context);
                             if (entryCode == null || entryCode.isEmpty) {
                               return;
                             }
@@ -1372,11 +1246,7 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
 
                             try {
                               await ref
-                                  .read(
-                                    tournamentControllerProvider(
-                                      widget.state.id,
-                                    ).notifier,
-                                  )
+                                  .read(tournamentControllerProvider(widget.state.id).notifier)
                                   .joinOrPause(entryCode: entryCode);
                             } catch (e) {
                               if (!mounted) return;
@@ -1384,7 +1254,6 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                                 joinOrLeaveInProgress = false;
                               });
                               if (e is ServerException && e.statusCode == 400) {
-                                // Invalid entry code
                                 if (!context.mounted) return;
                                 showSnackBar(
                                   context,
@@ -1396,17 +1265,12 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
                               }
                             }
                           } else {
-                            // Normal join/pause flow
                             setState(() {
                               joinOrLeaveInProgress = true;
                             });
 
                             ref
-                                .read(
-                                  tournamentControllerProvider(
-                                    widget.state.id,
-                                  ).notifier,
-                                )
+                                .read(tournamentControllerProvider(widget.state.id).notifier)
                                 .joinOrPause();
                           }
                         }
@@ -1417,11 +1281,7 @@ class _BottomBarState extends ConsumerState<_BottomBar> {
   }
 }
 
-void _showPlayerDetails(
-  BuildContext context,
-  TournamentId tournamentId,
-  UserId userId,
-) {
+void _showPlayerDetails(BuildContext context, TournamentId tournamentId, UserId userId) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -1434,14 +1294,16 @@ void _showPlayerDetails(
         builder: (context, scrollController) {
           return Consumer(
             builder: (context, ref, child) {
-              final playerAsync = ref.watch(
-                tournamentPlayerProvider((tournamentId, userId)),
-              );
+              final playerAsync = ref.watch(tournamentPlayerProvider((tournamentId, userId)));
+
               return switch (playerAsync) {
-                AsyncData(:final value) => _TournamentPlayerDetails(
-                  player: value,
+                AsyncData(value: final player) => _TournamentPlayerDetails(
+                  player: player,
                   tournamentId: tournamentId,
                   scrollController: scrollController,
+                ),
+                AsyncError(error: final error) => Center(
+                  child: Text('Error loading player data: $error'),
                 ),
                 _ => const Center(child: CircularProgressIndicator.adaptive()),
               };
@@ -1453,6 +1315,11 @@ void _showPlayerDetails(
   );
 }
 
+class _TournamentPlayerDetails extends ConsumerWidget {
+  final TournamentPlayer player;
+  final TournamentId tournamentId;
+  final ScrollController scrollController;
+
   const _TournamentPlayerDetails({
     required this.player,
     required this.tournamentId,
@@ -1461,12 +1328,9 @@ void _showPlayerDetails(
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tournamentState = ref.watch(
-      tournamentControllerProvider(tournamentId),
-    );
+    final tournamentState = ref.watch(tournamentControllerProvider(tournamentId));
     final teamInfo = player.teamId != null
-        ? tournamentState.value?.tournament.meta.teamBattle?.teams[player
-              .teamId!]
+        ? tournamentState.value?.tournament.meta.teamBattle?.teams[player.teamId!]
         : null;
     return Column(
       children: [
@@ -1478,10 +1342,7 @@ void _showPlayerDetails(
               Expanded(
                 child: Row(
                   children: [
-                    Text(
-                      '#${player.rank}',
-                      style: const TextStyle(fontSize: 20),
-                    ),
+                    Text('#${player.rank}', style: const TextStyle(fontSize: 20)),
                     const SizedBox(width: 8),
                     Flexible(
                       child: UserFullNameWidget(
@@ -1489,35 +1350,26 @@ void _showPlayerDetails(
                         rating: player.rating,
                         style: Styles.title,
                         onTap: tournamentState.value?.isSpectator == true
-                            ? () => Navigator.of(context).push(
-                                UserOrProfileScreen.buildRoute(player.user),
-                              )
+                            ? () => Navigator.of(
+                                context,
+                              ).push(UserOrProfileScreen.buildRoute(player.user))
                             : null,
                       ),
                     ),
                   ],
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
+              IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
             ],
           ),
         ),
         if (teamInfo != null)
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               mainAxisSize: .min,
               children: [
-                Text(
-                  teamInfo.name,
-                  style: const TextStyle(fontWeight: .w500, fontSize: 14),
-                ),
+                Text(teamInfo.name, style: const TextStyle(fontWeight: .w500, fontSize: 14)),
                 const SizedBox(width: 8.0),
                 if (teamInfo.flair != null) ...[
                   HttpNetworkImageWidget(
@@ -1537,45 +1389,31 @@ void _showPlayerDetails(
             children: [
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12.0,
-                    horizontal: 16.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                   child: Column(
                     children: [
                       _StatRow(
                         label: context.l10n.stormScore,
                         value: '${player.score}',
                         prefix: player.fire
-                            ? Icon(
-                                LichessIcons.blitz,
-                                size: 15,
-                                color: context.lichessColors.brag,
-                              )
+                            ? Icon(LichessIcons.blitz, size: 15, color: context.lichessColors.brag)
                             : null,
                       ),
                       if (player.performance != null)
                         _StatRow(
                           label: context.l10n.performance,
-                          value:
-                              player.performance.toString() +
-                              (player.stats.game < 3 ? '?' : ''),
+                          value: player.performance.toString() + (player.stats.game < 3 ? '?' : ''),
                         ),
                       if (player.stats.game > 0) ...[
-                        _StatRow(
-                          label: context.l10n.gamesPlayed,
-                          value: '${player.stats.game}',
-                        ),
+                        _StatRow(label: context.l10n.gamesPlayed, value: '${player.stats.game}'),
                         if (player.stats.win > 0)
                           _StatRow(
                             label: context.l10n.winRate,
-                            value:
-                                '${((player.stats.win / player.stats.game) * 100).round()}%',
+                            value: '${((player.stats.win / player.stats.game) * 100).round()}%',
                           ),
                         _StatRow(
                           label: context.l10n.arenaBerserkRate,
-                          value:
-                              '${((player.stats.berserk / player.stats.game) * 100).round()}%',
+                          value: '${((player.stats.berserk / player.stats.game) * 100).round()}%',
                         ),
                       ],
                       if (player.pairings.isNotEmpty)
@@ -1662,9 +1500,7 @@ class _PairingTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tournamentState = ref.watch(
-      tournamentControllerProvider(tournamentId),
-    );
+    final tournamentState = ref.watch(tournamentControllerProvider(tournamentId));
 
     final resultColor = pairing.score != null && pairing.score! >= 4
         ? context.lichessColors.brag
@@ -1678,14 +1514,11 @@ class _PairingTile extends ConsumerWidget {
     return ListTile(
       contentPadding: const EdgeInsetsDirectional.only(start: 16.0, end: 16.0),
       visualDensity: VisualDensity.compact,
-      tileColor: index.isEven
-          ? context.lichessTheme.rowEven
-          : context.lichessTheme.rowOdd,
+      tileColor: index.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
       onTap: tournamentState.value?.isSpectator == true
           ? () {
               // If game is finished (status neither started nor created), go to analysis board
-              if (pairing.status != GameStatus.started &&
-                  pairing.status != GameStatus.created) {
+              if (pairing.status != GameStatus.started && pairing.status != GameStatus.created) {
                 Navigator.of(context, rootNavigator: true).push(
                   AnalysisScreen.buildRoute(
                     AnalysisOptions.archivedGame(
@@ -1709,10 +1542,7 @@ class _PairingTile extends ConsumerWidget {
 
       leading: Text((nbGames - index).toString().padLeft(2)),
 
-      title: UserFullNameWidget(
-        user: pairing.opponent,
-        rating: pairing.opponentRating,
-      ),
+      title: UserFullNameWidget(user: pairing.opponent, rating: pairing.opponentRating),
 
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1729,11 +1559,7 @@ class _PairingTile extends ConsumerWidget {
             child: Center(
               child: Text(
                 pairing.score?.toString() ?? '*',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: resultColor,
-                  fontSize: 15,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, color: resultColor, fontSize: 15),
               ),
             ),
           ),
@@ -1747,18 +1573,11 @@ int _calculateAverageOpponentRating(TournamentPlayer player) {
   if (player.pairings.isEmpty) {
     return 0;
   }
-  final totalRating = player.pairings.fold(
-    0,
-    (sum, pairing) => sum + pairing.opponentRating,
-  );
+  final totalRating = player.pairings.fold(0, (sum, pairing) => sum + pairing.opponentRating);
   return (totalRating / player.pairings.length).round();
 }
 
-void _showTeamDetails(
-  BuildContext context,
-  TournamentId tournamentId,
-  TeamId teamId,
-) {
+void _showTeamDetails(BuildContext context, TournamentId tournamentId, TeamId teamId) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -1771,9 +1590,7 @@ void _showTeamDetails(
         builder: (context, scrollController) {
           return Consumer(
             builder: (context, ref, child) {
-              final teamAsync = ref.watch(
-                tournamentTeamProvider((tournamentId, teamId)),
-              );
+              final teamAsync = ref.watch(tournamentTeamProvider((tournamentId, teamId)));
 
               return switch (teamAsync) {
                 AsyncData(value: final team) => _TournamentTeamDetails(
@@ -1807,13 +1624,9 @@ class _TournamentTeamDetails extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tournamentState = ref.watch(
-      tournamentControllerProvider(tournamentId),
-    );
-    final teamInfo =
-        tournamentState.value?.tournament.meta.teamBattle?.teams[team.id];
-    final nbLeaders =
-        tournamentState.value?.tournament.meta.teamBattle?.nbLeaders;
+    final tournamentState = ref.watch(tournamentControllerProvider(tournamentId));
+    final teamInfo = tournamentState.value?.tournament.meta.teamBattle?.teams[team.id];
+    final nbLeaders = tournamentState.value?.tournament.meta.teamBattle?.nbLeaders;
 
     return Column(
       children: [
@@ -1846,10 +1659,7 @@ class _TournamentTeamDetails extends ConsumerWidget {
                   ],
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
+              IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
             ],
           ),
         ),
@@ -1860,30 +1670,18 @@ class _TournamentTeamDetails extends ConsumerWidget {
             children: [
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12.0,
-                    horizontal: 16.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                   child: Column(
                     children: [
-                      _StatRow(
-                        label: context.l10n.players,
-                        value: '${team.nbPlayers}',
-                      ),
+                      _StatRow(label: context.l10n.players, value: '${team.nbPlayers}'),
 
-                      _StatRow(
-                        label: context.l10n.averageElo,
-                        value: '${team.rating}',
-                      ),
+                      _StatRow(label: context.l10n.averageElo, value: '${team.rating}'),
                       if (team.performance != null)
                         _StatRow(
                           label: context.l10n.arenaAveragePerformance,
                           value: '${team.performance}',
                         ),
-                      _StatRow(
-                        label: context.l10n.arenaAverageScore,
-                        value: '${team.score}',
-                      ),
+                      _StatRow(label: context.l10n.arenaAverageScore, value: '${team.score}'),
                     ],
                   ),
                 ),
@@ -1934,23 +1732,14 @@ class _TeamPlayerTile extends ConsumerWidget {
     return ListTile(
       contentPadding: const EdgeInsetsDirectional.only(start: 16.0, end: 16.0),
       visualDensity: .compact,
-      tileColor: index.isEven
-          ? context.lichessTheme.rowEven
-          : context.lichessTheme.rowOdd,
-      leading: Row(
-        mainAxisSize: .min,
-        children: [Text((index + 1).toString().padLeft(2))],
-      ),
+      tileColor: index.isEven ? context.lichessTheme.rowEven : context.lichessTheme.rowOdd,
+      leading: Row(mainAxisSize: .min, children: [Text((index + 1).toString().padLeft(2))]),
       title: Row(
         children: [
           if (nbLeaders != null && index < nbLeaders!)
             Padding(
               padding: const EdgeInsets.only(right: 4.0),
-              child: Icon(
-                LichessIcons.crown,
-                size: 16,
-                color: context.lichessColors.brag,
-              ),
+              child: Icon(LichessIcons.crown, size: 16, color: context.lichessColors.brag),
             ),
           Flexible(
             child: UserFullNameWidget(
@@ -1967,11 +1756,7 @@ class _TeamPlayerTile extends ConsumerWidget {
           if (player.fire)
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: Icon(
-                LichessIcons.blitz,
-                size: 15,
-                color: context.lichessColors.brag,
-              ),
+              child: Icon(LichessIcons.blitz, size: 15, color: context.lichessColors.brag),
             ),
           Text(
             player.score.toString().padLeft(2),
@@ -1986,10 +1771,7 @@ class _TeamPlayerTile extends ConsumerWidget {
   }
 }
 
-Future<TeamId?> _showTeamSelectionDialog(
-  BuildContext context,
-  TeamBattleData teamBattle,
-) {
+Future<TeamId?> _showTeamSelectionDialog(BuildContext context, TeamBattleData teamBattle) {
   return showDialog<TeamId>(
     context: context,
     builder: (context) {
@@ -2057,15 +1839,9 @@ class _AllTeamsScreen extends ConsumerWidget {
   final TournamentId tournamentId;
   final TeamBattleData teamBattle;
 
-  static Route<void> buildRoute(
-    TournamentId tournamentId,
-    TeamBattleData teamBattle,
-  ) {
+  static Route<void> buildRoute(TournamentId tournamentId, TeamBattleData teamBattle) {
     return buildScreenRoute(
-      screen: _AllTeamsScreen(
-        tournamentId: tournamentId,
-        teamBattle: teamBattle,
-      ),
+      screen: _AllTeamsScreen(tournamentId: tournamentId, teamBattle: teamBattle),
     );
   }
 
@@ -2073,18 +1849,11 @@ class _AllTeamsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allTeams = ref.watch(allTeamStandingsProvider(tournamentId));
     final tournamentFullName =
-        ref
-            .watch(tournamentControllerProvider(tournamentId))
-            .value
-            ?.tournament
-            .meta
-            .fullName ??
+        ref.watch(tournamentControllerProvider(tournamentId)).value?.tournament.meta.fullName ??
         'Team Standings';
 
     return PlatformScaffold(
-      appBar: PlatformAppBar(
-        title: AppBarTitleText(tournamentFullName, maxLines: 2),
-      ),
+      appBar: PlatformAppBar(title: AppBarTitleText(tournamentFullName, maxLines: 2)),
       body: allTeams.when(
         data: (teams) => ListView.builder(
           itemCount: teams.length,
@@ -2098,8 +1867,7 @@ class _AllTeamsScreen extends ConsumerWidget {
             );
           },
         ),
-        loading: () =>
-            const Center(child: CircularProgressIndicator.adaptive()),
+        loading: () => const Center(child: CircularProgressIndicator.adaptive()),
         error: (error, _) => Center(child: Text('Error loading teams: $error')),
       ),
     );
