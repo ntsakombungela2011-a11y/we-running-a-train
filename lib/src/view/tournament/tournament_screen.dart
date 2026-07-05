@@ -1102,7 +1102,7 @@ class _TournamentCompleteWidget extends ConsumerWidget {
             ),
             if (true)
               LoadingButtonBuilder<File>(
-                fetchData: () => _downloadGames(ref, authUser.user),
+                fetchData: () => _downloadGames(ref, authUser?.user),
                 builder: (context, isLoading, fetchData) {
                   return ListTile(
                     leading: const Icon(Icons.download),
@@ -1115,7 +1115,7 @@ class _TournamentCompleteWidget extends ConsumerWidget {
                           context,
                           ShareParams(
                             fileNameOverrides: [
-                              'lichess_tournament_${state.tournament.startsAt}.${state.tournament.id}_${authUser.user.name}.pgn',
+                              'lichess_tournament_${state.tournament.startsAt}.${state.tournament.id}_${authUser?.user.name ?? "offline"}.pgn',
                             ],
                             files: [XFile(file.path, mimeType: 'text/plain')],
                           ),
